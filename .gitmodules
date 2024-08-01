@@ -1,0 +1,3 @@
+[submodule "graypaper"]
+	path = graypaper
+	url = https://github.com/gavofyork/graypaper.git
