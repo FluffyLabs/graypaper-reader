@@ -3,5 +3,5 @@
 set -ex
 
 mkdir -p ./dist
-./scripts/build-pdf.sh
+./scripts/build-pdf-local.sh
 pdf2htmlEX ./dist/graypaper.pdf
