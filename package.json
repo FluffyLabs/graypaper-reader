@@ -9,8 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "cp-gp": "cp ./dist/graypaper.html ./public",
-    "predev": "npm run cp-gp",
-    "prebuild": "npm run cp-gp"
+    "predev": "npm run cp-gp"
   },
   "dependencies": {
     "react": "^18.3.1",
