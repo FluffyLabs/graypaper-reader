@@ -15,13 +15,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Download and install pdf2htmlEX
-RUN wget https://github.com/pdf2htmlEX/pdf2htmlEX/releases/download/v0.18.8.rc1/pdf2htmlEX-0.18.8.rc1-master-20200630-Ubuntu-focal-x86_64.deb && \
-    gdebi --non-interactive pdf2htmlEX-0.18.8.rc1-master-20200630-Ubuntu-focal-x86_64.deb && \
-    rm pdf2htmlEX-0.18.8.rc1-master-20200630-Ubuntu-focal-x86_64.deb
 
 # Set the working directory
 WORKDIR /workspace
 
 # Default command
-CMD ["/workspace/build-html.sh"]
+CMD ["/workspace/scripts/build-pdf-local.sh"]
