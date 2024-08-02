@@ -46,7 +46,8 @@ export class IframeController {
   jumpTo(id: string) {
     const encoded = id.replace(/"/g, '\\"');
     const $elem = this.doc.querySelector(`a[data-dest-detail="${encoded}"]`);
-    $elem?.click();
+    const $e = $elem as HTMLElement | null;
+    $e?.click();
   }
 
   trackMouseLocation(updateLocation: (loc: InDocLocation) => void) {
