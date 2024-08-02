@@ -1,0 +1,36 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  flex: 1;
+  overflow: hidden;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.menu {
+  display: flex;
+  justify-content: flex-start;
+  padding-bottom: 1rem;
+}
+
+.menu button {
+  border-radius: 0 0 1rem 1rem;
+  margin-right: 0.5rem;
+}
+
+.menu button:hover {
+  border-color: #81c5f9;
+}
+
+.menu button[disabled] {
+  background-color: #81c5f9;
+}
+
+.tabs .content {
+  flex: 1;
+  overflow: scroll;
+  border: 1px solid #81c5f9;
+  padding: 1rem;
+  border-radius: 1rem 1rem 1rem 0;
+}

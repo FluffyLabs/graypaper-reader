@@ -10,20 +10,43 @@ iframe {
 
 .viewer {
   box-sizing: border-box;
-  height: 100vh;
+  height: 100%;
   width: 30vw;
-  padding: 1rem;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: start;
+  overflow: hidden;
 }
+
 .selection {
   min-height: 25vh;
-}
-.actions {
+  max-height: 25vh;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: end;
+  flex-direction: column;
 }
-.outline {
-  overflow-y: auto;
+
+.selection small {
+  padding-top: 2rem;
+  text-align: center;
+  display: block;
+}
+
+.selection blockquote {
+  background: #eee;
+  height: auto;
+  margin: 1rem 0;
+  overflow: scroll;
+  padding: 1rem;
+  flex: 1;
+}
+
+.selection .actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.selection .actions button {
+  margin-right: 0.5rem;
 }

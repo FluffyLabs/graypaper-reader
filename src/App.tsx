@@ -1,100 +1,112 @@
-import {useEffect, useRef, useState} from 'react';
-import './App.css'
+import {useCallback, useEffect, useRef, useState} from 'react';
+import './App.css';
+import {Outline} from './components/Outline/Outline';
+import {IframeController, InDocLocation, Outline as OutlineType } from './utils/IframeController';
+import {Tabs} from './components/Tabs/Tabs';
+
+import grayPaperMetadata from '../public/metadata.json';
+import {Version} from './components/Version/Version';
+import {getLatestVersion} from './components/Version/util';
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
-  const [loadedFrame, setLoadedFrame] = useState(null as HTMLIFrameElement | null);
+  const [loadedFrame, setLoadedFrame] = useState(null as IframeController | null);
+  const [version, setVersion] = useState(getLatestVersion(grayPaperMetadata));
 
+  // wait for the iframe content to load.
   useEffect(() => {
     const interval = setInterval(() => {
-      if (frame.current?.contentWindow) {
-        frame.current?.contentWindow.addEventListener('load', () => {
-          setLoadedFrame(frame.current);
-        });
+      const win = frame.current?.contentWindow;
+      if (win) {
+        if (win.document.readyState === 'complete') {
+          setLoadedFrame(new IframeController(win));
+        } else {
+          win.addEventListener('load', () => {
+            setLoadedFrame(new IframeController(win));
+          });
+        }
         clearInterval(interval);
       }
-    })
+    }, 50);
     return () => {
       clearInterval(interval);
     };
-  }, [frame.current]);
+  }, [frame]);
 
   return (
     <>
-      <iframe name="gp" ref={frame} src="graypaper.html"></iframe>
-      <Viewer gpFrame={loadedFrame}></Viewer>
+      <iframe name="gp" ref={frame} src={`graypaper-${version}.html`}></iframe>
+      {loadedFrame && <Viewer
+        selectedVersion={version}
+        onVersionChange={setVersion}
+        iframeCtrl={loadedFrame}
+      ></Viewer>}
     </>
   )
 }
 
-function Viewer({ gpFrame }: { gpFrame: HTMLIFrameElement | null}) {
+type ViewerProps = {
+  iframeCtrl: IframeController,
+  selectedVersion: string,
+  onVersionChange: (v: string) => void
+};
+
+function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   const [selection, setSelection] = useState('');
-  const [outline, setOutline] = useState([] as [string, string][]);
+  const [location, setLocation] = useState({ page: 0 } as InDocLocation);
+  const [outline, setOutline] = useState([] as OutlineType);
   
   // get outline once
   useEffect(() => {
-    const doc = gpFrame?.contentWindow?.document;
+    setOutline(iframeCtrl.getOutline());
+    iframeCtrl.toggleSidebar(false);
+  }, [iframeCtrl]);
 
-    if (!doc) {
-      return;
-    }
-
-    // get outline
-    const $outline = doc.querySelectorAll('#outline a');
-    setOutline(convertOutline($outline));
-    doc.querySelector('#sidebar')?.classList.remove('opened');
-  }, [gpFrame?.contentWindow?.document]);
-
+  // TODO [ToDr] use a listener for that
   // maintain selection
   useEffect(() => {
-    const interval = window.setInterval(()=> {
-      const doc = gpFrame?.contentWindow?.document;
-      if (!doc) {
-        return;
-      }
-      // get selection
-      const $select = doc.getSelection();
-      setSelection($select?.toString() ?? '');
-    }, 200);
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [gpFrame]);
+    const interval = window.setInterval(()=> setSelection(iframeCtrl.getSelection()), 50);
+    return () => window.clearInterval(interval);
+  }, [iframeCtrl]);
+
+  // maintain location within document
+  useEffect(() => {
+    return iframeCtrl.trackMouseLocation((loc) => setLocation(loc));
+  }, [iframeCtrl]);
+
+  const jumpTo = useCallback((id: string) => {
+    iframeCtrl.jumpTo(id);
+  }, [iframeCtrl]);
 
   return (
     <div className="viewer">
-      <div className="actions">
-        <button>outline</button>
-        <button>notes</button>
-        <button>glossary</button>
-      </div>
       <div className="selection">
-        <h3>Selection:</h3>
-        <blockquote>{selection}</blockquote>
-       <div className="actions">
-          {selection && <button>Explain</button>}
-          {selection && <button>Add note</button>}
+        <p>Page: {location.page}</p>
+        <blockquote>
+          {selection ? selection : <small>no text selected</small>}
+        </blockquote>
+        <div className="actions">
+          <button disabled={!selection}>Link</button>
+          <button disabled={!selection}>Explain</button>
+          <button disabled={!selection}>Add note</button>
         </div>
       </div>
-      <h3>Notes:</h3>
-      TODO
-      <h3>Outline:</h3>
-      <div className="outline">
-        <ul>
-          {outline.map(x => <li key={x[0]}><a target="gp" href={`graypaper.html${x[0]}`}>{x[1]}</a></li>)}
-        </ul>
-      </div>
+      <Tabs tabs={tabsContent(outline, jumpTo)} />
+      <Version
+        onChange={onVersionChange}
+        metadata={grayPaperMetadata}
+        selectedVersion={selectedVersion}
+      />
     </div>
   );
 }
 
-function convertOutline($outline: NodeListOf<Element>): [string, string][] {
-  const ret = [] as [string, string][];
-  for (const e of $outline) {
-    const text = e.innerHTML;
-    const id = e.getAttribute('href') ?? '';
-    ret.push([id, text]);
-  }
-  return ret;
+function tabsContent(outline: OutlineType, jumpTo: (id: string) => void) {
+  return [{
+    name: 'outline',
+    render: () => <Outline outline={outline} jumpTo={jumpTo} />,
+  }, {
+    name: 'notes',
+    render: () => 'todo',
+  }];
 }
-
