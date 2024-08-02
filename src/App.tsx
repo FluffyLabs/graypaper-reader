@@ -5,7 +5,8 @@ import {IframeController, Outline as OutlineType } from './utils/IframeControlle
 import {Tabs} from './components/Tabs/Tabs';
 
 import grayPaperMetadata from '../public/metadata.json';
-import {Version, getLatestVersion} from './components/Version/Version';
+import {Version} from './components/Version/Version';
+import {getLatestVersion} from './components/Version/util';
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
@@ -30,7 +31,7 @@ export function App() {
     return () => {
       clearInterval(interval);
     };
-  }, [frame.current]);
+  }, [frame]);
 
   return (
     <>

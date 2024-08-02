@@ -12,10 +12,6 @@ export type Metadata = {
   }
 };
 
-export function getLatestVersion(metadata: Metadata) {
-  return metadata.latest ?? 'latest';
-}
-
 type VersionProps = {
   metadata: Metadata,
   onChange: (v: string) => void,
