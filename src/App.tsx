@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import './App.css';
 import {Outline} from './components/Outline/Outline';
-import {IframeController, Outline as OutlineType } from './utils/IframeController';
+import {IframeController, InDocLocation, Outline as OutlineType } from './utils/IframeController';
 import {Tabs} from './components/Tabs/Tabs';
 
 import grayPaperMetadata from '../public/metadata.json';
@@ -53,6 +53,7 @@ type ViewerProps = {
 
 function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   const [selection, setSelection] = useState('');
+  const [location, setLocation] = useState({ page: 0 } as InDocLocation);
   const [outline, setOutline] = useState([] as OutlineType);
   
   // get outline once
@@ -64,8 +65,13 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   // TODO [ToDr] use a listener for that
   // maintain selection
   useEffect(() => {
-    const interval = window.setInterval(()=> setSelection(iframeCtrl.getSelection()));
+    const interval = window.setInterval(()=> setSelection(iframeCtrl.getSelection()), 50);
     return () => window.clearInterval(interval);
+  }, [iframeCtrl]);
+
+  // maintain location within document
+  useEffect(() => {
+    return iframeCtrl.trackMouseLocation((loc) => setLocation(loc));
   }, [iframeCtrl]);
 
   const jumpTo = useCallback((id: string) => {
@@ -75,6 +81,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   return (
     <div className="viewer">
       <div className="selection">
+        <p>Page: {location.page}</p>
         <blockquote>
           {selection ? selection : <small>no text selected</small>}
         </blockquote>
