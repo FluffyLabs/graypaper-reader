@@ -1,23 +1,23 @@
 import './Outline.css';
-import type { Outline } from '../../utils/IframeController';
+import type { InDocLocation, Outline } from '../../utils/IframeController';
 
 type OutlineProps = {
   outline: Outline,
-  section: string,
+  location: InDocLocation,
   jumpTo: (id: string) => void,
 };
 
 export function Outline({
   outline,
-  section,
+  location,
   jumpTo
 } :  OutlineProps) {
   return <>
     <div className="outline">
       <ul>
         {outline.map(x => (
-          <li key={x.id} className={isSameSection(x.text, section) ? 'active' : ''}>
-            <a href={`#${x.id}`} onClick={() => jumpTo(x.id)}>
+          <li key={x.id} className={isSameSection(x.text, location) ? 'active' : ''}>
+            <a onClick={() => jumpTo(x.id)}>
               {x.text}
             </a>
           </li>
@@ -27,6 +27,9 @@ export function Outline({
   </>
 }
 
-function isSameSection(name: string, section: string) {
-  return name.indexOf(section) !== -1;
+function isSameSection(name: string, location: InDocLocation) {
+  const matchesSection = name.indexOf(location.section?.title ?? '') !== -1;
+  const matchesSubSection = name.indexOf(location.subSection?.title ?? '') !== -1;
+
+  return matchesSection || matchesSubSection;
 }

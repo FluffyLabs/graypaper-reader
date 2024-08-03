@@ -3,6 +3,7 @@ import './App.css';
 import {Outline} from './components/Outline/Outline';
 import {IframeController, InDocLocation, Outline as OutlineType } from './utils/IframeController';
 import {Tabs} from './components/Tabs/Tabs';
+import {Selection} from './components/Selection/Selection';
 
 import grayPaperMetadata from '../public/metadata.json';
 import {Version} from './components/Version/Version';
@@ -82,18 +83,8 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <div className="selection">
-        <small>Page: {location.page}, section: {location.section}</small>
-        <blockquote>
-          {selection ? selection : <small>no text selected</small>}
-        </blockquote>
-        <div className="actions">
-          <button disabled={!selection}>Link</button>
-          <button disabled={!selection}>Explain</button>
-          <button disabled={!selection}>Add note</button>
-        </div>
-      </div>
-      <Tabs tabs={tabsContent(outline, location.section, jumpTo)} />
+      <Selection location={location} selection={selection}></Selection>
+      <Tabs tabs={tabsContent(outline, location, jumpTo)} />
       <Version
         onChange={onVersionChange}
         metadata={grayPaperMetadata}
@@ -103,10 +94,10 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   );
 }
 
-function tabsContent(outline: OutlineType, section: string, jumpTo: (id: string) => void) {
+function tabsContent(outline: OutlineType, location: InDocLocation, jumpTo: (id: string) => void) {
   return [{
     name: 'outline',
-    render: () => <Outline outline={outline} jumpTo={jumpTo} section={section} />,
+    render: () => <Outline outline={outline} jumpTo={jumpTo} location={location} />,
   }, {
     name: 'notes',
     render: () => 'todo',

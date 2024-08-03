@@ -11,3 +11,7 @@
 .outline li.active {
   background-color: #eee;
 }
+
+.outline a {
+  cursor: pointer;
+}
