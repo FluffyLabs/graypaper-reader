@@ -163,7 +163,7 @@ function findPreviousMatching<T>($elem: Element | null, extract: (e: Element) =>
   }
 
   let $current = $elem;
-  do {
+  for (;;) {
     // exit early if we are off the page
     if ($current.id === 'page-container') {
       return null;
@@ -199,7 +199,7 @@ function findPreviousMatching<T>($elem: Element | null, extract: (e: Element) =>
       continue;
     }
     $current = $current.previousElementSibling;
-  } while (true);
+  } 
 }
 
 function findMatchingParent<T>($elem: Element | null, extract: (e: Element) => T | null) {
@@ -208,7 +208,7 @@ function findMatchingParent<T>($elem: Element | null, extract: (e: Element) => T
   }
 
   let $current = $elem;
-  do {
+  for(;;) {
     // exit early if we are off the page
     if ($current.id === 'page-container') {
       return null;
@@ -222,5 +222,5 @@ function findMatchingParent<T>($elem: Element | null, extract: (e: Element) => T
       return null;
     }
     $current = $current.parentElement;
-  } while (true);
+  }
 }

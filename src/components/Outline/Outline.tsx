@@ -27,7 +27,7 @@ export function Outline({
   return (
     <div className="outline">
       <ul>
-        {Object.entries(nestedOutline).map(([_, items]) => (
+        {Object.entries(nestedOutline).map(([, items]) => (
           <Item key={items[0].id} item={items[0]} location={location} jumpTo={jumpTo}>
             {items.length > 1 && (
               <ul>
