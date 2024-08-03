@@ -47,3 +47,12 @@
 .selection .actions button {
   margin-right: 0.5rem;
 }
+
+.selection button span {
+  animation: fadeIn 500ms;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

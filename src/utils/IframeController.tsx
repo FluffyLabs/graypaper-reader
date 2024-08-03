@@ -80,7 +80,7 @@ export class IframeController {
       lastRun = now;
 
       const selection = this.doc.getSelection();
-      if (selection) {
+      if (selection && selection.rangeCount) {
         this.location.selection = selection.getRangeAt(0).cloneContents();
       } else {
         this.location.selection = null;

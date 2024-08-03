@@ -75,7 +75,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <Selection location={location}></Selection>
+      <Selection version={selectedVersion} location={location} />
       <Tabs tabs={tabsContent(outline, location, jumpTo)} />
       <Version
         onChange={onVersionChange}
