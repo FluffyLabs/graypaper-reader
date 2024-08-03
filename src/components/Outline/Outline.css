@@ -8,7 +8,7 @@
   padding-left: 1rem;
 }
 
-.outline li.active {
+.outline li.active > a {
   background-color: #eee;
 }
 
