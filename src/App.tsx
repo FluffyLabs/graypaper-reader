@@ -1,8 +1,9 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import './App.css';
 import {Outline} from './components/Outline/Outline';
-import {IframeController, InDocLocation, Outline as OutlineType } from './utils/IframeController';
+import {IframeController, InDocLocation, InDocSelection, Outline as OutlineType } from './utils/IframeController';
 import {Tabs} from './components/Tabs/Tabs';
+import {Selection} from './components/Selection/Selection';
 
 import grayPaperMetadata from '../public/metadata.json';
 import {Version} from './components/Version/Version';
@@ -52,27 +53,42 @@ type ViewerProps = {
 };
 
 function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
-  const [selection, setSelection] = useState('');
-  const [location, setLocation] = useState({ page: 0 } as InDocLocation);
+  const [location, setLocation] = useState({ page: '0' } as InDocLocation);
+  const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
   
-  // get outline once
+  // perform one-time operations.
   useEffect(() => {
     setOutline(iframeCtrl.getOutline());
-    iframeCtrl.toggleSidebar(false);
-  }, [iframeCtrl]);
 
-  // TODO [ToDr] use a listener for that
-  // maintain selection
-  useEffect(() => {
-    const interval = window.setInterval(()=> setSelection(iframeCtrl.getSelection()), 50);
-    return () => window.clearInterval(interval);
+    iframeCtrl.injectStyles();
+    iframeCtrl.toggleSidebar(false);
   }, [iframeCtrl]);
 
   // maintain location within document
   useEffect(() => {
-    return iframeCtrl.trackMouseLocation((loc) => setLocation(loc));
+    return iframeCtrl.trackMouseLocation((loc, sel) => {
+      setLocation(loc);
+      setSelection(sel);
+    });
   }, [iframeCtrl]);
+
+  // react to changes in hash location
+  useEffect(() => {
+    const listener = (ev: HashChangeEvent) => {
+      iframeCtrl.goToLocation(selectedVersion, '#' + ev.newURL.split('#')[1]);
+    };
+    // read current hash
+    const cleanup = iframeCtrl.goToLocation(selectedVersion, window.location.hash);
+    // react to hash changes
+    window.addEventListener('hashchange', listener);
+    return () => {
+      window.removeEventListener('hashchange', listener);
+      if (cleanup) {
+        cleanup();
+      }
+    };
+  }, [iframeCtrl, selectedVersion]);
 
   const jumpTo = useCallback((id: string) => {
     iframeCtrl.jumpTo(id);
@@ -80,18 +96,8 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <div className="selection">
-        <p>Page: {location.page}</p>
-        <blockquote>
-          {selection ? selection : <small>no text selected</small>}
-        </blockquote>
-        <div className="actions">
-          <button disabled={!selection}>Link</button>
-          <button disabled={!selection}>Explain</button>
-          <button disabled={!selection}>Add note</button>
-        </div>
-      </div>
-      <Tabs tabs={tabsContent(outline, jumpTo)} />
+      <Selection version={selectedVersion} location={location} selection={selection} />
+      <Tabs tabs={tabsContent(outline, location, jumpTo)} />
       <Version
         onChange={onVersionChange}
         metadata={grayPaperMetadata}
@@ -101,10 +107,10 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   );
 }
 
-function tabsContent(outline: OutlineType, jumpTo: (id: string) => void) {
+function tabsContent(outline: OutlineType, location: InDocLocation, jumpTo: (id: string) => void) {
   return [{
     name: 'outline',
-    render: () => <Outline outline={outline} jumpTo={jumpTo} />,
+    render: () => <Outline outline={outline} jumpTo={jumpTo} location={location} />,
   }, {
     name: 'notes',
     render: () => 'todo',

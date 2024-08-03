@@ -1,0 +1,58 @@
+.selection {
+  min-height: 150px;
+  height: 20vh;
+  max-height: 20vh;
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+}
+
+.selection small {
+  text-align: center;
+  display: block;
+}
+
+.selection blockquote {
+  background: #eee;
+  flex: 1;
+  font-family: ff7;
+  font-size: 1rem;
+  height: auto;
+  margin: 0.5rem 0 0;
+  overflow: scroll;
+  padding-bottom: 2rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.selection small {
+  background: #eee;
+  box-sizing: border-box;
+  display: block;
+  font-family: monospace;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  padding: 0.2rem 0.3rem 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.selection .actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.selection .actions button {
+  margin-right: 0.5rem;
+}
+
+.selection button span {
+  animation: fadeIn 500ms;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
