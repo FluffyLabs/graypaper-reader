@@ -1,8 +1,13 @@
 .outline {
   overflow-y: auto;
 }
+
 .outline ul {
   margin: 0;
   padding: 0;
   padding-left: 1rem;
+}
+
+.outline li.active {
+  background-color: #eee;
 }

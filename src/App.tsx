@@ -56,9 +56,11 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   const [location, setLocation] = useState({ page: 0 } as InDocLocation);
   const [outline, setOutline] = useState([] as OutlineType);
   
-  // get outline once
+  // perform one-time operations.
   useEffect(() => {
     setOutline(iframeCtrl.getOutline());
+
+    iframeCtrl.injectStyles();
     iframeCtrl.toggleSidebar(false);
   }, [iframeCtrl]);
 
@@ -81,7 +83,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   return (
     <div className="viewer">
       <div className="selection">
-        <p>Page: {location.page}</p>
+        <small>Page: {location.page}, section: {location.section}</small>
         <blockquote>
           {selection ? selection : <small>no text selected</small>}
         </blockquote>
@@ -91,7 +93,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
           <button disabled={!selection}>Add note</button>
         </div>
       </div>
-      <Tabs tabs={tabsContent(outline, jumpTo)} />
+      <Tabs tabs={tabsContent(outline, location.section, jumpTo)} />
       <Version
         onChange={onVersionChange}
         metadata={grayPaperMetadata}
@@ -101,10 +103,10 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   );
 }
 
-function tabsContent(outline: OutlineType, jumpTo: (id: string) => void) {
+function tabsContent(outline: OutlineType, section: string, jumpTo: (id: string) => void) {
   return [{
     name: 'outline',
-    render: () => <Outline outline={outline} jumpTo={jumpTo} />,
+    render: () => <Outline outline={outline} jumpTo={jumpTo} section={section} />,
   }, {
     name: 'notes',
     render: () => 'todo',

@@ -20,15 +20,15 @@ iframe {
 }
 
 .selection {
-  min-height: 25vh;
-  max-height: 25vh;
+  min-height: 100px;
+  height: 30vh;
+  max-height: 30vh;
   display: flex;
   justify-content: end;
   flex-direction: column;
 }
 
 .selection small {
-  padding-top: 2rem;
   text-align: center;
   display: block;
 }
@@ -40,6 +40,12 @@ iframe {
   overflow: scroll;
   padding: 1rem;
   flex: 1;
+  font-family: ff7;
+  font-size: 0.8rem;
+}
+
+.selection blockquote small {
+  padding-top: 2rem;
 }
 
 .selection .actions {
