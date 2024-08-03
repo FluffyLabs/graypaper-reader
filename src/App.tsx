@@ -53,7 +53,6 @@ type ViewerProps = {
 };
 
 function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
-  const [selection, setSelection] = useState('');
   const [location, setLocation] = useState({ page: 0 } as InDocLocation);
   const [outline, setOutline] = useState([] as OutlineType);
   
@@ -63,13 +62,6 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
     iframeCtrl.injectStyles();
     iframeCtrl.toggleSidebar(false);
-  }, [iframeCtrl]);
-
-  // TODO [ToDr] use a listener for that
-  // maintain selection
-  useEffect(() => {
-    const interval = window.setInterval(()=> setSelection(iframeCtrl.getSelection()), 50);
-    return () => window.clearInterval(interval);
   }, [iframeCtrl]);
 
   // maintain location within document
@@ -83,7 +75,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <Selection location={location} selection={selection}></Selection>
+      <Selection location={location}></Selection>
       <Tabs tabs={tabsContent(outline, location, jumpTo)} />
       <Version
         onChange={onVersionChange}

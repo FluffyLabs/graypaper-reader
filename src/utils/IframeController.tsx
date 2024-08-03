@@ -10,6 +10,7 @@ export type Section = {
 };
 
 export type InDocLocation = {
+  selection: DocumentFragment | null,
   page: number,
   section?: Section,
   subSection?: Section,
@@ -26,6 +27,7 @@ export class IframeController {
     this.doc = win.document;
     this.location = {
       page: 0,
+      selection: null,
     };
   }
 
@@ -57,10 +59,6 @@ export class IframeController {
     return ret;
   }
 
-  getSelection(): string {
-    return this.doc.getSelection()?.toString() ?? '';
-  }
-
   jumpTo(id: string) {
     const encoded = id.replace(/"/g, '\\"');
     const $elem = this.doc.querySelector(`a[data-dest-detail="${encoded}"]`);
@@ -80,6 +78,13 @@ export class IframeController {
         return
       }
       lastRun = now;
+
+      const selection = this.doc.getSelection();
+      if (selection) {
+        this.location.selection = selection.getRangeAt(0).cloneContents();
+      } else {
+        this.location.selection = null;
+      }
 
       const $elem = this.doc.elementFromPoint(ev.clientX, ev.clientY);
       if (finder === 0) {
