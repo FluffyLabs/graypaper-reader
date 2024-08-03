@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import './App.css';
 import {Outline} from './components/Outline/Outline';
-import {IframeController, InDocLocation, Outline as OutlineType } from './utils/IframeController';
+import {IframeController, InDocLocation, InDocSelection, Outline as OutlineType } from './utils/IframeController';
 import {Tabs} from './components/Tabs/Tabs';
 import {Selection} from './components/Selection/Selection';
 
@@ -53,7 +53,8 @@ type ViewerProps = {
 };
 
 function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
-  const [location, setLocation] = useState({ page: 0 } as InDocLocation);
+  const [location, setLocation] = useState({ page: '0' } as InDocLocation);
+  const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
   
   // perform one-time operations.
@@ -66,8 +67,28 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   // maintain location within document
   useEffect(() => {
-    return iframeCtrl.trackMouseLocation((loc) => setLocation(loc));
+    return iframeCtrl.trackMouseLocation((loc, sel) => {
+      setLocation(loc);
+      setSelection(sel);
+    });
   }, [iframeCtrl]);
+
+  // react to changes in hash location
+  useEffect(() => {
+    const listener = (ev: HashChangeEvent) => {
+      iframeCtrl.goToLocation(selectedVersion, '#' + ev.newURL.split('#')[1]);
+    };
+    // read current hash
+    const cleanup = iframeCtrl.goToLocation(selectedVersion, window.location.hash);
+    // react to hash changes
+    window.addEventListener('hashchange', listener);
+    return () => {
+      window.removeEventListener('hashchange', listener);
+      if (cleanup) {
+        cleanup();
+      }
+    };
+  }, [iframeCtrl, selectedVersion]);
 
   const jumpTo = useCallback((id: string) => {
     iframeCtrl.jumpTo(id);
@@ -75,7 +96,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <Selection version={selectedVersion} location={location} />
+      <Selection version={selectedVersion} location={location} selection={selection} />
       <Tabs tabs={tabsContent(outline, location, jumpTo)} />
       <Version
         onChange={onVersionChange}
