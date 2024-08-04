@@ -18,4 +18,4 @@ docker run --platform linux/amd64 -ti --rm \
   -w /pdf $PDF2HTMLEX_IMG \
   --zoom 1.3 graypaper-$VERSION.pdf
 
-cp ./dist/graypaper.html ./public/graypaper-${VERSION}.html
+cp ./dist/graypaper-${VERSION}.html ./public/graypaper-${VERSION}.html
