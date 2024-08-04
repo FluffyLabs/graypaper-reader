@@ -11,6 +11,7 @@ type SelectionProps = {
 
 export function Selection({ version, location, selection }: SelectionProps) {
   const [linkCreated, setLinkCreated] = useState(false);
+  const [selectionCopied, setSelectionCopied] = useState(false);
 
   const createLink = useCallback(() => {
     if (!selection) {
@@ -25,6 +26,25 @@ export function Selection({ version, location, selection }: SelectionProps) {
     window.setTimeout(() => setLinkCreated(false), 2000);
   }, [selection, version]);
 
+  const openGpt = useCallback(() => {
+    const text = selection?.selection.textContent;
+
+    const prompt = `
+      Please provide a deep explanation based only on the GrayPaper for the following quote:
+      
+      ${text}
+    `;
+    window.navigator.clipboard.writeText(prompt);
+
+    setSelectionCopied(true);
+    window.setTimeout(() => setSelectionCopied(false), 2000);
+
+    const a = document.createElement('a');
+    a.target = '_blank';
+    a.href = 'https://chatgpt.com/g/g-ZuDULS0ij-dzemmer';
+    a.click();
+  }, [selection]);
+
   // location is either the constant location from the selection or dynamic location.
   const loc = selection ? selection.location : location;
   return (
@@ -37,7 +57,7 @@ export function Selection({ version, location, selection }: SelectionProps) {
       </small>
       <div className="actions">
         <button disabled={!selection} onClick={createLink}>{linkCreated ? (<span>Copied</span>) : 'Link'}</button>
-        <button disabled={!selection}>Explain</button>
+        <button disabled={!selection} onClick={openGpt}>{selectionCopied ? (<span>Copied</span>) : 'Explain'}</button>
         <button disabled={!selection}>Add note</button>
       </div>
     </div>
