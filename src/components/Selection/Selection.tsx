@@ -1,7 +1,8 @@
 import './Selection.css';
 import {InDocLocation, InDocSelection, Section} from "../../utils/IframeController";
-import {useCallback, useState} from 'react';
+import {ReactNode, useCallback, useState} from 'react';
 import {serializeLocation} from '../../utils/location';
+import {Tooltip} from 'react-tooltip';
 
 type SelectionProps = {
   version: string,
@@ -47,6 +48,20 @@ export function Selection({ version, location, selection }: SelectionProps) {
 
   // location is either the constant location from the selection or dynamic location.
   const loc = selection ? selection.location : location;
+
+  const Button = ({onClick, tooltip, children}: { onClick: () => void, tooltip: string, children: ReactNode }) => {
+      return (
+        <button
+          data-tooltip-id="selection-tooltip"
+          data-tooltip-content={tooltip}
+          data-tooltip-place='bottom'
+          disabled={!selection}
+          onClick={onClick}>
+        {children}
+        </button>
+      );
+  };
+
   return (
     <div className="selection">
       <blockquote>
@@ -56,9 +71,16 @@ export function Selection({ version, location, selection }: SelectionProps) {
         <span>p:{Number(`0x${loc.page}`)} &gt; {displaySection(loc.section)} &gt; {displaySection(loc.subSection)}</span>
       </small>
       <div className="actions">
-        <button disabled={!selection} onClick={createLink}>{linkCreated ? (<span>Copied</span>) : 'Link'}</button>
-        <button disabled={!selection} onClick={openGpt}>{selectionCopied ? (<span>Copied</span>) : 'Explain'}</button>
-        <button disabled={!selection}>Add note</button>
+        <Button onClick={createLink} tooltip="Create a shareable link to the selected content.">
+          {linkCreated ? (<span>Copied</span>) : 'Link'}
+        </Button>
+        <Button onClick={openGpt} tooltip="Open a GrayPaper-specific ChatGPT and copy the prompt with selection to clipboard.">
+          {selectionCopied ? (<span>Copied</span>) : 'Explain'}
+        </Button>
+        <Button onClick={() => {}} tooltip="Create a local note to the selected content.">
+          Add note
+        </Button>
+        <Tooltip id="selection-tooltip"></Tooltip>
       </div>
     </div>
   );
