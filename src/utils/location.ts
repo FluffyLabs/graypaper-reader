@@ -8,17 +8,45 @@ export type LocationDetails = {
   selection: string[],
 };
 
+export function updateLocationVersion(version: string, hash: string): string | null {
+  const loc = deserializeLocation(hash);
+  if (loc === null) {
+    return null;
+  }
+
+  loc.version = version;
+  return reserializeLocation(loc);
+}
+
+export function reserializeLocation(loc: LocationDetails) {
+  const l = JSON.stringify([
+    loc.version,
+    loc.page,
+    loc.section,
+    loc.subSection,
+    loc.selection
+  ]);
+
+  return btoa(unescape(encodeURIComponent(l)));
+}
+
 export function serializeLocation(version: string, sel: InDocSelection) {
-  return JSON.stringify([
+  const loc = JSON.stringify([
     version,
     sel.location.page,
     sel.location.section?.title,
     sel.location.subSection?.title,
     Array.from(sel.selection.children ?? []).map(x => x.outerHTML),
   ]);
+
+  return btoa(unescape(encodeURIComponent(loc)));
 }
 
 export function deserializeLocation(hash: string): LocationDetails | null {
+  if (hash.length < 2) {
+    return null;
+  }
+
   try {
     const decoded = atob(hash.substring(1));
     const escaped = escape(decoded);
@@ -28,7 +56,6 @@ export function deserializeLocation(hash: string): LocationDetails | null {
       throw new Error(`parsed JSON is not an array: ${destringified} (${typeof destringified})`);
     }
     const [version, page, section, subSection, selection] = destringified;
-    console.log(destringified);
     return { version, page, section, subSection, selection };
   } catch (e) {
     console.warn('unable to decode hash', hash);

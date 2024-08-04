@@ -66,16 +66,10 @@ export class IframeController {
     return ret;
   }
 
-  goToLocation(version: string, hash: string) {
+  goToLocation(hash: string): [(() => void) | null, string | null] {
     const loc = deserializeLocation(hash);
     if (!loc) {
-      return;
-    }
-
-    if (version !== loc.version) {
-      // TODO [ToDr] switch automatically
-      alert('The link is coming from a different version of the Gray Paper.');
-      return;
+      return [null, null];
     }
 
     const classes = loc.selection
@@ -87,7 +81,7 @@ export class IframeController {
     const $divs = classes.map(c => $page?.querySelector(`div.${c}`)).filter(x => x !== null);
     if (!$divs.length) {
       console.warn('Did not find any divs:', $divs, classes, $page);
-      return;
+      return [null, loc.version];
     }
     const range = this.doc.createRange();
     const $first = $divs[0];
@@ -114,8 +108,11 @@ export class IframeController {
           });
         }
       }, 50);
-      return () => { clearTimeout(timeout); };
+
+      return [() => clearTimeout(timeout), loc.version];
     }
+
+    return [null, loc.version];
   }
 
   jumpTo(id: string) {
@@ -147,7 +144,6 @@ export class IframeController {
     const listener2 = () => {
       this.updateSelection();
       updateLocation({...this.location}, this.selection);
-      console.log(this.selection);
     };
 
     this.win.addEventListener('mousemove', listener);

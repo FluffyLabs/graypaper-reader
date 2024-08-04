@@ -1,6 +1,6 @@
 import './Selection.css';
 import {InDocLocation, InDocSelection, Section} from "../../utils/IframeController";
-import {ReactNode, useCallback, useState} from 'react';
+import {ReactNode, useCallback, useEffect, useState} from 'react';
 import {serializeLocation} from '../../utils/location';
 import {Tooltip} from 'react-tooltip';
 
@@ -14,18 +14,21 @@ export function Selection({ version, location, selection }: SelectionProps) {
   const [linkCreated, setLinkCreated] = useState(false);
   const [selectionCopied, setSelectionCopied] = useState(false);
 
+  // update hash with every selection
+  useEffect(() => {
+    const loc = selection ? '#' + serializeLocation(version, selection) : '';
+    window.history.replaceState(null, '', document.location.pathname + loc);
+  }, [selection, version]);
+
   const createLink = useCallback(() => {
     if (!selection) {
       return;
     }
 
-    const loc = serializeLocation(version, selection);
-    const encoded = btoa(unescape(encodeURIComponent(loc)));
-    window.history.replaceState(null, '', document.location.pathname + '#' + encoded);
     window.navigator.clipboard.writeText(window.location.toString());
     setLinkCreated(true);
     window.setTimeout(() => setLinkCreated(false), 2000);
-  }, [selection, version]);
+  }, [selection]);
 
   const openGpt = useCallback(() => {
     const text = selection?.selection.textContent;

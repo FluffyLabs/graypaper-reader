@@ -8,11 +8,12 @@ import {Selection} from './components/Selection/Selection';
 import grayPaperMetadata from '../public/metadata.json';
 import {Version} from './components/Version/Version';
 import {getLatestVersion} from './components/Version/util';
+import {deserializeLocation} from './utils/location';
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
   const [loadedFrame, setLoadedFrame] = useState(null as IframeController | null);
-  const [version, setVersion] = useState(getLatestVersion(grayPaperMetadata));
+  const [version, setVersion] = useState(getInitialVersion());
 
   // wait for the iframe content to load.
   useEffect(() => {
@@ -26,13 +27,14 @@ export function App() {
             setLoadedFrame(new IframeController(win));
           });
         }
+        console.log('Iframe loaded');
         clearInterval(interval);
       }
     }, 50);
     return () => {
       clearInterval(interval);
     };
-  }, [frame]);
+  }, [frame, version]);
 
   return (
     <>
@@ -59,6 +61,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   
   // perform one-time operations.
   useEffect(() => {
+    console.log('Hiding toolbar');
     setOutline(iframeCtrl.getOutline());
 
     iframeCtrl.injectStyles();
@@ -76,10 +79,17 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   // react to changes in hash location
   useEffect(() => {
     const listener = (ev: HashChangeEvent) => {
-      iframeCtrl.goToLocation(selectedVersion, '#' + ev.newURL.split('#')[1]);
+      const [, versionToSelect] = iframeCtrl.goToLocation('#' + ev.newURL.split('#')[1]);
+      if (versionToSelect) {
+        onVersionChange(versionToSelect);
+      }
     };
     // read current hash
-    const cleanup = iframeCtrl.goToLocation(selectedVersion, window.location.hash);
+    const [cleanup, versionToSelect] = iframeCtrl.goToLocation(window.location.hash);
+    if (versionToSelect) {
+      onVersionChange(versionToSelect);
+    }
+
     // react to hash changes
     window.addEventListener('hashchange', listener);
     return () => {
@@ -88,7 +98,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
         cleanup();
       }
     };
-  }, [iframeCtrl, selectedVersion]);
+  }, [iframeCtrl, selectedVersion, onVersionChange]);
 
   const jumpTo = useCallback((id: string) => {
     iframeCtrl.jumpTo(id);
@@ -116,3 +126,13 @@ function tabsContent(outline: OutlineType, location: InDocLocation, jumpTo: (id:
     render: () => 'todo',
   }];
 }
+
+function getInitialVersion(): string {
+  const loc = deserializeLocation(window.location.hash);
+  if (loc) {
+    return loc.version;
+  }
+
+  return getLatestVersion(grayPaperMetadata);
+}
+
