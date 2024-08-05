@@ -1,24 +1,28 @@
 import "./Tabs.css";
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 
 export type Tab = {
   name: string,
   render: () => ReactNode,
 };
 
-export function Tabs({ tabs }: { tabs: Tab[] }) {
-  const [activeTabIdx, setActiveTabIdx] = useState(0);
-
+type TabsProps = {
+  tabs: Tab[],
+  activeTab: string,
+  switchTab: (v: string) => void,
+};
+export function Tabs({ tabs, activeTab, switchTab }: TabsProps) {
   if (tabs.length === 0) {
     return null;
   }
 
-  const actions = tabs.map((t, idx) => (
-    <button key={t.name} disabled={idx === activeTabIdx} onClick={() => setActiveTabIdx(idx)}>
+  const actions = tabs.map(t => (
+    <button key={t.name} disabled={t.name === activeTab} onClick={() => switchTab(t.name)}>
       {t.name}
     </button>
   ));
 
+  const activeTabIdx = tabs.map(t => t.name).indexOf(activeTab);
   return (
     <div className="tabs">
       <div className="content">

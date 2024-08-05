@@ -9,6 +9,7 @@ import grayPaperMetadata from '../public/metadata.json';
 import {Version} from './components/Version/Version';
 import {getLatestVersion} from './components/Version/util';
 import {deserializeLocation} from './utils/location';
+import {Notes} from './components/Notes/Notes';
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
@@ -27,7 +28,6 @@ export function App() {
             setLoadedFrame(new IframeController(win));
           });
         }
-        console.log('Iframe loaded');
         clearInterval(interval);
       }
     }, 50);
@@ -58,10 +58,10 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   const [location, setLocation] = useState({ page: '0' } as InDocLocation);
   const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
+  const [tab, setTab] = useState('outline');
   
   // perform one-time operations.
   useEffect(() => {
-    console.log('Hiding toolbar');
     setOutline(iframeCtrl.getOutline());
 
     iframeCtrl.injectStyles();
@@ -89,6 +89,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
     if (versionToSelect) {
       onVersionChange(versionToSelect);
     }
+    setSelection(iframeCtrl.getSelection());
 
     // react to hash changes
     window.addEventListener('hashchange', listener);
@@ -106,8 +107,18 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
 
   return (
     <div className="viewer">
-      <Selection version={selectedVersion} location={location} selection={selection} />
-      <Tabs tabs={tabsContent(outline, location, jumpTo)} />
+      <Selection
+        version={selectedVersion}
+        location={location}
+        selection={selection}
+        activeTab={tab}
+        switchTab={setTab}
+      />
+      <Tabs 
+        tabs={tabsContent(outline, location, jumpTo, selection, selectedVersion)}
+        activeTab={tab}
+        switchTab={setTab}
+      />
       <Version
         onChange={onVersionChange}
         metadata={grayPaperMetadata}
@@ -117,13 +128,19 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   );
 }
 
-function tabsContent(outline: OutlineType, location: InDocLocation, jumpTo: (id: string) => void) {
+function tabsContent(
+  outline: OutlineType,
+  location: InDocLocation,
+  jumpTo: (id: string) => void,
+  selection: InDocSelection | null,
+  version: string,
+) {
   return [{
     name: 'outline',
     render: () => <Outline outline={outline} jumpTo={jumpTo} location={location} />,
   }, {
     name: 'notes',
-    render: () => 'todo',
+    render: () => <Notes version={version} selection={selection} />
   }];
 }
 

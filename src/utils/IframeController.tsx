@@ -82,6 +82,7 @@ export class IframeController {
     if (!$divs.length) {
       console.warn('Did not find any divs:', $divs, classes, $page);
       return [null, loc.version];
+    
     }
     const range = this.doc.createRange();
     const $first = $divs[0];
@@ -91,23 +92,31 @@ export class IframeController {
       range.setEndAfter($last);
 
       // select the range
-      this.doc.getSelection()?.addRange(range);
+      const selection = this.doc.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
       this.updateLocation($first)
       this.updateSelection();
 
       // open the page and scroll to it
       $page?.classList?.add('opened');
+
+      // scroll to that element
+      const scrollTo = (block: 'start' | 'center', behavior: 'smooth' | 'instant') => {
+        $first.scrollIntoView({
+          behavior,
+          block
+        });
+      };
+      scrollTo('start', 'smooth');
+
       const timeout = setTimeout(() => {
-        const rect = $first?.getBoundingClientRect();
-        // move to the first div and select all
-        if (rect) {
-          this.doc.querySelector('#page-container')?.scrollTo({
-            top: rect.y - 100,
-            left: rect.x,
-            behavior: 'smooth'
-          });
-        }
-      }, 50);
+        // now try to scroll to the center
+        // TODO [ToDr] scrolling only to the `center` makes it unpredictable
+        // sometimes it does work and sometimes it does not?
+        scrollTo('center', 'instant');
+      }, 300);
 
       return [() => clearTimeout(timeout), loc.version];
     }
@@ -185,6 +194,10 @@ export class IframeController {
           this.location.subSection = isWithinSection(section, subSection) ? subSection : undefined;
         }
       }
+  }
+
+  getSelection() {
+    return this.selection;
   }
 }
 

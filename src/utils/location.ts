@@ -2,7 +2,7 @@ import {InDocSelection} from "./IframeController";
 
 export type LocationDetails = {
   version: string,
-  page: number,
+  page: string,
   section: string,
   subSection: string,
   selection: string[],
@@ -47,8 +47,12 @@ export function deserializeLocation(hash: string): LocationDetails | null {
     return null;
   }
 
+  if (hash.startsWith('#')) {
+    hash = hash.substring(1);
+  }
+
   try {
-    const decoded = atob(hash.substring(1));
+    const decoded = atob(hash);
     const escaped = escape(decoded);
     const decoded2 = decodeURIComponent(escaped);
     const destringified = JSON.parse(decoded2);
