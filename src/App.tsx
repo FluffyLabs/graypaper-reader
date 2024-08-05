@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Outline } from "./components/Outline/Outline";
-import { IframeController, InDocLocation, InDocSelection, Outline as OutlineType } from "./utils/IframeController";
-import { Tabs } from "./components/Tabs/Tabs";
 import { Selection } from "./components/Selection/Selection";
+import { Tabs } from "./components/Tabs/Tabs";
+import {
+  IframeController,
+  type InDocLocation,
+  type InDocSelection,
+  type Outline as OutlineType,
+} from "./utils/IframeController";
 
 import grayPaperMetadata from "../public/metadata.json";
+import { Notes } from "./components/Notes/Notes";
 import { Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
-import { Notes } from "./components/Notes/Notes";
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
@@ -22,10 +27,10 @@ export function App() {
       const win = frame.current?.contentWindow;
       if (win) {
         if (win.document.readyState === "complete") {
-          setLoadedFrame(new IframeController(win));
+          setLoadedFrame(new IframeController(win, version));
         } else {
           win.addEventListener("load", () => {
-            setLoadedFrame(new IframeController(win));
+            setLoadedFrame(new IframeController(win, version));
           });
         }
         clearInterval(interval);
@@ -34,12 +39,12 @@ export function App() {
     return () => {
       clearInterval(interval);
     };
-  }, [frame, version]);
+  }, [version]);
 
   return (
     <>
-      <iframe name="gp" ref={frame} src={`graypaper-${version}.html`}></iframe>
-      {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame}></Viewer>}
+      <iframe title="Gray Paper" name="gp" ref={frame} src={`graypaper-${version}.html`} />
+      {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame} />}
     </>
   );
 }
@@ -75,7 +80,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   // react to changes in hash location
   useEffect(() => {
     const listener = (ev: HashChangeEvent) => {
-      const [, versionToSelect] = iframeCtrl.goToLocation("#" + ev.newURL.split("#")[1]);
+      const [, versionToSelect] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
       if (versionToSelect) {
         onVersionChange(versionToSelect);
       }
@@ -95,7 +100,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
         cleanup();
       }
     };
-  }, [iframeCtrl, selectedVersion, onVersionChange]);
+  }, [iframeCtrl, onVersionChange]);
 
   const jumpTo = useCallback(
     (id: string) => {

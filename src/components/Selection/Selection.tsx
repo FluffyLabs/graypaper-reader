@@ -1,8 +1,8 @@
 import "./Selection.css";
-import { InDocLocation, InDocSelection, Section } from "../../utils/IframeController";
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { serializeLocation } from "../../utils/location";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import type { InDocLocation, InDocSelection, Section } from "../../utils/IframeController";
+import { serializeLocation } from "../../utils/location";
 
 type SelectionProps = {
   version: string;
@@ -31,7 +31,7 @@ export function Selection({ version, location, selection, activeTab, switchTab }
       return;
     }
 
-    const loc = selection ? "#" + serializeLocation(version, selection) : "";
+    const loc = selection ? `#${serializeLocation(version, selection)}` : "";
     window.history.replaceState(null, "", document.location.pathname + loc);
   }, [selection, version, isMount]);
 
@@ -50,7 +50,7 @@ export function Selection({ version, location, selection, activeTab, switchTab }
 
     const prompt = `
       Please provide a deep explanation based only on the GrayPaper for the following quote:
-      
+
       ${text}
     `;
     window.navigator.clipboard.writeText(prompt);
@@ -110,7 +110,7 @@ export function Selection({ version, location, selection, activeTab, switchTab }
             Add note
           </Button>
         )}
-        <Tooltip id="selection-tooltip"></Tooltip>
+        <Tooltip id="selection-tooltip" />
       </div>
     </div>
   );

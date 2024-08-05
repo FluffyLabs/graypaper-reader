@@ -1,5 +1,5 @@
 import "./Tabs.css";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export type Tab = {
   name: string;

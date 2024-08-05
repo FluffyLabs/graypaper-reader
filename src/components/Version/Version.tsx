@@ -1,8 +1,8 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
-import { getLatestVersion } from "./util";
 import { useCallback } from "react";
 import { updateLocationVersion } from "../../utils/location";
+import { getLatestVersion } from "./util";
 
 export type VersionInfo = {
   hash: string;
@@ -63,10 +63,11 @@ export function Version({ metadata, selectedVersion, onChange }: VersionProps) {
         data-tooltip-place="top"
         target="_blank"
         href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}
+        rel="noreferrer"
       >
         Github
       </a>
-      <Tooltip id="version"></Tooltip>
+      <Tooltip id="version" />
     </div>
   );
 }

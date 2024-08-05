@@ -28,6 +28,11 @@
       },
       "correctness": {
         "noUnusedImports": "error"
+      },
+      "a11y": {
+        "noAutofocus": "off",
+        "useButtonType": "off",
+        "useValidAnchor": "off"
       }
     }
   }

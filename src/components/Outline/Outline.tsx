@@ -1,6 +1,6 @@
 import "./Outline.css";
-import type { InDocLocation, Outline, OutlineItem } from "../../utils/IframeController";
-import { ReactNode, useCallback, useMemo } from "react";
+import { type ReactNode, useCallback, useMemo } from "react";
+import type { InDocLocation, OutlineItem, Outline as OutlineT } from "../../utils/IframeController";
 
 type OutlineProps = {
   outline: Outline;
@@ -10,7 +10,7 @@ type OutlineProps = {
 
 export function Outline({ outline, location, jumpTo }: OutlineProps) {
   const nestedOutline = useMemo(() => {
-    const nested = {} as { [key: string]: Outline };
+    const nested = {} as { [key: string]: OutlineT };
     for (const o of outline) {
       const number = o.text.split(".")[0].replace("Appendix ", "");
       const arr = nested[number] ?? [];

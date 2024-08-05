@@ -1,6 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import "./Notes.css";
-import { InDocSelection } from "../../utils/IframeController";
+import type { InDocSelection } from "../../utils/IframeController";
 import { deserializeLocation } from "../../utils/location";
 
 type NotesItem = {
@@ -21,7 +21,7 @@ export function Notes({ selection }: NotesProps) {
   useEffect(() => {
     writeNotes(notes);
     setHasUndo(true);
-  }, [notes, setHasUndo]);
+  }, [notes]);
 
   const addNote = useCallback(() => {
     notes.unshift({
@@ -30,7 +30,7 @@ export function Notes({ selection }: NotesProps) {
     });
     setNewNote("");
     setNotes([...notes]);
-  }, [newNote, notes, setNewNote, setNotes]);
+  }, [newNote, notes]);
 
   const onEditNote = useCallback(
     (note: NotesItem) => {
@@ -41,7 +41,7 @@ export function Notes({ selection }: NotesProps) {
       notes[idx] = { ...note };
       setNotes([...notes]);
     },
-    [notes, setNotes],
+    [notes],
   );
 
   const onRemoveNote = useCallback(
@@ -53,18 +53,18 @@ export function Notes({ selection }: NotesProps) {
       notes.splice(idx, 1);
       setNotes([...notes]);
     },
-    [notes, setNotes],
+    [notes],
   );
 
   const onUndo = useCallback(() => {
     const oldNotes = readNotes(true);
     setNotes(oldNotes);
-  }, [setNotes]);
+  }, []);
 
   const onExport = useCallback(() => {
     const strNotes = JSON.stringify(notes);
     const link = document.createElement("a");
-    link.setAttribute("href", "data:application/json;charset=utf-8," + encodeURIComponent(strNotes));
+    link.setAttribute("href", `data:application/json;charset=utf-8,${encodeURIComponent(strNotes)}`);
     link.setAttribute("download", `graypaper-notes-${new Date().toISOString()}.json`);
     link.click();
   }, [notes]);
@@ -107,7 +107,7 @@ function Note({ note, onEditNote, onRemoveNote }: NoteProps) {
     } else {
       setIsEditing(true);
     }
-  }, [isEditing, setIsEditing]);
+  }, [isEditing]);
 
   const editNote = useCallback(
     (ev: ChangeEvent<HTMLTextAreaElement>) => {
@@ -139,7 +139,9 @@ function Note({ note, onEditNote, onRemoveNote }: NoteProps) {
       {isEditing ? (
         <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
       ) : (
-        <blockquote onClick={toggleEdit}>{note.content}</blockquote>
+        <blockquote onClick={toggleEdit} onKeyPress={toggleEdit}>
+          {note.content}
+        </blockquote>
       )}
       <button className="remove" style={{ display: isEditing ? "block" : "none" }} onClick={removeNote}>
         delete

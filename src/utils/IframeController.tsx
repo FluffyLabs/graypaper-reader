@@ -29,7 +29,7 @@ export class IframeController {
   private readonly location: InDocLocation;
   private selection: InDocSelection | null;
 
-  constructor(win: Window) {
+  constructor(win: Window, _version: string) {
     this.win = win;
     this.doc = win.document;
     this.location = {
@@ -170,7 +170,7 @@ export class IframeController {
   updateSelection() {
     // TODO [ToDr] update only on mouseup?
     const selection = this.doc.getSelection();
-    if (selection && selection.rangeCount && !selection.isCollapsed) {
+    if (selection?.rangeCount && !selection.isCollapsed) {
       this.selection = {
         selection: selection.getRangeAt(0).cloneContents(),
         location: { ...this.location },

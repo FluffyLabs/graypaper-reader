@@ -1,4 +1,4 @@
-import { InDocSelection } from "./IframeController";
+import type { InDocSelection } from "./IframeController";
 
 export type LocationDetails = {
   version: string;
@@ -36,14 +36,12 @@ export function serializeLocation(version: string, sel: InDocSelection) {
   return btoa(unescape(encodeURIComponent(loc)));
 }
 
-export function deserializeLocation(hash: string): LocationDetails | null {
-  if (hash.length < 2) {
+export function deserializeLocation(h: string): LocationDetails | null {
+  if (h.length < 2) {
     return null;
   }
 
-  if (hash.startsWith("#")) {
-    hash = hash.substring(1);
-  }
+  const hash = h.startsWith("#") ? h.substring(1) : h;
 
   try {
     const decoded = atob(hash);
