@@ -1,15 +1,20 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import './App.css';
-import {Outline} from './components/Outline/Outline';
-import {IframeController, InDocLocation, InDocSelection, Outline as OutlineType } from './utils/IframeController';
-import {Tabs} from './components/Tabs/Tabs';
-import {Selection} from './components/Selection/Selection';
+import { useCallback, useEffect, useRef, useState } from "react";
+import "./App.css";
+import { Outline } from "./components/Outline/Outline";
+import { Selection } from "./components/Selection/Selection";
+import { Tabs } from "./components/Tabs/Tabs";
+import {
+  IframeController,
+  type InDocLocation,
+  type InDocSelection,
+  type Outline as OutlineType,
+} from "./utils/IframeController";
 
-import grayPaperMetadata from '../public/metadata.json';
-import {Version} from './components/Version/Version';
-import {getLatestVersion} from './components/Version/util';
-import {deserializeLocation} from './utils/location';
-import {Notes} from './components/Notes/Notes';
+import grayPaperMetadata from "../public/metadata.json";
+import { Notes } from "./components/Notes/Notes";
+import { Version } from "./components/Version/Version";
+import { getLatestVersion } from "./components/Version/util";
+import { deserializeLocation } from "./utils/location";
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
@@ -21,11 +26,11 @@ export function App() {
     const interval = setInterval(() => {
       const win = frame.current?.contentWindow;
       if (win) {
-        if (win.document.readyState === 'complete') {
-          setLoadedFrame(new IframeController(win));
+        if (win.document.readyState === "complete") {
+          setLoadedFrame(new IframeController(win, version));
         } else {
-          win.addEventListener('load', () => {
-            setLoadedFrame(new IframeController(win));
+          win.addEventListener("load", () => {
+            setLoadedFrame(new IframeController(win, version));
           });
         }
         clearInterval(interval);
@@ -34,32 +39,28 @@ export function App() {
     return () => {
       clearInterval(interval);
     };
-  }, [frame, version]);
+  }, [version]);
 
   return (
     <>
-      <iframe name="gp" ref={frame} src={`graypaper-${version}.html`}></iframe>
-      {loadedFrame && <Viewer
-        selectedVersion={version}
-        onVersionChange={setVersion}
-        iframeCtrl={loadedFrame}
-      ></Viewer>}
+      <iframe title="Gray Paper" name="gp" ref={frame} src={`graypaper-${version}.html`} />
+      {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame} />}
     </>
-  )
+  );
 }
 
 type ViewerProps = {
-  iframeCtrl: IframeController,
-  selectedVersion: string,
-  onVersionChange: (v: string) => void
+  iframeCtrl: IframeController;
+  selectedVersion: string;
+  onVersionChange: (v: string) => void;
 };
 
 function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
-  const [location, setLocation] = useState({ page: '0' } as InDocLocation);
+  const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
-  const [tab, setTab] = useState('outline');
-  
+  const [tab, setTab] = useState("outline");
+
   // perform one-time operations.
   useEffect(() => {
     setOutline(iframeCtrl.getOutline());
@@ -79,7 +80,7 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   // react to changes in hash location
   useEffect(() => {
     const listener = (ev: HashChangeEvent) => {
-      const [, versionToSelect] = iframeCtrl.goToLocation('#' + ev.newURL.split('#')[1]);
+      const [, versionToSelect] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
       if (versionToSelect) {
         onVersionChange(versionToSelect);
       }
@@ -92,18 +93,21 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
     setSelection(iframeCtrl.getSelection());
 
     // react to hash changes
-    window.addEventListener('hashchange', listener);
+    window.addEventListener("hashchange", listener);
     return () => {
-      window.removeEventListener('hashchange', listener);
+      window.removeEventListener("hashchange", listener);
       if (cleanup) {
         cleanup();
       }
     };
-  }, [iframeCtrl, selectedVersion, onVersionChange]);
+  }, [iframeCtrl, onVersionChange]);
 
-  const jumpTo = useCallback((id: string) => {
-    iframeCtrl.jumpTo(id);
-  }, [iframeCtrl]);
+  const jumpTo = useCallback(
+    (id: string) => {
+      iframeCtrl.jumpTo(id);
+    },
+    [iframeCtrl],
+  );
 
   return (
     <div className="viewer">
@@ -114,16 +118,12 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
         activeTab={tab}
         switchTab={setTab}
       />
-      <Tabs 
+      <Tabs
         tabs={tabsContent(outline, location, jumpTo, selection, selectedVersion)}
         activeTab={tab}
         switchTab={setTab}
       />
-      <Version
-        onChange={onVersionChange}
-        metadata={grayPaperMetadata}
-        selectedVersion={selectedVersion}
-      />
+      <Version onChange={onVersionChange} metadata={grayPaperMetadata} selectedVersion={selectedVersion} />
     </div>
   );
 }
@@ -135,13 +135,16 @@ function tabsContent(
   selection: InDocSelection | null,
   version: string,
 ) {
-  return [{
-    name: 'outline',
-    render: () => <Outline outline={outline} jumpTo={jumpTo} location={location} />,
-  }, {
-    name: 'notes',
-    render: () => <Notes version={version} selection={selection} />
-  }];
+  return [
+    {
+      name: "outline",
+      render: () => <Outline outline={outline} jumpTo={jumpTo} location={location} />,
+    },
+    {
+      name: "notes",
+      render: () => <Notes version={version} selection={selection} />,
+    },
+  ];
 }
 
 function getInitialVersion(): string {
@@ -152,4 +155,3 @@ function getInitialVersion(): string {
 
   return getLatestVersion(grayPaperMetadata);
 }
-
