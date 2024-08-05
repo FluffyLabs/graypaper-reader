@@ -3,7 +3,7 @@ import { type ReactNode, useCallback, useMemo } from "react";
 import type { InDocLocation, OutlineItem, Outline as OutlineT } from "../../utils/IframeController";
 
 type OutlineProps = {
-  outline: Outline;
+  outline: OutlineT;
   location: InDocLocation;
   jumpTo: (id: string) => void;
 };
