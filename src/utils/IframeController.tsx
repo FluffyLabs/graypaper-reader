@@ -22,12 +22,30 @@ export type InDocSelection = {
   location: InDocLocation;
 };
 
+const customStyles = `
+// Disable drag&drop on background.
+img {
+  pointer-events: none;
+}
+
+div {
+  scroll-margin-top: 150px;
+}
+
+// Always hide the sidebar.
+#sidebar {
+  display: none;
+}
+`;
+
 export class IframeController {
   private readonly win: Window;
   private readonly doc: Document;
 
   private readonly location: InDocLocation;
   private selection: InDocSelection | null;
+
+  private updateLocationListener: () => void;
 
   constructor(win: Window, _version: string) {
     this.win = win;
@@ -36,11 +54,12 @@ export class IframeController {
       page: "0",
     };
     this.selection = null;
+    this.updateLocationListener = () => {};
   }
 
   injectStyles() {
     const $style = this.doc.createElement("style");
-    $style.innerHTML = "img { pointer-events: none };";
+    $style.innerHTML = customStyles;
     this.doc.head.appendChild($style);
   }
 
@@ -133,6 +152,18 @@ export class IframeController {
     const $elem = this.doc.querySelector(`a[data-dest-detail="${encoded}"]`);
     const $e = $elem as HTMLElement | null;
     $e?.click();
+
+    // Because we have a banner on top, we need to move the scroll a bit.
+    setTimeout(() => {
+      const $pageContainer = this.doc.querySelector("#page-container");
+      $pageContainer?.scrollTo({
+        top: $pageContainer?.scrollTop - 100,
+      });
+
+      const $elem = this.doc.elementFromPoint(($pageContainer?.clientWidth ?? this.win.innerWidth) / 3, 100);
+      this.updateLocation($elem);
+      this.updateLocationListener();
+    }, 50);
   }
 
   trackMouseLocation(updateLocation: (loc: InDocLocation, sel: InDocSelection | null) => void) {
@@ -150,15 +181,18 @@ export class IframeController {
 
       const $elem = this.doc.elementFromPoint(ev.clientX, ev.clientY);
       this.updateLocation($elem, finder);
-      updateLocation({ ...this.location }, this.selection);
+      this.updateLocationListener();
       finder = (finder + 1) % 2;
     };
 
     const listener2 = () => {
       this.updateSelection();
-      updateLocation({ ...this.location }, this.selection);
+      this.updateLocationListener();
     };
 
+    this.updateLocationListener = () => {
+      updateLocation({ ...this.location }, this.selection);
+    };
     this.win.addEventListener("mousemove", listener);
     this.win.addEventListener("mouseup", listener2);
     return () => {

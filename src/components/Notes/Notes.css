@@ -1,7 +1,19 @@
 .notes textarea {
-  width: 100%;
+  flex: 1;
+  padding: 1rem;
 }
 
 .notes button.remove {
   color: #f22;
+}
+
+.notes blockquote {
+  cursor: zoom-in;
+  border: 1px solid transparent;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.notes blockquote:hover {
+  border: 1px solid #eee;
 }

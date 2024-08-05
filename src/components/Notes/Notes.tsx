@@ -71,12 +71,18 @@ export function Notes({ selection }: NotesProps) {
 
   return (
     <div className="notes">
-      {selection && (
-        <div className="newNote">
-          <textarea autoFocus value={newNote} onChange={(ev) => setNewNote(ev.currentTarget.value)} />
-          <button onClick={addNote}>Add</button>
-        </div>
-      )}
+      <div className="newNote">
+        <textarea
+          disabled={!selection}
+          autoFocus
+          value={newNote}
+          onChange={(ev) => setNewNote(ev.currentTarget.value)}
+          placeholder="Add a note to the selected fragment."
+        />
+        <button disabled={newNote.length < 1} onClick={addNote}>
+          Add
+        </button>
+      </div>
       <ul>
         {notes.map((x, idx) => (
           <Note key={`${idx}-${x.location}`} note={x} onEditNote={onEditNote} onRemoveNote={onRemoveNote} />

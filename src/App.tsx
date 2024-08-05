@@ -27,12 +27,13 @@ export function App() {
     const interval = setInterval(() => {
       const win = frame.current?.contentWindow;
       if (win) {
+        // first add listener
+        win.addEventListener("load", () => {
+          setLoadedFrame(new IframeController(win, version));
+        });
+        // and then check ready state to avoid race condition
         if (win.document.readyState === "complete") {
           setLoadedFrame(new IframeController(win, version));
-        } else {
-          win.addEventListener("load", () => {
-            setLoadedFrame(new IframeController(win, version));
-          });
         }
         clearInterval(interval);
       }
