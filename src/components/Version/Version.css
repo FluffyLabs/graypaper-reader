@@ -1,9 +1,15 @@
 .version {
   padding: 1rem;
-  background-color: #eee;
+  background-color: #111;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+}
+
+@media (prefers-color-scheme: light) {
+  .version {
+    background-color: #eee;
+  }
 }
 
 .version select {
