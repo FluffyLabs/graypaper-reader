@@ -9,7 +9,13 @@
 }
 
 .outline li.active > a {
-  background-color: #eee;
+    background-color: #111;
+}
+
+@media (prefers-color-scheme: light) {
+  .outline li.active > a {
+    background-color: #eee;
+  }
 }
 
 .outline a {

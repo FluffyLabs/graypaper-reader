@@ -13,7 +13,6 @@
 }
 
 .selection blockquote {
-  background: #eee;
   flex: 1;
   font-family: ff7;
   font-size: 1rem;
@@ -23,10 +22,11 @@
   padding-bottom: 2rem;
   padding: 1rem;
   text-align: center;
+  background: #111;
 }
 
 .selection small {
-  background: #eee;
+  background: #111;
   box-sizing: border-box;
   display: block;
   font-family: monospace;
@@ -37,6 +37,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+}
+
+@media (prefers-color-scheme: light) {
+  .selection blockquote,
+  .selection small {
+    background: #eee;
+  }
 }
 
 .selection .actions {
