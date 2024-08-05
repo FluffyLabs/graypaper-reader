@@ -1,9 +1,13 @@
 {
-  "latest": "4369a96e787b29c91bae5996c66054717020082e",
+  "latest": "4866b59bc0f62158da03a6bea13284a138f2eee5",
   "versions": {
     "4369a96e787b29c91bae5996c66054717020082e": {
       "hash": "4369a96e787b29c91bae5996c66054717020082e",
       "date": "Wed Jul 31 21:04:53 2024 +0900"
+    },
+    "4866b59bc0f62158da03a6bea13284a138f2eee5": {
+      "hash": "4866b59bc0f62158da03a6bea13284a138f2eee5",
+      "date": "Sun Aug 4 12:15:10 2024 +0200"
     }
   }
 }

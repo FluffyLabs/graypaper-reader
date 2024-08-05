@@ -1,0 +1,7 @@
+.notes textarea {
+  width: 100%;
+}
+
+.notes button.remove {
+  color: #f22;
+}

@@ -66,16 +66,10 @@ export class IframeController {
     return ret;
   }
 
-  goToLocation(version: string, hash: string) {
+  goToLocation(hash: string): [(() => void) | null, string | null] {
     const loc = deserializeLocation(hash);
     if (!loc) {
-      return;
-    }
-
-    if (version !== loc.version) {
-      // TODO [ToDr] switch automatically
-      alert('The link is coming from a different version of the Gray Paper.');
-      return;
+      return [null, null];
     }
 
     const classes = loc.selection
@@ -87,7 +81,8 @@ export class IframeController {
     const $divs = classes.map(c => $page?.querySelector(`div.${c}`)).filter(x => x !== null);
     if (!$divs.length) {
       console.warn('Did not find any divs:', $divs, classes, $page);
-      return;
+      return [null, loc.version];
+    
     }
     const range = this.doc.createRange();
     const $first = $divs[0];
@@ -97,25 +92,36 @@ export class IframeController {
       range.setEndAfter($last);
 
       // select the range
-      this.doc.getSelection()?.addRange(range);
+      const selection = this.doc.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
       this.updateLocation($first)
       this.updateSelection();
 
       // open the page and scroll to it
       $page?.classList?.add('opened');
+
+      // scroll to that element
+      const scrollTo = (block: 'start' | 'center', behavior: 'smooth' | 'instant') => {
+        $first.scrollIntoView({
+          behavior,
+          block
+        });
+      };
+      scrollTo('start', 'smooth');
+
       const timeout = setTimeout(() => {
-        const rect = $first?.getBoundingClientRect();
-        // move to the first div and select all
-        if (rect) {
-          this.doc.querySelector('#page-container')?.scrollTo({
-            top: rect.y - 100,
-            left: rect.x,
-            behavior: 'smooth'
-          });
-        }
-      }, 50);
-      return () => { clearTimeout(timeout); };
+        // now try to scroll to the center
+        // TODO [ToDr] scrolling only to the `center` makes it unpredictable
+        // sometimes it does work and sometimes it does not?
+        scrollTo('center', 'instant');
+      }, 300);
+
+      return [() => clearTimeout(timeout), loc.version];
     }
+
+    return [null, loc.version];
   }
 
   jumpTo(id: string) {
@@ -147,7 +153,6 @@ export class IframeController {
     const listener2 = () => {
       this.updateSelection();
       updateLocation({...this.location}, this.selection);
-      console.log(this.selection);
     };
 
     this.win.addEventListener('mousemove', listener);
@@ -189,6 +194,10 @@ export class IframeController {
           this.location.subSection = isWithinSection(section, subSection) ? subSection : undefined;
         }
       }
+  }
+
+  getSelection() {
+    return this.selection;
   }
 }
 

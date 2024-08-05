@@ -1,4 +1,8 @@
+import {Tooltip} from 'react-tooltip';
 import './Version.css';
+import {getLatestVersion} from './util';
+import {useCallback} from 'react';
+import {updateLocationVersion} from '../../utils/location';
 
 export type VersionInfo = {
   hash: string,
@@ -21,24 +25,51 @@ type VersionProps = {
 export function Version({ metadata, selectedVersion, onChange }: VersionProps) {
   const versions = Object.keys(metadata.versions);
   const currentVersionHash = metadata.versions[selectedVersion].hash;
+
+  const handleChange = useCallback((v: string) => {
+    const newHash = updateLocationVersion(v, window.location.hash);
+    // we only call the explicit set version if we don't have the
+    // hash already
+    if (newHash) {
+      window.location.hash = newHash;
+    } else {
+      onChange(v);
+    }
+  }, [onChange]);
+
   return (
     <div className="version">
-      <select onChange={(ev) => onChange(ev.target.value)} value={selectedVersion}>
-        {versions.map((v) => (<Option key={v} id={v} version={metadata.versions[v]} />))}
+      { currentVersionHash !== getLatestVersion(metadata) && (
+        <span
+          data-tooltip-id="version"
+          data-tooltip-content="The current version is not the latest."
+          data-tooltip-place="top"
+          className="icon"
+        >⚠</span>
+      )}
+      <select onChange={(ev) => handleChange(ev.target.value)} value={selectedVersion}>
+        {versions.map((v) => (<Option key={v} id={v} version={metadata.versions[v]} latest={metadata.latest} />))}
       </select>
-      <a target="_blank" href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}>
+      <a
+        data-tooltip-id="version"
+        data-tooltip-content="Open GrayPaper github commit."
+        data-tooltip-place="top"
+        target="_blank"
+        href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}
+      >
         Github
       </a>
+      <Tooltip id="version"></Tooltip>
     </div>
   );
 }
 
-type OptionProps = { id: string, version: VersionInfo };
-function Option({ id, version }: OptionProps) {
+type OptionProps = { id: string, version: VersionInfo, latest: string };
+function Option({ id, version, latest }: OptionProps) {
   const date = new Date(version.date);
   return (
     <option value={id}>
-      Version {shortHash(version.hash)} ({date.toLocaleDateString()})
+      { version.hash === latest ? 'Latest' : 'Version' } {shortHash(version.hash)} ({date.toLocaleDateString()})
     </option>
   );
 }
