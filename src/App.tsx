@@ -11,6 +11,7 @@ import {
 } from "./utils/IframeController";
 
 import grayPaperMetadata from "../public/metadata.json";
+import { Banner } from "./components/Banner/Banner";
 import { Notes } from "./components/Notes/Notes";
 import { Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
@@ -43,6 +44,7 @@ export function App() {
 
   return (
     <>
+      <Banner />
       <iframe title="Gray Paper" name="gp" ref={frame} src={`graypaper-${version}.html`} />
       {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame} />}
     </>
