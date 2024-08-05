@@ -11,11 +11,11 @@ import {
 } from "./utils/IframeController";
 
 import grayPaperMetadata from "../public/metadata.json";
+import { Banner } from "./components/Banner/Banner";
 import { Notes } from "./components/Notes/Notes";
 import { Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
-import {Banner} from "./components/Banner/Banner";
 
 export function App() {
   const frame = useRef(null as HTMLIFrameElement | null);
