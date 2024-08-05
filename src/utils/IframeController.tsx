@@ -153,18 +153,14 @@ export class IframeController {
     const $e = $elem as HTMLElement | null;
     $e?.click();
 
-
     // Because we have a banner on top, we need to move the scroll a bit.
     setTimeout(() => {
-      const $pageContainer = this.doc.querySelector('#page-container');
+      const $pageContainer = this.doc.querySelector("#page-container");
       $pageContainer?.scrollTo({
         top: $pageContainer?.scrollTop - 100,
       });
 
-      const $elem = this.doc.elementFromPoint(
-        ($pageContainer?.clientWidth ?? this.win.innerWidth) / 3,
-        100
-      );
+      const $elem = this.doc.elementFromPoint(($pageContainer?.clientWidth ?? this.win.innerWidth) / 3, 100);
       this.updateLocation($elem);
       this.updateLocationListener();
     }, 50);

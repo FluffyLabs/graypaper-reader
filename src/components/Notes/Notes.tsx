@@ -79,7 +79,9 @@ export function Notes({ selection }: NotesProps) {
           onChange={(ev) => setNewNote(ev.currentTarget.value)}
           placeholder="Add a note to the selected fragment."
         />
-        <button disabled={newNote.length < 1} onClick={addNote}>Add</button>
+        <button disabled={newNote.length < 1} onClick={addNote}>
+          Add
+        </button>
       </div>
       <ul>
         {notes.map((x, idx) => (
