@@ -1,15 +1,15 @@
-import './Selection.css';
-import {InDocLocation, InDocSelection, Section} from "../../utils/IframeController";
-import {ReactNode, useCallback, useEffect, useRef, useState} from 'react';
-import {serializeLocation} from '../../utils/location';
-import {Tooltip} from 'react-tooltip';
+import "./Selection.css";
+import { InDocLocation, InDocSelection, Section } from "../../utils/IframeController";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { serializeLocation } from "../../utils/location";
+import { Tooltip } from "react-tooltip";
 
 type SelectionProps = {
-  version: string,
-  location: InDocLocation,
-  selection: InDocSelection | null,
-  activeTab: string,
-  switchTab: (tab: 'notes') => void,
+  version: string;
+  location: InDocLocation;
+  selection: InDocSelection | null;
+  activeTab: string;
+  switchTab: (tab: "notes") => void;
 };
 
 const useIsMount = () => {
@@ -31,8 +31,8 @@ export function Selection({ version, location, selection, activeTab, switchTab }
       return;
     }
 
-    const loc = selection ? '#' + serializeLocation(version, selection) : '';
-    window.history.replaceState(null, '', document.location.pathname + loc);
+    const loc = selection ? "#" + serializeLocation(version, selection) : "";
+    window.history.replaceState(null, "", document.location.pathname + loc);
   }, [selection, version, isMount]);
 
   const createLink = useCallback(() => {
@@ -58,50 +58,56 @@ export function Selection({ version, location, selection, activeTab, switchTab }
     setSelectionCopied(true);
     window.setTimeout(() => setSelectionCopied(false), 2000);
 
-    const a = document.createElement('a');
-    a.target = '_blank';
-    a.href = 'https://chatgpt.com/g/g-ZuDULS0ij-dzemmer';
+    const a = document.createElement("a");
+    a.target = "_blank";
+    a.href = "https://chatgpt.com/g/g-ZuDULS0ij-dzemmer";
     a.click();
   }, [selection]);
 
   const openNotes = useCallback(() => {
-    switchTab('notes');
+    switchTab("notes");
   }, [switchTab]);
 
   // location is either the constant location from the selection or dynamic location.
   const loc = selection ? selection.location : location;
 
-  const Button = ({onClick, tooltip, children}: { onClick: () => void, tooltip: string, children: ReactNode }) => {
-      return (
-        <button
-          data-tooltip-id="selection-tooltip"
-          data-tooltip-content={tooltip}
-          data-tooltip-place='bottom'
-          disabled={!selection}
-          onClick={onClick}>
+  const Button = ({ onClick, tooltip, children }: { onClick: () => void; tooltip: string; children: ReactNode }) => {
+    return (
+      <button
+        data-tooltip-id="selection-tooltip"
+        data-tooltip-content={tooltip}
+        data-tooltip-place="bottom"
+        disabled={!selection}
+        onClick={onClick}
+      >
         {children}
-        </button>
-      );
+      </button>
+    );
   };
 
   return (
     <div className="selection">
       <blockquote>
-        {selection ? Array.from(selection.selection.children).map(x => x.textContent) : '[no text selected]'}
+        {selection ? Array.from(selection.selection.children).map((x) => x.textContent) : "[no text selected]"}
       </blockquote>
       <small>
-        <span>p:{Number(`0x${loc.page}`)} &gt; {displaySection(loc.section)} &gt; {displaySection(loc.subSection)}</span>
+        <span>
+          p:{Number(`0x${loc.page}`)} &gt; {displaySection(loc.section)} &gt; {displaySection(loc.subSection)}
+        </span>
       </small>
       <div className="actions">
         <Button onClick={createLink} tooltip="Create a shareable link to the selected content.">
-          {linkCreated ? (<span>Copied</span>) : 'Link'}
+          {linkCreated ? <span>Copied</span> : "Link"}
         </Button>
-        <Button onClick={openGpt} tooltip="Open a GrayPaper-specific ChatGPT and copy the prompt with selection to clipboard.">
-          {selectionCopied ? (<span>Copied</span>) : 'Explain'}
+        <Button
+          onClick={openGpt}
+          tooltip="Open a GrayPaper-specific ChatGPT and copy the prompt with selection to clipboard."
+        >
+          {selectionCopied ? <span>Copied</span> : "Explain"}
         </Button>
-        {activeTab !== 'notes' && (
+        {activeTab !== "notes" && (
           <Button onClick={openNotes} tooltip="Create a local note to the selected content.">
-          Add note
+            Add note
           </Button>
         )}
         <Tooltip id="selection-tooltip"></Tooltip>
@@ -112,7 +118,7 @@ export function Selection({ version, location, selection, activeTab, switchTab }
 
 function displaySection(section?: Section) {
   if (!section) {
-    return '??';
+    return "??";
   }
 
   return `${section.number} ${section.title}`;

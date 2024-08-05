@@ -1,22 +1,21 @@
-import {ChangeEvent, useCallback, useEffect, useMemo, useState} from 'react';
-import './Notes.css';
-import {InDocSelection} from '../../utils/IframeController';
-import {deserializeLocation} from '../../utils/location';
-
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import "./Notes.css";
+import { InDocSelection } from "../../utils/IframeController";
+import { deserializeLocation } from "../../utils/location";
 
 type NotesItem = {
-  location: string, // serialized InDocSelection
-  content: string,
+  location: string; // serialized InDocSelection
+  content: string;
 };
 type NotesList = NotesItem[];
 
 type NotesProps = {
-  version: string,
-  selection: InDocSelection | null,
+  version: string;
+  selection: InDocSelection | null;
 };
 export function Notes({ selection }: NotesProps) {
   const [notes, setNotes] = useState(readNotes());
-  const [newNote, setNewNote] = useState('');
+  const [newNote, setNewNote] = useState("");
   const [hasUndo, setHasUndo] = useState(false);
 
   useEffect(() => {
@@ -29,27 +28,33 @@ export function Notes({ selection }: NotesProps) {
       location: window.location.hash.substring(1),
       content: newNote,
     });
-    setNewNote('');
+    setNewNote("");
     setNotes([...notes]);
   }, [newNote, notes, setNewNote, setNotes]);
 
-  const onEditNote = useCallback((note: NotesItem) => {
-    const idx = notes.indexOf(note);
-    if (idx === -1) {
-      return;
-    }
-    notes[idx] = {...note};
-    setNotes([...notes]);
-  }, [notes, setNotes]);
+  const onEditNote = useCallback(
+    (note: NotesItem) => {
+      const idx = notes.indexOf(note);
+      if (idx === -1) {
+        return;
+      }
+      notes[idx] = { ...note };
+      setNotes([...notes]);
+    },
+    [notes, setNotes],
+  );
 
-  const onRemoveNote = useCallback((note: NotesItem) => {
-    const idx = notes.indexOf(note);
-    if (idx === -1) {
-      return;
-    }
-    notes.splice(idx, 1);
-    setNotes([...notes]);
-  }, [notes, setNotes]);
+  const onRemoveNote = useCallback(
+    (note: NotesItem) => {
+      const idx = notes.indexOf(note);
+      if (idx === -1) {
+        return;
+      }
+      notes.splice(idx, 1);
+      setNotes([...notes]);
+    },
+    [notes, setNotes],
+  );
 
   const onUndo = useCallback(() => {
     const oldNotes = readNotes(true);
@@ -58,34 +63,27 @@ export function Notes({ selection }: NotesProps) {
 
   const onExport = useCallback(() => {
     const strNotes = JSON.stringify(notes);
-    const link = document.createElement('a');
-    link.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(strNotes));
-    link.setAttribute('download', `graypaper-notes-${new Date().toISOString()}.json`);
+    const link = document.createElement("a");
+    link.setAttribute("href", "data:application/json;charset=utf-8," + encodeURIComponent(strNotes));
+    link.setAttribute("download", `graypaper-notes-${new Date().toISOString()}.json`);
     link.click();
   }, [notes]);
 
   return (
     <div className="notes">
-      {selection && (<div className="newNote">
-        <textarea
-          autoFocus
-          value={newNote}
-          onChange={(ev) => setNewNote(ev.currentTarget.value)}
-        />
-        <button onClick={addNote}>Add</button>
-      </div>)}
+      {selection && (
+        <div className="newNote">
+          <textarea autoFocus value={newNote} onChange={(ev) => setNewNote(ev.currentTarget.value)} />
+          <button onClick={addNote}>Add</button>
+        </div>
+      )}
       <ul>
-        {notes.map((x, idx) => <Note
-          key={`${idx}-${x.location}`}
-          note={x}
-          onEditNote={onEditNote}
-          onRemoveNote={onRemoveNote}
-        />)}
+        {notes.map((x, idx) => (
+          <Note key={`${idx}-${x.location}`} note={x} onEditNote={onEditNote} onRemoveNote={onRemoveNote} />
+        ))}
       </ul>
       <div className="actions">
-        { hasUndo && (
-          <button onClick={onUndo}>undo</button>
-        ) }
+        {hasUndo && <button onClick={onUndo}>undo</button>}
         <button onClick={onExport}>export notes</button>
       </div>
     </div>
@@ -93,11 +91,11 @@ export function Notes({ selection }: NotesProps) {
 }
 
 type NoteProps = {
-  note: NotesItem,
-  onEditNote: (n: NotesItem) => void,
-  onRemoveNote: (n: NotesItem) => void,
+  note: NotesItem;
+  onEditNote: (n: NotesItem) => void;
+  onRemoveNote: (n: NotesItem) => void;
 };
-function Note({note, onEditNote, onRemoveNote }: NoteProps) {
+function Note({ note, onEditNote, onRemoveNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = useCallback(() => {
@@ -111,10 +109,13 @@ function Note({note, onEditNote, onRemoveNote }: NoteProps) {
     }
   }, [isEditing, setIsEditing]);
 
-  const editNote = useCallback((ev: ChangeEvent<HTMLTextAreaElement>) => {
-    note.content = ev.currentTarget.value;
-    onEditNote(note);
-  }, [note, onEditNote]);
+  const editNote = useCallback(
+    (ev: ChangeEvent<HTMLTextAreaElement>) => {
+      note.content = ev.currentTarget.value;
+      onEditNote(note);
+    },
+    [note, onEditNote],
+  );
 
   const removeNote = useCallback(() => {
     onRemoveNote(note);
@@ -127,32 +128,37 @@ function Note({note, onEditNote, onRemoveNote }: NoteProps) {
   return (
     <li>
       <a href={`#${note.location}`}>
-        {locDetails ? <span>
-          p:{Number(`0x${locDetails?.page}`)} &gt; {locDetails.section} &gt; {locDetails.subSection}
-        </span> : 'link' }
+        {locDetails ? (
+          <span>
+            p:{Number(`0x${locDetails?.page}`)} &gt; {locDetails.section} &gt; {locDetails.subSection}
+          </span>
+        ) : (
+          "link"
+        )}
       </a>
-      {isEditing
-        ? <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
-        : <blockquote onClick={toggleEdit}>{note.content}</blockquote>
-      }
-      <button className="remove" style={{display: isEditing ? 'block' : 'none' }} onClick={removeNote}>delete</button>
+      {isEditing ? (
+        <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
+      ) : (
+        <blockquote onClick={toggleEdit}>{note.content}</blockquote>
+      )}
+      <button className="remove" style={{ display: isEditing ? "block" : "none" }} onClick={removeNote}>
+        delete
+      </button>
     </li>
   );
-
 }
-
 
 function readNotes(isBackup?: boolean): NotesList {
   try {
-    const key = isBackup ? 'notes-backup' : 'notes';
-    const n = window.localStorage.getItem(key) ?? '[]';
+    const key = isBackup ? "notes-backup" : "notes";
+    const n = window.localStorage.getItem(key) ?? "[]";
     const read = JSON.parse(n);
     if (!Array.isArray(read)) {
-      throw new Error('not an array');
+      throw new Error("not an array");
     }
     return read;
   } catch (e) {
-    console.warn('Error reading notes', e);
+    console.warn("Error reading notes", e);
     return [];
   }
 }
@@ -160,9 +166,9 @@ function readNotes(isBackup?: boolean): NotesList {
 function writeNotes(notes: NotesList) {
   try {
     const oldNotes = readNotes();
-    window.localStorage.setItem('notes-backup', JSON.stringify(oldNotes));
+    window.localStorage.setItem("notes-backup", JSON.stringify(oldNotes));
 
-    window.localStorage.setItem('notes', JSON.stringify(notes));
+    window.localStorage.setItem("notes", JSON.stringify(notes));
   } catch (e) {
     alert(`unable to save notes: ${e}`);
   }

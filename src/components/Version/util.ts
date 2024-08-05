@@ -1,5 +1,5 @@
-import {Metadata} from "./Version";
+import { Metadata } from "./Version";
 
 export function getLatestVersion(metadata: Metadata) {
-  return metadata.latest ?? 'latest';
+  return metadata.latest ?? "latest";
 }
