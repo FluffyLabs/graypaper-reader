@@ -10,7 +10,7 @@ export function Banner() {
       <a href="https://fluffylabs.dev">
         <img src={logo} width="45" height="45" alt="Fluffy Labs" />
       </a>
-      <a href="https://graypaper.fluffylabs.dev">Gray Paper Viewer</a>
+      <a href="https://graypaper.fluffylabs.dev">Gray Paper Reader</a>
 
       <div style={{ flex: 1 }} />
       <a
@@ -18,7 +18,7 @@ export function Banner() {
         data-tooltip-content="Report an issue or fork on Github"
         data-tooltip-place="bottom"
         target="_blank"
-        href="https://github.com/fluffylabs/graypaper-viewer"
+        href="https://github.com/fluffylabs/graypaper-reader"
         rel="noreferrer"
       >
         <img src={github} alt="Github logo" width="45" height="45" />
