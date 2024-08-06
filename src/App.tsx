@@ -13,6 +13,7 @@ import {
 import grayPaperMetadata from "../public/metadata.json";
 import { Banner } from "./components/Banner/Banner";
 import { Notes } from "./components/Notes/Notes";
+import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import { Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
@@ -46,6 +47,7 @@ export function App() {
   return (
     <>
       <Banner />
+      {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
       <iframe title="Gray Paper" name="gp" ref={frame} src={`graypaper-${version}.html`} />
       {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame} />}
     </>
@@ -69,7 +71,6 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
     setOutline(iframeCtrl.getOutline());
 
     iframeCtrl.injectStyles();
-    iframeCtrl.toggleSidebar(false);
   }, [iframeCtrl]);
 
   // maintain location within document

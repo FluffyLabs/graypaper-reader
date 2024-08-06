@@ -28,13 +28,22 @@ img {
   pointer-events: none;
 }
 
-div {
-  scroll-margin-top: 150px;
+/* Always hide the sidebar. */
+#sidebar {
+  display: none !important;
+}
+#sidebar.opened+#page-container {
+  left: 0 !important;
 }
 
-// Always hide the sidebar.
-#sidebar {
+body.theme-light img.bi {
   display: none;
+}
+body.theme-light .fc0 {
+  color: #111;
+}
+body.theme-light ::selection {
+  background: rgba(127, 180, 180, 0.4);
 }
 `;
 
@@ -63,15 +72,8 @@ export class IframeController {
     this.doc.head.appendChild($style);
   }
 
-  toggleSidebar(open?: boolean) {
-    const classList = this.doc.querySelector("#sidebar")?.classList;
-    if (open === undefined) {
-      classList?.toggle("opened");
-    } else if (open) {
-      classList?.add("opened");
-    } else {
-      classList?.remove("opened");
-    }
+  toggleTheme() {
+    this.doc.body.classList.toggle("theme-light");
   }
 
   getOutline(): Outline {
