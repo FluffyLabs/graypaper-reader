@@ -1,5 +1,5 @@
 {
-  "name": "graypaper-viewer",
+  "name": "graypaper-reader",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,8 +11,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "cp-gp": "cp ./dist/graypaper.html ./public",
-    "predev": "npm run cp-gp",
     "test": "echo yolo"
   },
   "dependencies": {

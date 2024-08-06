@@ -26,15 +26,16 @@ export function App() {
   // wait for the iframe content to load.
   useEffect(() => {
     const interval = setInterval(() => {
-      const win = frame.current?.contentWindow;
+      const $frame = frame.current;
+      const win = $frame?.contentWindow;
       if (win) {
         // first add listener
         win.addEventListener("load", () => {
-          setLoadedFrame(new IframeController(win, version));
+          setLoadedFrame(new IframeController(win, $frame, version));
         });
         // and then check ready state to avoid race condition
         if (win.document.readyState === "complete") {
-          setLoadedFrame(new IframeController(win, version));
+          setLoadedFrame(new IframeController(win, $frame, version));
         }
         clearInterval(interval);
       }

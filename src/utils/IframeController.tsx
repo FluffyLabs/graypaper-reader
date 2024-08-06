@@ -48,15 +48,21 @@ body.theme-light ::selection {
 `;
 
 export class IframeController {
+  /** The iframe element on the page */
+  private readonly $frame: HTMLIFrameElement;
+
+  /** The inner (within iframe) window and document. */
   private readonly win: Window;
   private readonly doc: Document;
 
+  /** Current location and selection **/
   private readonly location: InDocLocation;
   private selection: InDocSelection | null;
 
   private updateLocationListener: () => void;
 
-  constructor(win: Window, _version: string) {
+  constructor(win: Window, $frame: HTMLIFrameElement, _v: string) {
+    this.$frame = $frame;
     this.win = win;
     this.doc = win.document;
     this.location = {
@@ -67,6 +73,7 @@ export class IframeController {
   }
 
   injectStyles() {
+    this.$frame.classList.add("visible");
     const $style = this.doc.createElement("style");
     $style.innerHTML = customStyles;
     this.doc.head.appendChild($style);
