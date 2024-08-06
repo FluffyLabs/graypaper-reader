@@ -80,7 +80,7 @@ export class IframeController {
   }
 
   toggleTheme(isLight?: boolean) {
-    const clazz = 'theme-light';
+    const clazz = "theme-light";
     const classList = this.doc.body.classList;
     if (isLight === false) {
       classList.remove(clazz);

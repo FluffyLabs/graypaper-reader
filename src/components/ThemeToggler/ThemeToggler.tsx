@@ -3,8 +3,8 @@ import type { IframeController } from "../../utils/IframeController";
 import "./ThemeToggler.css";
 import { Tooltip } from "react-tooltip";
 
-const LS_KEY = 'theme';
-const DEFAULT_THEME = 'dark';
+const LS_KEY = "theme";
+const DEFAULT_THEME = "dark";
 function readTheme() {
   return window.localStorage.getItem(LS_KEY) ?? DEFAULT_THEME;
 }
@@ -18,7 +18,7 @@ const initialTheme = readTheme();
 export function ThemeToggler({ iframeCtrl }: { iframeCtrl: IframeController }) {
   const toggleTheme = useCallback(() => {
     const isLight = iframeCtrl.toggleTheme();
-    writeTheme(isLight ? 'light' : DEFAULT_THEME);
+    writeTheme(isLight ? "light" : DEFAULT_THEME);
   }, [iframeCtrl]);
 
   useEffect(() => {
@@ -34,4 +34,3 @@ export function ThemeToggler({ iframeCtrl }: { iframeCtrl: IframeController }) {
     </div>
   );
 }
-
