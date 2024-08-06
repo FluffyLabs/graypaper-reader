@@ -79,8 +79,17 @@ export class IframeController {
     this.doc.head.appendChild($style);
   }
 
-  toggleTheme() {
-    this.doc.body.classList.toggle("theme-light");
+  toggleTheme(isLight?: boolean) {
+    const clazz = 'theme-light';
+    const classList = this.doc.body.classList;
+    if (isLight === false) {
+      classList.remove(clazz);
+    } else if (isLight === true) {
+      classList.add(clazz);
+    } else {
+      classList.toggle(clazz);
+    }
+    return classList.contains(clazz);
   }
 
   getOutline(): Outline {
