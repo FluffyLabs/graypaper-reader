@@ -1,4 +1,4 @@
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Notes.css";
 import type { InDocSelection } from "../../utils/IframeController";
 import { deserializeLocation } from "../../utils/location";
@@ -69,6 +69,33 @@ export function Notes({ selection }: NotesProps) {
     link.click();
   }, [notes]);
 
+  const fileImport = useRef(null as HTMLInputElement | null);
+  const onImport = useCallback(() => {
+    fileImport.current?.click();
+  }, []);
+
+  const importNotes = useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+    if (!ev.target?.files?.length) {
+      return;
+    }
+    const f = new FileReader();
+    f.onload = (e) => {
+      try {
+        const notes = parseNotes(e.target?.result?.toString() ?? "");
+        const overwrite = confirm(
+          `Your current notes will be replaced with ${notes.length} notes loaded from the file. Continue?`,
+        );
+        if (overwrite) {
+          setNotes(notes);
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Unable to load the notes file. Check console for details.");
+      }
+    };
+    f.readAsText(ev.target.files[0]);
+  }, []);
+
   return (
     <div className="notes">
       <div className="newNote">
@@ -90,7 +117,9 @@ export function Notes({ selection }: NotesProps) {
       </ul>
       <div className="actions">
         {hasUndo && <button onClick={onUndo}>undo</button>}
+        <button onClick={onImport}>import notes</button>
         <button onClick={onExport}>export notes</button>
+        <input ref={fileImport} onChange={importNotes} type="file" style={{ opacity: 0 }} />
       </div>
     </div>
   );
@@ -160,15 +189,19 @@ function readNotes(isBackup?: boolean): NotesList {
   try {
     const key = isBackup ? "notes-backup" : "notes";
     const n = window.localStorage.getItem(key) ?? "[]";
-    const read = JSON.parse(n);
-    if (!Array.isArray(read)) {
-      throw new Error("not an array");
-    }
-    return read;
+    return parseNotes(n);
   } catch (e) {
     console.warn("Error reading notes", e);
     return [];
   }
+}
+
+function parseNotes(notes: string) {
+  const read = JSON.parse(notes);
+  if (!Array.isArray(read)) {
+    throw new Error("not an array");
+  }
+  return read;
 }
 
 function writeNotes(notes: NotesList) {
