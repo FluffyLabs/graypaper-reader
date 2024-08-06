@@ -1,4 +1,4 @@
-# GrayPaper viewer
+# GrayPaper Reader
 
 A tool to help with reading and analyzing the Gray Paper.
 

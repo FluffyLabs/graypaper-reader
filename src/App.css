@@ -8,6 +8,12 @@ iframe {
   padding-top: 40px;
   height: 100vh;
   width: 70vw;
+  opacity: 0;
+}
+
+iframe.visible {
+  opacity: 1.0;
+  transition: opacity 500ms;
 }
 
 .viewer {
