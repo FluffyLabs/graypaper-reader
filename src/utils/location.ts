@@ -1,7 +1,7 @@
 import type { InDocSelection } from "./IframeController";
 
 export type LocationDetails = {
-  version: string;
+  shortVersion: string;
   page: string;
   section: string;
   subSection: string;
@@ -14,20 +14,29 @@ export function updateLocationVersion(version: string, hash: string): string | n
     return null;
   }
 
-  loc.version = version;
+  loc.shortVersion = version.substring(0, 10);
   return reserializeLocation(loc);
 }
 
 export function reserializeLocation(loc: LocationDetails) {
-  const l = JSON.stringify([loc.version, loc.page, loc.section, loc.subSection, loc.selection]);
+  const l = JSON.stringify([
+    loc.shortVersion,
+    loc.page,
+    loc.section,
+    loc.subSection,
+    loc.selection
+  ]);
 
   return btoa(unescape(encodeURIComponent(l)));
 }
 
 export function serializeLocation(version: string, sel: InDocSelection) {
-  const selectedNodes = Array.from(sel.selection.children ?? []).map((x) => x.outerHTML);
+  const selectedNodes = Array.from(sel.selection.children ?? [])
+    .map((x) => x.outerHTML)
+    .filter(x => x.startsWith('<div class="'))
+    .map(x => x.substring(0, x.indexOf('>') + 1))
   const loc = JSON.stringify([
-    version,
+    version.substring(0, 10),
     sel.location.page,
     sel.location.section?.title,
     sel.location.subSection?.title,
@@ -52,8 +61,8 @@ export function deserializeLocation(h: string): LocationDetails | null {
     if (!Array.isArray(destringified)) {
       throw new Error(`parsed JSON is not an array: ${destringified} (${typeof destringified})`);
     }
-    const [version, page, section, subSection, selection] = destringified;
-    return { version, page, section, subSection, selection };
+    const [shortVersion, page, section, subSection, selection] = destringified;
+    return { shortVersion, page, section, subSection, selection };
   } catch (e) {
     console.warn("unable to decode hash", hash);
     console.warn(e);
