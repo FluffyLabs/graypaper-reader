@@ -25,12 +25,13 @@ export function reserializeLocation(loc: LocationDetails) {
 }
 
 export function serializeLocation(version: string, sel: InDocSelection) {
+  const selectedNodes = Array.from(sel.selection.children ?? []).map((x) => x.outerHTML);
   const loc = JSON.stringify([
     version,
     sel.location.page,
     sel.location.section?.title,
     sel.location.subSection?.title,
-    Array.from(sel.selection.children ?? []).map((x) => x.outerHTML),
+    selectedNodes.length ? [selectedNodes[0], selectedNodes[selectedNodes.length - 1]] : [],
   ]);
 
   return btoa(unescape(encodeURIComponent(loc)));
