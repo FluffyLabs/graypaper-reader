@@ -109,7 +109,7 @@ export class IframeController {
       return [null, null];
     }
 
-    const DIV_PATTERN='<div class="';
+    const DIV_PATTERN = '<div class="';
 
     const classes = loc.selection
       .filter((x) => x.startsWith(DIV_PATTERN))
@@ -122,7 +122,7 @@ export class IframeController {
 
     const $page = this.doc.querySelector(`div[data-page-no="${loc.page}"] > .pc`);
 
-    let $divs;
+    let $divs: (Element | null | undefined)[];
     try {
       $divs = classes.map((c) => $page?.querySelector(`div.${c}`)).filter((x) => x !== null);
       if (!$divs.length) {

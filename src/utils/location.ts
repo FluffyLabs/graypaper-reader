@@ -19,13 +19,7 @@ export function updateLocationVersion(version: string, hash: string): string | n
 }
 
 export function reserializeLocation(loc: LocationDetails) {
-  const l = JSON.stringify([
-    loc.shortVersion,
-    loc.page,
-    loc.section,
-    loc.subSection,
-    loc.selection
-  ]);
+  const l = JSON.stringify([loc.shortVersion, loc.page, loc.section, loc.subSection, loc.selection]);
 
   return btoa(unescape(encodeURIComponent(l)));
 }
@@ -33,8 +27,8 @@ export function reserializeLocation(loc: LocationDetails) {
 export function serializeLocation(version: string, sel: InDocSelection) {
   const selectedNodes = Array.from(sel.selection.children ?? [])
     .map((x) => x.outerHTML)
-    .filter(x => x.startsWith('<div class="'))
-    .map(x => x.substring(0, x.indexOf('>') + 1))
+    .filter((x) => x.startsWith('<div class="'))
+    .map((x) => x.substring(0, x.indexOf(">") + 1));
   const loc = JSON.stringify([
     version.substring(0, 10),
     sel.location.page,

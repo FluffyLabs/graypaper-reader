@@ -14,7 +14,7 @@ import grayPaperMetadata from "../public/metadata.json";
 import { Banner } from "./components/Banner/Banner";
 import { Notes } from "./components/Notes/Notes";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
-import { Metadata, Version } from "./components/Version/Version";
+import { type Metadata, Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
 
