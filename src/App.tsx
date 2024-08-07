@@ -14,7 +14,7 @@ import grayPaperMetadata from "../public/metadata.json";
 import { Banner } from "./components/Banner/Banner";
 import { Notes } from "./components/Notes/Notes";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
-import { Version } from "./components/Version/Version";
+import { type Metadata, Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
 
@@ -85,13 +85,15 @@ function Viewer({ iframeCtrl, selectedVersion, onVersionChange }: ViewerProps) {
   // react to changes in hash location
   useEffect(() => {
     const listener = (ev: HashChangeEvent) => {
-      const [, versionToSelect] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
+      const [, shortVersion] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
+      const versionToSelect = findVersion(shortVersion, grayPaperMetadata);
       if (versionToSelect) {
         onVersionChange(versionToSelect);
       }
     };
     // read current hash
-    const [cleanup, versionToSelect] = iframeCtrl.goToLocation(window.location.hash);
+    const [cleanup, shortVersion] = iframeCtrl.goToLocation(window.location.hash);
+    const versionToSelect = findVersion(shortVersion, grayPaperMetadata);
     if (versionToSelect) {
       onVersionChange(versionToSelect);
     }
@@ -154,9 +156,18 @@ function tabsContent(
 
 function getInitialVersion(): string {
   const loc = deserializeLocation(window.location.hash);
-  if (loc) {
-    return loc.version;
+  const version = findVersion(loc?.shortVersion ?? null, grayPaperMetadata);
+  if (version) {
+    return version;
   }
 
   return getLatestVersion(grayPaperMetadata);
+}
+
+function findVersion(shortVersion: string | null, metadata: Metadata) {
+  if (!shortVersion) {
+    return null;
+  }
+
+  return Object.keys(metadata.versions).find((v) => v.startsWith(shortVersion)) ?? null;
 }

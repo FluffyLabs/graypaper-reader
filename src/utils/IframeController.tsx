@@ -109,22 +109,31 @@ export class IframeController {
       return [null, null];
     }
 
+    const DIV_PATTERN = '<div class="';
+
     const classes = loc.selection
-      .filter((x) => x.startsWith("<div "))
+      .filter((x) => x.startsWith(DIV_PATTERN))
       .map((x) =>
         x
-          .substring('<div class="'.length, x.indexOf(">") - 1)
+          .substring(DIV_PATTERN.length, x.indexOf(">") - 1)
           .split(" ")
           .join("."),
       );
 
     const $page = this.doc.querySelector(`div[data-page-no="${loc.page}"] > .pc`);
 
-    const $divs = classes.map((c) => $page?.querySelector(`div.${c}`)).filter((x) => x !== null);
-    if (!$divs.length) {
-      console.warn("Did not find any divs:", $divs, classes, $page);
-      return [null, loc.version];
+    let $divs: (Element | null | undefined)[];
+    try {
+      $divs = classes.map((c) => $page?.querySelector(`div.${c}`)).filter((x) => x !== null);
+      if (!$divs.length) {
+        console.warn("Did not find any divs:", $divs, classes, $page);
+        return [null, loc.shortVersion];
+      }
+    } catch (e) {
+      console.warn("Invalid querySelector created", e);
+      return [null, loc.shortVersion];
     }
+
     const range = this.doc.createRange();
     const $first = $divs[0];
     const $last = $divs[$divs.length - 1];
@@ -159,10 +168,10 @@ export class IframeController {
         scrollTo("center", "instant");
       }, 300);
 
-      return [() => clearTimeout(timeout), loc.version];
+      return [() => clearTimeout(timeout), loc.shortVersion];
     }
 
-    return [null, loc.version];
+    return [null, loc.shortVersion];
   }
 
   jumpTo(id: string) {
