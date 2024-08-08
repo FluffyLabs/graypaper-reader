@@ -48,9 +48,6 @@ body.theme-light ::selection {
 `;
 
 export class IframeController {
-  /** The iframe element on the page */
-  private readonly $frame: HTMLIFrameElement;
-
   /** The inner (within iframe) window and document. */
   private readonly win: Window;
   private readonly doc: Document;
@@ -61,8 +58,7 @@ export class IframeController {
 
   private updateLocationListener: () => void;
 
-  constructor(win: Window, $frame: HTMLIFrameElement, _v: string) {
-    this.$frame = $frame;
+  constructor(win: Window, _v: string) {
     this.win = win;
     this.doc = win.document;
     this.location = {
@@ -73,7 +69,6 @@ export class IframeController {
   }
 
   injectStyles() {
-    this.$frame.classList.add("visible");
     const $style = this.doc.createElement("style");
     $style.innerHTML = customStyles;
     this.doc.head.appendChild($style);
@@ -126,7 +121,7 @@ export class IframeController {
     try {
       $divs = classes.map((c) => $page?.querySelector(`div.${c}`)).filter((x) => x !== null);
       if (!$divs.length) {
-        console.warn("Did not find any divs:", $divs, classes, $page);
+        console.warn("Did not find any divs:", loc.selection, classes, $divs, $page);
         return [null, loc.shortVersion];
       }
     } catch (e) {
@@ -229,11 +224,21 @@ export class IframeController {
   }
 
   updateSelection() {
-    // TODO [ToDr] update only on mouseup?
     const selection = this.doc.getSelection();
     if (selection?.rangeCount && !selection.isCollapsed) {
+      const range = selection.getRangeAt(0).cloneRange();
+      // extend the selection if it's only text nodes.
+      const extendRange = ($elem: Node, set: (n: Node) => void) => {
+        if ($elem.nodeType === Node.TEXT_NODE) {
+          if ($elem.parentElement) {
+            set($elem.parentElement);
+          }
+        }
+      };
+      extendRange(range.startContainer, ($e) => range.setStart($e, 0));
+      extendRange(range.endContainer, ($e) => range.setEndAfter($e));
       this.selection = {
-        selection: selection.getRangeAt(0).cloneContents(),
+        selection: range.cloneContents(),
         location: { ...this.location },
       };
     } else {
