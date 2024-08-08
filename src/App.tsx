@@ -23,23 +23,27 @@ export function App() {
   const [loadedFrame, setLoadedFrame] = useState(null as IframeController | null);
   const [version, setVersion] = useState(getInitialVersion());
 
+  const onSetVersion = useCallback(
+    (v: string) => {
+      if (v !== version) {
+        setLoadedFrame(null);
+      }
+      setVersion(v);
+    },
+    [version],
+  );
+
   // wait for the iframe content to load.
   useEffect(() => {
     const interval = setInterval(() => {
       const $frame = frame.current;
       const win = $frame?.contentWindow;
-      if (win) {
-        // first add listener
-        win.addEventListener("load", () => {
-          setLoadedFrame(new IframeController(win, $frame, version));
-        });
-        // and then check ready state to avoid race condition
-        if (win.document.readyState === "complete") {
-          setLoadedFrame(new IframeController(win, $frame, version));
-        }
+      if (win && win.document.readyState === "complete") {
+        setLoadedFrame(new IframeController(win, version));
         clearInterval(interval);
       }
     }, 50);
+
     return () => {
       clearInterval(interval);
     };
@@ -49,8 +53,14 @@ export function App() {
     <>
       <Banner />
       {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
-      <iframe title="Gray Paper" name="gp" ref={frame} src={`graypaper-${version}.html`} />
-      {loadedFrame && <Viewer selectedVersion={version} onVersionChange={setVersion} iframeCtrl={loadedFrame} />}
+      <iframe
+        className={loadedFrame ? "visible" : ""}
+        title="Gray Paper"
+        name="gp"
+        ref={frame}
+        src={`graypaper-${version}.html`}
+      />
+      {loadedFrame && <Viewer selectedVersion={version} onVersionChange={onSetVersion} iframeCtrl={loadedFrame} />}
     </>
   );
 }
