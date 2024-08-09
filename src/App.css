@@ -15,14 +15,3 @@ iframe.visible {
   opacity: 1.0;
   transition: opacity 500ms;
 }
-
-.viewer {
-  box-sizing: border-box;
-  height: 100%;
-  width: 30vw;
-  padding: 0 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  overflow: hidden;
-}

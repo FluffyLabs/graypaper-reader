@@ -2,19 +2,7 @@ import { Tooltip } from "react-tooltip";
 import "./Version.css";
 import { useCallback } from "react";
 import { updateLocationVersion } from "../../utils/location";
-import { getLatestVersion } from "./util";
-
-export type VersionInfo = {
-  hash: string;
-  date: string;
-};
-
-export type Metadata = {
-  latest: string;
-  versions: {
-    [key: string]: VersionInfo;
-  };
-};
+import { type Metadata, type VersionInfo, getLatestVersion } from "../../utils/metadata";
 
 type VersionProps = {
   metadata: Metadata;
