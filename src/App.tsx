@@ -9,40 +9,22 @@ import { IframeController } from "./utils/IframeController";
 import { getInitialVersion, grayPaperMetadata } from "./utils/metadata";
 
 export function App() {
-  const frame = useRef(null as HTMLIFrameElement | null);
-  const [loadedFrame, setLoadedFrame] = useState(null as IframeController | null);
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [loadedFrame, setLoadedFrame] = useState<IframeController | null>(null);
   const [version, setVersion] = useState(getInitialVersion(grayPaperMetadata));
   const browserZoom = useBrowserZoom();
 
-  const onSetVersion = useCallback(
-    (v: string) => {
-      if (v !== version) {
-        setLoadedFrame(null);
-      }
-      setVersion(v);
-    },
-    [version],
-  );
-
-  // wait for the iframe content to load.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const $frame = frame.current;
-      const win = $frame?.contentWindow;
-      if (win && win.document.readyState === "complete") {
-        setLoadedFrame(new IframeController(win, version));
-        clearInterval(interval);
-      }
-    }, 50);
-
-    return () => {
-      clearInterval(interval);
-    };
+  const onIframeLoad = useCallback(() => {
+    const $frame = frame.current;
+    const win = $frame?.contentWindow;
+    if (win?.document.readyState === "complete") {
+      setLoadedFrame(new IframeController(win, version));
+    }
   }, [version]);
 
   return (
     <Resizable
-      left={() => (
+      left={
         <>
           <Banner />
           {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
@@ -52,19 +34,22 @@ export function App() {
             name="gp"
             ref={frame}
             src={`graypaper-${version}.html`}
+            onLoad={onIframeLoad}
           />
         </>
-      )}
-      right={() =>
-        loadedFrame && (
-          <Sidebar
-            metadata={grayPaperMetadata}
-            selectedVersion={version}
-            onVersionChange={onSetVersion}
-            iframeCtrl={loadedFrame}
-            zoom={browserZoom}
-          />
-        )
+      }
+      right={
+        <>
+          {loadedFrame && (
+            <Sidebar
+              metadata={grayPaperMetadata}
+              selectedVersion={version}
+              onVersionChange={setVersion}
+              iframeCtrl={loadedFrame}
+              zoom={browserZoom}
+            />
+          )}
+        </>
       }
     />
   );

@@ -1,11 +1,9 @@
 import "./Resizable.css";
 import { type ReactNode, useCallback, useState } from "react";
 
-type CreateComponent = () => ReactNode | null;
-
 type ResizableProps = {
-  left: CreateComponent;
-  right: CreateComponent;
+  left: ReactNode;
+  right: ReactNode;
 };
 
 const SPLIT_THRESHOLD = 99;
@@ -59,11 +57,11 @@ export function Resizable({ left, right }: ResizableProps) {
     <div className={`resizable${isDragging ? " dragging" : ""}`}>
       <div className={`overlay${isDragging ? " active" : ""}`} onMouseUp={toggleRight} />
       <div className="left" style={{ width: `calc(${split}% - 6px)` }}>
-        {left()}
+        {left}
       </div>
       <div className="handle" onMouseDown={onStartDrag} />
       <div className="right" style={{ width: `${100 - split}%` }}>
-        {right()}
+        {right}
       </div>
     </div>
   );
