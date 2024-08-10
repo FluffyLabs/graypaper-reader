@@ -15,13 +15,14 @@ import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
 
 type SidebarProps = {
-  metadata: Metadata;
   iframeCtrl: IframeController;
-  selectedVersion: string;
+  metadata: Metadata;
   onVersionChange: (v: string) => void;
+  selectedVersion: string;
+  zoom: number;
 };
 
-export function Sidebar({ iframeCtrl, selectedVersion, onVersionChange, metadata }: SidebarProps) {
+export function Sidebar({ iframeCtrl, metadata, onVersionChange, selectedVersion, zoom }: SidebarProps) {
   const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
@@ -77,20 +78,22 @@ export function Sidebar({ iframeCtrl, selectedVersion, onVersionChange, metadata
   );
 
   return (
-    <div className="viewer">
-      <Selection
-        version={selectedVersion}
-        location={location}
-        selection={selection}
-        activeTab={tab}
-        switchTab={setTab}
-      />
-      <Tabs
-        tabs={tabsContent(outline, location, jumpTo, selection, selectedVersion)}
-        activeTab={tab}
-        switchTab={setTab}
-      />
-      <Version onChange={onVersionChange} metadata={metadata} selectedVersion={selectedVersion} />
+    <div className="sidebar">
+      <div className="content no-zoom" style={{ height: `${100 * zoom}%`, width: `${100 * zoom}` }}>
+        <Selection
+          version={selectedVersion}
+          location={location}
+          selection={selection}
+          activeTab={tab}
+          switchTab={setTab}
+        />
+        <Tabs
+          tabs={tabsContent(outline, location, jumpTo, selection, selectedVersion)}
+          activeTab={tab}
+          switchTab={setTab}
+        />
+        <Version onChange={onVersionChange} metadata={metadata} selectedVersion={selectedVersion} />
+      </div>
     </div>
   );
 }

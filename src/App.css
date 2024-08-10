@@ -6,8 +6,8 @@
 iframe {
   box-sizing: border-box;
   padding-top: 40px;
-  height: 100vh;
-  width: 70vw;
+  height: 100%;
+  width: 100%;
   opacity: 0;
 }
 
