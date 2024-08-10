@@ -6,7 +6,7 @@ import logo from "./logo-128x128.png";
 
 export function Banner() {
   return (
-    <div className="banner">
+    <div className="banner no-zoom">
       <a href="https://fluffylabs.dev">
         <img src={logo} width="45" height="45" alt="Fluffy Labs" />
       </a>

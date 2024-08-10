@@ -1,0 +1,12 @@
+.sidebar {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar .content {
+  height: 100%;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
