@@ -14,6 +14,16 @@ export function App() {
   const [version, setVersion] = useState(getInitialVersion(grayPaperMetadata));
   const browserZoom = useBrowserZoom();
 
+  const onSetVersion = useCallback(
+    (v: string) => {
+      if (v !== version) {
+        setLoadedFrame(null);
+      }
+      setVersion(v);
+    },
+    [version],
+  );
+
   const onIframeLoad = useCallback(() => {
     const $frame = frame.current;
     const win = $frame?.contentWindow;
@@ -44,7 +54,7 @@ export function App() {
             <Sidebar
               metadata={grayPaperMetadata}
               selectedVersion={version}
-              onVersionChange={setVersion}
+              onVersionChange={onSetVersion}
               iframeCtrl={loadedFrame}
               zoom={browserZoom}
             />
