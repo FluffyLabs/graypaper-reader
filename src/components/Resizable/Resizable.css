@@ -5,10 +5,23 @@
   display: flex;
 }
 
-.resizable .left {
+.resizable .left, .resizable .right {
   position: relative;
-  width: calc(70% - 2px);
   height: 100%;
+  transition: width 150ms;
+}
+
+.resizable.dragging .left,
+.resizable.dragging .right {
+  transition: none;
+}
+
+.resizable .left {
+  width: calc(70% - 2px);
+}
+
+.resizable .right {
+  width: calc(30% - 2px);
 }
 
 .resizable .handle {
@@ -17,11 +30,8 @@
   height: 100%;
   background-color: #ddd;
 }
-
-.resizable .right {
-  position: relative;
-  width: calc(30% - 2px);
-  height: 100%;
+.resizable .handle:hover {
+  background-color: #ccc;
 }
 
 .resizable .overlay {

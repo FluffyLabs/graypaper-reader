@@ -56,7 +56,7 @@ export function Resizable({ left, right }: ResizableProps) {
   }, [wasDragged, split, lastSplit]);
 
   return (
-    <div className="resizable">
+    <div className={`resizable${isDragging ? " dragging" : ""}`}>
       <div className={`overlay${isDragging ? " active" : ""}`} onMouseUp={toggleRight} />
       <div className="left" style={{ width: `calc(${split}% - 6px)` }}>
         {left()}
