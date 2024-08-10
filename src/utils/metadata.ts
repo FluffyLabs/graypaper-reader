@@ -22,7 +22,7 @@ export async function getMetadata(): Promise<Metadata> {
     return await metadataCache;
   }
 
-  metadataCache = fetch(METADATA_JSON).then(response => response.json());
+  metadataCache = fetch(METADATA_JSON).then((response) => response.json());
   return await metadataCache;
 }
 

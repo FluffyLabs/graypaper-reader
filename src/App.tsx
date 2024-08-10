@@ -6,7 +6,7 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import { IframeController } from "./utils/IframeController";
-import { Metadata, getInitialVersion, getMetadata, grayPaperUrl } from "./utils/metadata";
+import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl } from "./utils/metadata";
 
 export function App() {
   const [metadata, setMetadata] = useState<Metadata | null>(null);
