@@ -1,5 +1,5 @@
-#!bin/sh
-
+#!/bin/sh
+#
 cd graypaper-archive
 git pull
 cd ..
