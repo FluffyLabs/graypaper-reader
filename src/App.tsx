@@ -6,12 +6,24 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import { IframeController } from "./utils/IframeController";
-import { getInitialVersion, grayPaperMetadata } from "./utils/metadata";
+import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl } from "./utils/metadata";
 
 export function App() {
+  const [metadata, setMetadata] = useState<Metadata | null>(null);
+  useEffect(() => {
+    const fetch = async () => {
+      setMetadata(await getMetadata());
+    };
+    fetch();
+  }, []);
+
+  return metadata && <InnerApp metadata={metadata} />;
+}
+
+function InnerApp({ metadata }: { metadata: Metadata }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [loadedFrame, setLoadedFrame] = useState<IframeController | null>(null);
-  const [version, setVersion] = useState(getInitialVersion(grayPaperMetadata));
+  const [version, setVersion] = useState(getInitialVersion(metadata));
   const browserZoom = useBrowserZoom();
 
   const onSetVersion = useCallback(
@@ -43,7 +55,7 @@ export function App() {
             title="Gray Paper"
             name="gp"
             ref={frame}
-            src={`graypaper-${version}.html`}
+            src={grayPaperUrl(version)}
             onLoad={onIframeLoad}
           />
         </>
@@ -52,7 +64,7 @@ export function App() {
         <>
           {loadedFrame && (
             <Sidebar
-              metadata={grayPaperMetadata}
+              metadata={metadata}
               selectedVersion={version}
               onVersionChange={onSetVersion}
               iframeCtrl={loadedFrame}

@@ -1,6 +1,7 @@
 import { deserializeLocation } from "../utils/location";
 
-import originalMetadata from "../../public/metadata.json";
+const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "https://gp.fluffylabs.dev";
+const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 
 export type VersionInfo = {
   hash: string;
@@ -14,7 +15,16 @@ export type Metadata = {
   };
 };
 
-export const grayPaperMetadata: Metadata = originalMetadata;
+let metadataCache: Promise<Metadata> | null = null;
+
+export async function getMetadata(): Promise<Metadata> {
+  if (metadataCache) {
+    return await metadataCache;
+  }
+
+  metadataCache = fetch(METADATA_JSON).then((response) => response.json());
+  return await metadataCache;
+}
 
 export function getInitialVersion(metadata: Metadata): string {
   const loc = deserializeLocation(window.location.hash);
@@ -23,7 +33,7 @@ export function getInitialVersion(metadata: Metadata): string {
     return version;
   }
 
-  return getLatestVersion(grayPaperMetadata);
+  return getLatestVersion(metadata);
 }
 
 export function findVersion(shortVersion: string | null, metadata: Metadata) {
@@ -36,4 +46,8 @@ export function findVersion(shortVersion: string | null, metadata: Metadata) {
 
 export function getLatestVersion(metadata: Metadata) {
   return metadata.latest ?? "latest";
+}
+
+export function grayPaperUrl(version: string) {
+  return `${METADATA_HOST}/graypaper-${version}.html`;
 }
