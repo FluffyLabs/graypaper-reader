@@ -1,6 +1,10 @@
 import { deserializeLocation } from "../utils/location";
 
-const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "https://gp.fluffylabs.dev";
+// TODO [ToDr] Accessing cross-origin iframes is not possible. We either
+// need to use postMessage and inject some script to the hosted website
+// or figure out how to deploy both at the same origin.
+//const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "https://gp.fluffylabs.dev";
+const METADATA_HOST = "/public";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 
 export type VersionInfo = {
