@@ -14,13 +14,23 @@ export function updateLocationVersion(version: string, hash: string): string | n
     return null;
   }
 
-  loc.shortVersion = version.substring(0, 10);
-  return reserializeLocation(loc);
+  return reserializeLocation(loc, version);
 }
 
-export function reserializeLocation(loc: LocationDetails) {
-  const l = JSON.stringify([loc.shortVersion, loc.page, loc.section, loc.subSection, loc.selection]);
+export function updateLocation(loc: LocationDetails, version?: string): LocationDetails {
+  const shortVersion = version?.substring(0, 10) ?? loc.shortVersion;
+  return {
+    shortVersion,
+    page: loc.page,
+    section: loc.section,
+    subSection: loc.subSection,
+    selection: loc.selection,
+  };
+}
 
+export function reserializeLocation(originalLocation: LocationDetails, version?: string) {
+  const loc = updateLocation(originalLocation, version);
+  const l = JSON.stringify([loc.shortVersion, loc.page, loc.section, loc.subSection, loc.selection]);
   return btoa(unescape(encodeURIComponent(l)));
 }
 

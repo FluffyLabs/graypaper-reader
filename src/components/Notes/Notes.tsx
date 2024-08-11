@@ -1,19 +1,16 @@
-import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import "./Notes.css";
 import type { InDocSelection } from "../../utils/IframeController";
-import { deserializeLocation } from "../../utils/location";
+import { Note, type NotesItem } from "./Note";
 
-type NotesItem = {
-  location: string; // serialized InDocSelection
-  content: string;
-};
 type NotesList = NotesItem[];
 
 type NotesProps = {
   version: string;
   selection: InDocSelection | null;
 };
-export function Notes({ selection }: NotesProps) {
+
+export function Notes({ selection, version }: NotesProps) {
   const [notes, setNotes] = useState(readNotes());
   const [newNote, setNewNote] = useState("");
   const [hasUndo, setHasUndo] = useState(false);
@@ -112,7 +109,13 @@ export function Notes({ selection }: NotesProps) {
       </div>
       <ul>
         {notes.map((x, idx) => (
-          <Note key={`${idx}-${x.location}`} note={x} onEditNote={onEditNote} onRemoveNote={onRemoveNote} />
+          <Note
+            version={version}
+            key={`${idx}-${x.location}`}
+            note={x}
+            onEditNote={onEditNote}
+            onRemoveNote={onRemoveNote}
+          />
         ))}
       </ul>
       <div className="actions">
@@ -122,66 +125,6 @@ export function Notes({ selection }: NotesProps) {
         <input ref={fileImport} onChange={importNotes} type="file" style={{ opacity: 0 }} />
       </div>
     </div>
-  );
-}
-
-type NoteProps = {
-  note: NotesItem;
-  onEditNote: (n: NotesItem) => void;
-  onRemoveNote: (n: NotesItem) => void;
-};
-function Note({ note, onEditNote, onRemoveNote }: NoteProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const toggleEdit = useCallback(() => {
-    if (isEditing) {
-      // defer change to prevent onBlur happening before clicks.
-      setTimeout(() => {
-        setIsEditing(false);
-      }, 300);
-    } else {
-      setIsEditing(true);
-    }
-  }, [isEditing]);
-
-  const editNote = useCallback(
-    (ev: ChangeEvent<HTMLTextAreaElement>) => {
-      note.content = ev.currentTarget.value;
-      onEditNote(note);
-    },
-    [note, onEditNote],
-  );
-
-  const removeNote = useCallback(() => {
-    onRemoveNote(note);
-  }, [note, onRemoveNote]);
-
-  const locDetails = useMemo(() => {
-    return deserializeLocation(note.location);
-  }, [note]);
-
-  return (
-    <li>
-      <a href={`#${note.location}`}>
-        {locDetails ? (
-          <span>
-            p:{Number(`0x${locDetails?.page}`)} &gt; {locDetails.section} &gt; {locDetails.subSection}
-          </span>
-        ) : (
-          "link"
-        )}
-      </a>
-      {isEditing ? (
-        <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
-      ) : (
-        <blockquote onClick={toggleEdit} onKeyPress={toggleEdit}>
-          {note.content}
-        </blockquote>
-      )}
-      <button className="remove" style={{ display: isEditing ? "block" : "none" }} onClick={removeNote}>
-        delete
-      </button>
-    </li>
   );
 }
 
