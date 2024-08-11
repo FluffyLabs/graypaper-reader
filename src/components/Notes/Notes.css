@@ -21,3 +21,17 @@
 .notes blockquote:hover {
   border: 1px solid #eee;
 }
+
+.notes .icon {
+  margin-right: 3px;
+  color: #e22;
+  background-color: lightyellow;
+  padding: 2px;
+}
+
+.notes .update {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 3px;
+  color: #444;
+}

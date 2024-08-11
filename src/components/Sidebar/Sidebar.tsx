@@ -26,7 +26,7 @@ export function Sidebar({ iframeCtrl, metadata, onVersionChange, selectedVersion
   const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState([] as OutlineType);
-  const [tab, setTab] = useState("outline");
+  const [tab, setTab] = useState(loadActiveTab());
 
   // perform one-time operations.
   useEffect(() => {
@@ -69,6 +69,11 @@ export function Sidebar({ iframeCtrl, metadata, onVersionChange, selectedVersion
       }
     };
   }, [iframeCtrl, onVersionChange, metadata]);
+
+  // store seletected tab in LS
+  useEffect(() => {
+    storeActiveTab(tab);
+  }, [tab]);
 
   const jumpTo = useCallback(
     (id: string) => {
@@ -115,4 +120,12 @@ function tabsContent(
       render: () => <Notes version={version} selection={selection} />,
     },
   ];
+}
+
+function storeActiveTab(tab: string) {
+  window.localStorage.setItem("gp-tab", tab);
+}
+
+function loadActiveTab(): string {
+  return window.localStorage.getItem("gp-tab") ?? "outline";
 }

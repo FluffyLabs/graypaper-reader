@@ -11,6 +11,7 @@ type TabsProps = {
   activeTab: string;
   switchTab: (v: string) => void;
 };
+
 export function Tabs({ tabs, activeTab, switchTab }: TabsProps) {
   if (tabs.length === 0) {
     return null;
