@@ -4,14 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 
-import synctexJson from "../../../public/graypaper.synctex.json";
-
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
 
 pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
 interface PdfViewerProps {
-  url: string;
+  pdfUrl: string;
+  synctexUrl: string;
 }
 
 interface TextLayerReneredEventPayload {
@@ -20,13 +19,48 @@ interface TextLayerReneredEventPayload {
   error: Error;
 }
 
-export function PdfViewer({ url }: PdfViewerProps) {
+interface SynctexData {
+  files: {
+    [key: string]: string;
+  };
+  pages: {
+    [key: string]: [
+      {
+        file: number;
+        line: number;
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      }
+    ];
+  };
+}
+
+export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pdfJsViewerInstance, setPdfJsViewerInstance] = useState<pdfJsViewer.PDFViewer>();
+  const [synctexData, setSynctexData] = useState<SynctexData>();
 
   const handleRootRef = useCallback((element: HTMLDivElement) => {
     setRootElement(element);
   }, []);
+
+  useEffect(() => {
+    async function loadSynctex() {
+      try {
+        const response = await fetch(synctexUrl);
+        const fromJson = (await response.json()) as SynctexData;
+        setSynctexData(fromJson);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (synctexUrl) {
+      loadSynctex();
+    }
+  }, [synctexUrl]);
 
   useEffect(() => {
     async function loadPdf() {
@@ -61,7 +95,7 @@ export function PdfViewer({ url }: PdfViewerProps) {
 
       // Loading document.
       const loadingTask = pdfJs.getDocument({
-        url,
+        url: pdfUrl,
         cMapUrl: CMAP_URL,
         cMapPacked: CMAP_PACKED,
       });
@@ -74,13 +108,13 @@ export function PdfViewer({ url }: PdfViewerProps) {
       pdfLinkService.setDocument(pdfDocument, null);
     }
 
-    if (url && rootElement) {
+    if (pdfUrl && rootElement) {
       loadPdf();
     }
-  }, [url, rootElement]);
+  }, [pdfUrl, rootElement]);
 
   useEffect(() => {
-    if (pdfJsViewerInstance) {
+    if (pdfJsViewerInstance && synctexData) {
       const handleTextLayerRendered = (textLayer: TextLayerReneredEventPayload) => {
         // handle both versions for backwards-compatibility
         const textLayerDiv = textLayer.source.textLayer?.div;
@@ -111,7 +145,7 @@ export function PdfViewer({ url }: PdfViewerProps) {
               const pageXTexUnit = (pageX / pageBoundingRect.width) * documentWidthTexUnit;
               const pageYTexUnit = (pageY / pageBoundingRect.height) * documentHeightTexUnit;
 
-              const blocksInCurrPage = synctexJson.pages[textLayer.pageNumber];
+              const blocksInCurrPage = synctexData.pages[textLayer.pageNumber];
 
               let lastMatch;
 
@@ -128,7 +162,7 @@ export function PdfViewer({ url }: PdfViewerProps) {
               }
 
               if (lastMatch) {
-                console.log(synctexJson.files[lastMatch.file], lastMatch.line);
+                console.log(synctexData.files[lastMatch.file], lastMatch.line);
                 Object.assign(document.getElementById("js-debug").style, {
                   display: "block",
                   left: `${(lastMatch.left / documentWidthTexUnit) * pageBoundingRect.width + pageBoundingRect.left}px`,
@@ -150,7 +184,7 @@ export function PdfViewer({ url }: PdfViewerProps) {
 
       pdfJsViewerInstance.eventBus.on("textlayerrendered", handleTextLayerRendered);
     }
-  }, [pdfJsViewerInstance]);
+  }, [pdfJsViewerInstance, synctexData]);
 
   return (
     <div ref={handleRootRef} className="pdf-viewer-root">

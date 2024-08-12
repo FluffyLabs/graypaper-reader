@@ -1,5 +1,5 @@
 # Use the official Ubuntu Jammy image as a base
-FROM ubuntu:jammy
+FROM node:22
 
 # Set the environment to non-interactive
 ENV DEBIAN_FRONTEND=noninteractive

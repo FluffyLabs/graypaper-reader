@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
 // import { Outline } from "./components/Outline/Outline";
 // import { Selection } from "./components/Selection/Selection";
@@ -23,12 +23,18 @@ export function App() {
   // const frame = useRef(null as HTMLIFrameElement | null);
   // const [loadedFrame, setLoadedFrame] = useState(null as IframeController | null);
   const [version, setVersion] = useState(getInitialVersion());
+  const { pdfUrl, synctexUrl } = useMemo(() => {
+    return {
+      pdfUrl: `graypaper-${version}.pdf`,
+      synctexUrl: `graypaper-${version}.synctex.json`,
+    };
+  }, [version]);
 
   return (
     <>
       {/* {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />} */}
       <div className="pdf-viewer-container">
-        <PdfViewer url="graypaper.pdf" />
+        <PdfViewer pdfUrl={pdfUrl} synctexUrl={synctexUrl} />
       </div>
       <Banner />
       <div id="js-debug" style={{ display: "none", position: "absolute", backgroundColor: "#f00" }} />
