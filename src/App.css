@@ -3,17 +3,13 @@
   height: 100vh;
 }
 
-iframe {
+.pdf-viewer-container {
   box-sizing: border-box;
-  padding-top: 40px;
-  height: 100vh;
+  margin-top: 45px;
+  height: calc(100vh - 45px);
   width: 70vw;
-  opacity: 0;
-}
-
-iframe.visible {
-  opacity: 1.0;
-  transition: opacity 500ms;
+  position: relative;
+  overflow: hidden;
 }
 
 .viewer {
