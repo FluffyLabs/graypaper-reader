@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 
-const SRC_PATH_ARG_INDEX = 2;
-const DEST_PATH_ARG_INDEX = 3;
+const EXPECTED_ARGUMENTS_N = 4;
 const INPUT_PATTERN = /Input:([0-9]+):(.+)/;
 const START_PAGE_PATTERN = /\{([0-9]+)$/;
 const VERTICAL_BLOCK_PATTERN = /\[([0-9]+),([0-9]+):(-?[0-9]+),(-?[0-9]+):(-?[0-9]+),(-?[0-9]+),(-?[0-9]+)/;
@@ -49,12 +48,11 @@ function synctexToObject(synctex) {
 }
 
 async function main() {
-  if (process.argv.length !== 4) {
+  if (process.argv.length !== EXPECTED_ARGUMENTS_N) {
     throw new Error("Unexpected number of arguments.");
   }
 
-  const srcPath = process.argv[SRC_PATH_ARG_INDEX];
-  const destPath = process.argv[DEST_PATH_ARG_INDEX];
+  const [srcPath, destPath] = process.argv.slice(-2);
 
   try {
     const synctex = await fs.readFile(srcPath, {
@@ -63,7 +61,7 @@ async function main() {
 
     const result = synctexToObject(synctex);
 
-    await fs.writeFile(destPath, JSON.stringify(result, null, 2));
+    await fs.writeFile(destPath, JSON.stringify(result));
   } catch (error) {
     console.error(error);
   }
