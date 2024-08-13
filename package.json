@@ -11,7 +11,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "echo yolo"
+    "test": "echo yolo",
+    "predev": "rm -rf public/pdf-viewer-images && cp -r node_modules/pdfjs-dist/web/images/. public/pdf-viewer-images",
+    "prebuild": "rm -rf public/pdf-viewer-images && cp -r node_modules/pdfjs-dist/web/images/. public/pdf-viewer-images"
   },
   "dependencies": {
     "@types/pdfjs-dist": "^2.10.378",

@@ -84,6 +84,7 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
         eventBus,
         linkService: pdfLinkService,
         findController: pdfFindController,
+        imageResourcesPath: "pdf-viewer-images/",
       });
 
       setPdfJsViewerInstance(pdfViewer);
