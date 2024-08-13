@@ -52,7 +52,7 @@ function Viewer({ selectedVersion, onVersionChange }: ViewerProps) {
   // const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   // const [selection, setSelection] = useState(null as InDocSelection | null);
   // const [outline, setOutline] = useState([] as OutlineType);
-  const [tab, setTab] = useState("outline");
+  // const [tab, setTab] = useState("outline");
 
   // // perform one-time operations.
   // useEffect(() => {

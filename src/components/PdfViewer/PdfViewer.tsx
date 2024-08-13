@@ -19,21 +19,21 @@ interface TextLayerReneredEventPayload {
   error: Error;
 }
 
+interface SynctexBlock {
+  file: number;
+  line: number;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 interface SynctexData {
   files: {
     [key: string]: string;
   };
   pages: {
-    [key: string]: [
-      {
-        file: number;
-        line: number;
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      }
-    ];
+    [key: string]: SynctexBlock[];
   };
 }
 
@@ -64,6 +64,8 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
 
   useEffect(() => {
     async function loadPdf() {
+      if (!rootElement) return;
+
       const eventBus = new pdfJsViewer.EventBus();
 
       // (Optionally) enable hyperlinks within PDF files.
@@ -124,6 +126,9 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
 
           const doubleClickListener = (event: MouseEvent) => {
             const pageCanvas = textLayerDiv.closest(".page")?.querySelector("canvas");
+
+            if (!pageCanvas) return;
+
             const pageBoundingRect = pageCanvas.getBoundingClientRect();
 
             if (pageBoundingRect) {
@@ -147,7 +152,7 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
 
               const blocksInCurrPage = synctexData.pages[textLayer.pageNumber];
 
-              let lastMatch;
+              let lastMatch: SynctexBlock | null = null;
 
               for (let i = 0; i < blocksInCurrPage.length; i++) {
                 const currBlock = blocksInCurrPage[i];
@@ -163,17 +168,25 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
 
               if (lastMatch) {
                 console.log(synctexData.files[lastMatch.file], lastMatch.line);
-                Object.assign(document.getElementById("js-debug").style, {
-                  display: "block",
-                  left: `${(lastMatch.left / documentWidthTexUnit) * pageBoundingRect.width + pageBoundingRect.left}px`,
-                  top: `${
-                    ((lastMatch.top - lastMatch.height) / documentHeightTexUnit) * pageBoundingRect.height +
-                    pageBoundingRect.top
-                  }px`,
-                  width: `${(lastMatch.width / documentWidthTexUnit) * pageBoundingRect.width}px`,
-                  height: `${(lastMatch.height / documentHeightTexUnit) * pageBoundingRect.height}px`,
-                });
-                setTimeout(() => (document.getElementById("js-debug").style.display = "none"), 5000);
+                const debugElement = document.getElementById("js-debug");
+
+                if (debugElement) {
+                  Object.assign(debugElement.style, {
+                    display: "block",
+                    left: `${
+                      (lastMatch.left / documentWidthTexUnit) * pageBoundingRect.width + pageBoundingRect.left
+                    }px`,
+                    top: `${
+                      ((lastMatch.top - lastMatch.height) / documentHeightTexUnit) * pageBoundingRect.height +
+                      pageBoundingRect.top
+                    }px`,
+                    width: `${(lastMatch.width / documentWidthTexUnit) * pageBoundingRect.width}px`,
+                    height: `${(lastMatch.height / documentHeightTexUnit) * pageBoundingRect.height}px`,
+                  });
+                  setTimeout(() => {
+                    debugElement.style.display = "none";
+                  }, 5000);
+                }
               }
             }
           };
