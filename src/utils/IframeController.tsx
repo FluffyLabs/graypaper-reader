@@ -37,7 +37,7 @@ img {
 }
 
 body.theme-light img.bi {
-  display: none;
+  filter: invert(100%) brightness(150%);
 }
 body.theme-light .fc0 {
   color: #111;
