@@ -122,6 +122,8 @@ export class IframeController {
       $divs = classes.map((c) => $page?.querySelector(`div.${c}`)).filter((x) => x !== null);
       if (!$divs.length) {
         console.warn("Did not find any divs:", loc.selection, classes, $divs, $page);
+        // we can at least try to go to the page.
+        $page?.parentElement?.scrollIntoView({ block: "start", behavior: "smooth" });
         return [null, loc.shortVersion];
       }
     } catch (e) {
@@ -285,7 +287,12 @@ function findSection($elem: Element | null): Section | null {
   if ($elem?.classList?.contains("opened")) {
     return null;
   }
-  const section = findPreviousMatching($elem, (e) => e.querySelector("span._3 + span.ff5:nth-child(2):last-child"));
+  // newer versions
+  let section = findPreviousMatching($elem, (e) => e.querySelector("span._2 + span.ff5:nth-child(2):last-child"));
+  if (section === null) {
+    // old versions fallback
+    section = findPreviousMatching($elem, (e) => e.querySelector("span._3 + span.ff5:nth-child(2):last-child"));
+  }
   if (section === null) {
     return null;
   }
@@ -295,7 +302,13 @@ function findSection($elem: Element | null): Section | null {
 }
 
 function findSubSection($elem: Element | null): Section | null {
-  const subSection = findPreviousMatching($elem, (e) => e.querySelector("span._3 + span.ff1:nth-child(2)"));
+  // newer versions
+  let subSection = findPreviousMatching($elem, (e) => e.querySelector("span._2 + span.ff1:nth-child(2)"));
+  if (subSection === null) {
+    // old versions fallback
+    subSection = findPreviousMatching($elem, (e) => e.querySelector("span._3 + span.ff1:nth-child(2)"));
+    return null;
+  }
   if (subSection === null) {
     return null;
   }
