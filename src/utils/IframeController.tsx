@@ -287,7 +287,7 @@ function findSection($elem: Element | null): Section | null {
   if ($elem?.classList?.contains("opened")) {
     return null;
   }
-  // new versions
+  // newer versions
   let section = findPreviousMatching($elem, (e) => e.querySelector("span._2 + span.ff5:nth-child(2):last-child"));
   if (section === null) {
     // old versions fallback
@@ -305,7 +305,7 @@ function findSubSection($elem: Element | null): Section | null {
   // newer versions
   let subSection = findPreviousMatching($elem, (e) => e.querySelector("span._2 + span.ff1:nth-child(2)"));
   if (subSection === null) {
-    // old verisons suppor
+    // old versions fallback
     subSection = findPreviousMatching($elem, (e) => e.querySelector("span._3 + span.ff1:nth-child(2)"));
     return null;
   }
