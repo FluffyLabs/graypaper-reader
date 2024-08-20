@@ -1,6 +1,7 @@
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { deserializeLocation, reserializeLocation, updateLocation } from "../../utils/location";
+import type { InDocSelection } from "../../utils/IframeController";
+import { deserializeLocation, reserializeLocation, serializeLocation, updateLocation } from "../../utils/location";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -8,13 +9,14 @@ export type NotesItem = {
 };
 
 type NoteProps = {
+  selection: InDocSelection | null;
   version: string;
   note: NotesItem;
   onEditNote: (n: NotesItem) => void;
   onRemoveNote: (n: NotesItem) => void;
 };
 
-export function Note({ note, onEditNote, onRemoveNote, version }: NoteProps) {
+export function Note({ selection, note, onEditNote, onRemoveNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = useCallback(() => {
@@ -50,7 +52,7 @@ export function Note({ note, onEditNote, onRemoveNote, version }: NoteProps) {
 
   return (
     <li>
-      <NoteLink note={note} version={version} onMigrate={updateLocation} />
+      <NoteLink selection={selection} note={note} version={version} onMigrate={updateLocation} />
       {isEditing ? (
         <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
       ) : (
@@ -66,11 +68,12 @@ export function Note({ note, onEditNote, onRemoveNote, version }: NoteProps) {
 }
 
 type NoteLinkProps = {
+  selection: InDocSelection | null;
   note: NotesItem;
   version: string;
   onMigrate: (location: string) => void;
 };
-function NoteLink({ note, version, onMigrate }: NoteLinkProps) {
+function NoteLink({ selection, note, version, onMigrate }: NoteLinkProps) {
   const origLocDetails = useMemo(() => {
     return deserializeLocation(note.location);
   }, [note]);
@@ -93,8 +96,19 @@ function NoteLink({ note, version, onMigrate }: NoteLinkProps) {
   }, [origLocDetails, locDetails, note]);
 
   const migrateNote = useCallback(() => {
-    onMigrate(newHref);
-  }, [newHref, onMigrate]);
+    if (selection === null) {
+      return;
+    }
+    const selectionHref = serializeLocation(version, selection);
+    if (selectionHref === newHref) {
+      onMigrate(newHref);
+      return;
+    }
+
+    if (confirm("The highlighted part of the document has changed. Update to current selection?")) {
+      onMigrate(selectionHref);
+    }
+  }, [version, selection, newHref, onMigrate]);
 
   return (
     <div>
@@ -124,7 +138,7 @@ function NoteLink({ note, version, onMigrate }: NoteLinkProps) {
           data-tooltip-id="note-link"
           data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
           data-tooltip-place="top"
-          className="update"
+          className={selection === null ? "disabled update" : "update"}
         >
           (migrate)
         </a>

@@ -110,6 +110,7 @@ export function Notes({ selection, version }: NotesProps) {
       <ul>
         {notes.map((x, idx) => (
           <Note
+            selection={selection}
             version={version}
             key={`${idx}-${x.location}`}
             note={x}

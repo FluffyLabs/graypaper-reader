@@ -35,3 +35,8 @@
   margin-left: 3px;
   color: #444;
 }
+.notes .update.disabled {
+  text-decoration: none;
+  color: #ddd;
+  cursor: initial;
+}
