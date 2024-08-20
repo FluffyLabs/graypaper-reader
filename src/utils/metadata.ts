@@ -53,5 +53,9 @@ export function getLatestVersion(metadata: Metadata) {
 }
 
 export function grayPaperUrl(version: string) {
-  return `${METADATA_HOST}/graypaper-${version}.html`;
+  return `${METADATA_HOST}/graypaper-${version}.pdf`;
+}
+
+export function synctexUrl(version: string) {
+  return `${METADATA_HOST}/graypaper-${version}.synctex.json`;
 }

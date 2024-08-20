@@ -6,7 +6,9 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import { IframeController } from "./utils/IframeController";
-import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl } from "./utils/metadata";
+import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl } from "./utils/metadata";
+import { PdfViewer } from "./components/PdfViewer/PdfViewer";
+import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 
 export function App() {
   const [metadata, setMetadata] = useState<Metadata | null>(null);
@@ -21,7 +23,6 @@ export function App() {
 }
 
 function InnerApp({ metadata }: { metadata: Metadata }) {
-  const frame = useRef<HTMLIFrameElement>(null);
   const [loadedFrame, setLoadedFrame] = useState<IframeController | null>(null);
   const [version, setVersion] = useState(getInitialVersion(metadata));
   const browserZoom = useBrowserZoom();
@@ -33,32 +34,19 @@ function InnerApp({ metadata }: { metadata: Metadata }) {
       }
       setVersion(v);
     },
-    [version],
+    [version]
   );
-
-  const onIframeLoad = useCallback(() => {
-    const $frame = frame.current;
-    const win = $frame?.contentWindow;
-    if (win?.document.readyState === "complete") {
-      setLoadedFrame(new IframeController(win, version));
-    }
-  }, [version]);
 
   return (
     <Resizable
       left={
-        <>
+        <CodeSyncProvider synctexUrl={synctexUrl(version)}>
           <Banner />
           {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
-          <iframe
-            className={loadedFrame ? "visible" : ""}
-            title="Gray Paper"
-            name="gp"
-            ref={frame}
-            src={grayPaperUrl(version)}
-            onLoad={onIframeLoad}
-          />
-        </>
+          <div className="pdf-viewer-container">
+            <PdfViewer pdfUrl={grayPaperUrl(version)} />
+          </div>
+        </CodeSyncProvider>
       }
       right={
         <>
