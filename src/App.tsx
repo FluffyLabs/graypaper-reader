@@ -18,6 +18,7 @@ import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { type Metadata, Version } from "./components/Version/Version";
 import { getLatestVersion } from "./components/Version/util";
 import { deserializeLocation } from "./utils/location";
+import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 
 export function App() {
   // const frame = useRef(null as HTMLIFrameElement | null);
@@ -31,15 +32,15 @@ export function App() {
   }, [version]);
 
   return (
-    <>
+    <CodeSyncProvider synctexUrl={synctexUrl}>
       {/* {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />} */}
       <div className="pdf-viewer-container">
-        <PdfViewer pdfUrl={pdfUrl} synctexUrl={synctexUrl} />
+        <PdfViewer pdfUrl={pdfUrl} />
       </div>
       <Banner />
       <div id="js-debug" style={{ display: "none", position: "absolute", backgroundColor: "#f00" }} />
       {<Viewer selectedVersion={version} onVersionChange={setVersion} />}
-    </>
+    </CodeSyncProvider>
   );
 }
 

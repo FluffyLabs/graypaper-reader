@@ -34,7 +34,7 @@ function synctexToObject(synctex) {
     matches = lines[i].match(VERTICAL_BLOCK_PATTERN) || lines[i].match(HORIZONTAL_BLOCK_PATTERN);
     if (matches) {
       result.pages[currentPage].push({
-        file: Number.parseInt(matches[1]),
+        fileId: Number.parseInt(matches[1]),
         line: Number.parseInt(matches[2]),
         left: Number.parseInt(matches[3]),
         top: Number.parseInt(matches[4]),

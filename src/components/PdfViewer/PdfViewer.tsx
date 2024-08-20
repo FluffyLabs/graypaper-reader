@@ -1,66 +1,58 @@
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./PdfViewer.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
+import { NoteRenderer } from "../NoteRenderer/NoteRenderer";
+import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import type { MouseEventHandler } from "react";
+import type { TAnyNote } from "../NoteRenderer/NoteRenderer";
+import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+
+const MOCK_NOTES: TAnyNote[] = [
+  {
+    content: "free-floating note",
+    date: 1724146563065,
+    author: "Sebastian",
+    pageNumber: 1,
+    left: 0.6666666,
+    top: 0.5,
+  },
+  {
+    content: "highlight note",
+    date: 1724146564017,
+    author: "Sebastian",
+    pageNumber: 1,
+    line: 16,
+    fileId: 184,
+  },
+  {
+    content: "highlight note 2",
+    date: 1724146564681,
+    author: "Sebastian",
+    pageNumber: 1,
+    line: 8,
+    fileId: 184,
+  },
+];
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
 
 pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
+
 interface PdfViewerProps {
   pdfUrl: string;
-  synctexUrl: string;
 }
 
-interface TextLayerReneredEventPayload {
-  source: pdfJsViewer.PDFPageView;
-  pageNumber: number;
-  error: Error;
-}
-
-interface SynctexBlock {
-  file: number;
-  line: number;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
-
-interface SynctexData {
-  files: {
-    [key: string]: string;
-  };
-  pages: {
-    [key: string]: SynctexBlock[];
-  };
-}
-
-export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
+export function PdfViewer({ pdfUrl }: PdfViewerProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pdfJsViewerInstance, setPdfJsViewerInstance] = useState<pdfJsViewer.PDFViewer>();
-  const [synctexData, setSynctexData] = useState<SynctexData>();
+  const { getSourceLocationByCoordinates } = useContext(CodeSyncContext) as ICodeSyncContext;
 
   const handleRootRef = useCallback((element: HTMLDivElement) => {
     setRootElement(element);
   }, []);
-
-  useEffect(() => {
-    async function loadSynctex() {
-      try {
-        const response = await fetch(synctexUrl);
-        const fromJson = (await response.json()) as SynctexData;
-        setSynctexData(fromJson);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    if (synctexUrl) {
-      loadSynctex();
-    }
-  }, [synctexUrl]);
 
   useEffect(() => {
     async function loadPdf() {
@@ -116,93 +108,36 @@ export function PdfViewer({ pdfUrl, synctexUrl }: PdfViewerProps) {
     }
   }, [pdfUrl, rootElement]);
 
-  useEffect(() => {
-    if (pdfJsViewerInstance && synctexData) {
-      const handleTextLayerRendered = (textLayer: TextLayerReneredEventPayload) => {
-        // handle both versions for backwards-compatibility
-        const textLayerDiv = textLayer.source.textLayer?.div;
+  const handleDoubleClick = useCallback<MouseEventHandler<HTMLElement>>(
+    (event) => {
+      const pageElement = (event.target as HTMLElement).closest(".page") as HTMLElement;
+      if (!pageElement || !pageElement.dataset.pageNumber) return;
 
-        if (textLayerDiv && textLayerDiv.dataset.listeningForDoubleClick !== "true") {
-          textLayerDiv.dataset.listeningForDoubleClick = "true";
+      const pageNumber = Number.parseInt(pageElement.dataset.pageNumber);
 
-          const doubleClickListener = (event: MouseEvent) => {
-            const pageCanvas = textLayerDiv.closest(".page")?.querySelector("canvas");
+      const pageCanvas = pageElement.querySelector("canvas");
+      if (!pageCanvas) return;
 
-            if (!pageCanvas) return;
+      const pageBoundingRect = pageCanvas.getBoundingClientRect();
 
-            const pageBoundingRect = pageCanvas.getBoundingClientRect();
+      const left = (event.clientX - pageBoundingRect.left) / pageBoundingRect.width;
+      const top = (event.clientY - pageBoundingRect.top) / pageBoundingRect.height;
 
-            if (pageBoundingRect) {
-              const pageX = event.clientX - pageBoundingRect.left;
-              const pageY = event.clientY - pageBoundingRect.top;
+      const synctexFound = getSourceLocationByCoordinates(left, top, pageNumber);
 
-              const mmToInch = 0.0393701;
-              const ppi = 72.27;
-              const ptToTexUnit = 65536;
-              const documentWidthMm = 210;
-              const documentHeightMm = 297;
-
-              const documentWidthInch = mmToInch * documentWidthMm;
-              const documentHeightInch = mmToInch * documentHeightMm;
-
-              const documentWidthTexUnit = documentWidthInch * ppi * ptToTexUnit;
-              const documentHeightTexUnit = documentHeightInch * ppi * ptToTexUnit;
-
-              const pageXTexUnit = (pageX / pageBoundingRect.width) * documentWidthTexUnit;
-              const pageYTexUnit = (pageY / pageBoundingRect.height) * documentHeightTexUnit;
-
-              const blocksInCurrPage = synctexData.pages[textLayer.pageNumber];
-
-              let lastMatch: SynctexBlock | null = null;
-
-              for (let i = 0; i < blocksInCurrPage.length; i++) {
-                const currBlock = blocksInCurrPage[i];
-                if (
-                  pageXTexUnit >= currBlock.left &&
-                  pageXTexUnit <= currBlock.left + currBlock.width &&
-                  pageYTexUnit >= currBlock.top - currBlock.height &&
-                  pageYTexUnit <= currBlock.top
-                ) {
-                  lastMatch = currBlock;
-                }
-              }
-
-              if (lastMatch) {
-                console.log(synctexData.files[lastMatch.file], lastMatch.line);
-                const debugElement = document.getElementById("js-debug");
-
-                if (debugElement) {
-                  Object.assign(debugElement.style, {
-                    display: "block",
-                    left: `${
-                      (lastMatch.left / documentWidthTexUnit) * pageBoundingRect.width + pageBoundingRect.left
-                    }px`,
-                    top: `${
-                      ((lastMatch.top - lastMatch.height) / documentHeightTexUnit) * pageBoundingRect.height +
-                      pageBoundingRect.top
-                    }px`,
-                    width: `${(lastMatch.width / documentWidthTexUnit) * pageBoundingRect.width}px`,
-                    height: `${(lastMatch.height / documentHeightTexUnit) * pageBoundingRect.height}px`,
-                  });
-                  setTimeout(() => {
-                    debugElement.style.display = "none";
-                  }, 5000);
-                }
-              }
-            }
-          };
-
-          textLayerDiv.addEventListener("dblclick", doubleClickListener);
-        }
-      };
-
-      pdfJsViewerInstance.eventBus.on("textlayerrendered", handleTextLayerRendered);
-    }
-  }, [pdfJsViewerInstance, synctexData]);
+      if (synctexFound) {
+        console.log(synctexFound.fileId, synctexFound.line);
+      }
+    },
+    [getSourceLocationByCoordinates]
+  );
 
   return (
-    <div ref={handleRootRef} className="pdf-viewer-root">
+    <div ref={handleRootRef} className="pdf-viewer-root" onDoubleClick={handleDoubleClick}>
       <div className="pdfViewer" />
+      {pdfJsViewerInstance && rootElement && (
+        <NoteRenderer notes={MOCK_NOTES} pdfJsViewerInstance={pdfJsViewerInstance} viewerRoot={rootElement} />
+      )}
     </div>
   );
 }

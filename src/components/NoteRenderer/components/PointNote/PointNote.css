@@ -1,0 +1,8 @@
+.point-note {
+  position: absolute;
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 10px;
+  max-width: 300px;
+}
