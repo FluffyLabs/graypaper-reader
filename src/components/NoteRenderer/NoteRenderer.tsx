@@ -5,9 +5,27 @@ import { useThrottle } from "../../hooks/useThrottle";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import type { TAnyNote } from "../NoteManager/NoteManager";
 
 const SCROLL_THROTTLE_DELAY_MS = 100;
+
+export interface INote {
+  content: string;
+  date: number;
+  author: string;
+  pageNumber: number;
+}
+
+export interface IPointNote extends INote {
+  left: number;
+  top: number;
+}
+
+export interface IHighlightNote extends INote {
+  line: number;
+  fileId: number;
+}
+
+export type TAnyNote = IPointNote | IHighlightNote;
 
 export interface IPageOffset {
   left: number;
