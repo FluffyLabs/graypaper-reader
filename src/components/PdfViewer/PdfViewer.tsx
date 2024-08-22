@@ -98,7 +98,7 @@ export function PdfViewer() {
         console.log(sourceLocation.fileId, sourceLocation.line);
       }
     },
-    [getSourceLocationByCoordinates]
+    [getSourceLocationByCoordinates],
   );
 
   return (
