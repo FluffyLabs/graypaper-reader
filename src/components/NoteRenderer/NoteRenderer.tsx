@@ -5,6 +5,7 @@ import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { PointNote } from "./components/PointNote/PointNote";
+import { IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 const SCROLL_THROTTLE_DELAY_MS = 100;
 
@@ -54,6 +55,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const viewerRootEventHandlerRef = useRef<() => void>();
   const { getCoordinatesBySourceLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const { eventBus } = useContext(PdfContext) as IPdfContext;
 
   const handleViewChanged = useThrottle(() => {
     const visiblePagesAfterEvent: number[] = [];
@@ -65,7 +67,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
@@ -86,9 +88,15 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
     };
   }, [viewerRoot, handleViewChanged]);
 
+  useEffect(() => {
+    eventBus.on("pagesloaded", () => {
+      viewerRoot.dispatchEvent(new CustomEvent("scroll"));
+    });
+  }, [viewerRoot, eventBus]);
+
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages],
+    [notes, visiblePages]
   );
 
   return notesToRender.map((note) => {

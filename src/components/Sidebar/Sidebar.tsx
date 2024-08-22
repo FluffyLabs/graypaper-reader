@@ -17,19 +17,19 @@ type SidebarProps = {
   zoom: number;
 };
 
-export type TOutline = Awaited<ReturnType<IPdfContext["document"]["getOutline"]>>;
+export type TOutline = Awaited<ReturnType<IPdfContext["pdfDocument"]["getOutline"]>>;
 
 export function Sidebar({ metadata, onVersionChange, selectedVersion, zoom }: SidebarProps) {
   // const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   // const [selection, setSelection] = useState(null as InDocSelection | null);
   const [outline, setOutline] = useState<TOutline>([]);
   const [tab, setTab] = useState(loadActiveTab());
-  const { document } = useContext(PdfContext) as IPdfContext;
+  const { pdfDocument } = useContext(PdfContext) as IPdfContext;
 
   // perform one-time operations.
   useEffect(() => {
-    document.getOutline().then((outline) => setOutline(outline));
-  }, [document]);
+    pdfDocument.getOutline().then((outline) => setOutline(outline));
+  }, [pdfDocument]);
 
   // maintain location within document
   // useEffect(() => {

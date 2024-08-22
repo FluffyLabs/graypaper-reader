@@ -14,7 +14,7 @@ export interface IPdfContext {
   eventBus: pdfJsViewer.EventBus;
   linkService: pdfJsViewer.PDFLinkService;
   findController: pdfJsViewer.PDFFindController;
-  document: pdfJs.PDFDocumentProxy;
+  pdfDocument: pdfJs.PDFDocumentProxy;
 }
 
 interface IPdfProviderProps {
@@ -38,19 +38,19 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
         linkService,
       });
 
-      const document = await pdfJs.getDocument({
+      const pdfDocument = await pdfJs.getDocument({
         url: pdfUrl,
         cMapUrl: CMAP_URL,
         cMapPacked: CMAP_PACKED,
       }).promise;
 
-      linkService.setDocument(document, null);
+      linkService.setDocument(pdfDocument, null);
 
       setContext({
         eventBus,
         linkService,
         findController,
-        document,
+        pdfDocument,
       });
     }
 

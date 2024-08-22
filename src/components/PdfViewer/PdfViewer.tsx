@@ -42,7 +42,7 @@ export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pdfJsViewerInstance, setPdfJsViewerInstance] = useState<pdfJsViewer.PDFViewer>();
   const { getSourceLocationByCoordinates } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const { eventBus, linkService, findController, document } = useContext(PdfContext) as IPdfContext;
+  const { eventBus, linkService, findController, pdfDocument } = useContext(PdfContext) as IPdfContext;
 
   const handleRootRef = useCallback((element: HTMLDivElement) => {
     setRootElement(element);
@@ -52,7 +52,10 @@ export function PdfViewer() {
     async function loadViewer() {
       if (!rootElement) return;
 
-      rootElement.innerHTML = '<div class="pdfViewer"></div>';
+      rootElement.innerHTML = "";
+      const viewerContainer = document.createElement("div");
+      viewerContainer.classList.add("pdfViewer");
+      rootElement.appendChild(viewerContainer);
 
       const pdfViewer = new pdfJsViewer.PDFViewer({
         container: rootElement,
@@ -66,13 +69,13 @@ export function PdfViewer() {
 
       linkService.setViewer(pdfViewer);
 
-      pdfViewer.setDocument(document);
+      pdfViewer.setDocument(pdfDocument);
     }
 
     if (rootElement) {
       loadViewer();
     }
-  }, [rootElement, eventBus, linkService, findController, document]);
+  }, [rootElement, eventBus, linkService, findController, pdfDocument]);
 
   const handleDoubleClick = useCallback<MouseEventHandler<HTMLElement>>(
     (event) => {
@@ -95,7 +98,7 @@ export function PdfViewer() {
         console.log(sourceLocation.fileId, sourceLocation.line);
       }
     },
-    [getSourceLocationByCoordinates],
+    [getSourceLocationByCoordinates]
   );
 
   return (
