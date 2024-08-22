@@ -1,7 +1,7 @@
 import "./HighlightNote.css";
-import type { IHighlightNote, IPageOffset } from "../../NoteRenderer";
-import type { ISynctexBlock } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { useState } from "react";
+import type { ISynctexBlock } from "../../../CodeSyncProvider/CodeSyncProvider";
+import type { IHighlightNote, IPageOffset } from "../../NoteRenderer";
 
 interface HighlightNoteProps {
   note: IHighlightNote;

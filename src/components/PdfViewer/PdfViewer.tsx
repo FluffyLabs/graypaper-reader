@@ -1,13 +1,13 @@
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./PdfViewer.css";
-import { useCallback, useContext, useEffect, useState } from "react";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
-import { NoteRenderer } from "../NoteRenderer/NoteRenderer";
-import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import { PdfContext } from "../PdfProvider/PdfProvider";
+import { useCallback, useContext, useEffect, useState } from "react";
 import type { MouseEventHandler } from "react";
-import type { TAnyNote } from "../NoteRenderer/NoteRenderer";
+import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { NoteRenderer } from "../NoteRenderer/NoteRenderer";
+import type { TAnyNote } from "../NoteRenderer/NoteRenderer";
+import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
 
 const MOCK_NOTES: TAnyNote[] = [
@@ -95,7 +95,7 @@ export function PdfViewer() {
         console.log(sourceLocation.fileId, sourceLocation.line);
       }
     },
-    [getSourceLocationByCoordinates]
+    [getSourceLocationByCoordinates],
   );
 
   return (

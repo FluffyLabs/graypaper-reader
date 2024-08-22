@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 
+import { Banner } from "./components/Banner/Banner";
+import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
-import { Banner } from "./components/Banner/Banner";
 import { Resizable } from "./components/Resizable/Resizable";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
-import { IframeController } from "./utils/IframeController";
-import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl, codeUrl } from "./utils/metadata";
-import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
+import type { IframeController } from "./utils/IframeController";
+import { type Metadata, codeUrl, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl } from "./utils/metadata";
 
 export function App() {
   const [metadata, setMetadata] = useState<Metadata | null>(null);
@@ -35,7 +35,7 @@ function InnerApp({ metadata }: { metadata: Metadata }) {
       }
       setVersion(v);
     },
-    [version]
+    [version],
   );
 
   return (

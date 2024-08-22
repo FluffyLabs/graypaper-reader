@@ -1,10 +1,10 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { PointNote } from "./components/PointNote/PointNote";
 import type { PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useThrottle } from "../../hooks/useThrottle";
-import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { HighlightNote } from "./components/HighlightNote/HighlightNote";
+import { PointNote } from "./components/PointNote/PointNote";
 
 const SCROLL_THROTTLE_DELAY_MS = 100;
 
@@ -65,7 +65,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
@@ -88,7 +88,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
 
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages]
+    [notes, visiblePages],
   );
 
   return notesToRender.map((note) => {

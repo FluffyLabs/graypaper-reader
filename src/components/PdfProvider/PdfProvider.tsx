@@ -57,11 +57,6 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     if (pdfUrl) {
       setupPdfServices();
     }
-
-    return () => {
-      context?.document.destroy();
-      setContext(null);
-    };
   }, [pdfUrl]);
 
   if (!context) return <div>Loading...</div>;

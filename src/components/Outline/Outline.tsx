@@ -1,8 +1,8 @@
 import "./Outline.css";
 import { type ReactNode, useCallback, useContext } from "react";
 import { PdfContext } from "../PdfProvider/PdfProvider";
-import type { TOutline } from "../Sidebar/Sidebar";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import type { TOutline } from "../Sidebar/Sidebar";
 
 type IOutlineProps = {
   outline: TOutline;

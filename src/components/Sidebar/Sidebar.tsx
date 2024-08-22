@@ -4,11 +4,11 @@ import { useContext, useEffect, useState } from "react";
 import type { Metadata } from "../../utils/metadata";
 // import { Notes } from "../Notes/Notes";
 import { Outline } from "../Outline/Outline";
+import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import { PdfContext } from "../PdfProvider/PdfProvider";
 // import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
-import type { IPdfContext } from "../PdfProvider/PdfProvider";
-import { PdfContext } from "../PdfProvider/PdfProvider";
 
 type SidebarProps = {
   metadata: Metadata;
