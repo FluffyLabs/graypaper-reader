@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 
+import { PdfProvider } from "./components/PdfProvider/PdfProvider";
+import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { Banner } from "./components/Banner/Banner";
 import { Resizable } from "./components/Resizable/Resizable";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import { IframeController } from "./utils/IframeController";
-import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl } from "./utils/metadata";
-import { PdfViewer } from "./components/PdfViewer/PdfViewer";
+import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl, codeUrl } from "./utils/metadata";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 
 export function App() {
@@ -38,30 +39,24 @@ function InnerApp({ metadata }: { metadata: Metadata }) {
   );
 
   return (
-    <Resizable
-      left={
-        <CodeSyncProvider synctexUrl={synctexUrl(version)}>
-          <Banner />
-          {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
-          <div className="pdf-viewer-container">
-            <PdfViewer pdfUrl={grayPaperUrl(version)} />
-          </div>
-        </CodeSyncProvider>
-      }
-      right={
-        <>
-          {loadedFrame && (
-            <Sidebar
-              metadata={metadata}
-              selectedVersion={version}
-              onVersionChange={onSetVersion}
-              iframeCtrl={loadedFrame}
-              zoom={browserZoom}
-            />
-          )}
-        </>
-      }
-    />
+    <PdfProvider pdfUrl={grayPaperUrl(version)}>
+      <CodeSyncProvider synctexUrl={synctexUrl(version)} codeUrl={codeUrl(version)}>
+        <Resizable
+          left={
+            <>
+              <Banner />
+              {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
+              <div className="pdf-viewer-container">
+                <PdfViewer />
+              </div>
+            </>
+          }
+          right={
+            <Sidebar metadata={metadata} selectedVersion={version} onVersionChange={onSetVersion} zoom={browserZoom} />
+          }
+        />
+      </CodeSyncProvider>
+    </PdfProvider>
   );
 }
 

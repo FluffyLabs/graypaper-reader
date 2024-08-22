@@ -1,6 +1,6 @@
 import "./Sidebar.css";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import type {
   IframeController,
   InDocLocation,
@@ -13,6 +13,10 @@ import { Outline } from "../Outline/Outline";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
+import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ICodeSyncContext, IOutlineEntry } from "../CodeSyncProvider/CodeSyncProvider";
+import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import { PdfContext } from "../PdfProvider/PdfProvider";
 
 type SidebarProps = {
   iframeCtrl: IframeController;
@@ -22,65 +26,65 @@ type SidebarProps = {
   zoom: number;
 };
 
-export function Sidebar({ iframeCtrl, metadata, onVersionChange, selectedVersion, zoom }: SidebarProps) {
+export type TOutline = Awaited<ReturnType<IPdfContext["document"]["getOutline"]>>;
+
+export function Sidebar({ metadata, onVersionChange, selectedVersion, zoom }: SidebarProps) {
   const [location, setLocation] = useState({ page: "0" } as InDocLocation);
   const [selection, setSelection] = useState(null as InDocSelection | null);
-  const [outline, setOutline] = useState([] as OutlineType);
+  const [outline, setOutline] = useState<TOutline>([]);
   const [tab, setTab] = useState(loadActiveTab());
+  const { document } = useContext(PdfContext) as IPdfContext;
 
   // perform one-time operations.
   useEffect(() => {
-    setOutline(iframeCtrl.getOutline());
+    document.getOutline().then((outline) => setOutline(outline));
+  }, [document]);
 
-    iframeCtrl.injectStyles();
-  }, [iframeCtrl]);
+  console.log(outline);
 
   // maintain location within document
-  useEffect(() => {
-    return iframeCtrl.trackMouseLocation((loc, sel) => {
-      setLocation(loc);
-      setSelection(sel);
-    });
-  }, [iframeCtrl]);
+  // useEffect(() => {
+  //   return iframeCtrl.trackMouseLocation((loc, sel) => {
+  //     setLocation(loc);
+  //     setSelection(sel);
+  //   });
+  // }, [iframeCtrl]);
 
   // react to changes in hash location
-  useEffect(() => {
-    const listener = (ev: HashChangeEvent) => {
-      const [, shortVersion] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
-      const versionToSelect = findVersion(shortVersion, metadata);
-      if (versionToSelect) {
-        onVersionChange(versionToSelect);
-      }
-    };
-    // read current hash
-    const [cleanup, shortVersion] = iframeCtrl.goToLocation(window.location.hash);
-    const versionToSelect = findVersion(shortVersion, metadata);
-    if (versionToSelect) {
-      onVersionChange(versionToSelect);
-    }
-    setSelection(iframeCtrl.getSelection());
+  // useEffect(() => {
+  //   const listener = (ev: HashChangeEvent) => {
+  //     const [, shortVersion] = iframeCtrl.goToLocation(`#${ev.newURL.split("#")[1]}`);
+  //     const versionToSelect = findVersion(shortVersion, metadata);
+  //     if (versionToSelect) {
+  //       onVersionChange(versionToSelect);
+  //     }
+  //   };
+  //   // read current hash
+  //   const [cleanup, shortVersion] = iframeCtrl.goToLocation(window.location.hash);
+  //   const versionToSelect = findVersion(shortVersion, metadata);
+  //   if (versionToSelect) {
+  //     onVersionChange(versionToSelect);
+  //   }
+  //   setSelection(iframeCtrl.getSelection());
 
-    // react to hash changes
-    window.addEventListener("hashchange", listener);
-    return () => {
-      window.removeEventListener("hashchange", listener);
-      if (cleanup) {
-        cleanup();
-      }
-    };
-  }, [iframeCtrl, onVersionChange, metadata]);
+  //   // react to hash changes
+  //   window.addEventListener("hashchange", listener);
+  //   return () => {
+  //     window.removeEventListener("hashchange", listener);
+  //     if (cleanup) {
+  //       cleanup();
+  //     }
+  //   };
+  // }, [iframeCtrl, onVersionChange, metadata]);
 
   // store seletected tab in LS
   useEffect(() => {
     storeActiveTab(tab);
   }, [tab]);
 
-  const jumpTo = useCallback(
-    (id: string) => {
-      iframeCtrl.jumpTo(id);
-    },
-    [iframeCtrl],
-  );
+  const jumpTo = useCallback((id: string) => {
+    // iframeCtrl.jumpTo(id);
+  }, []);
 
   return (
     <div className="sidebar">
@@ -108,7 +112,7 @@ function tabsContent(
   location: InDocLocation,
   jumpTo: (id: string) => void,
   selection: InDocSelection | null,
-  version: string,
+  version: string
 ) {
   return [
     {

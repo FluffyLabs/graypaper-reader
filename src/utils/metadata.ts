@@ -4,7 +4,7 @@ import { deserializeLocation } from "../utils/location";
 // need to use postMessage and inject some script to the hosted website
 // or figure out how to deploy both at the same origin.
 //const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "https://gp.fluffylabs.dev";
-const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "";
+const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 
 export type VersionInfo = {
@@ -58,4 +58,8 @@ export function grayPaperUrl(version: string) {
 
 export function synctexUrl(version: string) {
   return `${METADATA_HOST}/graypaper-${version}.synctex.json`;
+}
+
+export function codeUrl(version: string) {
+  return `${METADATA_HOST}/tex-${version}/`;
 }

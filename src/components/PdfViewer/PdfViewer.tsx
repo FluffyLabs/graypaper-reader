@@ -1,13 +1,14 @@
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./PdfViewer.css";
 import { useCallback, useContext, useEffect, useState } from "react";
-import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { NoteRenderer } from "../NoteRenderer/NoteRenderer";
 import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { MouseEventHandler } from "react";
 import type { TAnyNote } from "../NoteRenderer/NoteRenderer";
 import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import type { IPdfContext } from "../PdfProvider/PdfProvider";
 
 const MOCK_NOTES: TAnyNote[] = [
   {
@@ -35,78 +36,43 @@ const MOCK_NOTES: TAnyNote[] = [
     fileId: 188,
   },
 ];
+const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
 
-const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
-const CMAP_PACKED = true;
-
-pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
-
-interface PdfViewerProps {
-  pdfUrl: string;
-}
-
-export function PdfViewer({ pdfUrl }: PdfViewerProps) {
+export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pdfJsViewerInstance, setPdfJsViewerInstance] = useState<pdfJsViewer.PDFViewer>();
   const { getSourceLocationByCoordinates } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const { eventBus, linkService, findController, document } = useContext(PdfContext) as IPdfContext;
 
   const handleRootRef = useCallback((element: HTMLDivElement) => {
     setRootElement(element);
   }, []);
 
   useEffect(() => {
-    async function loadPdf() {
+    async function loadViewer() {
       if (!rootElement) return;
 
-      const eventBus = new pdfJsViewer.EventBus();
-
-      // (Optionally) enable hyperlinks within PDF files.
-      const pdfLinkService = new pdfJsViewer.PDFLinkService({
-        eventBus,
-      });
-
-      // (Optionally) enable find controller.
-      const pdfFindController = new pdfJsViewer.PDFFindController({
-        eventBus,
-        linkService: pdfLinkService,
-      });
+      rootElement.innerHTML = '<div class="pdfViewer"></div>';
 
       const pdfViewer = new pdfJsViewer.PDFViewer({
         container: rootElement,
         eventBus,
-        linkService: pdfLinkService,
-        findController: pdfFindController,
-        imageResourcesPath: "pdf-viewer-images/",
+        linkService,
+        findController,
+        imageResourcesPath: IMAGE_RESOURCES_PATH,
       });
 
       setPdfJsViewerInstance(pdfViewer);
 
-      pdfLinkService.setViewer(pdfViewer);
+      linkService.setViewer(pdfViewer);
 
-      eventBus.on("pagesinit", () => {
-        // We can use pdfViewer now, e.g. let's change default scale.
-        pdfViewer.currentScaleValue = "1.2";
-      });
-
-      // Loading document.
-      const loadingTask = pdfJs.getDocument({
-        url: pdfUrl,
-        cMapUrl: CMAP_URL,
-        cMapPacked: CMAP_PACKED,
-      });
-
-      const pdfDocument = await loadingTask.promise;
-      // Document loaded, specifying document for the viewer and
-      // the (optional) linkService.
-      pdfViewer.setDocument(pdfDocument);
-
-      pdfLinkService.setDocument(pdfDocument, null);
+      pdfViewer.setDocument(document);
     }
 
-    if (pdfUrl && rootElement) {
-      loadPdf();
+    if (rootElement) {
+      loadViewer();
     }
-  }, [pdfUrl, rootElement]);
+  }, [rootElement, eventBus, linkService, findController, document]);
 
   const handleDoubleClick = useCallback<MouseEventHandler<HTMLElement>>(
     (event) => {
@@ -123,10 +89,10 @@ export function PdfViewer({ pdfUrl }: PdfViewerProps) {
       const left = (event.clientX - pageBoundingRect.left) / pageBoundingRect.width;
       const top = (event.clientY - pageBoundingRect.top) / pageBoundingRect.height;
 
-      const synctexFound = getSourceLocationByCoordinates(left, top, pageNumber);
+      const sourceLocation = getSourceLocationByCoordinates(left, top, pageNumber);
 
-      if (synctexFound) {
-        console.log(synctexFound.fileId, synctexFound.line);
+      if (sourceLocation) {
+        console.log(sourceLocation.fileId, sourceLocation.line);
       }
     },
     [getSourceLocationByCoordinates]
@@ -134,7 +100,6 @@ export function PdfViewer({ pdfUrl }: PdfViewerProps) {
 
   return (
     <div ref={handleRootRef} className="pdf-viewer-root" onDoubleClick={handleDoubleClick}>
-      <div className="pdfViewer" />
       {pdfJsViewerInstance && rootElement && (
         <NoteRenderer notes={MOCK_NOTES} pdfJsViewerInstance={pdfJsViewerInstance} viewerRoot={rootElement} />
       )}
