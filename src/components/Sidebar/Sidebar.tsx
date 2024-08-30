@@ -9,6 +9,7 @@ import { PdfContext } from "../PdfProvider/PdfProvider";
 // import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
+import { NoteManager } from "../NoteManager/NoteManager";
 
 type SidebarProps = {
   metadata: Metadata;
@@ -71,6 +72,17 @@ export function Sidebar({ metadata, onVersionChange, selectedVersion, zoom }: Si
     storeActiveTab(tab);
   }, [tab]);
 
+  const tabs = [
+    {
+      name: "outline",
+      render: () => <Outline outline={outline} />,
+    },
+    {
+      name: "notes",
+      render: () => <NoteManager version={selectedVersion} />,
+    },
+  ];
+
   return (
     <div className="sidebar">
       <div className="content no-zoom" style={{ height: `${100 * zoom}%`, width: `${100 * zoom}` }}>
@@ -81,24 +93,11 @@ export function Sidebar({ metadata, onVersionChange, selectedVersion, zoom }: Si
           activeTab={tab}
           switchTab={setTab}
         /> */}
-        <Tabs tabs={tabsContent(outline)} activeTab={tab} switchTab={setTab} />
+        <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} />
         <Version onChange={onVersionChange} metadata={metadata} selectedVersion={selectedVersion} />
       </div>
     </div>
   );
-}
-
-function tabsContent(outline: TOutline) {
-  return [
-    {
-      name: "outline",
-      render: () => <Outline outline={outline} />,
-    },
-    // {
-    //   name: "notes",
-    //   render: () => <Notes version={version} selection={selection} />,
-    // },
-  ];
 }
 
 function storeActiveTab(tab: string) {

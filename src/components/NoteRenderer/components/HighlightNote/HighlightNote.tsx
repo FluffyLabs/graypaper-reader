@@ -1,12 +1,13 @@
 import "./HighlightNote.css";
 import { useState } from "react";
-import type { ISynctexBlock } from "../../../CodeSyncProvider/CodeSyncProvider";
-import type { IHighlightNote, IPageOffset } from "../../NoteRenderer";
+import type { ICodeSyncContext, ISynctexBlock } from "../../../CodeSyncProvider/CodeSyncProvider";
+import { IHighlightNote } from "../../../NotesProvider/NotesProvider";
+import { IElementOffset } from "../../../../utils/subtractBorder";
 
 interface HighlightNoteProps {
   note: IHighlightNote;
   coordinates: ISynctexBlock[];
-  pageOffset: IPageOffset;
+  pageOffset: IElementOffset;
 }
 
 export function HighlightNote({ note, coordinates, pageOffset }: HighlightNoteProps) {
@@ -27,7 +28,7 @@ export function HighlightNote({ note, coordinates, pageOffset }: HighlightNotePr
             width: `${pageOffset.width * marker.width}px`,
             height: `${pageOffset.height * marker.height}px`,
           }}
-          key={`${marker.left},${marker.top}`}
+          key={`${marker.id}`}
         />
       ))}
 

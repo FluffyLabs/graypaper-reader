@@ -1,41 +1,48 @@
-.notes .newNote {
+.debug {
+  position: absolute;
+  border: 2px solid #f00;
+  margin-top: -2px;
+  margin-left: -2px;
+}
+
+.note-manager .new-note {
   display: flex;
   flex-direction: column;
 }
-.notes textarea {
+.note-manager textarea {
   flex: 1;
   padding: 1rem;
 }
 
-.notes button.remove {
+.note-manager button.remove {
   color: #f22;
 }
 
-.notes blockquote {
+.note-manager blockquote {
   cursor: zoom-in;
   border: 1px solid transparent;
   padding: 0.5rem;
   margin: 0.5rem 0;
 }
 
-.notes blockquote:hover {
+.note-manager blockquote:hover {
   border: 1px solid #eee;
 }
 
-.notes .icon {
+.note-manager .icon {
   margin-right: 3px;
   color: #e22;
   background-color: lightyellow;
   padding: 2px;
 }
 
-.notes .update {
+.note-manager .update {
   text-decoration: underline;
   cursor: pointer;
   margin-left: 3px;
   color: #444;
 }
-.notes .update.disabled {
+.note-manager .update.disabled {
   text-decoration: none;
   color: #ddd;
   cursor: initial;

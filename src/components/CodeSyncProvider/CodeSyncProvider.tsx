@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 // import { useCodeStore } from "./hooks/useCodeStore";
 
 export interface ICodeSyncContext {
-  getSourceLocationByCoordinates(left: number, top: number, pageNumber: number): ISourceLocation | null;
-  getCoordinatesBySourceLocation(pageNumber: number, fileId: number, line: number): ISynctexBlock[];
+  getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
 }
 
 interface ISynctexData {
@@ -23,11 +22,7 @@ export interface ISynctexBlock {
   top: number;
   width: number;
   height: number;
-}
-
-interface ISourceLocation {
-  fileId: number;
-  line: number;
+  id: string;
 }
 
 interface ICodeSyncProviderProps {
@@ -35,10 +30,10 @@ interface ICodeSyncProviderProps {
   codeUrl: string;
   children: ReactNode;
 }
-
-const DOCUMENT_WIDTH_IN_SYNCTEX_UNITS = 39158297.17696512;
-const DOCUMENT_HEIGHT_IN_SYNCTEX_UNITS = 55381020.29313637;
 // const ENTRY_POINT_FILE_PATH = "graypaper.tex";
+
+const BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH = 0.00375;
+const BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_HEIGHT = 0.0025;
 
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
@@ -63,49 +58,32 @@ export function CodeSyncProvider({ synctexUrl, /* codeUrl, */ children }: ICodeS
   }, [synctexUrl]);
 
   const context: ICodeSyncContext = {
-    getSourceLocationByCoordinates(left, top, pageNumber) {
+    getSynctexBlockAtLocation(left, top, pageNumber) {
       if (!synctexData) return null;
-
-      const withinPageLeft = left * DOCUMENT_WIDTH_IN_SYNCTEX_UNITS;
-      const withinPageTop = top * DOCUMENT_HEIGHT_IN_SYNCTEX_UNITS;
 
       const blocksInCurrPage = synctexData.pages[pageNumber];
 
       let lastMatch: ISynctexBlock | null = null;
+      const matches = [];
 
       for (let i = 0; i < blocksInCurrPage.length; i++) {
         const currBlock = blocksInCurrPage[i];
         if (
-          withinPageLeft >= currBlock.left &&
-          withinPageLeft <= currBlock.left + currBlock.width &&
-          withinPageTop >= currBlock.top - currBlock.height &&
-          withinPageTop <= currBlock.top
+          left >= currBlock.left - BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
+          left <= currBlock.left + currBlock.width + BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
+          top >= currBlock.top - currBlock.height - BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_HEIGHT &&
+          top <= currBlock.top + BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_HEIGHT
         ) {
           lastMatch = currBlock;
+          matches.push(currBlock);
         }
       }
 
-      return lastMatch
-        ? {
-            fileId: lastMatch.fileId,
-            line: lastMatch.line,
-          }
-        : null;
-    },
-    getCoordinatesBySourceLocation(pageNumber, fileId, line) {
-      if (!synctexData) return [];
-
-      return synctexData.pages[pageNumber]
-        .filter((block) => block.fileId === fileId && block.line === line)
-        .map((block) => ({
-          ...block,
-          left: block.left / DOCUMENT_WIDTH_IN_SYNCTEX_UNITS,
-          top: block.top / DOCUMENT_HEIGHT_IN_SYNCTEX_UNITS,
-          width: block.width / DOCUMENT_WIDTH_IN_SYNCTEX_UNITS,
-          height: block.height / DOCUMENT_HEIGHT_IN_SYNCTEX_UNITS,
-        }));
+      return lastMatch || null;
     },
   };
+
+  document.getSynctexBlockAtLocation = context.getSynctexBlockAtLocation;
 
   return <CodeSyncContext.Provider value={context}>{children}</CodeSyncContext.Provider>;
 }

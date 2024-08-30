@@ -1,5 +1,6 @@
 import "./PointNote.css";
-import type { IPageOffset, IPointNote } from "../../NoteRenderer";
+import type { IPageOffset } from "../../NoteRenderer";
+import { IPointNote } from "../../../NotesProvider/NotesProvider";
 
 interface PointNoteProps {
   note: IPointNote;

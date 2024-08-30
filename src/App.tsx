@@ -10,6 +10,7 @@ import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import type { IframeController } from "./utils/IframeController";
 import { type Metadata, codeUrl, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl } from "./utils/metadata";
+import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 
 export function App() {
   const [metadata, setMetadata] = useState<Metadata | null>(null);
@@ -35,28 +36,35 @@ function InnerApp({ metadata }: { metadata: Metadata }) {
       }
       setVersion(v);
     },
-    [version],
+    [version]
   );
 
   return (
-    <PdfProvider pdfUrl={grayPaperUrl(version)}>
-      <CodeSyncProvider synctexUrl={synctexUrl(version)} codeUrl={codeUrl(version)}>
-        <Resizable
-          left={
-            <>
-              <Banner />
-              {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
-              <div className="pdf-viewer-container">
-                <PdfViewer />
-              </div>
-            </>
-          }
-          right={
-            <Sidebar metadata={metadata} selectedVersion={version} onVersionChange={onSetVersion} zoom={browserZoom} />
-          }
-        />
-      </CodeSyncProvider>
-    </PdfProvider>
+    <NotesProvider>
+      <PdfProvider pdfUrl={grayPaperUrl(version)}>
+        <CodeSyncProvider synctexUrl={synctexUrl(version)} codeUrl={codeUrl(version)}>
+          <Resizable
+            left={
+              <>
+                <Banner />
+                {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
+                <div className="pdf-viewer-container">
+                  <PdfViewer />
+                </div>
+              </>
+            }
+            right={
+              <Sidebar
+                metadata={metadata}
+                selectedVersion={version}
+                onVersionChange={onSetVersion}
+                zoom={browserZoom}
+              />
+            }
+          />
+        </CodeSyncProvider>
+      </PdfProvider>
+    </NotesProvider>
   );
 }
 

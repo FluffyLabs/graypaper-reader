@@ -6,34 +6,10 @@ import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { PointNote } from "./components/PointNote/PointNote";
+import { INotesContext, NotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
+import { subtractBorder } from "../../utils/subtractBorder";
 
 const SCROLL_THROTTLE_DELAY_MS = 100;
-
-export interface INote {
-  content: string;
-  date: number;
-  author: string;
-  pageNumber: number;
-}
-
-export interface IPointNote extends INote {
-  left: number;
-  top: number;
-}
-
-export interface IHighlightNote extends INote {
-  line: number;
-  fileId: number;
-}
-
-export type TAnyNote = IPointNote | IHighlightNote;
-
-export interface IPageOffset {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
 
 interface INoteRendererProps {
   notes: TAnyNote[];
@@ -51,11 +27,12 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
   );
 }
 
-export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRendererProps) {
+export function NoteRenderer({ pdfJsViewerInstance, viewerRoot }: INoteRendererProps) {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const viewerRootEventHandlerRef = useRef<() => void>();
-  const { getCoordinatesBySourceLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const { getCoordinatesAsFractionOfPageWidth } = useContext(CodeSyncContext) as ICodeSyncContext;
   const { eventBus } = useContext(PdfContext) as IPdfContext;
+  const { notes } = useContext(NotesContext) as INotesContext;
 
   const handleViewChanged = useThrottle(() => {
     const visiblePagesAfterEvent: number[] = [];
@@ -67,7 +44,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
@@ -96,7 +73,7 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
 
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages],
+    [notes, visiblePages]
   );
 
   return notesToRender.map((note) => {
@@ -104,20 +81,17 @@ export function NoteRenderer({ notes, pdfJsViewerInstance, viewerRoot }: INoteRe
 
     if (!pageElement) return null;
 
-    const pageElementBorderWidth = Number.parseInt(getComputedStyle(pageElement).getPropertyValue("border-width"));
-    const pageOffset: IPageOffset = {
-      left: pageElement.offsetLeft + pageElementBorderWidth,
-      top: pageElement.offsetTop + pageElementBorderWidth,
-      width: pageElement.offsetWidth - 2 * pageElementBorderWidth,
-      height: pageElement.offsetHeight - 2 * pageElementBorderWidth,
-    };
+    const pageOffset = subtractBorder(
+      new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
+      pageElement
+    );
 
     if ("left" in note && "top" in note) {
       return <PointNote note={note} pageOffset={pageOffset} key={note.date} />;
     }
 
-    if ("line" in note && "fileId" in note) {
-      const coordinates = getCoordinatesBySourceLocation(note.pageNumber, note.fileId, note.line);
+    if ("blocks" in note) {
+      const coordinates = note.blocks;
 
       if (!coordinates.length) return null;
 
