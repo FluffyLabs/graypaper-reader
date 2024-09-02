@@ -1,21 +1,12 @@
-import type { PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useThrottle } from "../../hooks/useThrottle";
-import { CodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import type { ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { subtractBorder } from "../../utils/subtractBorder";
+import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { PointNote } from "./components/PointNote/PointNote";
-import { INotesContext, NotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
-import { subtractBorder } from "../../utils/subtractBorder";
 
 const SCROLL_THROTTLE_DELAY_MS = 100;
-
-interface INoteRendererProps {
-  notes: TAnyNote[];
-  pdfJsViewerInstance: PDFViewer;
-  viewerRoot: HTMLDivElement;
-}
 
 function isPartlyInViewport({ top, bottom }: DOMRect) {
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -27,63 +18,71 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
   );
 }
 
-export function NoteRenderer({ pdfJsViewerInstance, viewerRoot }: INoteRendererProps) {
+export function NoteRenderer() {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const viewerRootEventHandlerRef = useRef<() => void>();
-  const { getCoordinatesAsFractionOfPageWidth } = useContext(CodeSyncContext) as ICodeSyncContext;
   const { eventBus } = useContext(PdfContext) as IPdfContext;
   const { notes } = useContext(NotesContext) as INotesContext;
+  const { viewer } = useContext(PdfContext) as IPdfContext;
 
   const handleViewChanged = useThrottle(() => {
+    if (!viewer) return;
+
     const visiblePagesAfterEvent: number[] = [];
 
-    for (let i = 0; i < pdfJsViewerInstance.pagesCount; i++) {
-      if (isPartlyInViewport(pdfJsViewerInstance.getPageView(i).div.getBoundingClientRect())) {
+    for (let i = 0; i < viewer.pagesCount; i++) {
+      if (isPartlyInViewport(viewer.getPageView(i).div.getBoundingClientRect())) {
         visiblePagesAfterEvent.push(i + 1); // using page numbers instead of indices
       }
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
   useEffect(() => {
-    if (viewerRoot) {
+    if (!viewer) return;
+
+    if (viewer.container) {
       if (viewerRootEventHandlerRef.current) {
-        viewerRoot.removeEventListener("scroll", viewerRootEventHandlerRef.current);
+        viewer.container.removeEventListener("scroll", viewerRootEventHandlerRef.current);
       }
 
-      viewerRoot.addEventListener("scroll", handleViewChanged);
+      viewer.container.addEventListener("scroll", handleViewChanged);
       viewerRootEventHandlerRef.current = handleViewChanged;
     }
 
     return () => {
       if (viewerRootEventHandlerRef.current) {
-        viewerRoot.removeEventListener("scroll", viewerRootEventHandlerRef.current);
+        viewer.container.removeEventListener("scroll", viewerRootEventHandlerRef.current);
       }
     };
-  }, [viewerRoot, handleViewChanged]);
+  }, [viewer, handleViewChanged]);
 
   useEffect(() => {
+    if (!viewer) return;
+
     eventBus.on("pagesloaded", () => {
-      viewerRoot.dispatchEvent(new CustomEvent("scroll"));
+      viewer.container.dispatchEvent(new CustomEvent("scroll"));
     });
-  }, [viewerRoot, eventBus]);
+  }, [viewer, eventBus]);
 
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages]
+    [notes, visiblePages],
   );
 
   return notesToRender.map((note) => {
-    const pageElement = pdfJsViewerInstance.getPageView(note.pageNumber - 1)?.div;
+    if (!viewer) return;
+
+    const pageElement = viewer.getPageView(note.pageNumber - 1)?.div;
 
     if (!pageElement) return null;
 
     const pageOffset = subtractBorder(
       new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement
+      pageElement,
     );
 
     if ("left" in note && "top" in note) {
@@ -91,11 +90,9 @@ export function NoteRenderer({ pdfJsViewerInstance, viewerRoot }: INoteRendererP
     }
 
     if ("blocks" in note) {
-      const coordinates = note.blocks;
+      if (!note.blocks.length) return null;
 
-      if (!coordinates.length) return null;
-
-      return <HighlightNote note={note} pageOffset={pageOffset} coordinates={coordinates} key={note.date} />;
+      return <HighlightNote note={note} pageOffset={pageOffset} key={note.date} />;
     }
 
     throw new Error("Unidentified note type.");

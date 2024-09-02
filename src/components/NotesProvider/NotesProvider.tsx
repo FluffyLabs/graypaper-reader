@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
+import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 
 const LOCAL_STORAGE_KEY = "notes";
 const HISTORY_STEPS_LIMIT = 10;
@@ -65,7 +65,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const [notes, setNotes] = useState<TAnyNote[]>(loadFromLocalStorage());
   const [history, setHistory] = useState<TAnyNote[][]>([]);
 
-  const canUndo = useMemo(() => history.length < 0, [history]);
+  const canUndo = useMemo(() => history.length > 0, [history]);
 
   const pushCurrentStateToHistory = useCallback(() => {
     setHistory((history) => [...history, notes].slice(-1 * HISTORY_STEPS_LIMIT));
@@ -76,7 +76,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => [...notes, note]);
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleUpdateNote = useCallback(
@@ -84,7 +84,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.map((note) => (noteToReplace === note ? newNote : note)));
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleDeleteNote = useCallback(
@@ -92,12 +92,12 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.filter((note) => note !== noteToDelete));
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleUndo = useCallback(() => {
     setNotes(history[history.length - 1]);
-    setHistory((history) => history.slice(0, history.length - 2));
+    setHistory((history) => history.slice(0, history.length - 1));
   }, [history]);
 
   useEffect(() => {

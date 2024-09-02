@@ -1,7 +1,7 @@
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { createContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
@@ -10,11 +10,16 @@ export const PdfContext = createContext<IPdfContext | null>(null);
 
 pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
 
-export interface IPdfContext {
+export interface IPdfServices {
   eventBus: pdfJsViewer.EventBus;
   linkService: pdfJsViewer.PDFLinkService;
   findController: pdfJsViewer.PDFFindController;
   pdfDocument: pdfJs.PDFDocumentProxy;
+}
+
+export interface IPdfContext extends IPdfServices {
+  viewer: pdfJsViewer.PDFViewer | undefined;
+  setViewer: Dispatch<SetStateAction<pdfJsViewer.PDFViewer | undefined>>;
 }
 
 interface IPdfProviderProps {
@@ -23,7 +28,8 @@ interface IPdfProviderProps {
 }
 
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
-  const [context, setContext] = useState<IPdfContext | null>(null);
+  const [services, setServices] = useState<IPdfServices>();
+  const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
 
   useEffect(() => {
     async function setupPdfServices() {
@@ -46,7 +52,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
 
       linkService.setDocument(pdfDocument, null);
 
-      setContext({
+      setServices({
         eventBus,
         linkService,
         findController,
@@ -59,7 +65,13 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     }
   }, [pdfUrl]);
 
-  if (!context) return <div>Loading...</div>;
+  if (!services) return <div>Loading...</div>;
+
+  const context = {
+    ...services,
+    viewer,
+    setViewer,
+  };
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
 }

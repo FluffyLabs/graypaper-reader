@@ -1,84 +1,42 @@
-import { type ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
-import { Note, type NotesItem } from "./Note";
-import { IHighlightNote, INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
-import { CodeSyncContext, ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import { subtractBorder } from "../../utils/subtractBorder";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+
+const DEFAULT_AUTHOR = "Anonymous";
 
 type INoteManagerProps = {
   version: string;
 };
 
 export function NoteManager({ version }: INoteManagerProps) {
+  const [noteContent, setNoteContent] = useState("");
   const { notes, canUndo, handleAddNote, handleDeleteNote, handleUndo } = useContext(NotesContext) as INotesContext;
-  const [newNoteContent, setNewNoteContent] = useState("");
-  const [newNoteBlocks, setNewNoteBlocks] = useState<IHighlightNote["blocks"]>();
-  const [newNotePageNumber, setNewNotePageNumber] = useState<number>();
   const { getSynctexBlockAtLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const [selectionPageElement, setSelectionPageElement] = useState<HTMLElement>();
+  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
-    if (newNoteBlocks === undefined || newNotePageNumber === undefined) return;
+    if (selectedBlocks.length === 0 || pageNumber === null)
+      throw new Error("Attempted saving a note without selection.");
 
     const newNote: IHighlightNote = {
-      content: newNoteContent,
+      content: noteContent,
       date: Date.now(),
-      author: "author",
-      pageNumber: newNotePageNumber,
-      blocks: newNoteBlocks,
+      author: DEFAULT_AUTHOR,
+      pageNumber,
+      blocks: selectedBlocks,
     };
 
     handleAddNote(newNote);
-  }, [newNoteContent, newNoteBlocks, newNotePageNumber, handleAddNote]);
-
-  const handleSelectionChange = useCallback(() => {
-    const selection = document.getSelection();
-
-    if (!selection || !selection.anchorNode) return;
-
-    const anchorElement = "closest" in selection.anchorNode ? selection.anchorNode : selection.anchorNode.parentElement;
-
-    if (!anchorElement) return;
-
-    setSelectionPageElement((anchorElement as Element).closest(".page") as HTMLElement);
-  }, []);
-
-  const handleTextareaFocus = useCallback(() => {
-    const selection = document.getSelection();
-
-    if (!selectionPageElement || !selection) {
-      return;
-    }
-
-    const pageRect = subtractBorder(selectionPageElement.getBoundingClientRect(), selectionPageElement);
-    const pageNumber = Number.parseInt(selectionPageElement.dataset.pageNumber || "");
-    const synctexBlocks = [];
-
-    for (const rect of selection.getRangeAt(0).getClientRects()) {
-      const synctexBlock = getSynctexBlockAtLocation(
-        (rect.left + rect.width / 2 - pageRect.left) / pageRect.width,
-        (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
-        pageNumber
-      );
-
-      if (synctexBlock && synctexBlocks.indexOf(synctexBlock) === -1) {
-        synctexBlocks.push(synctexBlock);
-      }
-    }
-
-    if (synctexBlocks.length) {
-      setNewNoteBlocks(synctexBlocks);
-      setNewNotePageNumber(pageNumber);
-    }
-  }, [selectionPageElement, getSynctexBlockAtLocation]);
+    handleClearSelection();
+  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection]);
 
   useEffect(() => {
-    document.addEventListener("selectionchange", handleSelectionChange);
-
-    return () => {
-      document.removeEventListener("selectionchange", handleSelectionChange);
-    };
-  }, [handleSelectionChange]);
+    if (selectedBlocks.length === 0) {
+      setNoteContent("");
+    }
+  }, [selectedBlocks]);
 
   // const onExport = useCallback(() => {
   //   const strNotes = JSON.stringify(notes);
@@ -119,14 +77,13 @@ export function NoteManager({ version }: INoteManagerProps) {
     <div className="note-manager">
       <div className="new-note">
         <textarea
-          disabled={!selectionPageElement && !newNoteBlocks}
+          disabled={selectedBlocks.length === 0}
           autoFocus
-          value={newNoteContent}
-          onChange={(ev) => setNewNoteContent(ev.currentTarget.value)}
-          onFocus={handleTextareaFocus}
+          value={noteContent}
+          onChange={(ev) => setNoteContent(ev.currentTarget.value)}
           placeholder="Add a note to the selected fragment."
         />
-        <button disabled={newNoteContent.length < 1 || !newNoteBlocks} onClick={handleAddNoteClick}>
+        <button disabled={noteContent.length < 1} onClick={handleAddNoteClick}>
           Add
         </button>
       </div>

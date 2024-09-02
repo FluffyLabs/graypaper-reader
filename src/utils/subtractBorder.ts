@@ -10,6 +10,6 @@ export function subtractBorder(rect: DOMRect, element: HTMLElement): DOMRect {
     rect.x + borderWidth.left,
     rect.y + borderWidth.top,
     rect.width - borderWidth.left - borderWidth.right,
-    rect.height - borderWidth.top - borderWidth.bottom
+    rect.height - borderWidth.top - borderWidth.bottom,
   );
 }
