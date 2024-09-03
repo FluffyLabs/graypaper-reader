@@ -20,6 +20,7 @@ export interface INote {
   date: number;
   author: string;
   pageNumber: number;
+  version: string;
 }
 
 export interface IPointNote extends INote {
@@ -76,7 +77,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => [...notes, note]);
     },
-    [pushCurrentStateToHistory],
+    [pushCurrentStateToHistory]
   );
 
   const handleUpdateNote = useCallback(
@@ -84,7 +85,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.map((note) => (noteToReplace === note ? newNote : note)));
     },
-    [pushCurrentStateToHistory],
+    [pushCurrentStateToHistory]
   );
 
   const handleDeleteNote = useCallback(
@@ -92,7 +93,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.filter((note) => note !== noteToDelete));
     },
-    [pushCurrentStateToHistory],
+    [pushCurrentStateToHistory]
   );
 
   const handleUndo = useCallback(() => {

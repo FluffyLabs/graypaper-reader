@@ -3,8 +3,9 @@ import "./NoteManager.css";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { Note } from "./Note";
 
-const DEFAULT_AUTHOR = "Anonymous";
+const DEFAULT_AUTHOR = "";
 
 type INoteManagerProps = {
   version: string;
@@ -12,7 +13,9 @@ type INoteManagerProps = {
 
 export function NoteManager({ version }: INoteManagerProps) {
   const [noteContent, setNoteContent] = useState("");
-  const { notes, canUndo, handleAddNote, handleDeleteNote, handleUndo } = useContext(NotesContext) as INotesContext;
+  const { notes, canUndo, handleAddNote, handleDeleteNote, handleUpdateNote, handleUndo } = useContext(
+    NotesContext
+  ) as INotesContext;
   const { getSynctexBlockAtLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
@@ -26,11 +29,12 @@ export function NoteManager({ version }: INoteManagerProps) {
       author: DEFAULT_AUTHOR,
       pageNumber,
       blocks: selectedBlocks,
+      version,
     };
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection]);
+  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, version]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -87,18 +91,17 @@ export function NoteManager({ version }: INoteManagerProps) {
           Add
         </button>
       </div>
-      {/* <ul>
-        {notes.map((x, idx) => (
+      <ul>
+        {notes.map((note) => (
           <Note
-            selection={selection}
             version={version}
-            key={`${idx}-${x.location}`}
-            note={x}
-            onEditNote={onEditNote}
-            onRemoveNote={handleDeleteClick}
+            key={note.date}
+            note={note}
+            onEditNote={handleUpdateNote}
+            onDeleteNote={handleDeleteNote}
           />
         ))}
-      </ul> */}
+      </ul>
       <div className="actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
         {/* <button onClick={onImport}>import notes</button>

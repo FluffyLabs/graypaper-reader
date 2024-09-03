@@ -33,7 +33,7 @@ export function Highlighter({
         height: `${pageOffset.height * block.height}px`,
         backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`,
       }}
-      key={`${block.id}`}
+      key={`${block.pageNumber},${block.index}`}
     />
   ));
 }

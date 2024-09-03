@@ -22,7 +22,8 @@ export interface ISynctexBlock {
   top: number;
   width: number;
   height: number;
-  id: string;
+  pageNumber: number;
+  index: number;
 }
 
 interface ICodeSyncProviderProps {
@@ -64,7 +65,6 @@ export function CodeSyncProvider({ synctexUrl, /* codeUrl, */ children }: ICodeS
       const blocksInCurrPage = synctexData.pages[pageNumber];
 
       let lastMatch: ISynctexBlock | null = null;
-      const matches = [];
 
       for (let i = 0; i < blocksInCurrPage.length; i++) {
         const currBlock = blocksInCurrPage[i];
@@ -75,15 +75,12 @@ export function CodeSyncProvider({ synctexUrl, /* codeUrl, */ children }: ICodeS
           top <= currBlock.top + BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_HEIGHT
         ) {
           lastMatch = currBlock;
-          matches.push(currBlock);
         }
       }
 
       return lastMatch || null;
     },
   };
-
-  document.getSynctexBlockAtLocation = context.getSynctexBlockAtLocation;
 
   return <CodeSyncContext.Provider value={context}>{children}</CodeSyncContext.Provider>;
 }

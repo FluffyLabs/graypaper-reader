@@ -1,7 +1,8 @@
-import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import type { InDocSelection } from "../../utils/IframeController";
 import { deserializeLocation, reserializeLocation, serializeLocation, updateLocation } from "../../utils/location";
+import { INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -9,60 +10,56 @@ export type NotesItem = {
 };
 
 type NoteProps = {
-  selection: InDocSelection | null;
   version: string;
-  note: NotesItem;
-  onEditNote: (n: NotesItem) => void;
-  onRemoveNote: (n: NotesItem) => void;
+  note: TAnyNote;
+  onEditNote: INotesContext["handleUpdateNote"];
+  onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
-export function Note({ selection, note, onEditNote, onRemoveNote, version }: NoteProps) {
+export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [noteDirty, setNoteDirty] = useState({ ...note });
+
+  useEffect(() => {
+    setNoteDirty({ ...note });
+  }, [note]);
 
   const toggleEdit = useCallback(() => {
     if (isEditing) {
       // defer change to prevent onBlur happening before clicks.
       setTimeout(() => {
+        onEditNote(note, noteDirty);
         setIsEditing(false);
       }, 300);
     } else {
       setIsEditing(true);
     }
-  }, [isEditing]);
+  }, [onEditNote, note, noteDirty, isEditing]);
 
-  const editNote = useCallback(
-    (ev: ChangeEvent<HTMLTextAreaElement>) => {
-      note.content = ev.currentTarget.value;
-      onEditNote(note);
-    },
-    [note, onEditNote],
-  );
+  const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
+    setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
+  };
 
-  const removeNote = useCallback(() => {
-    onRemoveNote(note);
-  }, [note, onRemoveNote]);
-
-  const updateLocation = useCallback(
-    (href: string) => {
-      note.location = href;
-      onEditNote(note);
-    },
-    [note, onEditNote],
-  );
+  const handleDeleteClick = useCallback(() => {
+    onDeleteNote(note);
+  }, [note, onDeleteNote]);
 
   return (
     <li>
-      <NoteLink selection={selection} note={note} version={version} onMigrate={updateLocation} />
+      {/* <NoteLink selection={selection} note={note} version={version} onMigrate={updateLocation} /> */}
+      {note.pageNumber}
       {isEditing ? (
-        <textarea onChange={editNote} value={note.content} onBlur={toggleEdit} autoFocus />
+        <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={toggleEdit} autoFocus />
       ) : (
         <blockquote onClick={toggleEdit} onKeyPress={toggleEdit}>
           {note.content}
         </blockquote>
       )}
-      <button className="remove" style={{ display: isEditing ? "block" : "none" }} onClick={removeNote}>
-        delete
-      </button>
+      {isEditing ? (
+        <button className="remove" onClick={handleDeleteClick}>
+          delete
+        </button>
+      ) : null}
     </li>
   );
 }

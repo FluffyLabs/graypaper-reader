@@ -51,7 +51,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       const synctexBlock = getSynctexBlockAtLocation(
         (rect.left + rect.width / 2 - pageRect.left) / pageRect.width,
         (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
-        pageNumber,
+        pageNumber
       );
 
       if (synctexBlock && synctexBlocks.indexOf(synctexBlock) === -1) {
