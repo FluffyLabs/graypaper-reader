@@ -1,10 +1,9 @@
 import "./PointNote.css";
 import type { IPointNote } from "../../../NotesProvider/NotesProvider";
-import type { IPageOffset } from "../../NoteRenderer";
 
 interface PointNoteProps {
   note: IPointNote;
-  pageOffset: IPageOffset;
+  pageOffset: DOMRect;
 }
 
 export function PointNote({ note, pageOffset }: PointNoteProps) {
