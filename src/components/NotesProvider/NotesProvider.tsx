@@ -30,6 +30,7 @@ export interface IPointNote extends INote {
 
 export interface IHighlightNote extends INote {
   blocks: ISynctexBlock[];
+  selectionString: string;
 }
 
 export type TAnyNote = IPointNote | IHighlightNote;
@@ -77,7 +78,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => [...notes, note]);
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleUpdateNote = useCallback(
@@ -85,7 +86,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.map((note) => (noteToReplace === note ? newNote : note)));
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleDeleteNote = useCallback(
@@ -93,7 +94,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       pushCurrentStateToHistory();
       setNotes((notes) => notes.filter((note) => note !== noteToDelete));
     },
-    [pushCurrentStateToHistory]
+    [pushCurrentStateToHistory],
   );
 
   const handleUndo = useCallback(() => {

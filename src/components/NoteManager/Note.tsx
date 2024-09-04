@@ -1,8 +1,8 @@
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import type { InDocSelection } from "../../utils/IframeController";
-import { deserializeLocation, reserializeLocation, serializeLocation, updateLocation } from "../../utils/location";
-import { INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import type { INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
+import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -46,8 +46,7 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
   return (
     <li>
-      {/* <NoteLink selection={selection} note={note} version={version} onMigrate={updateLocation} /> */}
-      {note.pageNumber}
+      <NoteLink note={note} version={version} />
       {isEditing ? (
         <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={toggleEdit} autoFocus />
       ) : (
@@ -65,77 +64,56 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 }
 
 type NoteLinkProps = {
-  selection: InDocSelection | null;
-  note: NotesItem;
+  note: TAnyNote;
   version: string;
-  onMigrate: (location: string) => void;
 };
-function NoteLink({ selection, note, version, onMigrate }: NoteLinkProps) {
-  const origLocDetails = useMemo(() => {
-    return deserializeLocation(note.location);
-  }, [note]);
+function NoteLink({ note, version }: NoteLinkProps) {
+  const [sectionTitle, setSectionTitle] = useState<string | null>("");
+  const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
+  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
 
-  const locDetails = useMemo(() => {
-    const origVersion = origLocDetails?.shortVersion;
-    if (origVersion) {
-      if (!version.startsWith(origVersion)) {
-        return updateLocation(origLocDetails, version);
-      }
-    }
-    return origLocDetails;
-  }, [origLocDetails, version]);
+  const migrationFlag = version !== note.version;
 
-  const newHref = useMemo(() => {
-    if (locDetails && origLocDetails !== locDetails) {
-      return reserializeLocation(locDetails);
+  useEffect(() => {
+    if ("blocks" in note) {
+      getSectionTitleAtSynctexBlock(note.blocks[0]).then((sectionTitleFromSource) =>
+        setSectionTitle(sectionTitleFromSource),
+      );
+      getSubsectionTitleAtSynctexBlock(note.blocks[0]).then((sectionTitleFromSource) =>
+        setSubsectionTitle(sectionTitleFromSource),
+      );
     }
-    return note.location;
-  }, [origLocDetails, locDetails, note]);
+  }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
-  const migrateNote = useCallback(() => {
-    if (selection === null) {
-      return;
-    }
-    const selectionHref = serializeLocation(version, selection);
-    if (selectionHref === newHref) {
-      onMigrate(newHref);
-      return;
-    }
-
-    if (confirm("The highlighted part of the document has changed. Update to current selection?")) {
-      onMigrate(selectionHref);
-    }
-  }, [version, selection, newHref, onMigrate]);
+  const handleMigrateClick = () => {};
 
   return (
     <div>
-      {locDetails !== origLocDetails && (
+      {migrationFlag && (
         <a
-          href={`#${note.location}`}
+          href={"#"}
           data-tooltip-id="note-link"
-          data-tooltip-content="This note was created in a different version. Click to open the original selection."
+          data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
           className="icon"
         >
           ⚠
         </a>
       )}
-      <a href={`#${newHref}`}>
-        {locDetails ? (
-          <span>
-            p:{Number(`0x${locDetails?.page}`)} &gt; {locDetails.section} &gt; {locDetails.subSection}
-          </span>
-        ) : (
-          "link"
-        )}
+      <a href="#">
+        p. {note.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
+        {subsectionTitle ? `> ${subsectionTitle}` : null}
       </a>
-      {locDetails !== origLocDetails && (
+      {migrationFlag && (
         <a
-          onClick={migrateNote}
+          onClick={handleMigrateClick}
           data-tooltip-id="note-link"
           data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
           data-tooltip-place="top"
-          className={selection === null ? "disabled update" : "update"}
+          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
         >
           (migrate)
         </a>

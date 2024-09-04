@@ -1,17 +1,27 @@
 import { useRef } from "react";
 
 interface ICodeStore {
-  [key: string]: string[];
+  [key: string]: Promise<string[]>;
 }
 
 export function useCodeStore(codeUrl: string) {
   const storeRef = useRef<ICodeStore>({});
 
+  const fetchFileAsText = async (url: string): Promise<string[]> => {
+    try {
+      const response = await fetch(url);
+      return (await response.text()).split("\n");
+    } catch (e) {
+      console.error(`Failed to fetch file: ${url}.`, e);
+    }
+
+    return [];
+  };
+
   return {
     async getByFilePath(path: string): Promise<string[]> {
       if (!(path in storeRef.current)) {
-        const response = await fetch(`${codeUrl}${path}`);
-        storeRef.current[path] = (await response.text()).split("\n");
+        storeRef.current[path] = fetchFileAsText(`${codeUrl}${path}`);
       }
 
       return storeRef.current[path];

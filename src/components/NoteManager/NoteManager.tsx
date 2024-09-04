@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
-import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
@@ -14,10 +13,11 @@ type INoteManagerProps = {
 export function NoteManager({ version }: INoteManagerProps) {
   const [noteContent, setNoteContent] = useState("");
   const { notes, canUndo, handleAddNote, handleDeleteNote, handleUpdateNote, handleUndo } = useContext(
-    NotesContext
+    NotesContext,
   ) as INotesContext;
-  const { getSynctexBlockAtLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
+  const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
+    SelectionContext,
+  ) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
     if (selectedBlocks.length === 0 || pageNumber === null)
@@ -29,12 +29,13 @@ export function NoteManager({ version }: INoteManagerProps) {
       author: DEFAULT_AUTHOR,
       pageNumber,
       blocks: selectedBlocks,
+      selectionString,
       version,
     };
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, version]);
+  }, [noteContent, pageNumber, selectionString, selectedBlocks, handleAddNote, handleClearSelection, version]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {

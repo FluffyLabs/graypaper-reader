@@ -89,7 +89,7 @@ export function NoteRenderer() {
       return <PointNote note={note} pageOffset={pageOffset} key={note.date} />;
     }
 
-    if ("blocks" in note) {
+    if ("blocks" in note && "selectionString" in note) {
       if (!note.blocks.length) return null;
 
       return <HighlightNote note={note} pageOffset={pageOffset} key={note.date} />;

@@ -3,6 +3,7 @@ import { subtractBorder } from "../../utils/subtractBorder";
 import { CodeSyncContext, type ICodeSyncContext, type ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 
 export interface ISelectionContext {
+  selectionString: string;
   selectedBlocks: ISynctexBlock[];
   pageNumber: number | null;
   handleViewerMouseDown: MouseEventHandler;
@@ -19,11 +20,13 @@ export const SelectionContext = createContext<ISelectionContext | null>(null);
 // todo: solve the problem of multi-page selections
 
 export function SelectionProvider({ children }: ISelectionProviderProps) {
+  const [selectionString, setSelectionString] = useState<string>("");
   const [selectedBlocks, setSelectedBlocks] = useState<ISynctexBlock[]>([]);
   const [pageNumber, setPageNumber] = useState<number | null>(null);
   const { getSynctexBlockAtLocation } = useContext(CodeSyncContext) as ICodeSyncContext;
 
   const handleClearSelection = () => {
+    setSelectionString("");
     setSelectedBlocks([]);
     setPageNumber(null);
   };
@@ -51,7 +54,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       const synctexBlock = getSynctexBlockAtLocation(
         (rect.left + rect.width / 2 - pageRect.left) / pageRect.width,
         (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
-        pageNumber
+        pageNumber,
       );
 
       if (synctexBlock && synctexBlocks.indexOf(synctexBlock) === -1) {
@@ -59,11 +62,19 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       }
     }
 
+    setSelectionString(selection.toString());
     setSelectedBlocks(synctexBlocks);
     setPageNumber(pageNumber);
   };
 
-  const context = { selectedBlocks, pageNumber, handleViewerMouseDown, handleViewerMouseUp, handleClearSelection };
+  const context = {
+    selectionString,
+    selectedBlocks,
+    pageNumber,
+    handleViewerMouseDown,
+    handleViewerMouseUp,
+    handleClearSelection,
+  };
 
   return <SelectionContext.Provider value={context}>{children}</SelectionContext.Provider>;
 }
