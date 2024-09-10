@@ -17,7 +17,7 @@ export function SelectionRenderer() {
 
     return subtractBorder(
       new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement,
+      pageElement
     );
   }, [pageNumber, viewer]);
 

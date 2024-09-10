@@ -1,36 +1,29 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { updateLocationVersion } from "../../utils/location";
-import { type Metadata, type VersionInfo, getLatestVersion } from "../../utils/metadata";
+import { IMetadataContext, MetadataContext, IVersionInfo } from "../MetadataProvider/MetadataProvider";
+import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
-type VersionProps = {
-  metadata: Metadata;
-  onChange: (v: string) => void;
-  selectedVersion: string;
-};
-
-export function Version({ metadata, selectedVersion, onChange }: VersionProps) {
+export function Version() {
+  const { metadata } = useContext(MetadataContext) as IMetadataContext;
+  const {
+    locationParams: { version },
+    setLocationParams,
+  } = useContext(LocationContext) as ILocationContext;
   const versions = Object.keys(metadata.versions);
-  const currentVersionHash = metadata.versions[selectedVersion].hash;
+  const currentVersionHash = metadata.versions[version].hash;
 
   const handleChange = useCallback(
-    (v: string) => {
-      const newHash = updateLocationVersion(v, window.location.hash);
-      // we only call the explicit set version if we don't have the
-      // hash already
-      if (newHash) {
-        window.location.hash = newHash;
-      } else {
-        onChange(v);
-      }
+    (version: string) => {
+      setLocationParams({ version });
     },
-    [onChange],
+    [setLocationParams]
   );
 
   return (
     <div className="version">
-      {currentVersionHash !== getLatestVersion(metadata) && (
+      {currentVersionHash !== metadata.latest && (
         <span
           data-tooltip-id="version"
           data-tooltip-content="The current version is not the latest."
@@ -40,7 +33,7 @@ export function Version({ metadata, selectedVersion, onChange }: VersionProps) {
           ⚠
         </span>
       )}
-      <select onChange={(ev) => handleChange(ev.target.value)} value={selectedVersion}>
+      <select onChange={(ev) => handleChange(ev.target.value)} value={version}>
         {versions.map((v) => (
           <Option key={v} id={v} version={metadata.versions[v]} latest={metadata.latest} />
         ))}
@@ -60,7 +53,7 @@ export function Version({ metadata, selectedVersion, onChange }: VersionProps) {
   );
 }
 
-type OptionProps = { id: string; version: VersionInfo; latest: string };
+type OptionProps = { id: string; version: IVersionInfo; latest: string };
 function Option({ id, version, latest }: OptionProps) {
   const date = new Date(version.date);
   return (

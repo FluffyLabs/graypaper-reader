@@ -7,11 +7,13 @@ import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { SelectionRenderer } from "../SelectionRenderer/SelectionRenderer";
+import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
 
 export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
+  const [pagesLoaded, setPagesLoaded] = useState<boolean>(false);
   const { eventBus, linkService, findController, pdfDocument, setViewer } = useContext(PdfContext) as IPdfContext;
   const { handleViewerMouseDown, handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
 
@@ -21,7 +23,7 @@ export function PdfViewer() {
 
   useEffect(() => {
     async function loadViewer() {
-      if (!rootElement) return;
+      if (!rootElement || !pdfDocument || !eventBus || !linkService) return;
 
       rootElement.innerHTML = "";
       const viewerContainer = document.createElement("div");
@@ -41,22 +43,39 @@ export function PdfViewer() {
       linkService.setViewer(pdfViewer);
 
       pdfViewer.setDocument(pdfDocument);
+
+      eventBus.on("pagesloaded", () => {
+        setPagesLoaded(true);
+      });
     }
 
     if (rootElement) {
       loadViewer();
     }
+
+    return () => {
+      setViewer(undefined);
+      setPagesLoaded(false);
+    };
   }, [rootElement, eventBus, linkService, findController, pdfDocument, setViewer]);
 
+  if (!pdfDocument) return <div>Loading...</div>;
+
   return (
-    <div
-      ref={handleRootRef}
-      className="pdf-viewer-root"
-      onMouseDown={handleViewerMouseDown}
-      onMouseUp={handleViewerMouseUp}
-    >
-      <NoteRenderer />
-      <SelectionRenderer />
-    </div>
+    <>
+      <div
+        ref={handleRootRef}
+        className="pdf-viewer-root"
+        onMouseDown={handleViewerMouseDown}
+        onMouseUp={handleViewerMouseUp}
+      >
+        {pagesLoaded ? (
+          <>
+            <NoteRenderer />
+            <SelectionRenderer />
+          </>
+        ) : null}
+      </div>
+    </>
   );
 }

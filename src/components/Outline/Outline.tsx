@@ -1,14 +1,20 @@
 import "./Outline.css";
-import { type ReactNode, useCallback, useContext } from "react";
+import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
-import type { TOutline } from "../Sidebar/Sidebar";
+import { PDFDocumentProxy } from "pdfjs-dist";
 
-type IOutlineProps = {
-  outline: TOutline;
-};
+export type TOutline = Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>;
 
-export function Outline({ outline }: IOutlineProps) {
+export function Outline() {
+  const [outline, setOutline] = useState<TOutline>([]);
+  const { pdfDocument } = useContext(PdfContext) as IPdfContext;
+
+  // perform one-time operations.
+  useEffect(() => {
+    pdfDocument?.getOutline().then((outline) => setOutline(outline));
+  }, [pdfDocument]);
+
   const renderOutline = (outline: TOutline) => {
     return (
       <ul>
@@ -21,6 +27,8 @@ export function Outline({ outline }: IOutlineProps) {
       </ul>
     );
   };
+
+  if (!pdfDocument) return <div>Loading...</div>;
 
   return <div className="outline">{renderOutline(outline)}</div>;
 }
@@ -35,7 +43,7 @@ function Link({ dest, children }: ILinkProps) {
 
   const handleClick = useCallback(() => {
     if (!dest) return;
-    linkService.goToDestination(dest);
+    linkService?.goToDestination(dest);
   }, [linkService, dest]);
 
   return (

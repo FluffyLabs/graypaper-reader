@@ -1,68 +1,41 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import "./App.css";
 
 import { Banner } from "./components/Banner/Banner";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
-import { PdfProvider } from "./components/PdfProvider/PdfProvider";
+import { IPdfContext, PdfContext, PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
 import type { IframeController } from "./utils/IframeController";
-import { type Metadata, codeUrl, getInitialVersion, getMetadata, grayPaperUrl, synctexUrl } from "./utils/metadata";
+import { ILocationContext, LocationContext, LocationProvider } from "./components/LocationProvider/LocationProvider";
+import { IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 
 export function App() {
-  const [metadata, setMetadata] = useState<Metadata | null>(null);
-  useEffect(() => {
-    const fetch = async () => {
-      setMetadata(await getMetadata());
-    };
-    fetch();
-  }, []);
-
-  return metadata && <InnerApp metadata={metadata} />;
-}
-
-function InnerApp({ metadata }: { metadata: Metadata }) {
-  const [loadedFrame, setLoadedFrame] = useState<IframeController | null>(null);
-  const [version, setVersion] = useState(getInitialVersion(metadata));
+  const {
+    locationParams: { version },
+  } = useContext(LocationContext) as ILocationContext;
+  const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
   const browserZoom = useBrowserZoom();
-
-  const onSetVersion = useCallback(
-    (v: string) => {
-      if (v !== version) {
-        setLoadedFrame(null);
-      }
-      setVersion(v);
-    },
-    [version],
-  );
 
   return (
     <NotesProvider>
-      <PdfProvider pdfUrl={grayPaperUrl(version)}>
-        <CodeSyncProvider synctexUrl={synctexUrl(version)} codeUrl={codeUrl(version)}>
+      <PdfProvider pdfUrl={urlGetters.pdf(version)}>
+        <CodeSyncProvider synctexUrl={urlGetters.synctex(version)} texDirectory={urlGetters.texDirectory(version)}>
           <SelectionProvider>
             <Resizable
               left={
                 <>
                   <Banner />
-                  {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
                   <div className="pdf-viewer-container">
-                    <PdfViewer />
+                    <PdfViewer key={version} />
                   </div>
                 </>
               }
-              right={
-                <Sidebar
-                  metadata={metadata}
-                  selectedVersion={version}
-                  onVersionChange={onSetVersion}
-                  zoom={browserZoom}
-                />
-              }
+              right={<Sidebar zoom={browserZoom} />}
             />
           </SelectionProvider>
         </CodeSyncProvider>

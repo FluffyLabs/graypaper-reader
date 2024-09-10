@@ -21,7 +21,6 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
 export function NoteRenderer() {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const viewerRootEventHandlerRef = useRef<() => void>();
-  const { eventBus } = useContext(PdfContext) as IPdfContext;
   const { notes } = useContext(NotesContext) as INotesContext;
   const { viewer } = useContext(PdfContext) as IPdfContext;
 
@@ -37,7 +36,7 @@ export function NoteRenderer() {
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
@@ -62,15 +61,12 @@ export function NoteRenderer() {
 
   useEffect(() => {
     if (!viewer) return;
-
-    eventBus.on("pagesloaded", () => {
-      viewer.container.dispatchEvent(new CustomEvent("scroll"));
-    });
-  }, [viewer, eventBus]);
+    viewer.container.dispatchEvent(new CustomEvent("scroll"));
+  }, [viewer]);
 
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages],
+    [notes, visiblePages]
   );
 
   return notesToRender.map((note) => {
@@ -82,7 +78,7 @@ export function NoteRenderer() {
 
     const pageOffset = subtractBorder(
       new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement,
+      pageElement
     );
 
     if ("left" in note && "top" in note) {

@@ -11,10 +11,10 @@ export const PdfContext = createContext<IPdfContext | null>(null);
 pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
 
 export interface IPdfServices {
-  eventBus: pdfJsViewer.EventBus;
-  linkService: pdfJsViewer.PDFLinkService;
-  findController: pdfJsViewer.PDFFindController;
-  pdfDocument: pdfJs.PDFDocumentProxy;
+  eventBus?: pdfJsViewer.EventBus;
+  linkService?: pdfJsViewer.PDFLinkService;
+  findController?: pdfJsViewer.PDFFindController;
+  pdfDocument?: pdfJs.PDFDocumentProxy;
 }
 
 export interface IPdfContext extends IPdfServices {
@@ -28,7 +28,7 @@ interface IPdfProviderProps {
 }
 
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
-  const [services, setServices] = useState<IPdfServices>();
+  const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
 
   useEffect(() => {
@@ -61,11 +61,11 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     }
 
     if (pdfUrl) {
+      setServices({});
+      setViewer(undefined);
       setupPdfServices();
     }
   }, [pdfUrl]);
-
-  if (!services) return <div>Loading...</div>;
 
   const context = {
     ...services,

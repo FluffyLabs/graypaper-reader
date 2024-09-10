@@ -4,6 +4,7 @@ import { useCodeStore } from "./hooks/useCodeStore";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
+  getSynctexBlockByPageAndIndex(pageNumber: number, index: number): ISynctexBlock | null;
   getSectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
 }
@@ -30,7 +31,7 @@ export interface ISynctexBlock {
 
 interface ICodeSyncProviderProps {
   synctexUrl: string;
-  codeUrl: string;
+  texDirectory: string;
   children: ReactNode;
 }
 
@@ -43,9 +44,9 @@ const BIBLIOGRAPHY_TITLE = "References";
 
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
-export function CodeSyncProvider({ synctexUrl, codeUrl, children }: ICodeSyncProviderProps) {
+export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSyncProviderProps) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
-  const { getByFilePath } = useCodeStore(codeUrl);
+  const { getByFilePath } = useCodeStore(texDirectory);
 
   const getFilePathById = (id: number): string | null => {
     if (!synctexData) return null;
@@ -60,7 +61,7 @@ export function CodeSyncProvider({ synctexUrl, codeUrl, children }: ICodeSyncPro
         const fromJson = (await response.json()) as ISynctexData;
         setSynctexData(fromJson);
       } catch (error) {
-        console.error(error);
+        console.error("Failed to load synctex data for this version.", error);
       }
     }
 
@@ -91,6 +92,17 @@ export function CodeSyncProvider({ synctexUrl, codeUrl, children }: ICodeSyncPro
 
       return lastMatch || null;
     },
+    getSynctexBlockByPageAndIndex(pageNumber, index) {
+      if (!synctexData) return null;
+
+      try {
+        return synctexData.pages[pageNumber][index];
+      } catch (e) {
+        console.warn(`Synctex block not found at page ${pageNumber} and index ${index}.`, e);
+      }
+
+      return null;
+    },
     async getSectionTitleAtSynctexBlock(block) {
       const sourceFilePath = getFilePathById(block.fileId);
 
@@ -98,11 +110,11 @@ export function CodeSyncProvider({ synctexUrl, codeUrl, children }: ICodeSyncPro
 
       const sourceFileLines = await getByFilePath(sourceFilePath);
 
-      if (sourceFileLines[block.line - 2].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
+      if (sourceFileLines[Math.max(block.line - 2, 0)].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
         return BIBLIOGRAPHY_TITLE;
       }
 
-      for (let i = 0; i < block.line; i++) {
+      for (let i = block.line - 1; i >= 0; i--) {
         const matches = sourceFileLines[i].match(LATEX_SECTION_PATTERN);
 
         if (matches) {
@@ -119,7 +131,7 @@ export function CodeSyncProvider({ synctexUrl, codeUrl, children }: ICodeSyncPro
 
       const sourceFileLines = await getByFilePath(sourceFilePath);
 
-      for (let i = 0; i < block.line; i++) {
+      for (let i = block.line - 1; i >= 0; i--) {
         const matches = sourceFileLines[i].match(LATEX_SUBSECTION_PATTERN);
 
         if (matches) {

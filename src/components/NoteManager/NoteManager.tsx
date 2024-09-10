@@ -3,20 +3,20 @@ import "./NoteManager.css";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
+import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 const DEFAULT_AUTHOR = "";
 
-type INoteManagerProps = {
-  version: string;
-};
-
-export function NoteManager({ version }: INoteManagerProps) {
+export function NoteManager() {
   const [noteContent, setNoteContent] = useState("");
+  const {
+    locationParams: { version },
+  } = useContext(LocationContext) as ILocationContext;
   const { notes, canUndo, handleAddNote, handleDeleteNote, handleUpdateNote, handleUndo } = useContext(
-    NotesContext,
+    NotesContext
   ) as INotesContext;
   const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
-    SelectionContext,
+    SelectionContext
   ) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
