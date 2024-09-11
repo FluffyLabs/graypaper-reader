@@ -8,6 +8,7 @@ const METADATA_HOST = import.meta.env.MODE === "development" ? "/public" : "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 
 export type VersionInfo = {
+  name?: string;
   hash: string;
   date: string;
 };
