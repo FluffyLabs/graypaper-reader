@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import { IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export interface ILocationContext {
   locationParams: ILocationParams;
@@ -40,7 +40,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
       window.location.hash = new URLSearchParams(stringifiedParams).toString();
     },
-    [metadata.latest]
+    [metadata.latest],
   );
 
   const handleHashChange = useCallback(() => {

@@ -13,5 +13,5 @@ ReactDOM.createRoot(document.getElementById("root") ?? document.body).render(
         <App />
       </LocationProvider>
     </MetadataProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

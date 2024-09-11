@@ -36,7 +36,7 @@ export function NoteRenderer() {
     }
 
     setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages
+      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
     );
   }, SCROLL_THROTTLE_DELAY_MS);
 
@@ -66,7 +66,7 @@ export function NoteRenderer() {
 
   const notesToRender = useMemo(
     () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages]
+    [notes, visiblePages],
   );
 
   return notesToRender.map((note) => {
@@ -78,7 +78,7 @@ export function NoteRenderer() {
 
     const pageOffset = subtractBorder(
       new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement
+      pageElement,
     );
 
     if ("left" in note && "top" in note) {

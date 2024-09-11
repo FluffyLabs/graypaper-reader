@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { type ReactNode, createContext, useEffect, useState } from "react";
 
 const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;

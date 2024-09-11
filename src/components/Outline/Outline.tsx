@@ -1,8 +1,8 @@
 import "./Outline.css";
+import type { PDFDocumentProxy } from "pdfjs-dist";
 import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
-import { PDFDocumentProxy } from "pdfjs-dist";
 
 export type TOutline = Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>;
 

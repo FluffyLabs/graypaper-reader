@@ -1,9 +1,8 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
 import { useCallback, useContext } from "react";
-import { updateLocationVersion } from "../../utils/location";
-import { IMetadataContext, MetadataContext, IVersionInfo } from "../MetadataProvider/MetadataProvider";
-import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
@@ -18,7 +17,7 @@ export function Version() {
     (version: string) => {
       setLocationParams({ version });
     },
-    [setLocationParams]
+    [setLocationParams],
   );
 
   return (

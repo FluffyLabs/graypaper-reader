@@ -9,7 +9,7 @@ import {
 } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { CodeSyncContext, type ICodeSyncContext, type ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
-import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 export interface ISelectionContext {
   selectionString: string;
@@ -64,7 +64,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       const synctexBlock = getSynctexBlockAtLocation(
         (rect.left + rect.width / 2 - pageRect.left) / pageRect.width,
         (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
-        pageNumber
+        pageNumber,
       );
 
       if (synctexBlock && synctexBlocks.indexOf(synctexBlock) === -1) {
@@ -87,7 +87,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       setSelectedBlocks(
         locationParams.selection
           .map(({ pageNumber, index }) => getSynctexBlockByPageAndIndex(pageNumber, index))
-          .filter((block) => block !== null)
+          .filter((block) => block !== null),
       );
       setPageNumber(locationParams.selection[0].pageNumber);
     } else {

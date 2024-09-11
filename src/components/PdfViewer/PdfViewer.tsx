@@ -7,7 +7,6 @@ import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { SelectionRenderer } from "../SelectionRenderer/SelectionRenderer";
-import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
 

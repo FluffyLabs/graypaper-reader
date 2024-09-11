@@ -1,18 +1,16 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./App.css";
 
 import { Banner } from "./components/Banner/Banner";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
+import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
-import { IPdfContext, PdfContext, PdfProvider } from "./components/PdfProvider/PdfProvider";
+import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
-import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
-import type { IframeController } from "./utils/IframeController";
-import { ILocationContext, LocationContext, LocationProvider } from "./components/LocationProvider/LocationProvider";
-import { IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 
 export function App() {
   const {

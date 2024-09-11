@@ -1,11 +1,9 @@
 import "./Sidebar.css";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NoteManager } from "../NoteManager/NoteManager";
 // import { Notes } from "../Notes/Notes";
 import { Outline } from "../Outline/Outline";
-import type { IPdfContext } from "../PdfProvider/PdfProvider";
-import { PdfContext } from "../PdfProvider/PdfProvider";
 // import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
