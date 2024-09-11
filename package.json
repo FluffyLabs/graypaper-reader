@@ -12,7 +12,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "echo yolo",
-    "cp-gp": "cp ./graypaper-archive/dist/* ./public/",
+    "cp-gp": "cp -r ./graypaper-archive/dist/* ./public/",
     "prebuild": "npm run cp-gp",
     "predev": "npm run cp-gp"
   },
