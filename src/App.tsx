@@ -1,79 +1,44 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./App.css";
 
 import { Banner } from "./components/Banner/Banner";
+import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
+import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
+import { NotesProvider } from "./components/NotesProvider/NotesProvider";
+import { PdfProvider } from "./components/PdfProvider/PdfProvider";
+import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { Resizable } from "./components/Resizable/Resizable";
+import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
-import { ThemeToggler } from "./components/ThemeToggler/ThemeToggler";
-import { IframeController } from "./utils/IframeController";
-import { type Metadata, getInitialVersion, getMetadata, grayPaperUrl } from "./utils/metadata";
 
 export function App() {
-  const [metadata, setMetadata] = useState<Metadata | null>(null);
-  useEffect(() => {
-    const fetch = async () => {
-      setMetadata(await getMetadata());
-    };
-    fetch();
-  }, []);
-
-  return metadata && <InnerApp metadata={metadata} />;
-}
-
-function InnerApp({ metadata }: { metadata: Metadata }) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  const [loadedFrame, setLoadedFrame] = useState<IframeController | null>(null);
-  const [version, setVersion] = useState(getInitialVersion(metadata));
+  const {
+    locationParams: { version },
+  } = useContext(LocationContext) as ILocationContext;
+  const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
   const browserZoom = useBrowserZoom();
 
-  const onSetVersion = useCallback(
-    (v: string) => {
-      if (v !== version) {
-        setLoadedFrame(null);
-      }
-      setVersion(v);
-    },
-    [version],
-  );
-
-  const onIframeLoad = useCallback(() => {
-    const $frame = frame.current;
-    const win = $frame?.contentWindow;
-    if (win?.document.readyState === "complete") {
-      setLoadedFrame(new IframeController(win, version));
-    }
-  }, [version]);
-
   return (
-    <Resizable
-      left={
-        <>
-          <Banner />
-          {loadedFrame && <ThemeToggler iframeCtrl={loadedFrame} />}
-          <iframe
-            className={loadedFrame ? "visible" : ""}
-            title="Gray Paper"
-            name="gp"
-            ref={frame}
-            src={grayPaperUrl(version)}
-            onLoad={onIframeLoad}
-          />
-        </>
-      }
-      right={
-        <>
-          {loadedFrame && (
-            <Sidebar
-              metadata={metadata}
-              selectedVersion={version}
-              onVersionChange={onSetVersion}
-              iframeCtrl={loadedFrame}
-              zoom={browserZoom}
+    <NotesProvider>
+      <PdfProvider pdfUrl={urlGetters.pdf(version)}>
+        <CodeSyncProvider synctexUrl={urlGetters.synctex(version)} texDirectory={urlGetters.texDirectory(version)}>
+          <SelectionProvider>
+            <Resizable
+              left={
+                <>
+                  <Banner />
+                  <div className="pdf-viewer-container">
+                    <PdfViewer key={version} />
+                  </div>
+                </>
+              }
+              right={<Sidebar zoom={browserZoom} />}
             />
-          )}
-        </>
-      }
-    />
+          </SelectionProvider>
+        </CodeSyncProvider>
+      </PdfProvider>
+    </NotesProvider>
   );
 }
 

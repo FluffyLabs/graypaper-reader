@@ -12,11 +12,13 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "echo yolo",
-    "cp-gp": "cp ./graypaper-archive/dist/* ./public/",
+    "cp-gp": "mkdir -p ./public && cp -r ./graypaper-archive/dist/* ./public/",
     "prebuild": "npm run cp-gp",
     "predev": "npm run cp-gp"
   },
   "dependencies": {
+    "@types/pdfjs-dist": "^2.10.378",
+    "pdfjs-dist": "^4.5.136",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-tooltip": "^5.27.1"

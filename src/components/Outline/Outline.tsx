@@ -1,65 +1,54 @@
 import "./Outline.css";
-import { type ReactNode, useCallback, useMemo } from "react";
-import type { InDocLocation, OutlineItem, Outline as OutlineT } from "../../utils/IframeController";
+import type { PDFDocumentProxy } from "pdfjs-dist";
+import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { PdfContext } from "../PdfProvider/PdfProvider";
+import type { IPdfContext } from "../PdfProvider/PdfProvider";
 
-type OutlineProps = {
-  outline: OutlineT;
-  location: InDocLocation;
-  jumpTo: (id: string) => void;
-};
+export type TOutline = Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>;
 
-export function Outline({ outline, location, jumpTo }: OutlineProps) {
-  const nestedOutline = useMemo(() => {
-    const nested = {} as { [key: string]: OutlineT };
-    for (const o of outline) {
-      const number = o.text.split(".")[0].replace("Appendix ", "");
-      const arr = nested[number] ?? [];
-      arr.push(o);
-      nested[number] = arr;
-    }
-    return nested;
-  }, [outline]);
+export function Outline() {
+  const [outline, setOutline] = useState<TOutline>([]);
+  const { pdfDocument } = useContext(PdfContext) as IPdfContext;
 
-  return (
-    <div className="outline">
+  // perform one-time operations.
+  useEffect(() => {
+    pdfDocument?.getOutline().then((outline) => setOutline(outline));
+  }, [pdfDocument]);
+
+  const renderOutline = (outline: TOutline) => {
+    return (
       <ul>
-        {Object.entries(nestedOutline).map(([, items]) => (
-          <Item key={items[0].id} item={items[0]} location={location} jumpTo={jumpTo}>
-            {items.length > 1 && (
-              <ul>
-                {items.slice(1).map((i) => (
-                  <Item key={i.id} item={i} location={location} jumpTo={jumpTo} />
-                ))}
-              </ul>
-            )}
-          </Item>
+        {outline.map((item) => (
+          <li key={item.title}>
+            <Link dest={item.dest}>{item.title}</Link>
+            {item.items.length > 0 ? renderOutline(item.items) : null}
+          </li>
         ))}
       </ul>
-    </div>
-  );
+    );
+  };
+
+  if (!pdfDocument) return <div>Loading...</div>;
+
+  return <div className="outline">{renderOutline(outline)}</div>;
 }
-type ItemProps = {
-  item: OutlineItem;
-  location: InDocLocation;
-  jumpTo: OutlineProps["jumpTo"];
-  children?: ReactNode;
+
+type ILinkProps = {
+  dest: TOutline[0]["dest"];
+  children: ReactNode;
 };
-function Item({ item, location, jumpTo, children }: ItemProps) {
+
+function Link({ dest, children }: ILinkProps) {
+  const { linkService } = useContext(PdfContext) as IPdfContext;
+
   const handleClick = useCallback(() => {
-    jumpTo(item.id);
-  }, [jumpTo, item]);
+    if (!dest) return;
+    linkService?.goToDestination(dest);
+  }, [linkService, dest]);
 
   return (
-    <li className={isSameSection(item.text, location) ? "active" : ""}>
-      <a onClick={handleClick}>{item.text}</a>
+    <a href="#" onClick={handleClick}>
       {children}
-    </li>
+    </a>
   );
-}
-
-function isSameSection(name: string, location: InDocLocation) {
-  const matchesSection = location.section && name.indexOf(location.section.title) !== -1;
-  const matchesSubSection = location.subSection && name.indexOf(location.subSection.title ?? "") !== -1;
-
-  return matchesSection || matchesSubSection;
 }
