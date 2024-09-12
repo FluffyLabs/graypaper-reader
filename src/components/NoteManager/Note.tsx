@@ -1,7 +1,7 @@
-import { type ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
+import { type ChangeEvent, type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import type { INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
+import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
 export type NotesItem = {
@@ -46,7 +46,7 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
   return (
     <li>
-      <NoteLink note={note} version={version} />
+      <NoteLink note={note as IHighlightNote} version={version} />
       {isEditing ? (
         <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={toggleEdit} autoFocus />
       ) : (
@@ -64,13 +64,15 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 }
 
 type NoteLinkProps = {
-  note: TAnyNote;
+  note: IHighlightNote;
   version: string;
 };
 function NoteLink({ note, version }: NoteLinkProps) {
   const [sectionTitle, setSectionTitle] = useState<string | null>("");
   const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
-  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
+  const { selectedBlocks, handleSelectBlocks, setScrollToSelection } = useContext(
+    SelectionContext,
+  ) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
@@ -90,6 +92,16 @@ function NoteLink({ note, version }: NoteLinkProps) {
 
   const handleMigrateClick = () => {};
 
+  const handleNoteTitleClick = useCallback<MouseEventHandler>(
+    (e) => {
+      e.preventDefault();
+
+      setScrollToSelection(true);
+      handleSelectBlocks(note.blocks);
+    },
+    [setScrollToSelection, handleSelectBlocks, note.blocks],
+  );
+
   return (
     <div>
       {migrationFlag && (
@@ -103,7 +115,7 @@ function NoteLink({ note, version }: NoteLinkProps) {
           ⚠
         </a>
       )}
-      <a href="#">
+      <a href="#" onClick={handleNoteTitleClick}>
         p. {note.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
         {subsectionTitle ? `> ${subsectionTitle}` : null}
       </a>

@@ -17,7 +17,8 @@ interface ILocationProviderProps {
 
 const VERSION_SEARCH_KEY = "version";
 const SELECTION_SEARCH_KEY = "selection";
-const SELECTION_DECOMPOSE_PATTERN = /([0-9]+),([0-9]+)/g;
+const SELECTION_SEPARATOR = "_";
+const SELECTION_DECOMPOSE_PATTERN = new RegExp(String.raw`([0-9]+)${SELECTION_SEPARATOR}([0-9]+)`, "g");
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
@@ -34,7 +35,11 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       if (newParams?.selection) {
         stringifiedParams.push([
           SELECTION_SEARCH_KEY,
-          newParams.selection.map(({ pageNumber, index }) => `${pageNumber},${index}`).join(","),
+          btoa(
+            newParams.selection
+              .map(({ pageNumber, index }) => `${pageNumber}${SELECTION_SEPARATOR}${index}`)
+              .join(SELECTION_SEPARATOR),
+          ),
         ]);
       }
 
@@ -63,7 +68,8 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     };
 
     if (rawParams[SELECTION_SEARCH_KEY]) {
-      const matchedDigitPairs = [...rawParams[SELECTION_SEARCH_KEY].matchAll(SELECTION_DECOMPOSE_PATTERN)];
+      const decodedSelection = atob(rawParams[SELECTION_SEARCH_KEY]);
+      const matchedDigitPairs = [...decodedSelection.matchAll(SELECTION_DECOMPOSE_PATTERN)];
 
       if (matchedDigitPairs.length) {
         processedParams.selection = matchedDigitPairs.map((digitPair) => ({
