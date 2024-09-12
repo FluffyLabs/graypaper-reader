@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { NoteManager } from "../NoteManager/NoteManager";
 // import { Notes } from "../Notes/Notes";
 import { Outline } from "../Outline/Outline";
-// import { Selection } from "../Selection/Selection";
+import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
 
@@ -34,13 +34,7 @@ export function Sidebar({ zoom }: SidebarProps) {
   return (
     <div className="sidebar">
       <div className="content no-zoom" style={{ height: `${100 * zoom}%`, width: `${100 * zoom}` }}>
-        {/* <Selection
-          version={selectedVersion}
-          location={location}
-          selection={selection}
-          activeTab={tab}
-          switchTab={setTab}
-        /> */}
+        <Selection activeTab={tab} switchTab={setTab} />
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} />
         <Version />
       </div>

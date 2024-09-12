@@ -17,7 +17,7 @@ interface ILocationProviderProps {
 
 const VERSION_SEARCH_KEY = "version";
 const SELECTION_SEARCH_KEY = "selection";
-const SELECTION_SEPARATOR = "_";
+const SELECTION_SEPARATOR = ",";
 const SELECTION_DECOMPOSE_PATTERN = new RegExp(String.raw`([0-9]+)${SELECTION_SEPARATOR}([0-9]+)`, "g");
 
 export const LocationContext = createContext<ILocationContext | null>(null);
