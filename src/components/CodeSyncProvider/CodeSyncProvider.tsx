@@ -9,7 +9,7 @@ export interface ICodeSyncContext {
     startPageNumber: number,
     startIndex: number,
     endPageNumber: number,
-    endIndex: number,
+    endIndex: number
   ): ISynctexBlock[];
   getSectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
@@ -110,7 +110,7 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
       return null;
     },
     getSynctexBlockRange(startPageNumber, startIndex, endPageNumber, endIndex) {
-      if (!synctexData) return [];
+      if (!synctexData || startPageNumber !== endPageNumber) return [];
 
       // todo: for now we assume selections are within one page
       return synctexData.pages[startPageNumber].slice(startIndex, endIndex + 1);
