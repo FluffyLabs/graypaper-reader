@@ -5,6 +5,12 @@ import { useCodeStore } from "./hooks/useCodeStore";
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
   getSynctexBlockByPageAndIndex(pageNumber: number, index: number): ISynctexBlock | null;
+  getSynctexBlockRange(
+    startPageNumber: number,
+    startIndex: number,
+    endPageNumber: number,
+    endIndex: number,
+  ): ISynctexBlock[];
   getSectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
 }
@@ -102,6 +108,12 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
       }
 
       return null;
+    },
+    getSynctexBlockRange(startPageNumber, startIndex, endPageNumber, endIndex) {
+      if (!synctexData) return [];
+
+      // todo: for now we assume selections are within one page
+      return synctexData.pages[startPageNumber].slice(startIndex, endIndex + 1);
     },
     async getSectionTitleAtSynctexBlock(block) {
       const sourceFilePath = getFilePathById(block.fileId);

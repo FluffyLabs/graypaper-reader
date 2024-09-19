@@ -1,24 +1,30 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
+
+interface ISelectionParams {
+  selectionStart?: { pageNumber: number; index: number };
+  selectionEnd?: { pageNumber: number; index: number };
+}
 
 export interface ILocationContext {
   locationParams: ILocationParams;
   setLocationParams: (newParams: ILocationParams) => void;
+  synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
 }
 
-interface ILocationParams {
+interface ILocationParams extends ISelectionParams {
   version: string;
-  selection?: { pageNumber: number; index: number }[];
 }
 
 interface ILocationProviderProps {
   children: ReactNode;
 }
 
-const VERSION_SEARCH_KEY = "version";
-const SELECTION_SEARCH_KEY = "selection";
-const SELECTION_SEPARATOR = ",";
-const SELECTION_DECOMPOSE_PATTERN = new RegExp(String.raw`([0-9]+)${SELECTION_SEPARATOR}([0-9]+)`, "g");
+const VERSION_SEGMENT_INDEX = 0;
+const SELECTION_SEGMENT_INDEX = 1;
+const SEGMENT_SEPARATOR = "/";
+const SELECTION_DECOMPOSE_PATTERN = /[0-9A-F]{6}/gi;
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
@@ -30,20 +36,18 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     (newParams?: ILocationParams) => {
       const version = newParams?.version || metadata.latest;
 
-      const stringifiedParams = [[VERSION_SEARCH_KEY, version]];
+      const stringifiedParams = [];
 
-      if (newParams?.selection) {
-        stringifiedParams.push([
-          SELECTION_SEARCH_KEY,
-          btoa(
-            newParams.selection
-              .map(({ pageNumber, index }) => `${pageNumber}${SELECTION_SEPARATOR}${index}`)
-              .join(SELECTION_SEPARATOR),
-          ),
-        ]);
+      stringifiedParams[VERSION_SEGMENT_INDEX] = version;
+
+      if (newParams?.selectionStart && newParams?.selectionEnd) {
+        stringifiedParams[SELECTION_SEGMENT_INDEX] = [
+          encodePageNumberAndIndex(newParams.selectionStart.pageNumber, newParams.selectionStart.index),
+          encodePageNumberAndIndex(newParams.selectionEnd.pageNumber, newParams.selectionEnd.index),
+        ].join("");
       }
 
-      window.location.hash = new URLSearchParams(stringifiedParams).toString();
+      window.location.hash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`;
     },
     [metadata.latest],
   );
@@ -51,36 +55,45 @@ export function LocationProvider({ children }: ILocationProviderProps) {
   const handleHashChange = useCallback(() => {
     const newHash = window.location.hash.substring(1);
 
-    if (!newHash) {
+    if (!newHash || !newHash.startsWith(SEGMENT_SEPARATOR)) {
       handleSetLocationParams();
       return;
     }
 
-    const rawParams = Object.fromEntries(new URLSearchParams(newHash));
+    const rawParams = newHash.split(SEGMENT_SEPARATOR).slice(1);
 
-    if (!rawParams[VERSION_SEARCH_KEY]) {
+    if (!rawParams[VERSION_SEGMENT_INDEX]) {
       handleSetLocationParams();
       return;
     }
 
     const processedParams: ILocationParams = {
-      version: rawParams[VERSION_SEARCH_KEY],
+      version: rawParams[VERSION_SEGMENT_INDEX],
     };
 
-    if (rawParams[SELECTION_SEARCH_KEY]) {
-      const decodedSelection = atob(rawParams[SELECTION_SEARCH_KEY]);
-      const matchedDigitPairs = [...decodedSelection.matchAll(SELECTION_DECOMPOSE_PATTERN)];
+    if (rawParams[SELECTION_SEGMENT_INDEX]) {
+      const matchedHexSegments = [...rawParams[SELECTION_SEGMENT_INDEX].matchAll(SELECTION_DECOMPOSE_PATTERN)];
 
-      if (matchedDigitPairs.length) {
-        processedParams.selection = matchedDigitPairs.map((digitPair) => ({
-          pageNumber: Number.parseInt(digitPair[1]),
-          index: Number.parseInt(digitPair[2]),
-        }));
+      if (matchedHexSegments.length === 2) {
+        processedParams.selectionStart = decodePageNumberAndIndex(matchedHexSegments[0][0]);
+        processedParams.selectionEnd = decodePageNumberAndIndex(matchedHexSegments[1][0]);
       }
     }
 
     setLocationParams(processedParams);
   }, [handleSetLocationParams]);
+
+  const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = (blocks) => {
+    const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
+
+    return {
+      selectionStart: { pageNumber: blockIds[0].pageNumber, index: blockIds[0].index },
+      selectionEnd: {
+        pageNumber: blockIds[blockIds.length - 1].pageNumber,
+        index: blockIds[blockIds.length - 1].index,
+      },
+    };
+  };
 
   useEffect(() => {
     window.addEventListener("hashchange", handleHashChange);
@@ -96,7 +109,21 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   if (!locationParams) return null;
 
-  const context = { locationParams, setLocationParams: handleSetLocationParams };
+  const context = { locationParams, setLocationParams: handleSetLocationParams, synctexBlocksToSelectionParams };
 
   return <LocationContext.Provider value={context}>{children}</LocationContext.Provider>;
+}
+
+function encodePageNumberAndIndex(pageNumber: number, index: number) {
+  const asHexByte = (num: number) => (num & 0xff).toString(16).padStart(2, "0");
+  return `${asHexByte(pageNumber)}${asHexByte(index)}${asHexByte(index >> 8)}`;
+}
+
+function decodePageNumberAndIndex(s: string) {
+  if (s.length > 6) throw new Error("Pass exactly 6 hex characters");
+  const fromHex = (s: string) => Number(`0x${s}`);
+  const pageNumber = fromHex(s.substring(0, 2));
+  let index = fromHex(s.substring(2, 4));
+  index += fromHex(s.substring(4, 6)) << 8;
+  return { pageNumber, index };
 }
