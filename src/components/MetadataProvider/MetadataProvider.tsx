@@ -6,6 +6,7 @@ const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 export interface IVersionInfo {
   hash: string;
   date: string;
+  name?: string;
 }
 
 export interface IMetadata {

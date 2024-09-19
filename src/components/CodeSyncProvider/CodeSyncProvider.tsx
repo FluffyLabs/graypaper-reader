@@ -9,7 +9,7 @@ export interface ICodeSyncContext {
     startPageNumber: number,
     startIndex: number,
     endPageNumber: number,
-    endIndex: number
+    endIndex: number,
   ): ISynctexBlock[];
   getSectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;

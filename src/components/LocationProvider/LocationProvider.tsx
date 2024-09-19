@@ -25,6 +25,7 @@ const VERSION_SEGMENT_INDEX = 0;
 const SELECTION_SEGMENT_INDEX = 1;
 const SEGMENT_SEPARATOR = "/";
 const SELECTION_DECOMPOSE_PATTERN = /[0-9A-F]{6}/gi;
+const SHORT_COMMIT_HASH_LENGTH = 7; // as many as git uses for `git rev-parse --short`
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
@@ -34,7 +35,9 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const handleSetLocationParams = useCallback(
     (newParams?: ILocationParams) => {
-      const version = newParams?.version || metadata.latest;
+      const version =
+        newParams?.version.substring(0, SHORT_COMMIT_HASH_LENGTH) ||
+        metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
 
       const stringifiedParams = [];
 
@@ -49,7 +52,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
       window.location.hash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`;
     },
-    [metadata.latest],
+    [metadata],
   );
 
   const handleHashChange = useCallback(() => {
@@ -62,13 +65,19 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
     const rawParams = newHash.split(SEGMENT_SEPARATOR).slice(1);
 
-    if (!rawParams[VERSION_SEGMENT_INDEX]) {
+    const fullVersion = Object.keys(metadata.versions).find((version) =>
+      version.startsWith(rawParams[VERSION_SEGMENT_INDEX]),
+    );
+
+    if (!fullVersion) {
       handleSetLocationParams();
       return;
     }
 
     const processedParams: ILocationParams = {
-      version: rawParams[VERSION_SEGMENT_INDEX],
+      version:
+        Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ||
+        metadata.latest,
     };
 
     if (rawParams[SELECTION_SEGMENT_INDEX]) {
@@ -81,7 +90,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     }
 
     setLocationParams(processedParams);
-  }, [handleSetLocationParams]);
+  }, [handleSetLocationParams, metadata]);
 
   const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = (blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
