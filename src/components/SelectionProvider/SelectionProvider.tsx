@@ -105,7 +105,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
   }, [getSynctexBlockByPageAndIndex, locationParams.selection]);
 
   const pageNumber: number | null = useMemo(() => {
-    return selectedBlocks.length ? selectedBlocks[0].pageNumber : null;
+    return selectedBlocks[0]?.pageNumber;
   }, [selectedBlocks]);
 
   const context = {
