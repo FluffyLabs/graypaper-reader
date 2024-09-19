@@ -6,7 +6,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -16,6 +15,7 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 
 export interface ISelectionContext {
   selectionString: string;
+  setSelectionString: Dispatch<SetStateAction<string>>;
   selectedBlocks: ISynctexBlock[];
   pageNumber: number | null;
   scrollToSelection: boolean;
@@ -94,18 +94,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     });
   };
 
-  useEffect(() => {
-    const handleSelectionChange = () => {
-      setSelectionString(document.getSelection()?.toString() || "");
-    };
-
-    document.addEventListener("selectionchange", handleSelectionChange);
-
-    return () => {
-      document.removeEventListener("selectionchange", handleSelectionChange);
-    };
-  });
-
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selection) {
       return locationParams.selection
@@ -122,6 +110,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
 
   const context = {
     selectionString,
+    setSelectionString,
     selectedBlocks,
     pageNumber,
     scrollToSelection,

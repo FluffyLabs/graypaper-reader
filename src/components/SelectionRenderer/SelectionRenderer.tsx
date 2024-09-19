@@ -10,7 +10,7 @@ const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
   const { viewer, eventBus } = useContext(PdfContext) as IPdfContext;
-  const { selectedBlocks, pageNumber, scrollToSelection, setScrollToSelection } = useContext(
+  const { selectedBlocks, pageNumber, scrollToSelection, setScrollToSelection, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
   const [textLayerRendered, setTextLayerRendered] = useState<number[]>([]);
@@ -58,6 +58,12 @@ export function SelectionRenderer() {
   }, [eventBus]);
 
   useEffect(() => {
+    if (!selectedBlocks.length) {
+      setSelectionString("");
+    }
+  }, [selectedBlocks, setSelectionString]);
+
+  useEffect(() => {
     if (!viewer || !selectedBlocks.length || pageNumber === null || !textLayerRendered.includes(pageNumber)) return;
 
     const pageElement = viewer.getPageView(pageNumber - 1)?.div;
@@ -101,7 +107,9 @@ export function SelectionRenderer() {
         }
       }
     }
-  }, [selectedBlocks, pageNumber, viewer, textLayerRendered]);
+
+    setSelectionString(document.getSelection()?.toString() || "");
+  }, [selectedBlocks, pageNumber, viewer, textLayerRendered, setSelectionString]);
 
   if (!viewer || !pageOffset) return null;
 
