@@ -6,6 +6,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -91,9 +92,19 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       ...locationParams,
       selection: synctexBlocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index })),
     });
-
-    setSelectionString(selection.toString());
   };
+
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      setSelectionString(document.getSelection()?.toString() || "");
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  });
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selection) {
