@@ -1,9 +1,6 @@
-import { type ChangeEvent, type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
-import { Tooltip } from "react-tooltip";
-import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
-import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { NoteLink } from "./NoteLink";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -47,7 +44,7 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
   return (
     <li>
-      <NoteLink note={note as IHighlightNote} version={version} />
+      <NoteLink note={note as IHighlightNote} version={version} onEditNote={onEditNote} />
       {isEditing ? (
         <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={toggleEdit} autoFocus />
       ) : (
@@ -61,102 +58,5 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
         </button>
       ) : null}
     </li>
-  );
-}
-
-type NoteLinkProps = {
-  note: IHighlightNote;
-  version: string;
-};
-function NoteLink({ note, version }: NoteLinkProps) {
-  const [sectionTitle, setSectionTitle] = useState<string | null>("");
-  const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
-  const { selectedBlocks, setScrollToSelection } = useContext(SelectionContext) as ISelectionContext;
-  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
-    CodeSyncContext,
-  ) as ICodeSyncContext;
-  const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
-
-  const migrationFlag = version !== note.version;
-
-  useEffect(() => {
-    getSectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
-      setSectionTitle(sectionTitleFromSource),
-    );
-    getSubsectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
-      setSubsectionTitle(sectionTitleFromSource),
-    );
-  }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
-
-  const handleOriginalClick = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-
-      setLocationParams({
-        version: note.version,
-        selectionStart: note.selectionStart,
-        selectionEnd: note.selectionEnd,
-      });
-      setScrollToSelection(true);
-    },
-    [note, setLocationParams, setScrollToSelection],
-  );
-
-  const handleNoteTitleClick = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-
-      setScrollToSelection(true);
-      setLocationParams({
-        ...locationParams,
-        selectionStart: note.selectionStart,
-        selectionEnd: note.selectionEnd,
-      });
-    },
-    [setScrollToSelection, note, locationParams, setLocationParams],
-  );
-
-  const handleMigrateClick = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-
-      if (!selectedBlocks.length) {
-        return alert("Please make a selection to migrate the note to.");
-      }
-    },
-    [selectedBlocks],
-  );
-
-  return (
-    <div>
-      {migrationFlag && (
-        <a
-          href={"#"}
-          data-tooltip-id="note-link"
-          data-tooltip-content="This note was created in a different version. Click here to see in original context."
-          data-tooltip-place="top"
-          className="icon"
-          onClick={handleOriginalClick}
-        >
-          ⚠
-        </a>
-      )}
-      <a href="#" onClick={handleNoteTitleClick}>
-        p. {note.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
-        {subsectionTitle ? `> ${subsectionTitle}` : null}
-      </a>
-      {migrationFlag && (
-        <a
-          onClick={handleMigrateClick}
-          data-tooltip-id="note-link"
-          data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
-          data-tooltip-place="top"
-          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
-        >
-          (migrate)
-        </a>
-      )}
-      <Tooltip id="note-link" />
-    </div>
   );
 }
