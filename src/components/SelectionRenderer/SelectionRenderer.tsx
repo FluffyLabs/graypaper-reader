@@ -1,4 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
+import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
 import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
@@ -14,6 +15,7 @@ export function SelectionRenderer() {
     SelectionContext,
   ) as ISelectionContext;
   const [textLayerRendered, setTextLayerRendered] = useState<number[]>([]);
+  const previousScrollToSelection = usePrevious(scrollToSelection);
 
   const pageOffset = useMemo(() => {
     if (!viewer || pageNumber === null) return null;
@@ -27,7 +29,7 @@ export function SelectionRenderer() {
   }, [pageNumber, viewer]);
 
   useEffect(() => {
-    if (!viewer) return;
+    if (!viewer || (!previousScrollToSelection && scrollToSelection)) return;
 
     if (scrollToSelection) {
       if (selectedBlocks.length && pageOffset) {
@@ -43,7 +45,7 @@ export function SelectionRenderer() {
 
       setScrollToSelection(false);
     }
-  }, [selectedBlocks, viewer, pageOffset, scrollToSelection, setScrollToSelection]);
+  }, [selectedBlocks, viewer, pageOffset, scrollToSelection, setScrollToSelection, previousScrollToSelection]);
 
   useEffect(() => {
     const handleTextLayerRendered = (e: { pageNumber: number }) => {

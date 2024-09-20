@@ -1,6 +1,7 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
@@ -76,6 +77,7 @@ function NoteLink({ note, version }: NoteLinkProps) {
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
+  const { setLocationParams } = useContext(LocationContext) as ILocationContext;
 
   const migrationFlag = version !== note.version;
 
@@ -91,6 +93,20 @@ function NoteLink({ note, version }: NoteLinkProps) {
   }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
   const handleMigrateClick = () => {};
+
+  const handleOriginalClick = useCallback<MouseEventHandler>(
+    (e) => {
+      e.preventDefault();
+
+      setLocationParams({
+        version: note.version,
+        selectionStart: note.blocks[0],
+        selectionEnd: note.blocks[note.blocks.length - 1],
+      });
+      setScrollToSelection(true);
+    },
+    [note, setLocationParams, setScrollToSelection],
+  );
 
   const handleNoteTitleClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -111,6 +127,7 @@ function NoteLink({ note, version }: NoteLinkProps) {
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
           className="icon"
+          onClick={handleOriginalClick}
         >
           ⚠
         </a>
