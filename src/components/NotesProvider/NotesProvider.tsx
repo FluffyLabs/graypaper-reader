@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
-import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ISynctexBlockId } from "../CodeSyncProvider/CodeSyncProvider";
 
 const LOCAL_STORAGE_KEY = "notes";
 const HISTORY_STEPS_LIMIT = 10;
@@ -29,7 +29,8 @@ export interface IPointNote extends INote {
 }
 
 export interface IHighlightNote extends INote {
-  blocks: ISynctexBlock[];
+  selectionStart: ISynctexBlockId;
+  selectionEnd: ISynctexBlockId;
   selectionString: string;
 }
 

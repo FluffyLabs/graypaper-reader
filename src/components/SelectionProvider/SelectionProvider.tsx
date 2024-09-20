@@ -23,7 +23,6 @@ export interface ISelectionContext {
   handleViewerMouseDown: MouseEventHandler;
   handleViewerMouseUp: MouseEventHandler;
   handleClearSelection: () => void;
-  handleSelectBlocks: (blocks: ISynctexBlock[]) => void;
 }
 
 interface ISelectionProviderProps {
@@ -46,16 +45,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     const { selectionStart, selectionEnd, ...otherParams } = locationParams;
     setLocationParams(otherParams);
   }, [setLocationParams, locationParams]);
-
-  const handleSelectBlocks: ISelectionContext["handleSelectBlocks"] = useCallback(
-    (blocks) => {
-      setLocationParams({
-        ...locationParams,
-        ...synctexBlocksToSelectionParams(blocks),
-      });
-    },
-    [locationParams, setLocationParams, synctexBlocksToSelectionParams],
-  );
 
   const handleViewerMouseDown = () => handleClearSelection();
 
@@ -98,12 +87,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selectionStart && locationParams.selectionEnd) {
-      return getSynctexBlockRange(
-        locationParams.selectionStart.pageNumber,
-        locationParams.selectionStart.index,
-        locationParams.selectionEnd.pageNumber,
-        locationParams.selectionEnd.index,
-      );
+      return getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
     }
 
     return [];
@@ -123,7 +107,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     handleViewerMouseDown,
     handleViewerMouseUp,
     handleClearSelection,
-    handleSelectBlocks,
   };
 
   return <SelectionContext.Provider value={context}>{children}</SelectionContext.Provider>;

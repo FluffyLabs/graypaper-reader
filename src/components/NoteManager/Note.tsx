@@ -71,28 +71,22 @@ type NoteLinkProps = {
 function NoteLink({ note, version }: NoteLinkProps) {
   const [sectionTitle, setSectionTitle] = useState<string | null>("");
   const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
-  const { selectedBlocks, handleSelectBlocks, setScrollToSelection } = useContext(
-    SelectionContext,
-  ) as ISelectionContext;
+  const { selectedBlocks, setScrollToSelection } = useContext(SelectionContext) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
-  const { setLocationParams } = useContext(LocationContext) as ILocationContext;
+  const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
 
   const migrationFlag = version !== note.version;
 
   useEffect(() => {
-    if ("blocks" in note) {
-      getSectionTitleAtSynctexBlock(note.blocks[0]).then((sectionTitleFromSource) =>
-        setSectionTitle(sectionTitleFromSource),
-      );
-      getSubsectionTitleAtSynctexBlock(note.blocks[0]).then((sectionTitleFromSource) =>
-        setSubsectionTitle(sectionTitleFromSource),
-      );
-    }
+    getSectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+      setSectionTitle(sectionTitleFromSource),
+    );
+    getSubsectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+      setSubsectionTitle(sectionTitleFromSource),
+    );
   }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
-
-  const handleMigrateClick = () => {};
 
   const handleOriginalClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -100,8 +94,8 @@ function NoteLink({ note, version }: NoteLinkProps) {
 
       setLocationParams({
         version: note.version,
-        selectionStart: note.blocks[0],
-        selectionEnd: note.blocks[note.blocks.length - 1],
+        selectionStart: note.selectionStart,
+        selectionEnd: note.selectionEnd,
       });
       setScrollToSelection(true);
     },
@@ -113,9 +107,24 @@ function NoteLink({ note, version }: NoteLinkProps) {
       e.preventDefault();
 
       setScrollToSelection(true);
-      handleSelectBlocks(note.blocks);
+      setLocationParams({
+        ...locationParams,
+        selectionStart: note.selectionStart,
+        selectionEnd: note.selectionEnd,
+      });
     },
-    [setScrollToSelection, handleSelectBlocks, note.blocks],
+    [setScrollToSelection, note, locationParams, setLocationParams],
+  );
+
+  const handleMigrateClick = useCallback<MouseEventHandler>(
+    (e) => {
+      e.preventDefault();
+
+      if (!selectedBlocks.length) {
+        return alert("Please make a selection to migrate the note to.");
+      }
+    },
+    [selectedBlocks],
   );
 
   return (
