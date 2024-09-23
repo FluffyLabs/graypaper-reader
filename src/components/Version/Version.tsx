@@ -64,7 +64,7 @@ type OptionProps = { id: string; version: VersionInfo; latest: string };
 function Option({ id, version, latest }: OptionProps) {
   const date = new Date(version.date);
   let latestText = "Latest";
-  let versionText = "Version";
+  let versionText = "v";
   if (version.name) {
     latestText += `: ${version.name}`;
     versionText += `: ${version.name}`;
