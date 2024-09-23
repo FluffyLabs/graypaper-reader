@@ -11,6 +11,7 @@ import { PdfViewer } from "./components/PdfViewer/PdfViewer";
 import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
+import { ZoomControls } from "./components/ZoomControls/ZoomControls";
 
 export function App() {
   const {
@@ -31,6 +32,7 @@ export function App() {
                   <div className="pdf-viewer-container">
                     <PdfViewer key={version} />
                   </div>
+                  <ZoomControls />
                 </>
               }
               right={<Sidebar zoom={browserZoom} />}
