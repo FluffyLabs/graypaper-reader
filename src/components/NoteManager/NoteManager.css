@@ -33,10 +33,10 @@
   text-decoration: underline;
   cursor: pointer;
   margin-left: 3px;
-  color: #444;
+  color: #ddd;
 }
 .note-manager .update.disabled {
   text-decoration: none;
-  color: #ddd;
+  color: #444;
   cursor: initial;
 }

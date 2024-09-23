@@ -1,5 +1,6 @@
 import "./HighlightNote.css";
-import { useState } from "react";
+import { useContext, useMemo, useState } from "react";
+import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import type { IHighlightNote } from "../../../NotesProvider/NotesProvider";
 
@@ -10,21 +11,28 @@ interface HighlightNoteProps {
 
 export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
-  const rightmostEdge = Math.max(...note.blocks.map(({ left, width }) => left + width));
+  const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
+
+  const blocks = useMemo(
+    () => getSynctexBlockRange(note.selectionStart, note.selectionEnd),
+    [note, getSynctexBlockRange],
+  );
+
+  const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
 
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
 
   return (
     <>
-      <Highlighter blocks={note.blocks} pageOffset={pageOffset} />
+      <Highlighter blocks={blocks} pageOffset={pageOffset} />
 
       <div
         className="highlight-note-content"
         ref={handleNoteContentRef}
         style={{
           left: `${pageOffset.left + rightmostEdge * pageOffset.width}px`,
-          top: `${pageOffset.top + pageOffset.height * note.blocks[note.blocks.length - 1].top - noteContentHeight}px`,
+          top: `${pageOffset.top + pageOffset.height * blocks[blocks.length - 1].top - noteContentHeight}px`,
         }}
       >
         {note.content}

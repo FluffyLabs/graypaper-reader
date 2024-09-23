@@ -2,11 +2,17 @@ import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useCodeStore } from "./hooks/useCodeStore";
 
+export interface ISynctexBlockId {
+  pageNumber: number;
+  index: number;
+}
+
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
-  getSynctexBlockByPageAndIndex(pageNumber: number, index: number): ISynctexBlock | null;
-  getSectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
-  getSubsectionTitleAtSynctexBlock(block: ISynctexBlock): Promise<string | null>;
+  getSynctexBlockById(blockId: ISynctexBlockId): ISynctexBlock | null;
+  getSynctexBlockRange(startBlockId: ISynctexBlockId, endBlockId: ISynctexBlockId): ISynctexBlock[];
+  getSectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
+  getSubsectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
 }
 
 interface ISynctexData {
@@ -18,15 +24,13 @@ interface ISynctexData {
   };
 }
 
-export interface ISynctexBlock {
+export interface ISynctexBlock extends ISynctexBlockId {
   fileId: number;
   line: number;
   left: number;
   top: number;
   width: number;
   height: number;
-  pageNumber: number;
-  index: number;
 }
 
 interface ICodeSyncProviderProps {
@@ -92,18 +96,28 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
 
       return lastMatch || null;
     },
-    getSynctexBlockByPageAndIndex(pageNumber, index) {
+    getSynctexBlockById(blockId) {
       if (!synctexData) return null;
 
       try {
-        return synctexData.pages[pageNumber][index];
+        return synctexData.pages[blockId.pageNumber][blockId.index];
       } catch (e) {
-        console.warn(`Synctex block not found at page ${pageNumber} and index ${index}.`, e);
+        console.warn(`Synctex block not found at page ${blockId.pageNumber} and index ${blockId.index}.`, e);
       }
 
       return null;
     },
-    async getSectionTitleAtSynctexBlock(block) {
+    getSynctexBlockRange(startBlockId, endBlockId) {
+      if (!synctexData || startBlockId.pageNumber !== endBlockId.pageNumber) return [];
+
+      // todo: for now we assume selections are within one page
+      return synctexData.pages[startBlockId.pageNumber].slice(startBlockId.index, endBlockId.index + 1);
+    },
+    async getSectionTitleAtSynctexBlock(blockId) {
+      const block = context.getSynctexBlockById(blockId);
+
+      if (!block) return null;
+
       const sourceFilePath = getFilePathById(block.fileId);
 
       if (!sourceFilePath) return null;
@@ -124,7 +138,11 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
 
       return null;
     },
-    async getSubsectionTitleAtSynctexBlock(block) {
+    async getSubsectionTitleAtSynctexBlock(blockId) {
+      const block = context.getSynctexBlockById(blockId);
+
+      if (!block) return null;
+
       const sourceFilePath = getFilePathById(block.fileId);
 
       if (!sourceFilePath) return null;

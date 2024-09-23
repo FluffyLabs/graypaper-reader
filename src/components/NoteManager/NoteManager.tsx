@@ -9,9 +9,7 @@ const DEFAULT_AUTHOR = "";
 
 export function NoteManager() {
   const [noteContent, setNoteContent] = useState("");
-  const {
-    locationParams: { version },
-  } = useContext(LocationContext) as ILocationContext;
+  const { locationParams } = useContext(LocationContext) as ILocationContext;
   const { notes, canUndo, handleAddNote, handleDeleteNote, handleUpdateNote, handleUndo } = useContext(
     NotesContext,
   ) as INotesContext;
@@ -20,7 +18,12 @@ export function NoteManager() {
   ) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
-    if (selectedBlocks.length === 0 || pageNumber === null)
+    if (
+      selectedBlocks.length === 0 ||
+      pageNumber === null ||
+      !locationParams.selectionStart ||
+      !locationParams.selectionEnd
+    )
       throw new Error("Attempted saving a note without selection.");
 
     const newNote: IHighlightNote = {
@@ -28,14 +31,15 @@ export function NoteManager() {
       date: Date.now(),
       author: DEFAULT_AUTHOR,
       pageNumber,
-      blocks: selectedBlocks,
+      selectionStart: locationParams.selectionStart,
+      selectionEnd: locationParams.selectionEnd,
       selectionString,
-      version,
+      version: locationParams.version,
     };
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectionString, selectedBlocks, handleAddNote, handleClearSelection, version]);
+  }, [noteContent, pageNumber, selectionString, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -95,7 +99,7 @@ export function NoteManager() {
       <ul>
         {notes.map((note) => (
           <Note
-            version={version}
+            version={locationParams.version}
             key={note.date}
             note={note}
             onEditNote={handleUpdateNote}

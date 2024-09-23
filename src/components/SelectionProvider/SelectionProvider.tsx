@@ -1,10 +1,12 @@
 import {
+  type Dispatch,
   type MouseEventHandler,
   type ReactNode,
+  type SetStateAction,
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useState,
 } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
@@ -13,8 +15,11 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 
 export interface ISelectionContext {
   selectionString: string;
+  setSelectionString: Dispatch<SetStateAction<string>>;
   selectedBlocks: ISynctexBlock[];
   pageNumber: number | null;
+  scrollToSelection: boolean;
+  setScrollToSelection: Dispatch<SetStateAction<boolean>>;
   handleViewerMouseDown: MouseEventHandler;
   handleViewerMouseUp: MouseEventHandler;
   handleClearSelection: () => void;
@@ -29,17 +34,17 @@ export const SelectionContext = createContext<ISelectionContext | null>(null);
 // todo: solve the problem of multi-page selections
 
 export function SelectionProvider({ children }: ISelectionProviderProps) {
-  const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
+  const { locationParams, setLocationParams, synctexBlocksToSelectionParams } = useContext(
+    LocationContext,
+  ) as ILocationContext;
+  const { getSynctexBlockAtLocation, getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [selectionString, setSelectionString] = useState<string>("");
-  const [selectedBlocks, setSelectedBlocks] = useState<ISynctexBlock[]>([]);
-  const [pageNumber, setPageNumber] = useState<number | null>(null);
-  const { getSynctexBlockAtLocation, getSynctexBlockByPageAndIndex } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const [scrollToSelection, setScrollToSelection] = useState<boolean>(true);
 
   const handleClearSelection = useCallback(() => {
-    setSelectionString("");
-    setSelectedBlocks([]);
-    setPageNumber(null);
-  }, []);
+    const { selectionStart, selectionEnd, ...otherParams } = locationParams;
+    setLocationParams(otherParams);
+  }, [setLocationParams, locationParams]);
 
   const handleViewerMouseDown = () => handleClearSelection();
 
@@ -72,33 +77,33 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       }
     }
 
+    if (!synctexBlocks.length) return;
+
     setLocationParams({
       ...locationParams,
-      selection: synctexBlocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index })),
+      ...synctexBlocksToSelectionParams(synctexBlocks),
     });
-
-    // setSelectionString(selection.toString());
-    // setSelectedBlocks(synctexBlocks);
-    // setPageNumber(pageNumber);
   };
 
-  useEffect(() => {
-    if (locationParams.selection) {
-      setSelectedBlocks(
-        locationParams.selection
-          .map(({ pageNumber, index }) => getSynctexBlockByPageAndIndex(pageNumber, index))
-          .filter((block) => block !== null),
-      );
-      setPageNumber(locationParams.selection[0].pageNumber);
-    } else {
-      handleClearSelection();
+  const selectedBlocks: ISynctexBlock[] = useMemo(() => {
+    if (locationParams.selectionStart && locationParams.selectionEnd) {
+      return getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
     }
-  }, [locationParams.selection, getSynctexBlockByPageAndIndex, handleClearSelection]);
+
+    return [];
+  }, [getSynctexBlockRange, locationParams.selectionStart, locationParams.selectionEnd]);
+
+  const pageNumber: number | null = useMemo(() => {
+    return selectedBlocks[0]?.pageNumber || null;
+  }, [selectedBlocks]);
 
   const context = {
     selectionString,
+    setSelectionString,
     selectedBlocks,
     pageNumber,
+    scrollToSelection,
+    setScrollToSelection,
     handleViewerMouseDown,
     handleViewerMouseUp,
     handleClearSelection,

@@ -1,52 +1,47 @@
 import "./Selection.css";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import type { InDocLocation, InDocSelection, Section } from "../../utils/IframeController";
-import { serializeLocation } from "../../utils/location";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
 type SelectionProps = {
-  version: string;
-  location: InDocLocation;
-  selection: InDocSelection | null;
   activeTab: string;
   switchTab: (tab: "notes") => void;
 };
 
-const useIsMount = () => {
-  const isMountRef = useRef(true);
-  useEffect(() => {
-    isMountRef.current = false;
-  }, []);
-  return isMountRef.current;
-};
-
-export function Selection({ version, location, selection, activeTab, switchTab }: SelectionProps) {
+export function Selection({ activeTab, switchTab }: SelectionProps) {
+  const { selectedBlocks, selectionString, pageNumber } = useContext(SelectionContext) as ISelectionContext;
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
   const [linkCreated, setLinkCreated] = useState(false);
   const [selectionCopied, setSelectionCopied] = useState(false);
-  const isMount = useIsMount();
+  const [sectionTitle, setSectionTitle] = useState<string | null>("");
+  const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
 
-  // update hash with every selection
   useEffect(() => {
-    if (isMount) {
-      return;
-    }
+    if (!selectedBlocks.length) return;
 
-    const loc = selection ? `#${serializeLocation(version, selection)}` : "";
-    window.history.replaceState(null, "", document.location.pathname + loc);
-  }, [selection, version, isMount]);
+    getSectionTitleAtSynctexBlock(selectedBlocks[0]).then((sectionTitleFromSource) =>
+      setSectionTitle(sectionTitleFromSource),
+    );
+    getSubsectionTitleAtSynctexBlock(selectedBlocks[0]).then((sectionTitleFromSource) =>
+      setSubsectionTitle(sectionTitleFromSource),
+    );
+  }, [selectedBlocks, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
   const createLink = useCallback(() => {
-    if (!selection) {
+    if (!selectedBlocks.length) {
       return;
     }
 
     window.navigator.clipboard.writeText(window.location.toString());
     setLinkCreated(true);
     window.setTimeout(() => setLinkCreated(false), 2000);
-  }, [selection]);
+  }, [selectedBlocks]);
 
   const openGpt = useCallback(() => {
-    const text = selection?.selection.textContent;
+    const text = selectionString;
 
     const prompt = `
       Please provide a deep explanation based only on the GrayPaper for the following quote:
@@ -62,14 +57,11 @@ export function Selection({ version, location, selection, activeTab, switchTab }
     a.target = "_blank";
     a.href = "https://chatgpt.com/g/g-ZuDULS0ij-dzemmer";
     a.click();
-  }, [selection]);
+  }, [selectionString]);
 
   const openNotes = useCallback(() => {
     switchTab("notes");
   }, [switchTab]);
-
-  // location is either the constant location from the selection or dynamic location.
-  const loc = selection ? selection.location : location;
 
   const Button = ({ onClick, tooltip, children }: { onClick: () => void; tooltip: string; children: ReactNode }) => {
     return (
@@ -77,7 +69,7 @@ export function Selection({ version, location, selection, activeTab, switchTab }
         data-tooltip-id="selection-tooltip"
         data-tooltip-content={tooltip}
         data-tooltip-place="bottom"
-        disabled={!selection}
+        disabled={!selectedBlocks.length}
         onClick={onClick}
       >
         {children}
@@ -87,13 +79,16 @@ export function Selection({ version, location, selection, activeTab, switchTab }
 
   return (
     <div className="selection">
-      <blockquote>
-        {selection ? Array.from(selection.selection.children).map((x) => x.textContent) : "[no text selected]"}
-      </blockquote>
+      <blockquote>{selectionString}</blockquote>
       <small>
-        <span>
-          p:{Number(`0x${loc.page}`)} &gt; {displaySection(loc.section)} &gt; {displaySection(loc.subSection)}
-        </span>
+        {selectedBlocks.length ? (
+          <span>
+            p. {pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
+            {subsectionTitle ? `> ${subsectionTitle}` : null}
+          </span>
+        ) : (
+          <>&nbsp;</>
+        )}
       </small>
       <div className="actions">
         <Button onClick={createLink} tooltip="Create a shareable link to the selected content.">
@@ -114,12 +109,4 @@ export function Selection({ version, location, selection, activeTab, switchTab }
       </div>
     </div>
   );
-}
-
-function displaySection(section?: Section) {
-  if (!section) {
-    return "??";
-  }
-
-  return `${section.number} ${section.title}`;
 }
