@@ -41,7 +41,6 @@ export function ZoomControls() {
   };
 
   const handleScaleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (!viewer) return;
     setScaleInputValue(e.target.valueAsNumber || "");
   };
 
