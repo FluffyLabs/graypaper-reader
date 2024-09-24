@@ -9,14 +9,14 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 import { SelectionRenderer } from "../SelectionRenderer/SelectionRenderer";
 
 const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
-export const MIN_SCALE = 0.1;
+export const MIN_SCALE = 0.25;
 export const MAX_SCALE = 2.0;
 const WHEEL_SCALE_MULTIPLIER = 0.001;
 
 export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pagesLoaded, setPagesLoaded] = useState<boolean>(false);
-  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer } = useContext(
+  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale } = useContext(
     PdfContext,
   ) as IPdfContext;
   const { handleViewerMouseDown, handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
@@ -105,8 +105,8 @@ export function PdfViewer() {
       >
         {pagesLoaded ? (
           <>
-            <NoteRenderer />
-            <SelectionRenderer />
+            <NoteRenderer key={`${scale}-NoteRenderer`} />
+            <SelectionRenderer key={`${scale}-SelectionRenderer`} />
           </>
         ) : null}
       </div>
