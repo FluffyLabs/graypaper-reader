@@ -87,7 +87,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
 
   useEffect(() => {
     if (viewer) {
-      setScale(Math.round(viewer.currentScale));
+      setScale(viewer.currentScale);
     }
   }, [viewer]);
 
