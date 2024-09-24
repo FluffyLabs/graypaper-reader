@@ -12,14 +12,12 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ZoomControls } from "./components/ZoomControls/ZoomControls";
-import { useBrowserZoom } from "./hooks/useBrowserZoom";
 
 export function App() {
   const {
     locationParams: { version },
   } = useContext(LocationContext) as ILocationContext;
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
-  const browserZoom = useBrowserZoom();
 
   return (
     <NotesProvider>
@@ -36,7 +34,7 @@ export function App() {
                   <ZoomControls />
                 </>
               }
-              right={<Sidebar zoom={browserZoom} />}
+              right={<Sidebar />}
             />
           </SelectionProvider>
         </CodeSyncProvider>
