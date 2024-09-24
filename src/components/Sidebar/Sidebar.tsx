@@ -8,11 +8,7 @@ import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
 
-type SidebarProps = {
-  zoom: number;
-};
-
-export function Sidebar({ zoom }: SidebarProps) {
+export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
 
   // store seletected tab in LS
