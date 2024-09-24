@@ -26,7 +26,7 @@ export function ThemeToggler({ iframeCtrl }: { iframeCtrl: IframeController }) {
   }, [iframeCtrl]);
 
   return (
-    <div className="theme-toggler no-zoom">
+    <div className="theme-toggler">
       <button data-tooltip-id="theme" data-tooltip-content="Toggle Gray Paper theme" onClick={toggleTheme}>
         💡
       </button>

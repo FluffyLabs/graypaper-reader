@@ -33,7 +33,7 @@ export function Sidebar({ zoom }: SidebarProps) {
 
   return (
     <div className="sidebar">
-      <div className="content no-zoom" style={{ height: `${100 * zoom}%`, width: `${100 * zoom}` }}>
+      <div className="content">
         <Selection activeTab={tab} switchTab={setTab} />
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} />
         <Version />

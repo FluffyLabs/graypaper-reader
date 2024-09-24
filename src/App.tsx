@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import "./App.css";
 
 import { Banner } from "./components/Banner/Banner";
@@ -12,6 +12,7 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ZoomControls } from "./components/ZoomControls/ZoomControls";
+import { useBrowserZoom } from "./hooks/useBrowserZoom";
 
 export function App() {
   const {
@@ -42,26 +43,4 @@ export function App() {
       </PdfProvider>
     </NotesProvider>
   );
-}
-
-function useBrowserZoom() {
-  const [initialPixelRatio, _] = useState(window.devicePixelRatio > 2.0 ? 2.0 : window.devicePixelRatio);
-  const [browserZoom, setBrowserZoom] = useState(window.devicePixelRatio / initialPixelRatio);
-
-  useEffect(() => {
-    const $styles = document.createElement("style");
-    $styles.type = "text/css";
-    document.head.appendChild($styles);
-    const listener = () => {
-      const zoom = window.devicePixelRatio / initialPixelRatio;
-      $styles.textContent = `.no-zoom { transform-origin: top left; transform: scale(${1.0 / zoom}); }`;
-      setBrowserZoom(zoom);
-    };
-    window.addEventListener("resize", listener);
-    return () => {
-      window.removeEventListener("resize", listener);
-    };
-  }, [initialPixelRatio]);
-
-  return browserZoom;
 }
