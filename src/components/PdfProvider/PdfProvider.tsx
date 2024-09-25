@@ -21,6 +21,8 @@ export interface IPdfContext extends IPdfServices {
   viewer: pdfJsViewer.PDFViewer | undefined;
   setViewer: Dispatch<SetStateAction<pdfJsViewer.PDFViewer | undefined>>;
   scale: number;
+  lightThemeEnabled: boolean;
+  setLightThemeEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 interface IPdfProviderProps {
@@ -32,6 +34,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
   const [scale, setScale] = useState<number>(0);
+  const [lightThemeEnabled, setLightThemeEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     async function setupPdfServices() {
@@ -96,6 +99,8 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     viewer,
     setViewer,
     scale,
+    lightThemeEnabled,
+    setLightThemeEnabled,
   };
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;

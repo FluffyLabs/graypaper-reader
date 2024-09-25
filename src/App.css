@@ -10,6 +10,7 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  background-color: #999;
 }
 
 .viewer {
@@ -21,4 +22,13 @@
   flex-direction: column;
   justify-content: start;
   overflow: hidden;
+}
+
+.controls {
+  position: absolute;
+  right: 50px;
+  bottom: 30px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
 }
