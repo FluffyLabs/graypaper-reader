@@ -30,11 +30,27 @@ interface IPdfProviderProps {
   children: ReactNode;
 }
 
+const THEME_LOCAL_STORAGE_KEY = "lightThemeEnabled";
+
+function loadThemeSettingFromLocalStorage() {
+  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "false";
+
+  return localStorageValue.toLowerCase() === "true";
+}
+
+function saveThemeSettingToLocalStorage(value: boolean) {
+  try {
+    window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, value.toString());
+  } catch (e) {
+    alert(`Unable to save theme setting: ${e}`);
+  }
+}
+
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
   const [scale, setScale] = useState<number>(0);
-  const [lightThemeEnabled, setLightThemeEnabled] = useState<boolean>(false);
+  const [lightThemeEnabled, setLightThemeEnabled] = useState<boolean>(loadThemeSettingFromLocalStorage());
 
   useEffect(() => {
     async function setupPdfServices() {
@@ -93,6 +109,10 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
       setScale(viewer.currentScale);
     }
   }, [viewer]);
+
+  useEffect(() => {
+    saveThemeSettingToLocalStorage(lightThemeEnabled);
+  }, [lightThemeEnabled]);
 
   const context = {
     ...services,

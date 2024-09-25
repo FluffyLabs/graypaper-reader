@@ -92,14 +92,14 @@ export function PdfViewer() {
   }, [rootElement, eventBus, linkService, findController, pdfDocument, setViewer]);
 
   useEffect(() => {
-    if (!rootElement) return;
+    if (!rootElement || !viewer) return;
 
     if (lightThemeEnabled) {
       rootElement.querySelector(".pdfViewer")?.classList.add("light-theme");
     } else {
       rootElement.querySelector(".pdfViewer")?.classList.remove("light-theme");
     }
-  }, [lightThemeEnabled, rootElement]);
+  }, [lightThemeEnabled, rootElement, viewer]);
 
   if (!pdfDocument) return <div>Loading...</div>;
 
