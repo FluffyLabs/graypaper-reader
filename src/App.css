@@ -26,8 +26,8 @@
 
 .controls {
   position: absolute;
-  right: 50px;
-  bottom: 30px;
+  right: 35px;
+  bottom: 15px;
   display: flex;
   gap: 30px;
   align-items: center;

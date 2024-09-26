@@ -55,9 +55,16 @@ export function Version() {
 type OptionProps = { id: string; version: IVersionInfo; latest: string };
 function Option({ id, version, latest }: OptionProps) {
   const date = new Date(version.date);
+  let latestText = "Latest";
+  let versionText = "v";
+  if (version.name) {
+    latestText += `: ${version.name}`;
+    versionText += `: ${version.name}`;
+  }
   return (
     <option value={id}>
-      {version.hash === latest ? "Latest" : "Version"} {shortHash(version.hash)} ({date.toLocaleDateString()})
+      {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
+      {version.legacy ? " [will open in old reader]" : null}
     </option>
   );
 }

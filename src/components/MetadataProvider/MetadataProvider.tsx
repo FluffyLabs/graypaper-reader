@@ -2,11 +2,13 @@ import { type ReactNode, createContext, useEffect, useState } from "react";
 
 const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
+const LEGACY_READER_HOST = "https://old.graypaper.fluffylabs.dev"; // todo: replace with actual url
 
 export interface IVersionInfo {
   hash: string;
   date: string;
   name?: string;
+  legacy?: boolean;
 }
 
 export interface IMetadata {
@@ -22,7 +24,10 @@ export interface IMetadataContext {
     pdf: (version: string) => string;
     synctex: (version: string) => string;
     texDirectory: (version: string) => string;
+    legacyReaderVersion: (version: string) => string;
+    legacyReaderRedirect: (hash: string) => string;
   };
+  isLegacy(version: string): boolean;
 }
 
 interface IMetadataProviderProps {
@@ -54,6 +59,16 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
       pdf: (version) => `${METADATA_HOST}/graypaper-${version}.pdf`,
       synctex: (version) => `${METADATA_HOST}/graypaper-${version}.synctex.json`,
       texDirectory: (version) => `${METADATA_HOST}/tex-${version}/`,
+      legacyReaderVersion: (version) => {
+        const encodedParam = btoa(unescape(encodeURIComponent(JSON.stringify([version.substr(0, 10)]))));
+        return `${LEGACY_READER_HOST}/#${encodedParam}`;
+      },
+      legacyReaderRedirect: (hash) => {
+        return `${LEGACY_READER_HOST}/${hash}`;
+      },
+    },
+    isLegacy(version) {
+      return !!metadata.versions[version].legacy;
     },
   };
 
