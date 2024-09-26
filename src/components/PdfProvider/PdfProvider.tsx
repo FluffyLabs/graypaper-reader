@@ -20,6 +20,7 @@ export interface IPdfServices {
 export interface IPdfContext extends IPdfServices {
   viewer: pdfJsViewer.PDFViewer | undefined;
   setViewer: Dispatch<SetStateAction<pdfJsViewer.PDFViewer | undefined>>;
+  scale: number;
 }
 
 interface IPdfProviderProps {
@@ -30,6 +31,7 @@ interface IPdfProviderProps {
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
+  const [scale, setScale] = useState<number>(0);
 
   useEffect(() => {
     async function setupPdfServices() {
@@ -67,10 +69,33 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     }
   }, [pdfUrl]);
 
+  useEffect(() => {
+    if (!services.eventBus || !viewer) return;
+
+    const eventBus = services.eventBus;
+
+    const handleScaleChanging = () => {
+      setScale(viewer.currentScale);
+    };
+
+    eventBus.on("scalechanging", handleScaleChanging);
+
+    return () => {
+      eventBus.off("scalechanging", handleScaleChanging);
+    };
+  }, [services.eventBus, viewer]);
+
+  useEffect(() => {
+    if (viewer) {
+      setScale(viewer.currentScale);
+    }
+  }, [viewer]);
+
   const context = {
     ...services,
     viewer,
     setViewer,
+    scale,
   };
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;

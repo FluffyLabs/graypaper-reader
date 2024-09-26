@@ -1,0 +1,12 @@
+.zoom-controls {
+  position: absolute;
+  right: 50px;
+  bottom: 30px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.zoom-controls input {
+  max-width: 75px;
+}

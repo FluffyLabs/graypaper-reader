@@ -8,11 +8,7 @@ import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
 
-type SidebarProps = {
-  zoom: number;
-};
-
-export function Sidebar({ zoom }: SidebarProps) {
+export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
 
   // store seletected tab in LS
@@ -33,7 +29,7 @@ export function Sidebar({ zoom }: SidebarProps) {
 
   return (
     <div className="sidebar">
-      <div className="content no-zoom" style={{ height: `${100 * zoom}%`, width: `${100 * zoom}` }}>
+      <div className="content">
         <Selection activeTab={tab} switchTab={setTab} />
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} />
         <Version />
