@@ -2,6 +2,7 @@ import { type ReactNode, createContext, useCallback, useEffect, useMemo, useStat
 import type { ISynctexBlockId } from "../CodeSyncProvider/CodeSyncProvider";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
+const LEGACY_NOTES_LS_KEY = "notes";
 const HISTORY_STEPS_LIMIT = 10;
 
 export const NotesContext = createContext<INotesContext | null>(null);
@@ -9,11 +10,14 @@ export const NotesContext = createContext<INotesContext | null>(null);
 export interface INotesContext {
   notes: TAnyNote[];
   canUndo: boolean;
+  hasLegacyNotes: boolean;
   handleAddNote(note: TAnyNote): void;
   handleUpdateNote(noteToReplace: TAnyNote, newNote: TAnyNote): void;
   handleDeleteNote(note: TAnyNote): void;
   handleUndo(): void;
   handleImport(jsonStr: string): void;
+  handleExport(): void;
+  handleLegacyExport(): void;
 }
 
 export interface INote {
@@ -75,6 +79,10 @@ function loadFromLocalStorage(): TAnyNote[] {
   return parseJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
 }
 
+function loadLegacyFromLocalStorage(): string | null {
+  return window.localStorage.getItem(LEGACY_NOTES_LS_KEY);
+}
+
 function saveToLocalStorage(notes: TAnyNote[]): void {
   try {
     window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
@@ -86,7 +94,7 @@ function saveToLocalStorage(notes: TAnyNote[]): void {
 export function NotesProvider({ children }: INotesProviderProps) {
   const [notes, setNotes] = useState<TAnyNote[]>(loadFromLocalStorage());
   const [history, setHistory] = useState<TAnyNote[][]>([]);
-
+  const [hasLegacyNotes, setHasLegacyNotes] = useState<boolean>(false);
   const canUndo = useMemo(() => history.length > 0, [history]);
 
   const pushCurrentStateToHistory = useCallback(() => {
@@ -97,9 +105,15 @@ export function NotesProvider({ children }: INotesProviderProps) {
     saveToLocalStorage(notes);
   }, [notes]);
 
+  useEffect(() => {
+    const localStorageContent = loadLegacyFromLocalStorage();
+    setHasLegacyNotes(!!localStorageContent && localStorageContent !== "[]");
+  });
+
   const context: INotesContext = {
     notes,
     canUndo,
+    hasLegacyNotes,
     handleAddNote: useCallback(
       (note) => {
         pushCurrentStateToHistory();
@@ -133,6 +147,19 @@ export function NotesProvider({ children }: INotesProviderProps) {
       if (overwrite) {
         setNotes(newNotes);
       }
+    },
+    handleExport() {
+      const strNotes = JSON.stringify(notes);
+      const link = document.createElement("a");
+      link.setAttribute("href", `data:application/json;charset=utf-8,${encodeURIComponent(strNotes)}`);
+      link.setAttribute("download", `graypaper-notes-${new Date().toISOString()}.json`);
+      link.click();
+    },
+    handleLegacyExport() {
+      const link = document.createElement("a");
+      link.setAttribute("href", `data:application/json;charset=utf-8,${loadLegacyFromLocalStorage()}`);
+      link.setAttribute("download", `old-graypaper-notes-${new Date().toISOString()}.json`);
+      link.click();
     },
   };
 

@@ -2,7 +2,7 @@ import { type ReactNode, createContext, useEffect, useState } from "react";
 
 const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
-const LEGACY_READER_HOST = "https://old-graypaper.fluffylabs.dev"; // todo: replace with actual url
+export const LEGACY_READER_HOST = "https://old-graypaper.fluffylabs.dev";
 
 export interface IVersionInfo {
   hash: string;

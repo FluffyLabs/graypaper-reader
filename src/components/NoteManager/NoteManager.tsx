@@ -1,6 +1,8 @@
 import { type ChangeEventHandler, useCallback, useContext, useEffect, useRef, useState } from "react";
 import "./NoteManager.css";
+import { Tooltip } from "react-tooltip";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
@@ -10,9 +12,18 @@ const DEFAULT_AUTHOR = "";
 export function NoteManager() {
   const [noteContent, setNoteContent] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notes, canUndo, handleAddNote, handleDeleteNote, handleUpdateNote, handleUndo, handleImport } = useContext(
-    NotesContext,
-  ) as INotesContext;
+  const {
+    notes,
+    canUndo,
+    hasLegacyNotes,
+    handleAddNote,
+    handleDeleteNote,
+    handleUpdateNote,
+    handleUndo,
+    handleImport,
+    handleExport,
+    handleLegacyExport,
+  } = useContext(NotesContext) as INotesContext;
   const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
     SelectionContext,
   ) as ISelectionContext;
@@ -46,14 +57,6 @@ export function NoteManager() {
       setNoteContent("");
     }
   }, [selectedBlocks]);
-
-  const handleExportClick = useCallback(() => {
-    const strNotes = JSON.stringify(notes);
-    const link = document.createElement("a");
-    link.setAttribute("href", `data:application/json;charset=utf-8,${encodeURIComponent(strNotes)}`);
-    link.setAttribute("download", `graypaper-notes-${new Date().toISOString()}.json`);
-    link.click();
-  }, [notes]);
 
   const fileImport = useRef<HTMLInputElement>(null);
   const onImport = useCallback(() => {
@@ -107,9 +110,20 @@ export function NoteManager() {
       <div className="actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
         <button onClick={onImport}>import notes</button>
-        <button onClick={handleExportClick}>export notes</button>
+        <button onClick={handleExport}>export notes</button>
+        {hasLegacyNotes ? (
+          <button
+            data-tooltip-id="legacy-export-tooltip"
+            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}/.`}
+            data-tooltip-place="bottom"
+            onClick={handleLegacyExport}
+          >
+            export old notes
+          </button>
+        ) : null}
         <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ opacity: 0 }} />
       </div>
+      <Tooltip id="legacy-export-tooltip" />
     </div>
   );
 }
