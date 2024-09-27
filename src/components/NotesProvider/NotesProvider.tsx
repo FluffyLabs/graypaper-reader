@@ -13,6 +13,7 @@ export interface INotesContext {
   handleUpdateNote(noteToReplace: TAnyNote, newNote: TAnyNote): void;
   handleDeleteNote(note: TAnyNote): void;
   handleUndo(): void;
+  handleImport(jsonStr: string): void;
 }
 
 export interface INote {
@@ -40,20 +41,38 @@ interface INotesProviderProps {
   children: ReactNode;
 }
 
-function loadFromLocalStorage(): TAnyNote[] {
+function isINote(arg: unknown): arg is INote {
+  if (typeof arg !== "object" || arg === null) return false;
+  if ("content" in arg && typeof arg.content !== "string") return false;
+  if ("date" in arg && typeof arg.date !== "number") return false;
+  if ("author" in arg && typeof arg.author !== "string") return false;
+  if ("pageNumber" in arg && typeof arg.pageNumber !== "number") return false;
+  if ("version" in arg && typeof arg.version !== "string") return false;
+
+  return true;
+}
+
+function parseJson(jsonStr: string): TAnyNote[] {
   try {
-    const notes = window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]";
-    const parsed = JSON.parse(notes) as TAnyNote[];
+    const parsed = JSON.parse(jsonStr) as TAnyNote[];
 
     if (!Array.isArray(parsed)) {
-      throw new Error(`'${LOCAL_STORAGE_KEY}' in local storage should be an array.`);
+      throw new Error("Notes JSON should be an array.");
+    }
+
+    if (!parsed.every(isINote)) {
+      throw new Error("Invalid note format.");
     }
 
     return parsed;
   } catch (e) {
-    console.warn("Error loading notes from local storage.", e);
+    console.error("Error loading notes.", e);
     return [];
   }
+}
+
+function loadFromLocalStorage(): TAnyNote[] {
+  return parseJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
 }
 
 function saveToLocalStorage(notes: TAnyNote[]): void {
@@ -74,35 +93,6 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setHistory((history) => [...history, notes].slice(-1 * HISTORY_STEPS_LIMIT));
   }, [notes]);
 
-  const handleAddNote = useCallback(
-    (note: TAnyNote) => {
-      pushCurrentStateToHistory();
-      setNotes((notes) => [...notes, note]);
-    },
-    [pushCurrentStateToHistory],
-  );
-
-  const handleUpdateNote = useCallback(
-    (noteToReplace: TAnyNote, newNote: TAnyNote) => {
-      pushCurrentStateToHistory();
-      setNotes((notes) => notes.map((note) => (noteToReplace === note ? newNote : note)));
-    },
-    [pushCurrentStateToHistory],
-  );
-
-  const handleDeleteNote = useCallback(
-    (noteToDelete: TAnyNote) => {
-      pushCurrentStateToHistory();
-      setNotes((notes) => notes.filter((note) => note !== noteToDelete));
-    },
-    [pushCurrentStateToHistory],
-  );
-
-  const handleUndo = useCallback(() => {
-    setNotes(history[history.length - 1]);
-    setHistory((history) => history.slice(0, history.length - 1));
-  }, [history]);
-
   useEffect(() => {
     saveToLocalStorage(notes);
   }, [notes]);
@@ -110,10 +100,40 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const context: INotesContext = {
     notes,
     canUndo,
-    handleAddNote,
-    handleUpdateNote,
-    handleDeleteNote,
-    handleUndo,
+    handleAddNote: useCallback(
+      (note) => {
+        pushCurrentStateToHistory();
+        setNotes((notes) => [...notes, note]);
+      },
+      [pushCurrentStateToHistory],
+    ),
+    handleUpdateNote: useCallback(
+      (noteToReplace, newNote) => {
+        pushCurrentStateToHistory();
+        setNotes((notes) => notes.map((note) => (noteToReplace === note ? newNote : note)));
+      },
+      [pushCurrentStateToHistory],
+    ),
+    handleDeleteNote: useCallback(
+      (noteToDelete) => {
+        pushCurrentStateToHistory();
+        setNotes((notes) => notes.filter((note) => note !== noteToDelete));
+      },
+      [pushCurrentStateToHistory],
+    ),
+    handleUndo: useCallback(() => {
+      setNotes(history[history.length - 1]);
+      setHistory((history) => history.slice(0, history.length - 1));
+    }, [history]),
+    handleImport(jsonStr) {
+      const newNotes = parseJson(jsonStr);
+      const overwrite = confirm(
+        `Your current notes will be replaced with ${newNotes.length} notes loaded from the file. Continue?`,
+      );
+      if (overwrite) {
+        setNotes(newNotes);
+      }
+    },
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
