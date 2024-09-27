@@ -7,3 +7,7 @@
   overflow: auto;
   padding: inherit;
 }
+
+.pdfViewer.light-theme {
+  filter: invert(1);
+}

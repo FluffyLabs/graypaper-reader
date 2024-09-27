@@ -66,6 +66,7 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
         setSynctexData(fromJson);
       } catch (error) {
         console.error("Failed to load synctex data for this version.", error);
+        setSynctexData(undefined);
       }
     }
 

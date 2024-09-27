@@ -18,6 +18,8 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     [note, getSynctexBlockRange],
   );
 
+  if (!blocks.length) return null;
+
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
 
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>

@@ -16,9 +16,8 @@ const WHEEL_SCALE_MULTIPLIER = 0.001;
 export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pagesLoaded, setPagesLoaded] = useState<boolean>(false);
-  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale } = useContext(
-    PdfContext,
-  ) as IPdfContext;
+  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale, lightThemeEnabled } =
+    useContext(PdfContext) as IPdfContext;
   const { handleViewerMouseDown, handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
 
   const handleWheel: WheelEventHandler = (e) => {
@@ -91,6 +90,16 @@ export function PdfViewer() {
       setPagesLoaded(false);
     };
   }, [rootElement, eventBus, linkService, findController, pdfDocument, setViewer]);
+
+  useEffect(() => {
+    if (!rootElement || !viewer) return;
+
+    if (lightThemeEnabled) {
+      rootElement.querySelector(".pdfViewer")?.classList.add("light-theme");
+    } else {
+      rootElement.querySelector(".pdfViewer")?.classList.remove("light-theme");
+    }
+  }, [lightThemeEnabled, rootElement, viewer]);
 
   if (!pdfDocument) return <div>Loading...</div>;
 
