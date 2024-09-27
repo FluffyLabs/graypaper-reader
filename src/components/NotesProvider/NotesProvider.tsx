@@ -1,7 +1,7 @@
 import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
 import type { ISynctexBlockId } from "../CodeSyncProvider/CodeSyncProvider";
 
-const LOCAL_STORAGE_KEY = "notes";
+const LOCAL_STORAGE_KEY = "notes-v2";
 const HISTORY_STEPS_LIMIT = 10;
 
 export const NotesContext = createContext<INotesContext | null>(null);
