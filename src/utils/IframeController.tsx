@@ -100,7 +100,7 @@ export class IframeController {
 
   goToLocation(hash: string): [(() => void) | null, string | null] {
     const loc = deserializeLocation(hash);
-    if (!loc) {
+    if (!loc || !loc.selection) {
       return [null, null];
     }
 
@@ -112,7 +112,7 @@ export class IframeController {
         x
           .substring(DIV_PATTERN.length, x.indexOf(">") - 1)
           .split(" ")
-          .join("."),
+          .join(".")
       );
 
     const $page = this.doc.querySelector(`div[data-page-no="${loc.page}"] > .pc`);
