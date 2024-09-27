@@ -24,7 +24,6 @@ export interface IMetadataContext {
     pdf: (version: string) => string;
     synctex: (version: string) => string;
     texDirectory: (version: string) => string;
-    legacyReaderVersion: (version: string) => string;
     legacyReaderRedirect: (hash: string) => string;
   };
 }
@@ -58,10 +57,6 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
       pdf: (version) => `${METADATA_HOST}/graypaper-${version}.pdf`,
       synctex: (version) => `${METADATA_HOST}/graypaper-${version}.synctex.json`,
       texDirectory: (version) => `${METADATA_HOST}/tex-${version}/`,
-      legacyReaderVersion: (version) => {
-        const encodedParam = btoa(unescape(encodeURIComponent(JSON.stringify([version.substr(0, 10)]))));
-        return `${LEGACY_READER_HOST}/#${encodedParam}`;
-      },
       legacyReaderRedirect: (hash) => {
         return `${LEGACY_READER_HOST}/${hash}`;
       },

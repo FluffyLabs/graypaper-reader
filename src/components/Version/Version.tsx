@@ -5,26 +5,20 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
-  const { metadata, urlGetters } = useContext(MetadataContext) as IMetadataContext;
+  const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const {
     locationParams: { version },
     setLocationParams,
   } = useContext(LocationContext) as ILocationContext;
-  const versions = Object.keys(metadata.versions);
+  const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
   const currentVersionHash = metadata.versions[version].hash;
 
   const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     (e) => {
-      const version = e.target.value;
-
-      if (metadata.versions[version].legacy) {
-        window.open(urlGetters.legacyReaderVersion(version), "_blank");
-        return;
-      }
-
-      setLocationParams({ version });
+      console.log(e.target.value);
+      setLocationParams({ version: e.target.value });
     },
-    [setLocationParams, metadata, urlGetters],
+    [setLocationParams],
   );
 
   return (
@@ -41,7 +35,7 @@ export function Version() {
       )}
       <select onChange={handleChange} value={version}>
         {versions.map((v) => (
-          <Option key={v} id={v} version={metadata.versions[v]} latest={metadata.latest} />
+          <Option key={v.hash} id={v.hash} version={v} latest={metadata.latest} />
         ))}
       </select>
       <a
@@ -71,7 +65,6 @@ function Option({ id, version, latest }: OptionProps) {
   return (
     <option value={id}>
       {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
-      {version.legacy ? " [will open in old reader]" : null}
     </option>
   );
 }
