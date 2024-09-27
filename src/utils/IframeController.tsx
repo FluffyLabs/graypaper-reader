@@ -112,7 +112,7 @@ export class IframeController {
         x
           .substring(DIV_PATTERN.length, x.indexOf(">") - 1)
           .split(" ")
-          .join(".")
+          .join("."),
       );
 
     const $page = this.doc.querySelector(`div[data-page-no="${loc.page}"] > .pc`);
