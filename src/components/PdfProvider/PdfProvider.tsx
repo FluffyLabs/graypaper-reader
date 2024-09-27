@@ -42,7 +42,7 @@ function saveThemeSettingToLocalStorage(value: boolean) {
   try {
     window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, value.toString());
   } catch (e) {
-    alert(`Unable to save theme setting: ${e}`);
+    console.error(`Unable to save theme setting: ${e}`);
   }
 }
 
