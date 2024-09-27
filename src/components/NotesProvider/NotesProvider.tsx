@@ -41,13 +41,13 @@ interface INotesProviderProps {
   children: ReactNode;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-function isINote(arg: any): arg is INote {
-  if (typeof arg.content !== "string") return false;
-  if (typeof arg.date !== "number") return false;
-  if (typeof arg.author !== "string") return false;
-  if (typeof arg.pageNumber !== "number") return false;
-  if (typeof arg.version !== "string") return false;
+function isINote(arg: unknown): arg is INote {
+  if (typeof arg !== "object" || arg === null) return false;
+  if ("content" in arg && typeof arg.content !== "string") return false;
+  if ("date" in arg && typeof arg.date !== "number") return false;
+  if ("author" in arg && typeof arg.author !== "string") return false;
+  if ("pageNumber" in arg && typeof arg.pageNumber !== "number") return false;
+  if ("version" in arg && typeof arg.version !== "string") return false;
 
   return true;
 }
