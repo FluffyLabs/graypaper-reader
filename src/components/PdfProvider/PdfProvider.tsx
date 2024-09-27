@@ -30,7 +30,7 @@ interface IPdfProviderProps {
   children: ReactNode;
 }
 
-const THEME_LOCAL_STORAGE_KEY = "lightThemeEnabled";
+const THEME_LOCAL_STORAGE_KEY = "light-theme-enabled";
 
 function loadThemeSettingFromLocalStorage() {
   const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "false";
