@@ -34,15 +34,7 @@ export const LocationContext = createContext<ILocationContext | null>(null);
 export function LocationProvider({ children }: ILocationProviderProps) {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const [locationParams, setLocationParams] = useState<ILocationParams>();
-  const { isLegacy, urlGetters } = useContext(MetadataContext) as IMetadataContext;
-
-  useEffect(() => {
-    if (!locationParams) return;
-
-    if (isLegacy(locationParams.version)) {
-      window.location.replace(urlGetters.legacyReaderVersion(locationParams.version));
-    }
-  }, [locationParams, isLegacy, urlGetters]);
+  const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
   useEffect(() => {
     if (

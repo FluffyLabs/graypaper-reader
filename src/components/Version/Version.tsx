@@ -1,11 +1,11 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
-import { useCallback, useContext } from "react";
+import { type ChangeEventHandler, useCallback, useContext } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
-  const { metadata } = useContext(MetadataContext) as IMetadataContext;
+  const { metadata, urlGetters } = useContext(MetadataContext) as IMetadataContext;
   const {
     locationParams: { version },
     setLocationParams,
@@ -13,11 +13,18 @@ export function Version() {
   const versions = Object.keys(metadata.versions);
   const currentVersionHash = metadata.versions[version].hash;
 
-  const handleChange = useCallback(
-    (version: string) => {
+  const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
+    (e) => {
+      const version = e.target.value;
+
+      if (metadata.versions[version].legacy) {
+        window.open(urlGetters.legacyReaderVersion(version), "_blank");
+        return;
+      }
+
       setLocationParams({ version });
     },
-    [setLocationParams],
+    [setLocationParams, metadata, urlGetters],
   );
 
   return (
@@ -32,7 +39,7 @@ export function Version() {
           ⚠
         </span>
       )}
-      <select onChange={(ev) => handleChange(ev.target.value)} value={version}>
+      <select onChange={handleChange} value={version}>
         {versions.map((v) => (
           <Option key={v} id={v} version={metadata.versions[v]} latest={metadata.latest} />
         ))}

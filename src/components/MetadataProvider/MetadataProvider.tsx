@@ -27,7 +27,6 @@ export interface IMetadataContext {
     legacyReaderVersion: (version: string) => string;
     legacyReaderRedirect: (hash: string) => string;
   };
-  isLegacy(version: string): boolean;
 }
 
 interface IMetadataProviderProps {
@@ -66,9 +65,6 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
       legacyReaderRedirect: (hash) => {
         return `${LEGACY_READER_HOST}/${hash}`;
       },
-    },
-    isLegacy(version) {
-      return !!metadata.versions[version].legacy;
     },
   };
 
