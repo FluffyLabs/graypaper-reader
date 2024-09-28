@@ -1,6 +1,6 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
-import { useCallback, useContext } from "react";
+import { type ChangeEventHandler, useCallback, useContext } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
@@ -10,12 +10,13 @@ export function Version() {
     locationParams: { version },
     setLocationParams,
   } = useContext(LocationContext) as ILocationContext;
-  const versions = Object.keys(metadata.versions);
+  const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
   const currentVersionHash = metadata.versions[version].hash;
 
-  const handleChange = useCallback(
-    (version: string) => {
-      setLocationParams({ version });
+  const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
+    (e) => {
+      console.log(e.target.value);
+      setLocationParams({ version: e.target.value });
     },
     [setLocationParams],
   );
@@ -32,9 +33,9 @@ export function Version() {
           ⚠
         </span>
       )}
-      <select onChange={(ev) => handleChange(ev.target.value)} value={version}>
+      <select onChange={handleChange} value={version}>
         {versions.map((v) => (
-          <Option key={v} id={v} version={metadata.versions[v]} latest={metadata.latest} />
+          <Option key={v.hash} id={v.hash} version={v} latest={metadata.latest} />
         ))}
       </select>
       <a
@@ -55,9 +56,15 @@ export function Version() {
 type OptionProps = { id: string; version: IVersionInfo; latest: string };
 function Option({ id, version, latest }: OptionProps) {
   const date = new Date(version.date);
+  let latestText = "Latest";
+  let versionText = "v";
+  if (version.name) {
+    latestText += `: ${version.name}`;
+    versionText += `: ${version.name}`;
+  }
   return (
     <option value={id}>
-      {version.hash === latest ? "Latest" : "Version"} {shortHash(version.hash)} ({date.toLocaleDateString()})
+      {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
     </option>
   );
 }

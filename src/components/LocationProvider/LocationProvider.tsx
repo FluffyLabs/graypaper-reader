@@ -1,4 +1,5 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { deserializeLocation } from "../../utils/location";
 import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
@@ -26,12 +27,24 @@ const SELECTION_SEGMENT_INDEX = 1;
 const SEGMENT_SEPARATOR = "/";
 const SELECTION_DECOMPOSE_PATTERN = /[0-9A-F]{6}/gi;
 const SHORT_COMMIT_HASH_LENGTH = 7; // as many as git uses for `git rev-parse --short`
+const BASE64_VALIDATION_REGEX = /^#[-A-Za-z0-9+/]*={0,3}$/;
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
 export function LocationProvider({ children }: ILocationProviderProps) {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const [locationParams, setLocationParams] = useState<ILocationParams>();
+  const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
+
+  useEffect(() => {
+    if (
+      !window.location.hash.startsWith("#/") &&
+      BASE64_VALIDATION_REGEX.test(window.location.hash) &&
+      deserializeLocation(window.location.hash)
+    ) {
+      window.location.replace(urlGetters.legacyReaderRedirect(window.location.hash));
+    }
+  }, [urlGetters]);
 
   const handleSetLocationParams = useCallback(
     (newParams?: ILocationParams) => {

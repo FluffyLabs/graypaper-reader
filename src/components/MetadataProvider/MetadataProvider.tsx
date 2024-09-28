@@ -2,11 +2,13 @@ import { type ReactNode, createContext, useEffect, useState } from "react";
 
 const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
+export const LEGACY_READER_HOST = "https://old-graypaper.fluffylabs.dev";
 
 export interface IVersionInfo {
   hash: string;
   date: string;
   name?: string;
+  legacy?: boolean;
 }
 
 export interface IMetadata {
@@ -22,6 +24,7 @@ export interface IMetadataContext {
     pdf: (version: string) => string;
     synctex: (version: string) => string;
     texDirectory: (version: string) => string;
+    legacyReaderRedirect: (hash: string) => string;
   };
 }
 
@@ -54,6 +57,9 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
       pdf: (version) => `${METADATA_HOST}/graypaper-${version}.pdf`,
       synctex: (version) => `${METADATA_HOST}/graypaper-${version}.synctex.json`,
       texDirectory: (version) => `${METADATA_HOST}/tex-${version}/`,
+      legacyReaderRedirect: (hash) => {
+        return `${LEGACY_READER_HOST}/${hash}`;
+      },
     },
   };
 
