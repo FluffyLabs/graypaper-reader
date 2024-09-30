@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
   "files": {
-    "ignore": ["dist/**", "graypaper-archive/**"]
+    "ignore": ["dist/**", "graypaper-archive/**", "public/**"]
   },
   "formatter": {
     "enabled": true,

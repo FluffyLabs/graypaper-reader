@@ -1,14 +1,14 @@
 import "./Banner.css";
 
 import { Tooltip } from "react-tooltip";
-import github from "./github-mark.png";
-import logo from "./logo-128x128.png";
+import logo from "./black-h-64.png";
+import github from "./github-mark-white.png";
 
 export function Banner() {
   return (
     <div className="banner">
       <a href="https://fluffylabs.dev">
-        <img src={logo} width="45" height="45" alt="Fluffy Labs" />
+        <img src={logo} width="144" height="64" alt="Fluffy Labs" />
       </a>
       <a href="https://graypaper.fluffylabs.dev">Gray Paper Reader</a>
 

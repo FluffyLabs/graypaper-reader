@@ -6,7 +6,8 @@ import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter"
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
-const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 229, b: 255 };
+const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
+const SELECTION_OPACITY = 0.5;
 const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
@@ -115,7 +116,9 @@ export function SelectionRenderer() {
 
   if (!viewer || !pageOffset) return null;
 
-  return <Highlighter blocks={selectedBlocks} pageOffset={pageOffset} color={SELECTION_COLOR} />;
+  return (
+    <Highlighter blocks={selectedBlocks} pageOffset={pageOffset} color={SELECTION_COLOR} opacity={SELECTION_OPACITY} />
+  );
 }
 
 function rectanglesIntersect(r1: DOMRect, r2: DOMRect) {
