@@ -20,9 +20,9 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
 
 export function NoteRenderer() {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
-  const viewerRootEventHandlerRef = useRef<() => void>();
   const { notes } = useContext(NotesContext) as INotesContext;
   const { viewer } = useContext(PdfContext) as IPdfContext;
+  const [pageOffsets, setPageOffsets] = useState<DOMRect[]>([]);
 
   const handleViewChanged = useThrottle(() => {
     if (!viewer) return;
@@ -35,27 +35,35 @@ export function NoteRenderer() {
       }
     }
 
-    setVisiblePages((visiblePages) =>
-      visiblePages.join(";") !== visiblePagesAfterEvent.join(";") ? visiblePagesAfterEvent : visiblePages,
-    );
+    if (visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
+      setVisiblePages(visiblePagesAfterEvent);
+    }
+
+    const newPageOffsets: DOMRect[] = [];
+
+    for (const page of visiblePagesAfterEvent) {
+      const pageElement = viewer.getPageView(page - 1)?.div;
+
+      newPageOffsets[page] = subtractBorder(
+        new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
+        pageElement,
+      );
+    }
+
+    setPageOffsets(newPageOffsets);
   }, SCROLL_THROTTLE_DELAY_MS);
 
   useEffect(() => {
-    if (!viewer) return;
+    if (!viewer?.container) return;
 
-    if (viewer.container) {
-      if (viewerRootEventHandlerRef.current) {
-        viewer.container.removeEventListener("scroll", viewerRootEventHandlerRef.current);
-      }
+    const handler = handleViewChanged;
 
-      viewer.container.addEventListener("scroll", handleViewChanged);
-      viewerRootEventHandlerRef.current = handleViewChanged;
-    }
+    viewer.container.addEventListener("scroll", handler);
+    window.addEventListener("resize", handler);
 
     return () => {
-      if (viewerRootEventHandlerRef.current) {
-        viewer.container.removeEventListener("scroll", viewerRootEventHandlerRef.current);
-      }
+      viewer.container.removeEventListener("scroll", handler);
+      window.removeEventListener("resize", handler);
     };
   }, [viewer, handleViewChanged]);
 
@@ -72,21 +80,12 @@ export function NoteRenderer() {
   return notesToRender.map((note) => {
     if (!viewer) return;
 
-    const pageElement = viewer.getPageView(note.pageNumber - 1)?.div;
-
-    if (!pageElement) return null;
-
-    const pageOffset = subtractBorder(
-      new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement,
-    );
-
     if ("left" in note && "top" in note) {
-      return <PointNote note={note} pageOffset={pageOffset} key={note.date} />;
+      return <PointNote note={note} pageOffset={pageOffsets[note.pageNumber]} key={note.date} />;
     }
 
     if ("selectionStart" in note && "selectionEnd" in note && "selectionString" in note) {
-      return <HighlightNote note={note} pageOffset={pageOffset} key={note.date} />;
+      return <HighlightNote note={note} pageOffset={pageOffsets[note.pageNumber]} key={note.date} />;
     }
 
     throw new Error("Unidentified note type.");

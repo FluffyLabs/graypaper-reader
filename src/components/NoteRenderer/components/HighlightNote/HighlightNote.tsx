@@ -21,6 +21,18 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   if (!blocks.length) return null;
 
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
+  const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
+
+  const style =
+    rightmostEdge > 0.5
+      ? {
+          left: `${pageOffset.left + rightmostEdge * pageOffset.width}px`,
+          top: `${pageOffset.top + pageOffset.height * blocks[blocks.length - 1].top - noteContentHeight}px`,
+        }
+      : {
+          right: `${pageOffset.right - pageOffset.width + (1 - leftmostEdge) * pageOffset.width}px`,
+          top: `${pageOffset.top + pageOffset.height * blocks[blocks.length - 1].top - noteContentHeight}px`,
+        };
 
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
@@ -29,14 +41,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     <>
       <Highlighter blocks={blocks} pageOffset={pageOffset} />
 
-      <div
-        className="highlight-note-content"
-        ref={handleNoteContentRef}
-        style={{
-          left: `${pageOffset.left + rightmostEdge * pageOffset.width}px`,
-          top: `${pageOffset.top + pageOffset.height * blocks[blocks.length - 1].top - noteContentHeight}px`,
-        }}
-      >
+      <div className="highlight-note-content" ref={handleNoteContentRef} style={style}>
         {note.content}
       </div>
     </>
