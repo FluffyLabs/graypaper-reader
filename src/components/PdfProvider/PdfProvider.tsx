@@ -2,9 +2,12 @@ import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { createContext, useEffect, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import { useThrottle } from "../../hooks/useThrottle";
+import { subtractBorder } from "../../utils/subtractBorder";
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
+const DIMENSION_ADJUSTMENT_THROTTLE_MS = 100;
 
 export const PdfContext = createContext<IPdfContext | null>(null);
 
@@ -23,6 +26,8 @@ export interface IPdfContext extends IPdfServices {
   scale: number;
   lightThemeEnabled: boolean;
   setLightThemeEnabled: Dispatch<SetStateAction<boolean>>;
+  visiblePages: number[];
+  pageOffsets: DOMRect[];
 }
 
 interface IPdfProviderProps {
@@ -46,11 +51,23 @@ function saveThemeSettingToLocalStorage(value: boolean) {
   }
 }
 
+function isPartlyInViewport({ top, bottom }: DOMRect) {
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+  return (
+    (top <= 0 && bottom > 0) ||
+    (top < viewportHeight && bottom >= viewportHeight) ||
+    (top > 0 && bottom < viewportHeight)
+  );
+}
+
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
   const [scale, setScale] = useState<number>(0);
   const [lightThemeEnabled, setLightThemeEnabled] = useState<boolean>(loadThemeSettingFromLocalStorage());
+  const [visiblePages, setVisiblePages] = useState<number[]>([]);
+  const [pageOffsets, setPageOffsets] = useState<DOMRect[]>([]);
 
   useEffect(() => {
     async function setupPdfServices() {
@@ -91,7 +108,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   useEffect(() => {
     if (!services.eventBus || !viewer) return;
 
-    const eventBus = services.eventBus;
+    const { eventBus } = services;
 
     const handleScaleChanging = () => {
       setScale(viewer.currentScale);
@@ -102,7 +119,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     return () => {
       eventBus.off("scalechanging", handleScaleChanging);
     };
-  }, [services.eventBus, viewer]);
+  }, [services, viewer]);
 
   useEffect(() => {
     if (viewer) {
@@ -114,6 +131,55 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     saveThemeSettingToLocalStorage(lightThemeEnabled);
   }, [lightThemeEnabled]);
 
+  const handleViewChanged = useThrottle(() => {
+    if (!viewer) return;
+
+    const visiblePagesAfterEvent: number[] = [];
+
+    for (let i = 0; i < viewer.pagesCount; i++) {
+      if (isPartlyInViewport(viewer.getPageView(i).div.getBoundingClientRect())) {
+        visiblePagesAfterEvent.push(i + 1); // using page numbers instead of indices
+      }
+    }
+
+    if (visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
+      setVisiblePages(visiblePagesAfterEvent);
+    }
+
+    const newPageOffsets: DOMRect[] = [];
+
+    for (const page of visiblePagesAfterEvent) {
+      const pageElement = viewer.getPageView(page - 1)?.div;
+
+      newPageOffsets[page] = subtractBorder(
+        new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
+        pageElement,
+      );
+    }
+
+    setPageOffsets(newPageOffsets);
+  }, DIMENSION_ADJUSTMENT_THROTTLE_MS);
+
+  useEffect(() => {
+    if (!viewer?.container) return;
+
+    const handler = handleViewChanged;
+    const resizeObserver = new ResizeObserver(handler);
+
+    viewer.container.addEventListener("scroll", handler);
+    resizeObserver.observe(viewer.container);
+
+    return () => {
+      viewer.container.removeEventListener("scroll", handler);
+      resizeObserver.disconnect();
+    };
+  }, [viewer, handleViewChanged]);
+
+  useEffect(() => {
+    if (!viewer) return;
+    viewer.container.dispatchEvent(new CustomEvent("scroll"));
+  }, [viewer]);
+
   const context = {
     ...services,
     viewer,
@@ -121,6 +187,8 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     scale,
     lightThemeEnabled,
     setLightThemeEnabled,
+    visiblePages,
+    pageOffsets,
   };
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;

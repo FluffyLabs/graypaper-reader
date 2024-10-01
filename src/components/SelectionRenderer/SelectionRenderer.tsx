@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
 import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
@@ -14,19 +14,11 @@ export function SelectionRenderer() {
   const { selectedBlocks, pageNumber, scrollToSelection, setScrollToSelection, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
+  const { pageOffsets } = useContext(PdfContext) as IPdfContext;
   const [textLayerRendered, setTextLayerRendered] = useState<number[]>([]);
   const previousScrollToSelection = usePrevious(scrollToSelection);
 
-  const pageOffset = useMemo(() => {
-    if (!viewer || pageNumber === null) return null;
-
-    const pageElement = viewer.getPageView(pageNumber - 1)?.div;
-
-    return subtractBorder(
-      new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-      pageElement,
-    );
-  }, [pageNumber, viewer]);
+  const pageOffset = pageNumber ? pageOffsets[pageNumber] : null;
 
   useEffect(() => {
     if (!viewer || (!previousScrollToSelection && scrollToSelection)) return;
