@@ -45,3 +45,8 @@
   border-radius: 3px;
   outline: none;
 }
+@media (prefers-color-scheme: light) {
+  .controls button {
+    background: #ccc;
+  }
+}
