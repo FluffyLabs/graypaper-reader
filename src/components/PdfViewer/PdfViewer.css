@@ -9,5 +9,5 @@
 }
 
 .pdfViewer.light-theme {
-  filter: invert(1);
+  filter: invert(1) contrast(1.5);
 }
