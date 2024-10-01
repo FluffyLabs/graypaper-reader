@@ -148,7 +148,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
 
     const newPageOffsets: DOMRect[] = [];
 
-    for (const page of visiblePagesAfterEvent) {
+    for (let page = 1; page <= viewer.pagesCount; page++) {
       const pageElement = viewer.getPageView(page - 1)?.div;
 
       newPageOffsets[page] = subtractBorder(

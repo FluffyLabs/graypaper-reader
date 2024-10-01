@@ -61,7 +61,7 @@ export function SelectionRenderer() {
     if (!viewer || !selectedBlocks.length || pageNumber === null || !textLayerRendered.includes(pageNumber)) return;
 
     const pageElement = viewer.getPageView(pageNumber - 1)?.div;
-    const textLayerElement = viewer.getPageView(pageNumber - 1)?.textLayer.div;
+    const textLayerElement = viewer.getPageView(pageNumber - 1)?.textLayer?.div;
     const selection = document.getSelection();
 
     if (!pageElement || !textLayerElement || !selection) return;
