@@ -11,3 +11,9 @@
 .pdfViewer.light-theme {
   filter: invert(1) contrast(1.5);
 }
+.pdfViewer.light-theme .textLayer ::selection {
+  background: rgba(255, 155, 50, 0.25);
+}
+.pdfViewer .textLayer ::selection {
+  background: rgba(0, 50, 255, 0.25);
+}

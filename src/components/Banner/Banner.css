@@ -5,11 +5,12 @@
   right: 0;
   overflow: hidden;
   display: flex;
-  height: 35px;
+  height: 40px;
   padding: 5px 10px;
-  background: #55b3f3;
+  background: #000;
   font-size: 20px;
-  color: #fff;
+  color: #2ee;
+  font-family: monospace;
 }
 
 .banner img {
@@ -18,6 +19,7 @@
 
 .banner a {
   color: inherit;
+  line-height: 40px;
 }
 .banner a:hover {
   color: inherit;
@@ -36,4 +38,7 @@
 .banner img {
   width: auto;
   height: 100%;
+}
+.banner img.github {
+  filter: invert(1);
 }

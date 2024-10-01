@@ -1,9 +1,15 @@
 .zoom-controls {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
   align-items: center;
 }
-
-.zoom-controls input {
-  max-width: 40px;
+.zoom-controls button {
+  width: 25px;
+  height: 25px;
+  cursor: zoom-out;
 }
+.zoom-controls button.in {
+  cursor: zoom-in;
+}
+

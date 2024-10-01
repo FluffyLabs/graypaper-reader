@@ -9,6 +9,9 @@ interface HighlightNoteProps {
   pageOffset: DOMRect;
 }
 
+const NOTE_COLOR = { r: 200, g: 200, b: 0 };
+const NOTE_OPACITY = 0.5;
+
 export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
@@ -39,7 +42,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
 
   return (
     <>
-      <Highlighter blocks={blocks} pageOffset={pageOffset} />
+      <Highlighter blocks={blocks} pageOffset={pageOffset} color={NOTE_COLOR} opacity={NOTE_OPACITY} />
 
       <div className="highlight-note-content" ref={handleNoteContentRef} style={style}>
         {note.content}

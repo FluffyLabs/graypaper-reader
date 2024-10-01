@@ -14,6 +14,7 @@ export function LightThemeToggle() {
       <button
         data-tooltip-id="theme"
         data-tooltip-content="Toggle between light and dark theme"
+        data-tooltip-place="right"
         onClick={handleButtonClick}
         className={`light-theme-toggle ${lightThemeEnabled ? "toggled" : ""}`}
       >
