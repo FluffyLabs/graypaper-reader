@@ -10,7 +10,7 @@ export function Banner() {
       <a href="https://fluffylabs.dev">
         <img src={logo} width="144" height="64" alt="Fluffy Labs" />
       </a>
-      <a href="https://graypaper.fluffylabs.dev">Gray Paper Reader</a>
+      <a href="">Gray Paper Reader</a>
 
       <div style={{ flex: 1 }} />
       <a
