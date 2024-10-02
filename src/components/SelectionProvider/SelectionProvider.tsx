@@ -71,7 +71,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
         (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
         pageNumber,
       );
-      console.log(synctexBlock?.pageNumber, synctexBlock?.index);
 
       if (synctexBlock && synctexBlocks.indexOf(synctexBlock) === -1) {
         synctexBlocks.push(synctexBlock);
