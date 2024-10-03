@@ -47,7 +47,7 @@ function Link({ dest, children }: ILinkProps) {
   }, [linkService, dest]);
 
   return (
-    <a href="#" onClick={handleClick}>
+    <a onClick={handleClick}>
       {children}
     </a>
   );
