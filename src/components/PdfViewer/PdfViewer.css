@@ -8,6 +8,10 @@
   padding: inherit;
 }
 
+.pdfViewer {
+  width: fit-content;
+}
+
 .pdfViewer.light-theme {
   filter: invert(1) contrast(1.5);
 }
