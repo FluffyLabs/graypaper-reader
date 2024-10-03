@@ -107,13 +107,22 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = (blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
+    const lowestBlockId = blockIds.reduce((result, blockId) => {
+      if (blockId.pageNumber < result.pageNumber) return blockId;
+      if (blockId.pageNumber === result.pageNumber && blockId.index < result.index) return blockId;
+
+      return result;
+    }, blockIds[0]);
+    const highestBlockId = blockIds.reduce((result, blockId) => {
+      if (blockId.pageNumber > result.pageNumber) return blockId;
+      if (blockId.pageNumber === result.pageNumber && blockId.index > result.index) return blockId;
+
+      return result;
+    }, blockIds[0]);
 
     return {
-      selectionStart: { pageNumber: blockIds[0].pageNumber, index: blockIds[0].index },
-      selectionEnd: {
-        pageNumber: blockIds[blockIds.length - 1].pageNumber,
-        index: blockIds[blockIds.length - 1].index,
-      },
+      selectionStart: lowestBlockId,
+      selectionEnd: highestBlockId,
     };
   };
 
