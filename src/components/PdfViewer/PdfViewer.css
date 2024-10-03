@@ -8,10 +8,16 @@
   padding: inherit;
 }
 
-.pdfViewer.light-theme {
+.pdfViewer.light {
   filter: invert(1) contrast(1.5);
 }
-.pdfViewer.light-theme .textLayer ::selection {
+
+.pdfViewer.gray {
+  filter: invert(1);
+}
+
+.pdfViewer.gray .textLayer ::selection,
+.pdfViewer.light .textLayer ::selection {
   background: rgba(255, 155, 50, 0.25);
 }
 .pdfViewer .textLayer ::selection {
