@@ -41,7 +41,7 @@ interface IPdfProviderProps {
 const THEME_LOCAL_STORAGE_KEY = "theme";
 
 function loadThemeSettingFromLocalStorage(): ITheme {
-  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "false";
+  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? themesOrder[0];
 
   switch (localStorageValue.toLowerCase()) {
     case "light":
