@@ -13,6 +13,9 @@ export const PdfContext = createContext<IPdfContext | null>(null);
 
 pdfJs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).toString();
 
+export type ITheme = "light" | "gray" | "dark";
+export const themesOrder: ITheme[] = ["dark", "gray", "light"];
+
 export interface IPdfServices {
   eventBus?: pdfJsViewer.EventBus;
   linkService?: pdfJsViewer.PDFLinkService;
@@ -24,8 +27,8 @@ export interface IPdfContext extends IPdfServices {
   viewer: pdfJsViewer.PDFViewer | undefined;
   setViewer: Dispatch<SetStateAction<pdfJsViewer.PDFViewer | undefined>>;
   scale: number;
-  lightThemeEnabled: boolean;
-  setLightThemeEnabled: Dispatch<SetStateAction<boolean>>;
+  theme: ITheme;
+  setTheme: Dispatch<SetStateAction<ITheme>>;
   visiblePages: number[];
   pageOffsets: DOMRect[];
 }
@@ -35,17 +38,26 @@ interface IPdfProviderProps {
   children: ReactNode;
 }
 
-const THEME_LOCAL_STORAGE_KEY = "light-theme-enabled";
+const THEME_LOCAL_STORAGE_KEY = "theme";
 
-function loadThemeSettingFromLocalStorage() {
-  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "false";
+function loadThemeSettingFromLocalStorage(): ITheme {
+  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? themesOrder[0];
 
-  return localStorageValue.toLowerCase() === "true";
+  switch (localStorageValue.toLowerCase()) {
+    case "light":
+      return "light";
+    case "gray":
+      return "gray";
+    case "dark":
+      return "dark";
+    default:
+      return "dark";
+  }
 }
 
-function saveThemeSettingToLocalStorage(value: boolean) {
+function saveThemeSettingToLocalStorage(value: ITheme) {
   try {
-    window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, value.toString());
+    window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, value);
   } catch (e) {
     console.error(`Unable to save theme setting: ${e}`);
   }
@@ -65,7 +77,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [services, setServices] = useState<IPdfServices>({});
   const [viewer, setViewer] = useState<pdfJsViewer.PDFViewer>();
   const [scale, setScale] = useState<number>(0);
-  const [lightThemeEnabled, setLightThemeEnabled] = useState<boolean>(loadThemeSettingFromLocalStorage());
+  const [theme, setTheme] = useState<ITheme>(loadThemeSettingFromLocalStorage());
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const [pageOffsets, setPageOffsets] = useState<DOMRect[]>([]);
 
@@ -128,8 +140,8 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   }, [viewer]);
 
   useEffect(() => {
-    saveThemeSettingToLocalStorage(lightThemeEnabled);
-  }, [lightThemeEnabled]);
+    saveThemeSettingToLocalStorage(theme);
+  }, [theme]);
 
   const handleViewChanged = useThrottle(() => {
     if (!viewer) return;
@@ -185,8 +197,8 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     viewer,
     setViewer,
     scale,
-    lightThemeEnabled,
-    setLightThemeEnabled,
+    theme,
+    setTheme,
     visiblePages,
     pageOffsets,
   };
