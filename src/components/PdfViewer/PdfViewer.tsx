@@ -65,6 +65,7 @@ export function PdfViewer() {
 
       const pdfViewer = new pdfJsViewer.PDFViewer({
         container: rootElement,
+        viewer: viewerContainer,
         eventBus,
         linkService,
         findController,
