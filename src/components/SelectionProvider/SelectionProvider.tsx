@@ -75,6 +75,8 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     const synctexBlocks = [];
 
     for (const rect of selection.getRangeAt(0).getClientRects()) {
+      if (rect.width === 0 || rect.height === 0) continue;
+
       const synctexBlock = getSynctexBlockAtLocation(
         (rect.left + rect.width / 2 - pageRect.left) / pageRect.width,
         (rect.top + rect.height / 2 - pageRect.top) / pageRect.height,
