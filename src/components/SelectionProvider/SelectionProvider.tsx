@@ -55,12 +55,15 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     if (!selection || !selection.anchorNode) return;
 
     const anchorElement = "closest" in selection.anchorNode ? selection.anchorNode : selection.anchorNode.parentElement;
-    const focusElement = selection.focusNode && "closest" in selection.focusNode ? selection.focusNode : selection.focusNode?.parentElement;
+    const focusElement =
+      selection.focusNode && "closest" in selection.focusNode
+        ? selection.focusNode
+        : selection.focusNode?.parentElement;
 
     if (!anchorElement) return;
 
     const pageElement = (anchorElement as Element).closest(".page") as HTMLElement;
-    const endPageElement = focusElement ? (focusElement as Element).closest(".page") as HTMLElement : null;
+    const endPageElement = focusElement ? ((focusElement as Element).closest(".page") as HTMLElement) : null;
 
     if ((endPageElement && pageElement !== endPageElement) || !pageElement) {
       window.getSelection()?.empty();
