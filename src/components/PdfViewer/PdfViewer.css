@@ -9,7 +9,7 @@
 }
 
 .pdfViewer {
-  width: fit-content;
+  min-width: fit-content;
 }
 
 .pdfViewer.light {
