@@ -35,6 +35,14 @@
   opacity: 0.7;
   transition: opacity ease-in 250ms;
 }
+@media (max-width: 768px) {
+  .controls {
+    bottom: auto;
+    top: 60px;
+    flex-direction: column;
+  }
+}
+
 .controls:hover {
   opacity: 1.0;
 }

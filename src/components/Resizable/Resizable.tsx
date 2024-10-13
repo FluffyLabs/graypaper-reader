@@ -7,12 +7,13 @@ type ResizableProps = {
 };
 
 const SPLIT_THRESHOLD = 99;
+const INITIAL_SPLIT = window.innerWidth <= 768 ? SPLIT_THRESHOLD : 70.0;
 
 export function Resizable({ left, right }: ResizableProps) {
   const [isDragging, setDragging] = useState(false);
   const [wasDragged, setWasDragged] = useState(false);
-  const [split, setSplit] = useState(70.0);
-  const [lastSplit, setLastSplit] = useState(split);
+  const [split, setSplit] = useState(INITIAL_SPLIT);
+  const [lastSplit, setLastSplit] = useState(split === SPLIT_THRESHOLD ? 15.0 : split);
 
   const onStartDrag = useCallback(() => {
     const onDrag = (ev: MouseEvent) => {
