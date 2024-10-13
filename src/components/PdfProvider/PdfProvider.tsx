@@ -121,13 +121,12 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   useScaleUpdater({
     setScale,
     services,
-    viewer
+    viewer,
   });
 
   useEffect(() => {
     saveThemeSettingToLocalStorage(theme);
   }, [theme]);
-
 
   useScrolling({
     setPageOffsets,
@@ -153,11 +152,12 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
 function useScaleUpdater({
   setScale,
   services,
-  viewer}: {
-    setScale(s: number): void,
-    viewer?: pdfJsViewer.PDFViewer,
-    services: IPdfServices,
-  }) {
+  viewer,
+}: {
+  setScale(s: number): void;
+  viewer?: pdfJsViewer.PDFViewer;
+  services: IPdfServices;
+}) {
   useEffect(() => {
     if (!services.eventBus || !viewer) return;
 
@@ -172,22 +172,27 @@ function useScaleUpdater({
     return () => {
       eventBus.off("scalechanging", handleScaleChanging);
     };
-  }, [services, viewer]);
+  }, [services, viewer, setScale]);
 
   useEffect(() => {
     if (viewer) {
       setScale(viewer.currentScale);
     }
-  }, [viewer]);
+  }, [viewer, setScale]);
 }
 
-function useScrolling({ viewer, setVisiblePages, visiblePages, setPageOffsets }: {
-  viewer?: pdfJsViewer.PDFViewer,
-  setVisiblePages: (s: number[]) => void,
-  visiblePages: number[],
-  setPageOffsets: (o: DOMRect[]) => void,
+function useScrolling({
+  viewer,
+  setVisiblePages,
+  visiblePages,
+  setPageOffsets,
+}: {
+  viewer?: pdfJsViewer.PDFViewer;
+  setVisiblePages: (s: number[]) => void;
+  visiblePages: number[];
+  setPageOffsets: (o: DOMRect[]) => void;
 }) {
-const handleViewChanged = useThrottle(() => {
+  const handleViewChanged = useThrottle(() => {
     if (!viewer) return;
 
     const visiblePagesAfterEvent: number[] = [];

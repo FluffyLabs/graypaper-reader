@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import prefetchChunk from 'vite-plugin-prefetch-chunk';
+import prefetchChunk from "vite-plugin-prefetch-chunk";
 
 // https://vitejs.dev/config/
 export default defineConfig({
