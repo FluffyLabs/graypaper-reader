@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
 
-declare module '*?prefetch' {
+declare module "*?prefetch" {
   export default string;
 }
