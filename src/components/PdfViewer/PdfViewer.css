@@ -8,6 +8,11 @@
   padding: inherit;
 }
 
+.pdf-viewer-loading {
+  text-align: center;
+  padding-top: 60px;
+}
+
 .pdfViewer {
   min-width: fit-content;
 }

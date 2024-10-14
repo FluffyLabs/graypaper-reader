@@ -28,6 +28,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.2.2",
-    "vite": "^5.3.4"
+    "vite": "^5.3.4",
+    "vite-plugin-prefetch-chunk": "^0.1.2"
   }
 }
