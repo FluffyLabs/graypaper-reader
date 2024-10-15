@@ -100,7 +100,7 @@ export function PdfViewer() {
     rootElement.querySelector(".pdfViewer")?.classList.add(theme);
   }, [theme, rootElement, viewer]);
 
-  if (!pdfDocument) return <div>Loading...</div>;
+  if (!pdfDocument) return <div className="pdf-viewer-loading">Loading...</div>;
 
   return (
     <>

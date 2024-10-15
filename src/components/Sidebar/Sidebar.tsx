@@ -2,7 +2,6 @@ import "./Sidebar.css";
 
 import { useEffect, useState } from "react";
 import { NoteManager } from "../NoteManager/NoteManager";
-// import { Notes } from "../Notes/Notes";
 import { Outline } from "../Outline/Outline";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";

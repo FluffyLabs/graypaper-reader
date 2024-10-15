@@ -41,7 +41,7 @@ interface IPdfProviderProps {
 const THEME_LOCAL_STORAGE_KEY = "theme";
 
 function loadThemeSettingFromLocalStorage(): ITheme {
-  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? themesOrder[0];
+  const localStorageValue = window.localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? "false";
 
   switch (localStorageValue.toLowerCase()) {
     case "light":
@@ -81,6 +81,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const [pageOffsets, setPageOffsets] = useState<DOMRect[]>([]);
 
+  // Initial setup
   useEffect(() => {
     async function setupPdfServices() {
       const eventBus = new pdfJsViewer.EventBus();
@@ -117,6 +118,46 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     }
   }, [pdfUrl]);
 
+  useScaleUpdater({
+    setScale,
+    services,
+    viewer,
+  });
+
+  useEffect(() => {
+    saveThemeSettingToLocalStorage(theme);
+  }, [theme]);
+
+  useScrolling({
+    setPageOffsets,
+    setVisiblePages,
+    viewer,
+    visiblePages,
+  });
+
+  const context = {
+    ...services,
+    viewer,
+    setViewer,
+    scale,
+    theme,
+    setTheme,
+    visiblePages,
+    pageOffsets,
+  };
+
+  return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
+}
+
+function useScaleUpdater({
+  setScale,
+  services,
+  viewer,
+}: {
+  setScale(s: number): void;
+  viewer?: pdfJsViewer.PDFViewer;
+  services: IPdfServices;
+}) {
   useEffect(() => {
     if (!services.eventBus || !viewer) return;
 
@@ -131,18 +172,26 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     return () => {
       eventBus.off("scalechanging", handleScaleChanging);
     };
-  }, [services, viewer]);
+  }, [services, viewer, setScale]);
 
   useEffect(() => {
     if (viewer) {
       setScale(viewer.currentScale);
     }
-  }, [viewer]);
+  }, [viewer, setScale]);
+}
 
-  useEffect(() => {
-    saveThemeSettingToLocalStorage(theme);
-  }, [theme]);
-
+function useScrolling({
+  viewer,
+  setVisiblePages,
+  visiblePages,
+  setPageOffsets,
+}: {
+  viewer?: pdfJsViewer.PDFViewer;
+  setVisiblePages: (s: number[]) => void;
+  visiblePages: number[];
+  setPageOffsets: (o: DOMRect[]) => void;
+}) {
   const handleViewChanged = useThrottle(() => {
     if (!viewer) return;
 
@@ -191,17 +240,4 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     if (!viewer) return;
     viewer.container.dispatchEvent(new CustomEvent("scroll"));
   }, [viewer]);
-
-  const context = {
-    ...services,
-    viewer,
-    setViewer,
-    scale,
-    theme,
-    setTheme,
-    visiblePages,
-    pageOffsets,
-  };
-
-  return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
 }

@@ -1,8 +1,8 @@
 import "./Banner.css";
 
 import { Tooltip } from "react-tooltip";
-import logo from "./black-h-64.png";
-import github from "./github-mark-white.png";
+import logo from "./black-h-64.png?prefetch";
+import github from "./github-mark-white.png?prefetch";
 
 export function Banner() {
   return (

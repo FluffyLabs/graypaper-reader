@@ -30,6 +30,11 @@
   height: 100%;
   background-color: #ddd;
 }
+@media (max-width: 768px) {
+  .resizable .handle {
+    width: 15px;
+  }
+}
 .resizable .handle:hover {
   background-color: #ccc;
 }
