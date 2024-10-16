@@ -13,7 +13,7 @@ if (!accessToken) {
 }
 
 // Call the function to start listening
-const logger = new MessagesLogger(roomId, "messages.json");
+const logger = new MessagesLogger(roomId, "output/messages.json");
 const client = listenToMessages(homeserverUrl, accessToken, roomId, logger);
 
 const cleanup = () => {
