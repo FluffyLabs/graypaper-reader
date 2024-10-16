@@ -16,11 +16,11 @@
   "description": "Matrix bot that listens for messages containing GP Reader links.",
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^22.7.5",
-    "matrix-js-sdk": "^34.8.0",
-    "ts-node": "^10.9.2"
+    "@types/node": "^22.7.5"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "matrix-js-sdk": "^34.8.0",
+    "ts-node": "^10.9.2"
   }
 }
