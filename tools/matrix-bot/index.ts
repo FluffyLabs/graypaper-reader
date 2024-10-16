@@ -8,14 +8,14 @@ dotenv.config();
 
 const homeserverUrl = "https://matrix.org";
 const accessToken = process.env.ACCESS_TOKEN;
-const roomId = "!wZOhikgrQjFqqZNKjB:matrix.org";
+const roomId = "!ddsEwXlCWnreEGuqXZ:polkadot.io";
 
 if (!accessToken) {
     throw new Error('Provide .env file or ENV variable `ACCESS_TOKEN`');
 }
 
 // Call the function to start listening
-const logger = new MessagesLogger(roomId, 'messages.csv');
+const logger = new MessagesLogger(roomId, 'messages.json');
 const client = listenToMessages(
     homeserverUrl,
     accessToken,

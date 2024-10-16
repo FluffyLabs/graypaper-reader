@@ -28,9 +28,13 @@ export class MessagesLogger {
 
         const link = this.generatePermalink(eventId);
 
-        this.file.write(
-            `${date?.toISOString()}; ${sender}; ${link}; ${msg.replaceAll(';', ',')};\n`
-        );
+        this.file.write(JSON.stringify({
+            date,
+            sender,
+            link,
+            msg,
+        }));
+        this.file.write(',\n');
     }
 
     flush() {
