@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "es2022",
+    "outDir": "dist/",
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "exclude": ["node_modules"]
+}
