@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
   "files": {
-    "ignore": ["dist/**", "graypaper-archive/**", "public/**"]
+    "ignore": ["dist/**", "graypaper-archive/**", "public/**", "tools/matrix-bot/messages.json"]
   },
   "formatter": {
     "enabled": true,
