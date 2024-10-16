@@ -1,0 +1,26 @@
+{
+  "name": "matrix-bot",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "qa": "biome ci",
+    "qa-fix": "npm run format; npm run lint",
+    "format": "biome format --write",
+    "lint": "biome lint --write; biome check --write",
+    "start": "node --loader ts-node/esm ./index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0",
+  "description": "Matrix bot that listens for messages containing GP Reader links.",
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.7.5",
+    "matrix-js-sdk": "^34.8.0",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
