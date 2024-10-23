@@ -1,0 +1,54 @@
+name: Update Graypaper
+
+on:
+  schedule:
+    - cron: "51 * * * *" # using an arbitrary minute to avoid high traffic
+
+jobs:
+  check_for_updates:
+    name: Check for updates
+    runs-on: ubuntu-latest
+    outputs:
+      local_version: ${{steps.local_version.outputs.VERSION}}
+      remote_version: ${{steps.remote_version.outputs.VERSION}}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: Check local version
+      id: local_version
+      run: echo "VERSION=$(cat graypaper-archive/graypaper/VERSION)" >> "$GITHUB_OUTPUT"
+    - name: Get latest graypaper and compare versions
+      id: remote_version
+      run: |
+        git submodule update --remote --recursive
+        echo "VERSION=$(cat graypaper-archive/graypaper/VERSION)" >> "$GITHUB_OUTPUT"
+  update:
+    runs-on: ubuntu-latest
+    needs: check_for_updates
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    if: needs.check_for_updates.outputs.local_version != needs.check_for_updates.outputs.remote_version
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Get latest graypaper-archive and create a pull request
+        run: |
+          BOT_NAME="github-actions[bot]"
+          BOT_EMAIL="$(gh api /users/github-actions[bot] | jq -r '.id')+$BOT_NAME@users.noreply.github.com"
+          git config --global user.name $BOT_NAME
+          git config --global user.email $BOT_EMAIL
+          git submodule update --remote --recursive
+          VERSION=v$(cat graypaper-archive/graypaper/VERSION)
+          git checkout -b feature/$VERSION
+          git add .
+          git commit -m "Bumped to ${VERSION}"
+          git push --set-upstream origin feature/$VERSION
+          gh pr create -B main -H feature/$VERSION --title "Bump to ${VERSION}" --body ""
+          gh pr merge --merge --delete-branch
