@@ -7,6 +7,7 @@ on:
 
 jobs:
   check_for_updates:
+    name: Check for updates
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -41,7 +42,7 @@ jobs:
         with:
           submodules: 'recursive'
       - name: Get the latest graypaper-archive
-        id: graypaper_update
+        id: archive_update
         run: |
           git submodule update --remote --recursive
           cd graypaper-archive
@@ -52,16 +53,16 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
-          message: Bump to ${{steps.graypaper_update.outputs.VERSION}}
-          tag: ${{steps.graypaper_update.outputs.TAG_NAME}}
+          message: Bump to ${{steps.archive_update.outputs.VERSION}}
+          tag: ${{steps.archive_update.outputs.TAG_NAME}}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: Bumped Graypaper version to ${{steps.graypaper_update.outputs.VERSION}}
+          body: Bumped Graypaper version to ${{steps.archive_update.outputs.VERSION}}
           draft: false
           prerelease: false
