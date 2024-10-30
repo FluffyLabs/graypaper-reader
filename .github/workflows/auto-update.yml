@@ -61,8 +61,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.archive_update.outputs.TAG_NAME }}
+          release_name: Release ${{ steps.archive_update.outputs.TAG_NAME }}
           body: Bumped Graypaper version to ${{steps.archive_update.outputs.VERSION}}
           draft: false
           prerelease: false
