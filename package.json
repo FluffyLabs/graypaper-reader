@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "test": "echo yolo",
     "cp-gp": "mkdir -p ./public && cp -r ./graypaper-archive/dist/* ./public/",
-    "prebuild": "npm run cp-gp",
+    "prebuild": "git submodule update --init  && npm run cp-gp",
     "predev": "npm run cp-gp"
   },
   "dependencies": {
