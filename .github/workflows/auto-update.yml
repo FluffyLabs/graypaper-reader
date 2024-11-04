@@ -23,6 +23,7 @@ jobs:
         submodules: 'true'
     - name: What's the latest graypaper-archive version?
       id: remote_release
+      shell: /usr/bin/bash -o pipefail -e {0} # need pipefail in case of a gh api error
       run: |
         echo "VERSION=$(gh api /repos/FluffyLabs/graypaper-archive/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
     - name: What's the version we're using?
