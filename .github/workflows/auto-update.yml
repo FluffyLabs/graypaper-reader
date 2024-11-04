@@ -23,18 +23,20 @@ jobs:
         submodules: 'true'
     - name: What's the latest graypaper-archive version?
       id: remote_release
-      # if you put the subshell (meaning the "$(...)") inside the echo content will fail to stop on errors.
-      # pipefail is also required to stop on api errors
       run: |
-        VERSION=$(set -eo pipefail && gh api /repos/FluffyLabs/graypaper-archive/releases/latest | jq -r '.tag_name')
-        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+        REMOTE_TAG=$(set -eo pipefail && gh api /repos/FluffyLabs/graypaper-archive/releases/latest | jq -r '.tag_name')
+        echo "VERSION=$REMOTE_TAG" >> "$GITHUB_OUTPUT"
+        echo "The remote version is $REMOTE_TAG"
     - name: What's the version we're using?
       id: local_release
       run: |
         cd graypaper-archive
         git fetch --tags
-        echo "VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> "$GITHUB_OUTPUT"
+        LOCAL_TAG=$(git describe --tags)
+        echo "VERSION=$LOCAL_TAG" >> "$GITHUB_OUTPUT"
+        echo "The local version is $LOCAL_TAG"
   update:
+    name: Update
     runs-on: ubuntu-latest
     needs: check_for_updates
     permissions:
@@ -47,14 +49,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: 'true'
       - name: Get the latest graypaper-archive
         id: archive_update
         run: |
-          git submodule update --remote --recursive
           cd graypaper-archive
           git fetch --tags
-          echo "VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> "$GITHUB_OUTPUT"
+          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          git checkout $LATEST_TAG
+          echo "VERSION=$LATEST_TAG" >> "$GITHUB_OUTPUT"
           echo "TAG_NAME=$(date +\"%Y-%m-%d\")" >> "$GITHUB_OUTPUT"
           cd ..
       - name: Use git as github actions bot
