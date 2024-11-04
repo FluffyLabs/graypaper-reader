@@ -1,6 +1,9 @@
 name: Update Graypaper
 
 on:
+  push:
+    branches:
+      - 'feature/auto-update-workflow'
   workflow_dispatch:
   schedule:
     - cron: "51 13 * * *" # using an arbitrary time to avoid high traffic
@@ -36,7 +39,7 @@ jobs:
       pull-requests: write
     env:
       GH_TOKEN: ${{ github.token }}
-    if: needs.check_for_updates.outputs.has_updates
+    if: needs.check_for_updates.outputs.has_updates == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
