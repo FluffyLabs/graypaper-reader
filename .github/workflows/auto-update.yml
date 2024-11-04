@@ -23,9 +23,11 @@ jobs:
         submodules: 'true'
     - name: What's the latest graypaper-archive version?
       id: remote_release
-      shell: /usr/bin/bash -o pipefail -e {0} # need pipefail in case of a gh api error
+      # if you put the subshell (meaning the "$(...)") inside the echo content will fail to stop on errors.
+      # pipefail is also required to stop on api errors
       run: |
-        echo "VERSION=$(gh api /repos/FluffyLabs/graypaper-archive/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
+        VERSION=$(set -eo pipefail && gh api /repos/FluffyLabs/graypaper-archive/releases/latest | jq -r '.tag_name')
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
     - name: What's the version we're using?
       id: local_release
       run: |
