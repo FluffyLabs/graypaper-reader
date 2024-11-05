@@ -1,7 +1,12 @@
 .note-manager .new-note {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
 }
+
+.note-manager .new-note button {
+  width: 100%;
+}
+
 .note-manager textarea {
   flex: 1;
   padding: 1rem;
