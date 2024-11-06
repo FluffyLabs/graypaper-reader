@@ -1,5 +1,8 @@
 # Gray Paper Reader
 
+- **Production @ https://graypaper.fluffylabs.dev**
+- Beta @ https://graypaper-reader.netlify.app
+
 A tool to help with reading and analyzing the Gray Paper.
 
 # Updating available versions of the gray paper.
