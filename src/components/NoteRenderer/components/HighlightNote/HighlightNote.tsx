@@ -15,6 +15,7 @@ const NOTE_OPACITY = 0.5;
 export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const [noteIsShown, setNoteIsShown] = useState(true);
 
   const blocks = useMemo(
     () => getSynctexBlockRange(note.selectionStart, note.selectionEnd),
@@ -26,7 +27,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
   const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
 
-  const style =
+  const position =
     rightmostEdge > 0.5
       ? {
           left: `${pageOffset.left + rightmostEdge * pageOffset.width}px`,
@@ -37,6 +38,11 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
           top: `${pageOffset.top + pageOffset.height * blocks[blocks.length - 1].top - noteContentHeight}px`,
         };
 
+  const style = {
+    opacity: noteIsShown ? 1.0 : 0.1,
+    ...position,
+  };
+
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
 
@@ -44,7 +50,13 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     <>
       <Highlighter blocks={blocks} pageOffset={pageOffset} color={NOTE_COLOR} opacity={NOTE_OPACITY} />
 
-      <div className="highlight-note-content" ref={handleNoteContentRef} style={style}>
+      <div
+        className="highlight-note-content"
+        ref={handleNoteContentRef}
+        style={style}
+        onMouseEnter={() => setNoteIsShown(false)}
+        onMouseLeave={() => setNoteIsShown(true)}
+      >
         {note.content}
       </div>
     </>
