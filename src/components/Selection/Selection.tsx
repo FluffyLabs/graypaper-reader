@@ -12,7 +12,7 @@ type SelectionProps = {
 export function Selection({ activeTab, switchTab }: SelectionProps) {
   const { selectedBlocks, selectionString, pageNumber } = useContext(SelectionContext) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
-    CodeSyncContext
+    CodeSyncContext,
   ) as ICodeSyncContext;
   const [linkCreated, setLinkCreated] = useState(false);
   const [selectionCopied, setSelectionCopied] = useState(false);
@@ -23,10 +23,10 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
     if (!selectedBlocks.length) return;
 
     getSectionTitleAtSynctexBlock(selectedBlocks[0]).then((sectionTitleFromSource) =>
-      setSectionTitle(sectionTitleFromSource)
+      setSectionTitle(sectionTitleFromSource),
     );
     getSubsectionTitleAtSynctexBlock(selectedBlocks[0]).then((sectionTitleFromSource) =>
-      setSubsectionTitle(sectionTitleFromSource)
+      setSubsectionTitle(sectionTitleFromSource),
     );
   }, [selectedBlocks, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
@@ -45,8 +45,8 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
 
     const prompt = `
       Based only on the GrayPaper and within the context of the following quote located on page ${pageNumber}${
-      sectionTitle !== null ? ", within section " + sectionTitle : ""
-    }${subsectionTitle ? " (subsection: " + subsectionTitle + ")" : ""}:
+        sectionTitle !== null ? `, within section ${sectionTitle}` : ""
+      }${subsectionTitle ? ` (subsection: ${subsectionTitle})` : ""}:
       
       ${text}
       
