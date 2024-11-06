@@ -19,7 +19,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
 
   const blocks = useMemo(
     () => getSynctexBlockRange(note.selectionStart, note.selectionEnd),
-    [note, getSynctexBlockRange]
+    [note, getSynctexBlockRange],
   );
 
   if (!blocks.length) return null;
