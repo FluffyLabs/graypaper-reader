@@ -15,10 +15,11 @@ const NOTE_OPACITY = 0.5;
 export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const [noteIsShown, setNoteIsShown] = useState(true);
 
   const blocks = useMemo(
     () => getSynctexBlockRange(note.selectionStart, note.selectionEnd),
-    [note, getSynctexBlockRange],
+    [note, getSynctexBlockRange]
   );
 
   if (!blocks.length) return null;
@@ -44,7 +45,13 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     <>
       <Highlighter blocks={blocks} pageOffset={pageOffset} color={NOTE_COLOR} opacity={NOTE_OPACITY} />
 
-      <div className="highlight-note-content" ref={handleNoteContentRef} style={style}>
+      <div
+        className="highlight-note-content"
+        ref={handleNoteContentRef}
+        style={Object.assign({}, noteIsShown ? { opacity: 1 } : { opacity: 0.1 }, style)}
+        onMouseEnter={() => setNoteIsShown(false)}
+        onMouseLeave={() => setNoteIsShown(true)}
+      >
         {note.content}
       </div>
     </>
