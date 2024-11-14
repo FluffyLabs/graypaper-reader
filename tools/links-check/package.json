@@ -4,7 +4,7 @@
   "description": "Check list of files for graypaper reader links and make sure they are up to date.",
   "main": "./dist/index.js",
   "bin": {
-    "gp-links-check": "./dist/index.js"
+    "gp-links-check": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
