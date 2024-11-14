@@ -1,8 +1,8 @@
 {
   "name": "@fluffylabs/links-check",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Check list of files for graypaper reader links and make sure they are up to date.",
-  "main": "index.ts",
+  "main": "./dist/index.js",
   "bin": {
     "gp-links-check": "./dist/index.js"
   },
