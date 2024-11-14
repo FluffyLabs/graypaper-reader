@@ -1,23 +1,32 @@
-import {printReport, Report } from "./report";
-import { scan } from "./scan";
+import {fetchMetadata} from "./metadata";
+import { printReport } from "./report";
+import { getCommonPath, scan } from "./scan";
 
 
-
-const files = process.argv.slice(2);
-
-if (files.length === 0) {
-  throw new Error('Provide a list of files to scan.');
-}
-
-const label =`scanning ${files.length}`;
-console.time(label);
-scan(files)
-  .then((res: Report) => {
-    printReport(res);
-  })
+main()
   .catch((err: unknown) => {
     console.error(`🚨 ${err}`);
-  })
-  .finally(() => {
-    console.timeEnd(label);
+    process.exit(255);
   });
+
+async function main() {
+  const files = process.argv.slice(2);
+
+  if (files.length === 0) {
+    throw new Error('Provide a list of files to scan.');
+  }
+
+  const metadata = await fetchMetadata();
+
+  const label =`scanning ${files.length}`;
+  const commonPath = getCommonPath(files);
+  console.time(label);
+  let report;
+  try {
+    report = await scan(files, metadata, commonPath);
+  } finally {
+    console.timeEnd(label);
+  }
+  console.info();
+  printReport(report);
+}

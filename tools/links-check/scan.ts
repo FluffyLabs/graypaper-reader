@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { Path, Report, FileReport, printFileReport } from './report';
+import {Metadata, ORIGIN, parseLink} from './metadata';
 
 class Timer {
   data = new Map();
@@ -20,12 +21,13 @@ class Timer {
   }
 }
 
-export async function scan(files: Path[]): Promise<Report> {
+export async function scan(files: Path[], metadata: Metadata, commonPath: string): Promise<Report> {
   const timer = new Timer();
   const results = await Promise.allSettled(files.map(async (file) => {
-    timer.start(file);
-    const fileReport = await scanFile(file);
-    timer.end(file, fileReport.allLinks.length > 0);
+    const shortFileName = file.replace(commonPath, '');
+    timer.start(shortFileName);
+    const fileReport = await scanFile(file, metadata);
+    timer.end(shortFileName, fileReport.allLinks.length > 0);
     printFileReport(fileReport);
     return fileReport;
   }));
@@ -37,7 +39,7 @@ export async function scan(files: Path[]): Promise<Report> {
   };
 
   for (const [idx, r] of results.entries()) {
-    const f = files[idx];
+    const f = files[idx].replace(commonPath, '');
     if (r.status === 'rejected') {
       report.failed.set(f, r.reason);
     } else {
@@ -54,14 +56,14 @@ export async function scan(files: Path[]): Promise<Report> {
 }
 
 
-async function scanFile(path: Path): Promise<FileReport> {
+async function scanFile(path: Path, metadata: Metadata): Promise<FileReport> {
   const report: FileReport = {
     allLinks: [],
     outdated: [],
   };
 
   await readLineByLine(path, (line) => {
-    const linkStart = line.indexOf("https://graypaper.fluffylabs.dev");
+    const linkStart = line.indexOf(ORIGIN);
     if (linkStart !== -1) {
       // extract raw link
       const linkLine = line.substring(linkStart);
@@ -69,11 +71,12 @@ async function scanFile(path: Path): Promise<FileReport> {
       const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
       // attempt to parse version and blocks.
 
-      report.allLinks.push({
-        raw: link,
-        version: '',
-        blocks: ''
-      });
+      const linkData = parseLink(link, metadata);
+      report.allLinks.push(linkData);
+
+      if (linkData.isOutdated) {
+        report.outdated.push(linkData);
+      }
     }
   });
 
@@ -116,4 +119,18 @@ function readLineByLine(path: Path, cb: (line: string) => void): Promise<void> {
       resolve();
     });
   });
+}
+
+export function getCommonPath(files: Path[]) {
+  let common = files[0];
+  for (const f of files) {
+    const len = Math.min(f.length, common.length);
+    for (let i = 0; i < len; i += 1) {
+      if (common.charAt(i) !== f.charAt(i)) {
+        common = common.substring(0, i);
+        break;
+      }
+    }
+  }
+  return common;
 }
