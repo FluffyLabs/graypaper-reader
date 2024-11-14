@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Check list of files for graypaper reader links and make sure they are up to date.",
   "main": "index.ts",
+  "bin": {
+    "gp-links-check": "./index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "format": "biome format --write",

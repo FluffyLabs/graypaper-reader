@@ -1,3 +1,5 @@
+#!/usr/bin/env node --require ts-node/register
+
 import { fetchMetadata } from "./metadata";
 import { type Report, printReport } from "./report";
 import { getCommonPath, scan } from "./scan";
