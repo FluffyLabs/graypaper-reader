@@ -15,7 +15,7 @@ Each of these links is then evaluated:
 npx @fluffylabs/links-check ./path-to-my-project/**/*.ts
 ```
 
-## Results:
+## Results
 
 ```
 scanning 3703: 405.271ms
