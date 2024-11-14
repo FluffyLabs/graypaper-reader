@@ -1,0 +1,16 @@
+{
+  "name": "@fluffylabs/links-check",
+  "version": "0.0.1",
+  "description": "Check list of files for graypaper reader links and make sure they are up to date.",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.9.0",
+    "ts-node": "^10.9.2"
+  }
+}
