@@ -1,5 +1,5 @@
 import { fetchMetadata } from "./metadata";
-import { printReport } from "./report";
+import { type Report, printReport } from "./report";
 import { getCommonPath, scan } from "./scan";
 
 main().catch((err: unknown) => {
@@ -19,7 +19,7 @@ async function main() {
   const label = `scanning ${files.length}`;
   const commonPath = getCommonPath(files);
   console.time(label);
-  let report = null;
+  let report: Report | null = null;
   try {
     report = await scan(files, metadata, commonPath);
   } finally {
