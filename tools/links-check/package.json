@@ -1,10 +1,10 @@
 {
   "name": "@fluffylabs/links-check",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Check list of files for graypaper reader links and make sure they are up to date.",
   "main": "index.ts",
   "bin": {
-    "gp-links-check": "./index.ts"
+    "gp-links-check": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,8 @@
     "lint": "biome lint --write; biome check --write",
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "prepublish": "npm run build"
   },
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
