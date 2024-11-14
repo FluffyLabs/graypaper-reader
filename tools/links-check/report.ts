@@ -1,50 +1,67 @@
-import {Link} from "./metadata";
+import type { Link } from "./metadata";
 
 export type Path = string;
 
 export type FileReport = {
-  allLinks: Link[],
-  outdated: Link[],
+  allLinks: Link[];
+  outdated: Link[];
 };
 
 export type Report = {
-  detected: Map<Path, Link[]>,
-  outdated: Map<Path, Link[]>,
-  failed: Map<Path, string>,
+  detected: Map<Path, Link[]>;
+  outdated: Map<Path, Link[]>;
+  failed: Map<Path, string>;
 };
-
 
 export function printReport(report: Report) {
   const total = Array.from(report.detected.values()).reduce((a, b) => a + b.length, 0);
   if (!report.outdated.size) {
-    console.info('');
+    console.info("");
     console.info(`✅ No outdated links found amongst ${total} total, congrats!`);
-    console.info('');
+    console.info("");
     return;
   }
 
   const outdated = Array.from(report.outdated.values()).reduce((a, b) => a + b.length, 0);
+  const broken = [];
   console.info(`⌛ Outdated links ${outdated}/${total}`);
   for (const [path, links] of report.outdated) {
     console.info(`  📜 ${path}`);
     for (const link of links) {
-      const ico = link.updated ? '🧹': '👴';
-      console.info(`    ${ico} ${link.raw}`);
+      const ico = link.updated ? "🧹" : "🦖";
+      const line = link.lineNumber.toString().padStart(3, " ");
+      console.info(`    ${line}: ${ico} ${link.raw}`);
+
+      let isBroken = link.updated === undefined;
       if (link.updated) {
-        console.info(`      Might be replaced with (but please check!)`);
-        console.info(`      👉 ${link.updated}`);
+        if (link.isValidInLatest) {
+          console.info("      Can be safely updated (but please check!):");
+          console.info(`      👉 ${link.updated}`);
+        } else {
+          console.info("      Is most likely broken:");
+          console.info(`      ☠️  ${link.updated}`);
+          isBroken = true;
+        }
+      }
+      if (isBroken) {
+        broken.push({
+          file: path,
+          link,
+        });
       }
     }
     console.info();
   }
 
-  const potentiallyBroken = Array.from(report.outdated.values()).reduce((a, b) => {
-    return [...b.filter(v => !v.isValid)];
-  }, []);
-  if (potentiallyBroken.length) {
-    console.info('⁉️  Detected some potentially broken links:');
-    for (const broken of potentiallyBroken) {
-      console.info(`\t${broken.raw}`);
+  if (broken.length) {
+    console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}`);
+    for (const { file, link } of broken) {
+      const ico = link.updated ? "⚠️" : "🦖";
+      console.info(`  ${ico} ${link.raw}`);
+      console.info(`    at ${file}:${link.lineNumber}`);
+      if (link.updated) {
+        console.info(`    ☠️ ${link.updated}`);
+      }
     }
   }
 }

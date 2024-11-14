@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import { Path, Report, FileReport, printFileReport } from './report';
-import {Metadata, ORIGIN, parseLink} from './metadata';
+import fs from "node:fs";
+import { type Metadata, ORIGIN, parseLink } from "./metadata";
+import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
 class Timer {
   data = new Map();
@@ -9,7 +9,7 @@ class Timer {
     this.data.set(label, performance.now());
   }
 
-  end(label: string, display: boolean = true) {
+  end(label: string, display = true) {
     const now = performance.now();
     const val = this.data.get(label);
     this.data.delete(label);
@@ -23,14 +23,16 @@ class Timer {
 
 export async function scan(files: Path[], metadata: Metadata, commonPath: string): Promise<Report> {
   const timer = new Timer();
-  const results = await Promise.allSettled(files.map(async (file) => {
-    const shortFileName = file.replace(commonPath, '');
-    timer.start(shortFileName);
-    const fileReport = await scanFile(file, metadata);
-    timer.end(shortFileName, fileReport.allLinks.length > 0);
-    printFileReport(fileReport);
-    return fileReport;
-  }));
+  const results = await Promise.allSettled(
+    files.map(async (file) => {
+      const shortFileName = file.replace(commonPath, "");
+      timer.start(shortFileName);
+      const fileReport = await scanFile(file, metadata);
+      timer.end(shortFileName, fileReport.allLinks.length > 0);
+      printFileReport(fileReport);
+      return fileReport;
+    }),
+  );
 
   const report = {
     detected: new Map(),
@@ -39,8 +41,8 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
   };
 
   for (const [idx, r] of results.entries()) {
-    const f = files[idx].replace(commonPath, '');
-    if (r.status === 'rejected') {
+    const f = files[idx].replace(commonPath, "");
+    if (r.status === "rejected") {
       report.failed.set(f, r.reason);
     } else {
       if (r.value.allLinks.length) {
@@ -55,23 +57,22 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
   return Promise.resolve(report);
 }
 
-
 async function scanFile(path: Path, metadata: Metadata): Promise<FileReport> {
   const report: FileReport = {
     allLinks: [],
     outdated: [],
   };
 
-  await readLineByLine(path, (line) => {
+  await readLineByLine(path, (no, line) => {
     const linkStart = line.indexOf(ORIGIN);
     if (linkStart !== -1) {
       // extract raw link
       const linkLine = line.substring(linkStart);
-      const whitespaceIdx = linkLine.indexOf(' ');
+      const whitespaceIdx = linkLine.indexOf(" ");
       const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
       // attempt to parse version and blocks.
 
-      const linkData = parseLink(link, metadata);
+      const linkData = parseLink(no, link, metadata);
       report.allLinks.push(linkData);
 
       if (linkData.isOutdated) {
@@ -83,12 +84,13 @@ async function scanFile(path: Path, metadata: Metadata): Promise<FileReport> {
   return Promise.resolve(report);
 }
 
-function readLineByLine(path: Path, cb: (line: string) => void): Promise<void> {
+function readLineByLine(path: Path, cb: (no: number, line: string) => void): Promise<void> {
   const BUFFER_SIZE = 4_096;
-  const stream = fs.createReadStream(path, { encoding: 'utf8' });
+  const stream = fs.createReadStream(path, { encoding: "utf8" });
   return new Promise((resolve, reject) => {
-    let previousData: string = '';
-    stream.on('readable', () => {
+    let previousData = "";
+    let lineNumber = 1;
+    stream.on("readable", () => {
       let chunk = null;
       do {
         try {
@@ -101,20 +103,21 @@ function readLineByLine(path: Path, cb: (line: string) => void): Promise<void> {
         if (chunk) {
           previousData += chunk;
         }
-        const lines = previousData.split('\n');
+        const lines = previousData.split("\n");
         for (let i = 0; i < lines.length - 1; i += 1) {
-          cb(lines[i]);
+          cb(lineNumber, lines[i]);
+          lineNumber += 1;
         }
         // we can't be sure if the last line is complete or not
-        previousData = lines.length > 0 ? lines[lines.length - 1] : '';
-      } while(chunk !== null);
+        previousData = lines.length > 0 ? lines[lines.length - 1] : "";
+      } while (chunk !== null);
     });
 
-    stream.on('error', reject);
-    stream.on('end', () => {
+    stream.on("error", reject);
+    stream.on("end", () => {
       // there might be still sometihng in the buffer:
       if (previousData.length) {
-        cb(previousData);
+        cb(lineNumber, previousData);
       }
       resolve();
     });
