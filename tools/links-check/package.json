@@ -1,6 +1,6 @@
 {
   "name": "@fluffylabs/links-check",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Check list of files for graypaper reader links and make sure they are up to date.",
   "main": "index.ts",
   "bin": {
