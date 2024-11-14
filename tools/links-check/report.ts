@@ -57,7 +57,7 @@ export function printReport(report: Report) {
   if (!broken.length) {
     console.info(`✅ No broken links found amongst ${total} total.`);
     if (outdated > 0) {
-      console.info(`⚠️  Yet there are ${outdated} links. See above.`);
+      console.info(`⚠️  Yet there are ${outdated} outdated links. See above.`);
     }
   } else {
     console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}`);
