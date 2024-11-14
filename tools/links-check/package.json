@@ -1,7 +1,7 @@
 {
   "name": "@fluffylabs/links-check",
-  "version": "0.0.5",
-  "description": "Check list of files for graypaper reader links and make sure they are up to date.",
+  "version": "0.0.6",
+  "description": "Check list of files for Gray Paper Reader links and make sure they are up to date.",
   "main": "./dist/index.js",
   "bin": {
     "gp-links-check": "dist/index.js"
@@ -17,7 +17,7 @@
   },
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
-  "dependencies": {
+  "devDependencies": {
     "ts-node": "^10.9.2",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^22.9.0",
