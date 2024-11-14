@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "matrix-js-sdk": "^34.8.0",
+    "matrix-js-sdk": "^34.11.1",
     "ts-node": "^10.9.2"
   }
 }
