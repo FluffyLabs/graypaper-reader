@@ -40,6 +40,6 @@ scanning 3703: 405.271ms
       👉 https://graypaper.fluffylabs.dev/#/364735a/0cb0000cb400 (version: 0.4.5)
 
 ✅ No broken links found amongst 82 total.
-⚠️  Yet there are 57 links. See above.
+⚠️  Yet there are 57 outdated links. See above.
 ```
 
