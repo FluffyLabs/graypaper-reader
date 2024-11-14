@@ -54,7 +54,12 @@ export function printReport(report: Report) {
     console.info();
   }
 
-  if (broken.length) {
+  if (!broken.length) {
+    console.info(`✅ No broken links found amongst ${total} total.`);
+    if (outdated > 0) {
+      console.info(`⚠️  Yet there are ${outdated} links. See above.`);
+    }
+  } else {
     console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}`);
     for (const { file, link } of broken) {
       const ico = link.updated ? "⚠️" : "🦖";
