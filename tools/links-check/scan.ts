@@ -35,6 +35,7 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
   );
 
   const report = {
+    latestVersion: metadata.metadata.versions[metadata.metadata.latest]?.name || metadata.latestShort,
     detected: new Map(),
     outdated: new Map(),
     failed: new Map(),

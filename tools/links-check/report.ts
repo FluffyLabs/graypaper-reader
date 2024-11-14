@@ -8,6 +8,7 @@ export type FileReport = {
 };
 
 export type Report = {
+  latestVersion: string;
   detected: Map<Path, Link[]>;
   outdated: Map<Path, Link[]>;
   failed: Map<Path, string>;
@@ -30,16 +31,16 @@ export function printReport(report: Report) {
     for (const link of links) {
       const ico = link.updated ? "🧹" : "🦖";
       const line = link.lineNumber.toString().padStart(3, " ");
-      console.info(`    ${line}: ${ico} ${link.raw}`);
+      console.info(`    ${line}: ${ico} ${link.raw} (version: ${link.versionName})`);
 
       let isBroken = link.updated === undefined;
       if (link.updated) {
         if (link.isValidInLatest) {
           console.info("      Can be safely updated (but please check!):");
-          console.info(`      👉 ${link.updated}`);
+          console.info(`      👉 ${link.updated} (version: ${report.latestVersion})`);
         } else {
           console.info("      Is most likely broken:");
-          console.info(`      ☠️  ${link.updated}`);
+          console.info(`      ☠️  ${link.updated} (version: ${report.latestVersion}`);
           isBroken = true;
         }
       }

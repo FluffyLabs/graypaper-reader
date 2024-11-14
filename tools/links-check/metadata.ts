@@ -105,6 +105,7 @@ export type Link = {
   lineNumber: number;
   updated?: string;
   version: string;
+  versionName: string;
   blocks: string;
   isValidInLatest?: boolean;
   isOutdated: boolean;
@@ -121,6 +122,7 @@ export function parseLink(lineNumber: number, link: string, meta: Metadata): Lin
       lineNumber,
       raw: link,
       version: "legacy",
+      versionName: "legacy",
       blocks: "",
       isValidInLatest: false,
       isOutdated: true,
@@ -131,6 +133,7 @@ export function parseLink(lineNumber: number, link: string, meta: Metadata): Lin
   const shortVersion = parts[1] || UNKNOWN;
   const blocks = parts[2] as string | undefined;
   const version = meta.shortMapping.get(shortVersion) || shortVersion;
+  const versionName = meta.metadata.versions[version]?.name || version;
 
   const isOutdated = version !== meta.metadata.latest;
   let isValidInLatest = !isOutdated && blocks !== undefined;
@@ -154,6 +157,7 @@ export function parseLink(lineNumber: number, link: string, meta: Metadata): Lin
     lineNumber,
     updated: `${ORIGIN}#/${meta.latestShort}/${blocks || UNKNOWN}`,
     version,
+    versionName,
     blocks: blocks || UNKNOWN,
     isValidInLatest,
     isOutdated,
