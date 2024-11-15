@@ -1,6 +1,16 @@
-import { type ChangeEvent, useCallback, useEffect, useState } from "react";
+import {
+  type ChangeEvent,
+  type FocusEventHandler,
+  type KeyboardEventHandler,
+  type MouseEventHandler,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
 import { NoteLink } from "./NoteLink";
+import { validateTeX } from "../../utils/validateTeX";
+import { TeX } from "../TeX/TeX";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -17,22 +27,35 @@ type NoteProps = {
 export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
+  const editTimeoutIdRef = useRef<number>();
 
-  useEffect(() => {
-    setNoteDirty({ ...note });
-  }, [note]);
+  const handleBlur = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
+    (e) => {
+      const target = e.currentTarget;
 
-  const toggleEdit = useCallback(() => {
-    if (isEditing) {
       // defer change to prevent onBlur happening before clicks.
-      setTimeout(() => {
+      editTimeoutIdRef.current = setTimeout(() => {
+        const texValidationError = validateTeX(noteDirty.content);
+
+        if (texValidationError) {
+          alert(`LaTeX validation failed: ${texValidationError}`);
+          setTimeout(() => {
+            target.focus();
+          }, 0);
+          return;
+        }
+
         onEditNote(note, noteDirty);
         setIsEditing(false);
       }, 300);
-    } else {
-      setIsEditing(true);
-    }
-  }, [onEditNote, note, noteDirty, isEditing]);
+    },
+    [note, noteDirty, onEditNote],
+  );
+
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+    setNoteDirty({ ...note });
+  }, [note]);
 
   const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
     setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
@@ -40,16 +63,17 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
   const handleDeleteClick = useCallback(() => {
     onDeleteNote(note);
+    clearTimeout(editTimeoutIdRef.current);
   }, [note, onDeleteNote]);
 
   return (
     <li>
       <NoteLink note={note as IHighlightNote} version={version} onEditNote={onEditNote} />
       {isEditing ? (
-        <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={toggleEdit} autoFocus />
+        <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={handleBlur} autoFocus />
       ) : (
-        <blockquote onClick={toggleEdit} onKeyPress={toggleEdit}>
-          {note.content}
+        <blockquote onClick={handleEdit as MouseEventHandler} onKeyUp={handleEdit as KeyboardEventHandler}>
+          <TeX>{note.content}</TeX>
         </blockquote>
       )}
       {isEditing ? (

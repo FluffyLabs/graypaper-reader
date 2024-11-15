@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
-import { deserializeLocation } from "../../utils/location";
+import { deserializeLocation } from "../../utils/deserializeLocation";
 import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 

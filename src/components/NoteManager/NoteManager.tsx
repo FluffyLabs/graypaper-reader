@@ -6,6 +6,7 @@ import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
+import { validateTeX } from "../../utils/validateTeX";
 
 const DEFAULT_AUTHOR = "";
 
@@ -36,6 +37,13 @@ export function NoteManager() {
       !locationParams.selectionEnd
     )
       throw new Error("Attempted saving a note without selection.");
+
+    const texValidationError = validateTeX(noteContent);
+
+    if (texValidationError) {
+      alert(`LaTeX validation failed: ${texValidationError}`);
+      return;
+    }
 
     const newNote: IHighlightNote = {
       content: noteContent,

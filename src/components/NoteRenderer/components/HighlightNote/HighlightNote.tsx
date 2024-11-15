@@ -3,6 +3,7 @@ import { useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import type { IHighlightNote } from "../../../NotesProvider/NotesProvider";
+import { TeX } from "../../../TeX/TeX";
 
 interface HighlightNoteProps {
   note: IHighlightNote;
@@ -57,7 +58,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
         onMouseEnter={() => setNoteIsShown(false)}
         onMouseLeave={() => setNoteIsShown(true)}
       >
-        {note.content}
+        <TeX>{note.content}</TeX>
       </div>
     </>
   );
