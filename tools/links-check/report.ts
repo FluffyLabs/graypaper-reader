@@ -14,17 +14,27 @@ export type Report = {
   failed: Map<Path, string>;
 };
 
-export function printReport(report: Report) {
+export type Summary = {
+  total: number;
+  outdated: number;
+  broken: number;
+};
+
+export function printReport(report: Report): Summary {
   const total = Array.from(report.detected.values()).reduce((a, b) => a + b.length, 0);
   if (!report.outdated.size) {
     console.info("");
     console.info(`✅ No outdated links found amongst ${total} total, congrats!`);
     console.info("");
-    return;
+    return {
+      total,
+      outdated: 0,
+      broken: 0,
+    };
   }
 
   const outdated = Array.from(report.outdated.values()).reduce((a, b) => a + b.length, 0);
-  const broken = [];
+  const broken: { file: Path; link: Link }[] = [];
   console.info(`⌛ Outdated links ${outdated}/${total}`);
   for (const [path, links] of report.outdated) {
     console.info(`  📜 ${path}`);
@@ -70,6 +80,12 @@ export function printReport(report: Report) {
       }
     }
   }
+
+  return {
+    total,
+    outdated,
+    broken: broken.length,
+  };
 }
 
 export function printFileReport(report: FileReport) {

@@ -26,7 +26,12 @@ async function main() {
     console.timeEnd(label);
   }
   console.info();
-  if (report) {
-    printReport(report);
+  if (!report) {
+    return;
+  }
+  const summary = printReport(report);
+
+  if (summary.broken > 0) {
+    process.exit(1);
   }
 }
