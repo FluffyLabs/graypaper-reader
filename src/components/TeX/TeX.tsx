@@ -1,6 +1,6 @@
 import "katex/dist/katex.css";
-import { type PropsWithChildren, type RefCallback, useCallback, useEffect, useState } from "react";
 import renderMathInElement from "katex/contrib/auto-render";
+import { type PropsWithChildren, type RefCallback, useCallback, useEffect, useState } from "react";
 
 export const TeX: React.FC<PropsWithChildren> = ({ children }) => {
   const [rootElem, setRootElem] = useState<HTMLDivElement>();

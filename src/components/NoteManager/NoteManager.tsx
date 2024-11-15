@@ -1,12 +1,12 @@
 import { type ChangeEventHandler, useCallback, useContext, useEffect, useRef, useState } from "react";
 import "./NoteManager.css";
 import { Tooltip } from "react-tooltip";
+import { validateTeX } from "../../utils/validateTeX";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
-import { validateTeX } from "../../utils/validateTeX";
 
 const DEFAULT_AUTHOR = "";
 

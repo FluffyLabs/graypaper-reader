@@ -7,10 +7,10 @@ import {
   useRef,
   useState,
 } from "react";
-import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
-import { NoteLink } from "./NoteLink";
 import { validateTeX } from "../../utils/validateTeX";
+import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
 import { TeX } from "../TeX/TeX";
+import { NoteLink } from "./NoteLink";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
