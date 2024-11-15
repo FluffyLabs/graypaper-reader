@@ -6,7 +6,7 @@ export type LocationDetails = {
   selection: string[];
 };
 
-export function deserializeLocation(h: string): LocationDetails | null {
+export function deserializeLegacyLocation(h: string): LocationDetails | null {
   if (h.length < 2) {
     return null;
   }
