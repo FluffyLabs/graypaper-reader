@@ -41,10 +41,10 @@ export function NoteManager() {
 
     setNoteContentError("");
 
-    const texValidationError = validateMath(noteContent);
+    const mathValidationError = validateMath(noteContent);
 
-    if (texValidationError) {
-      setNoteContentError(texValidationError);
+    if (mathValidationError) {
+      setNoteContentError(mathValidationError);
       return;
     }
 

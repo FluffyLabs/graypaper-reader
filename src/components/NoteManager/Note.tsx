@@ -36,11 +36,11 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
       // defer change to prevent onBlur happening before clicks.
       editTimeoutIdRef.current = setTimeout(() => {
-        const texValidationError = validateMath(noteDirty.content);
+        const mathValidationError = validateMath(noteDirty.content);
         setNoteContentError("");
 
-        if (texValidationError) {
-          setNoteContentError(texValidationError);
+        if (mathValidationError) {
+          setNoteContentError(mathValidationError);
           setTimeout(() => {
             target.focus();
           }, 0);
