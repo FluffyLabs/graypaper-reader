@@ -7,9 +7,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { validateTeX } from "../../utils/validateTeX";
+import { validateMath } from "../../utils/validateMath";
 import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
-import { TeX } from "../TeX/TeX";
+import { RenderMath } from "../RenderMath/RenderMath";
 import { NoteLink } from "./NoteLink";
 
 export type NotesItem = {
@@ -27,6 +27,7 @@ type NoteProps = {
 export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
+  const [noteContentError, setNoteContentError] = useState("");
   const editTimeoutIdRef = useRef<number>();
 
   const handleBlur = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
@@ -35,10 +36,11 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
       // defer change to prevent onBlur happening before clicks.
       editTimeoutIdRef.current = setTimeout(() => {
-        const texValidationError = validateTeX(noteDirty.content);
+        const texValidationError = validateMath(noteDirty.content);
+        setNoteContentError("");
 
         if (texValidationError) {
-          alert(`LaTeX validation failed: ${texValidationError}`);
+          setNoteContentError(texValidationError);
           setTimeout(() => {
             target.focus();
           }, 0);
@@ -55,6 +57,7 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   const handleEdit = useCallback(() => {
     setIsEditing(true);
     setNoteDirty({ ...note });
+    setNoteContentError("");
   }, [note]);
 
   const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
@@ -62,20 +65,40 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   };
 
   const handleDeleteClick = useCallback(() => {
-    onDeleteNote(note);
     clearTimeout(editTimeoutIdRef.current);
+    onDeleteNote(note);
   }, [note, onDeleteNote]);
+
+  const handleCancelClick = useCallback(() => {
+    clearTimeout(editTimeoutIdRef.current);
+    setNoteContentError("");
+    setIsEditing(false);
+  }, []);
 
   return (
     <li>
       <NoteLink note={note as IHighlightNote} version={version} onEditNote={onEditNote} />
       {isEditing ? (
-        <textarea onChange={handleNoteContentChange} value={noteDirty.content} onBlur={handleBlur} autoFocus />
+        <>
+          <textarea
+            className={noteContentError ? "error" : ""}
+            onChange={handleNoteContentChange}
+            value={noteDirty.content}
+            onBlur={handleBlur}
+            autoFocus
+          />
+          {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+        </>
       ) : (
         <blockquote onClick={handleEdit as MouseEventHandler} onKeyUp={handleEdit as KeyboardEventHandler}>
-          <TeX>{note.content}</TeX>
+          <RenderMath content={note.content} />
         </blockquote>
       )}
+      {isEditing && noteContentError ? (
+        <button type="button" onClick={handleCancelClick}>
+          cancel
+        </button>
+      ) : null}
       {isEditing ? (
         <button className="remove" onClick={handleDeleteClick}>
           delete

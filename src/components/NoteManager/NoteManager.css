@@ -1,8 +1,3 @@
-.note-manager .new-note {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .note-manager .new-note button {
   width: 100%;
 }
@@ -10,6 +5,18 @@
 .note-manager textarea {
   flex: 1;
   padding: 1rem;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.note-manager .validation-message {
+  padding-bottom: 10px;
+  color: #f22;
+}
+
+.note-manager textarea.error {
+  border: 1px solid #f22;
 }
 
 .note-manager button.remove {
