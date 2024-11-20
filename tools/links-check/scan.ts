@@ -1,5 +1,6 @@
 import fs from "node:fs";
-import { type Metadata, ORIGIN, parseLink } from "./metadata";
+import { parseLink } from "./link";
+import { type Metadata, ORIGIN } from "./metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
 class Timer {
