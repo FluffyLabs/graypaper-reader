@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
-import { deserializeLocation } from "../../utils/location";
+import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
@@ -40,7 +40,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     if (
       !window.location.hash.startsWith("#/") &&
       BASE64_VALIDATION_REGEX.test(window.location.hash) &&
-      deserializeLocation(window.location.hash)
+      deserializeLegacyLocation(window.location.hash)
     ) {
       window.location.replace(urlGetters.legacyReaderRedirect(window.location.hash));
     }

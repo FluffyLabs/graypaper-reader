@@ -1,6 +1,7 @@
 import { type ChangeEventHandler, useCallback, useContext, useEffect, useRef, useState } from "react";
 import "./NoteManager.css";
 import { Tooltip } from "react-tooltip";
+import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
@@ -11,6 +12,7 @@ const DEFAULT_AUTHOR = "";
 
 export function NoteManager() {
   const [noteContent, setNoteContent] = useState("");
+  const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
     notes,
@@ -37,6 +39,15 @@ export function NoteManager() {
     )
       throw new Error("Attempted saving a note without selection.");
 
+    setNoteContentError("");
+
+    const mathValidationError = validateMath(noteContent);
+
+    if (mathValidationError) {
+      setNoteContentError(mathValidationError);
+      return;
+    }
+
     const newNote: IHighlightNote = {
       content: noteContent,
       date: Date.now(),
@@ -55,6 +66,7 @@ export function NoteManager() {
   useEffect(() => {
     if (selectedBlocks.length === 0) {
       setNoteContent("");
+      setNoteContentError("");
     }
   }, [selectedBlocks]);
 
@@ -87,11 +99,13 @@ export function NoteManager() {
       <div className="new-note">
         <textarea
           disabled={selectedBlocks.length === 0}
+          className={noteContentError ? "error" : ""}
           autoFocus
           value={noteContent}
           onChange={(ev) => setNoteContent(ev.currentTarget.value)}
-          placeholder="Add a note to the selected fragment."
+          placeholder="Add a note to the selected fragment. Math typesetting is supported! Use standard delimiters such as $...$, \[...\] or \begin{equation}...\end{equation}."
         />
+        {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
         <button disabled={noteContent.length < 1} onClick={handleAddNoteClick}>
           Add
         </button>
