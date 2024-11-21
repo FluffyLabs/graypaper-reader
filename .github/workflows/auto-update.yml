@@ -78,6 +78,6 @@ jobs:
           gh pr merge --rebase --delete-branch
       - name: Create Release
         run: |
-          gh release create ${{ steps.archive_update.outputs.TAG_NAME }} \
+          gh release create --draft ${{ steps.archive_update.outputs.TAG_NAME }} \
             -t "Release ${{ steps.archive_update.outputs.TAG_NAME }}" \
             -n "Bumped Graypaper version to ${{steps.archive_update.outputs.VERSION}}"
