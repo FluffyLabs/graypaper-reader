@@ -1,0 +1,26 @@
+{
+  "name": "@fluffylabs/links-check",
+  "version": "0.0.7",
+  "description": "Check list of files for Gray Paper Reader links and make sure they are up to date.",
+  "main": "./dist/index.js",
+  "bin": {
+    "gp-links-check": "bin/links-check.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "biome format --write",
+    "lint": "biome lint --write; biome check --write",
+    "qa": "biome ci",
+    "qa-fix": "npm run format; npm run lint",
+    "start": "ts-node index.ts",
+    "prepublish": "npm run build"
+  },
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}
