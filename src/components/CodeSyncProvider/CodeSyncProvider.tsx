@@ -1,11 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useCodeStore } from "./hooks/useCodeStore";
-
-export interface ISynctexBlockId {
-  pageNumber: number;
-  index: number;
-}
+import type { ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
@@ -13,24 +9,6 @@ export interface ICodeSyncContext {
   getSynctexBlockRange(startBlockId: ISynctexBlockId, endBlockId: ISynctexBlockId): ISynctexBlock[];
   getSectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
-}
-
-interface ISynctexData {
-  files: {
-    [key: string]: string;
-  };
-  pages: {
-    [key: string]: ISynctexBlock[];
-  };
-}
-
-export interface ISynctexBlock extends ISynctexBlockId {
-  fileId: number;
-  line: number;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
 }
 
 interface ICodeSyncProviderProps {

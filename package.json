@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": ["tools/*", "packages/*"],
   "scripts": {
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
@@ -29,6 +30,7 @@
     "@types/katex": "^0.16.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@graypaper-reader/types": "workspace:*",
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
