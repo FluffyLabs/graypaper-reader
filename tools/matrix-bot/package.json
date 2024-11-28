@@ -1,5 +1,5 @@
 {
-  "name": "matrix-bot",
+  "name": "@graypaper-reader/matrix-bot",
   "version": "1.0.0",
   "main": "index.ts",
   "type": "module",

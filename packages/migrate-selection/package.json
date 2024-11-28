@@ -1,5 +1,5 @@
 {
-  "name": "migrate-selection",
+  "name": "@graypaper-reader/migrate-selection",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
