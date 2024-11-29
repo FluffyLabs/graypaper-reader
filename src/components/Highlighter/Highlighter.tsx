@@ -1,5 +1,5 @@
 import "./Highlighter.css";
-import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ISynctexBlock } from "@graypaper-reader/types";
 
 const DEFAULT_HIGHLIGHT_OPACITY = 0.2;
 

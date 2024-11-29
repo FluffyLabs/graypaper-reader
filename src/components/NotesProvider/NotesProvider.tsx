@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
-import type { ISynctexBlockId } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ISynctexBlockId } from "@graypaper-reader/types";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
 const LEGACY_NOTES_LS_KEY = "notes";
