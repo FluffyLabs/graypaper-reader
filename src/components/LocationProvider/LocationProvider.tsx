@@ -1,6 +1,6 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
-import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ISynctexBlock } from "@graypaper-reader/types";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 interface ISelectionParams {
