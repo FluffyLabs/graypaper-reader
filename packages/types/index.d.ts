@@ -20,3 +20,8 @@ export interface ISynctexBlock extends ISynctexBlockId {
   width: number;
   height: number;
 }
+
+export interface ISelectionParams {
+  selectionStart: ISynctexBlockId;
+  selectionEnd: ISynctexBlockId;
+}
