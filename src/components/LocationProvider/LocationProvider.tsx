@@ -2,11 +2,7 @@ import { type ReactNode, createContext, useCallback, useContext, useEffect, useS
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import type { ISynctexBlock } from "@graypaper-reader/types";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
-
-interface ISelectionParams {
-  selectionStart?: { pageNumber: number; index: number };
-  selectionEnd?: { pageNumber: number; index: number };
-}
+import type { ISelectionParams } from "@graypaper-reader/types";
 
 export interface ILocationContext {
   locationParams: ILocationParams;
@@ -14,7 +10,7 @@ export interface ILocationContext {
   synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
 }
 
-interface ILocationParams extends ISelectionParams {
+interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
 }
 

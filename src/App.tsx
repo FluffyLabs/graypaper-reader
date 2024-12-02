@@ -23,7 +23,7 @@ export function App() {
   return (
     <NotesProvider>
       <PdfProvider pdfUrl={urlGetters.pdf(version)}>
-        <CodeSyncProvider synctexUrl={urlGetters.synctex(version)} texDirectory={urlGetters.texDirectory(version)}>
+        <CodeSyncProvider>
           <SelectionProvider>
             <Resizable
               left={
