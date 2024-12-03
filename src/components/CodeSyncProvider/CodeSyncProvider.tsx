@@ -1,10 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import type { PropsWithChildren, ReactNode } from "react";
-import { useCodeStore } from "./hooks/useCodeStore";
-import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
-import { IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
-import { ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { migrateSelection } from "@graypaper-reader/migrate-selection";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { PropsWithChildren } from "react";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { useCodeStore } from "./hooks/useCodeStore";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;

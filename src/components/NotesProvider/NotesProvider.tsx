@@ -1,5 +1,5 @@
-import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
 import type { ISelectionParams } from "@graypaper-reader/types";
+import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
 const LEGACY_NOTES_LS_KEY = "notes";

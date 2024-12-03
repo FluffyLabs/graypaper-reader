@@ -1,3 +1,4 @@
+import type { ISynctexBlock } from "@graypaper-reader/types";
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -12,7 +13,6 @@ import {
 import { subtractBorder } from "../../utils/subtractBorder";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import type { ISynctexBlock } from "@graypaper-reader/types";
 
 export interface ISelectionContext {
   selectionString: string;
