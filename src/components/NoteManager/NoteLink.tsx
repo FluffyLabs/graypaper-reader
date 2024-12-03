@@ -20,6 +20,7 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
     CodeSyncContext,
   ) as ICodeSyncContext;
   const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
+  const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
 
   const migrationFlag = version !== note.version;
 
@@ -58,6 +59,30 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
       });
     },
     [setScrollToSelection, note, locationParams, setLocationParams],
+  );
+
+  const handleAutoMigrateClick = useCallback<MouseEventHandler>(
+    async (e) => {
+      e.preventDefault();
+
+      const newSelection = await migrateSelection(
+        { selectionStart: note.selectionStart, selectionEnd: note.selectionEnd },
+        note.version,
+        version,
+      );
+
+      if (newSelection) {
+        onEditNote(note, {
+          ...note,
+          selectionStart: newSelection.selectionStart,
+          selectionEnd: newSelection.selectionEnd,
+          version,
+        });
+      } else {
+        alert("Migration failed. Please check the note's selection.");
+      }
+    },
+    [migrateSelection, note, onEditNote, version],
   );
 
   const handleMigrateClick = useCallback<MouseEventHandler>(
@@ -104,15 +129,20 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
         {subsectionTitle ? `> ${subsectionTitle}` : null}
       </a>
       {migrationFlag && (
-        <a
-          onClick={handleMigrateClick}
-          data-tooltip-id="note-link"
-          data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
-          data-tooltip-place="top"
-          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
-        >
-          (migrate)
-        </a>
+        <>
+          <a
+            onClick={handleMigrateClick}
+            data-tooltip-id="note-link"
+            data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
+            data-tooltip-place="top"
+            className={selectedBlocks.length === 0 ? "disabled update" : "update"}
+          >
+            (migrate)
+          </a>
+          <a className="update" onClick={handleAutoMigrateClick}>
+            (auto-migrate)
+          </a>
+        </>
       )}
       <Tooltip id="note-link" />
     </div>

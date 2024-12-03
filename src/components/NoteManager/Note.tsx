@@ -28,7 +28,7 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
   const [noteContentError, setNoteContentError] = useState("");
-  const editTimeoutIdRef = useRef<number>();
+  const editTimeoutIdRef = useRef<ReturnType<typeof setTimeout>>();
 
   const handleBlur = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
     (e) => {
