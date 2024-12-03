@@ -1,23 +1,11 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
 import * as levenshtein from "fastest-levenshtein";
 
-const EXPECTED_ARGUMENTS_N = 5;
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;
 const MIN_CONFIDENCE = 0.8;
 
-async function readFile(archiveDir: string, version: string, filename: string): Promise<string> {
-  return fs.readFile(path.join(archiveDir, "dist", `tex-${version}`, filename), { encoding: "utf8" });
-}
-
 function getSiblingBlocks(synctex: ISynctexData, page: string, fileId: number, line: number): ISynctexBlock[] {
   return synctex.pages[page].filter((block: ISynctexBlock) => block.fileId === fileId && block.line === line);
-}
-
-function getFileId(synctex: ISynctexData, sourceFilename: string): number | null {
-  const fileId = Object.entries(synctex.files).find(([_, filename]) => filename === sourceFilename)?.[0];
-  return fileId ? Number.parseInt(fileId) : null;
 }
 
 function getBlockId(block: ISynctexBlock): ISynctexBlockId {
@@ -149,30 +137,3 @@ export function migrateSelection(
     selectionEnd: getBlockId(selectionEndBlock),
   };
 }
-
-async function main() {
-  if (process.argv.slice(2).length !== EXPECTED_ARGUMENTS_N) {
-    throw new Error("Unexpected number of arguments.");
-  }
-
-  const [sourceVersion, targetVersion, page, index, archiveDir] = process.argv.slice(-EXPECTED_ARGUMENTS_N);
-
-  const sourceSynctex = require(path.join(archiveDir, `dist/graypaper-${sourceVersion}.synctex.json`));
-  const sourceSynctexBlock = sourceSynctex.pages[page][index];
-  const sourceFilename = sourceSynctex.files[sourceSynctexBlock.fileId];
-  const sourceContent = await readFile(archiveDir, sourceVersion, sourceFilename);
-
-  const targetSynctex = require(path.join(archiveDir, `dist/graypaper-${targetVersion}.synctex.json`));
-  const targetContent = await readFile(archiveDir, targetVersion, sourceFilename);
-  const targetFileId = getFileId(targetSynctex, sourceFilename);
-
-  if (!targetFileId) {
-    throw new Error("fileId not found.");
-  }
-
-  console.log(
-    migrateBlock(sourceSynctexBlock, sourceContent, sourceSynctex, targetContent, targetSynctex, targetFileId),
-  );
-}
-
-main();

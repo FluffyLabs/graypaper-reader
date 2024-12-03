@@ -13,6 +13,7 @@ export interface ICodeSyncContext {
   getSubsectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
   migrateSelection(
     { selectionStart, selectionEnd }: ISelectionParams,
+    sourceVersion: string,
     targetVersion: string,
   ): Promise<ISelectionParams | null>;
 }
@@ -132,14 +133,17 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       return null;
     },
-    async migrateSelection({ selectionStart, selectionEnd }: ISelectionParams, targetVersion: string) {
-      if (!synctexData) return null;
-
-      const startBlock = context.getSynctexBlockById(selectionStart);
+    async migrateSelection(
+      { selectionStart, selectionEnd }: ISelectionParams,
+      sourceVersion: string,
+      targetVersion: string,
+    ) {
+      const sourceSynctex = await getSynctex(sourceVersion);
+      const startBlock = sourceSynctex.pages[selectionStart.pageNumber][selectionStart.index];
 
       if (!startBlock) return null;
 
-      const sourceFilePath = getFilePathById(startBlock.fileId);
+      const sourceFilePath = sourceSynctex.files[startBlock.fileId.toString()];
 
       if (!sourceFilePath) return null;
 
@@ -158,7 +162,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       return migrateSelection(
         { selectionStart, selectionEnd },
         sourceContent,
-        synctexData,
+        sourceSynctex,
         targetContent,
         targetSynctex,
         Number.parseInt(targetFileId),
