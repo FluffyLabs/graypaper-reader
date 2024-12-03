@@ -1,7 +1,7 @@
+import type { ISynctexBlock } from "@graypaper-reader/types";
 import { useContext, useEffect, useState } from "react";
 import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
-import type { ISynctexBlock } from "@graypaper-reader/types";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";

@@ -1,8 +1,8 @@
+import type { ISynctexBlock } from "@graypaper-reader/types";
+import type { ISelectionParams } from "@graypaper-reader/types";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
-import type { ISynctexBlock } from "@graypaper-reader/types";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
-import type { ISelectionParams } from "@graypaper-reader/types";
 
 export interface ILocationContext {
   locationParams: ILocationParams;

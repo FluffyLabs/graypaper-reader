@@ -1,7 +1,7 @@
+import type { ISynctexData } from "@graypaper-reader/types";
 import { useContext, useRef } from "react";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
-import type { ISynctexData } from "@graypaper-reader/types";
 
 export function useCodeStore() {
   const cacheRef = useRef<Map<string, Promise<string>>>(new Map());

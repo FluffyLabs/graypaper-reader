@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
 import * as levenshtein from "fastest-levenshtein";
-import type { ISynctexBlock, ISynctexData, ISynctexBlockId, ISelectionParams } from "@graypaper-reader/types";
 
 const EXPECTED_ARGUMENTS_N = 5;
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;
