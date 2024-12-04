@@ -1,4 +1,4 @@
-import type { ISynctexBlock } from "@graypaper-reader/types";
+import type { ISynctexBlock } from "@fluffylabs/types";
 import {
   type Dispatch,
   type MouseEventHandler,

@@ -1,4 +1,4 @@
-import type { ISynctexData } from "@graypaper-reader/types";
+import type { ISynctexData } from "@fluffylabs/types";
 import { useContext, useMemo, useRef } from "react";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
