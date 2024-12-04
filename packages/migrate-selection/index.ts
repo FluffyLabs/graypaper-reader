@@ -4,8 +4,14 @@ import * as levenshtein from "fastest-levenshtein";
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;
 const MIN_CONFIDENCE = 0.8;
 
-function getSiblingBlocks(synctex: ISynctexData, page: string, fileId: number, line: number): ISynctexBlock[] {
-  return synctex.pages[page].filter((block: ISynctexBlock) => block.fileId === fileId && block.line === line);
+function getSiblingBlocks(synctex: ISynctexData, fileId: number, line: number): ISynctexBlock[] {
+  const siblingBlocks: ISynctexBlock[] = [];
+
+  for (const blocks of Object.values(synctex.pages)) {
+    siblingBlocks.push(...blocks.filter((block: ISynctexBlock) => block.fileId === fileId && block.line === line));
+  }
+
+  return siblingBlocks;
 }
 
 function getBlockId(block: ISynctexBlock): ISynctexBlockId {
@@ -76,15 +82,9 @@ export function migrateBlock(
   const sourceLines = sourceContent.split("\n");
   const sourceBlock = sourceSynctex.pages[blockId.pageNumber.toString()][blockId.index];
 
-  const sourceSiblingBlocks = getSiblingBlocks(
-    sourceSynctex,
-    blockId.pageNumber.toString(),
-    sourceBlock.fileId,
-    sourceBlock.line,
-  );
+  const sourceSiblingBlocks = getSiblingBlocks(sourceSynctex, sourceBlock.fileId, sourceBlock.line);
   const relativePosition = sourceSiblingBlocks.indexOf(sourceBlock) / (sourceSiblingBlocks.length - 1);
 
-  // Find matching line
   const targetLineNumber =
     sourceBlock.line && sourceLines[sourceBlock.line - 1].startsWith("\\end")
       ? findMultiLineMatch(sourceLines, sourceBlock.line, targetContent)
@@ -94,13 +94,8 @@ export function migrateBlock(
     return null;
   }
 
-  const targetSiblingBlocks = getSiblingBlocks(
-    targetSynctex,
-    blockId.pageNumber.toString(),
-    targetFileId,
-    targetLineNumber,
-  );
-  return targetSiblingBlocks[Math.round(relativePosition * targetSiblingBlocks.length)];
+  const targetSiblingBlocks = getSiblingBlocks(targetSynctex, targetFileId, targetLineNumber);
+  return targetSiblingBlocks[Math.round(relativePosition * (targetSiblingBlocks.length - 1))];
 }
 
 export function migrateSelection(
