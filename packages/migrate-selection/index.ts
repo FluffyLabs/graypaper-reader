@@ -1,4 +1,4 @@
-import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@graypaper-reader/types";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/types";
 import * as levenshtein from "fastest-levenshtein";
 
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;

@@ -1,4 +1,4 @@
-import type { ISynctexBlock } from "@graypaper-reader/types";
+import type { ISynctexBlock } from "@fluffylabs/types";
 import { useContext, useEffect, useState } from "react";
 import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";

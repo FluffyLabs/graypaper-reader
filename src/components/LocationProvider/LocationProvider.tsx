@@ -1,5 +1,5 @@
-import type { ISynctexBlock } from "@graypaper-reader/types";
-import type { ISelectionParams } from "@graypaper-reader/types";
+import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISelectionParams } from "@fluffylabs/types";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";

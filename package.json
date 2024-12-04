@@ -18,7 +18,7 @@
     "predev": "npm run cp-gp"
   },
   "dependencies": {
-    "@graypaper-reader/migrate-selection": "^1.0.0",
+    "@fluffylabs/migrate-selection": "^1.0.0",
     "dompurify": "^3.2.0",
     "katex": "^0.16.11",
     "pdfjs-dist": "^4.5.136",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
-    "@graypaper-reader/types": "^1.0.0",
+    "@fluffylabs/types": "^1.0.0",
     "@types/katex": "^0.16.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
