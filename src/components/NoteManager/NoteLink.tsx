@@ -77,6 +77,7 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
           selectionStart: newSelection.selectionStart,
           selectionEnd: newSelection.selectionEnd,
           version,
+          pageNumber: newSelection.selectionStart.pageNumber,
         });
       } else {
         alert("Migration failed. Please check the note's selection.");
