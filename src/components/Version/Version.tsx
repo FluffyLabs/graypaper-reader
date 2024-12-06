@@ -15,7 +15,6 @@ export function Version() {
 
   const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     (e) => {
-      console.log(e.target.value);
       setLocationParams({ version: e.target.value });
     },
     [setLocationParams],

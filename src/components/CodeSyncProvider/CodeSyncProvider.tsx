@@ -148,7 +148,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       if (!sourceFilePath) return null;
 
       const [sourceContent, targetContent, targetSynctex] = await Promise.all([
-        getTexAsString(sourceFilePath),
+        getTexAsString(sourceFilePath, sourceVersion),
         getTexAsString(sourceFilePath, targetVersion),
         getSynctex(targetVersion),
       ]);

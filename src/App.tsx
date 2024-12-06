@@ -21,9 +21,9 @@ export function App() {
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
   return (
-    <NotesProvider>
-      <PdfProvider pdfUrl={urlGetters.pdf(version)}>
-        <CodeSyncProvider>
+    <CodeSyncProvider>
+      <NotesProvider>
+        <PdfProvider pdfUrl={urlGetters.pdf(version)}>
           <SelectionProvider>
             <Resizable
               left={
@@ -41,8 +41,8 @@ export function App() {
               right={<Sidebar />}
             />
           </SelectionProvider>
-        </CodeSyncProvider>
-      </PdfProvider>
-    </NotesProvider>
+        </PdfProvider>
+      </NotesProvider>
+    </CodeSyncProvider>
   );
 }
