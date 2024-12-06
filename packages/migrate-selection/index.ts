@@ -25,6 +25,15 @@ function calculateConfidence(source: string, target: string, distance: number): 
   return 1 - distance / Math.max(source.length, target.length);
 }
 
+function findFirstNonEmptyLineUpwards(lines: string[], lineNumber: number): string {
+  return (
+    lines
+      .slice(0, lineNumber)
+      .reverse()
+      .find((line) => line !== "") ?? ""
+  );
+}
+
 function findMultiLineMatch(sourceLines: string[], sourceLine: number, targetContent: string) {
   for (let i = sourceLine - 2; i >= 0; i--) {
     if (sourceLines[i].startsWith("\\begin")) {
@@ -88,7 +97,7 @@ export function migrateBlock(
   const targetLineNumber =
     sourceBlock.line && sourceLines[sourceBlock.line - 1].startsWith("\\end")
       ? findMultiLineMatch(sourceLines, sourceBlock.line, targetContent)
-      : findSingleLineMatch(sourceLines[sourceBlock.line - 2], targetContent);
+      : findSingleLineMatch(findFirstNonEmptyLineUpwards(sourceLines, sourceBlock.line), targetContent);
 
   if (!targetLineNumber) {
     return null;

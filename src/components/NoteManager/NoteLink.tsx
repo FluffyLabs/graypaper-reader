@@ -8,11 +8,12 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 
 type NoteLinkProps = {
   note: IHighlightNote;
+  noteMigrated: IHighlightNote;
   version: string;
   onEditNote: INotesContext["handleUpdateNote"];
 };
 
-export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
+export function NoteLink({ note, noteMigrated, version, onEditNote }: NoteLinkProps) {
   const [sectionTitle, setSectionTitle] = useState<string | null>("");
   const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
   const { selectedBlocks, setScrollToSelection } = useContext(SelectionContext) as ISelectionContext;
@@ -20,18 +21,17 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
     CodeSyncContext,
   ) as ICodeSyncContext;
   const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
-  const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
 
   const migrationFlag = version !== note.version;
 
   useEffect(() => {
-    getSectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+    getSectionTitleAtSynctexBlock(noteMigrated.selectionStart).then((sectionTitleFromSource) =>
       setSectionTitle(sectionTitleFromSource),
     );
-    getSubsectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+    getSubsectionTitleAtSynctexBlock(noteMigrated.selectionStart).then((sectionTitleFromSource) =>
       setSubsectionTitle(sectionTitleFromSource),
     );
-  }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+  }, [noteMigrated, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
   const handleOriginalClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -54,36 +54,11 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
       setScrollToSelection(true);
       setLocationParams({
         ...locationParams,
-        selectionStart: note.selectionStart,
-        selectionEnd: note.selectionEnd,
+        selectionStart: noteMigrated.selectionStart,
+        selectionEnd: noteMigrated.selectionEnd,
       });
     },
-    [setScrollToSelection, note, locationParams, setLocationParams],
-  );
-
-  const handleAutoMigrateClick = useCallback<MouseEventHandler>(
-    async (e) => {
-      e.preventDefault();
-
-      const newSelection = await migrateSelection(
-        { selectionStart: note.selectionStart, selectionEnd: note.selectionEnd },
-        note.version,
-        version,
-      );
-
-      if (newSelection) {
-        onEditNote(note, {
-          ...note,
-          selectionStart: newSelection.selectionStart,
-          selectionEnd: newSelection.selectionEnd,
-          version,
-          pageNumber: newSelection.selectionStart.pageNumber,
-        });
-      } else {
-        alert("Migration failed. Please check the note's selection.");
-      }
-    },
-    [migrateSelection, note, onEditNote, version],
+    [setScrollToSelection, noteMigrated, locationParams, setLocationParams],
   );
 
   const handleMigrateClick = useCallback<MouseEventHandler>(
@@ -93,9 +68,9 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
       if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
 
       if (
-        (!blockIdsEqual(locationParams.selectionStart, note.selectionStart) ||
-          !blockIdsEqual(locationParams.selectionEnd, note.selectionEnd)) &&
-        !confirm("Selection different than original. Are you sure you want to continue?")
+        (!blockIdsEqual(locationParams.selectionStart, noteMigrated.selectionStart) ||
+          !blockIdsEqual(locationParams.selectionEnd, noteMigrated.selectionEnd)) &&
+        !confirm("You manually changed the selection. Are you sure you want to continue?")
       ) {
         return;
       }
@@ -108,7 +83,7 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
         pageNumber: locationParams.selectionStart.pageNumber,
       });
     },
-    [locationParams, note, onEditNote],
+    [locationParams, note, noteMigrated, onEditNote],
   );
 
   return (
@@ -126,24 +101,19 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
         </a>
       )}
       <a href="#" onClick={handleNoteTitleClick}>
-        p. {note.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
+        p. {noteMigrated.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
         {subsectionTitle ? `> ${subsectionTitle}` : null}
       </a>
       {migrationFlag && (
-        <>
-          <a
-            onClick={handleMigrateClick}
-            data-tooltip-id="note-link"
-            data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
-            data-tooltip-place="top"
-            className={selectedBlocks.length === 0 ? "disabled update" : "update"}
-          >
-            (migrate)
-          </a>
-          <a className="update" onClick={handleAutoMigrateClick}>
-            (auto-migrate)
-          </a>
-        </>
+        <a
+          onClick={handleMigrateClick}
+          data-tooltip-id="note-link"
+          data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
+          data-tooltip-place="top"
+          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
+        >
+          (migrate)
+        </a>
       )}
       <Tooltip id="note-link" />
     </div>
