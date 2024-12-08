@@ -1,5 +1,7 @@
-import { type ReactNode, createContext, useCallback, useEffect, useMemo, useState } from "react";
-import type { ISynctexBlockId } from "../CodeSyncProvider/CodeSyncProvider";
+import type { ISelectionParams } from "@fluffylabs/types";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
 const LEGACY_NOTES_LS_KEY = "notes";
@@ -9,6 +11,7 @@ export const NotesContext = createContext<INotesContext | null>(null);
 
 export interface INotesContext {
   notes: TAnyNote[];
+  notesMigrated: TAnyNote[];
   canUndo: boolean;
   hasLegacyNotes: boolean;
   handleAddNote(note: TAnyNote): void;
@@ -33,9 +36,7 @@ export interface IPointNote extends INote {
   top: number;
 }
 
-export interface IHighlightNote extends INote {
-  selectionStart: ISynctexBlockId;
-  selectionEnd: ISynctexBlockId;
+export interface IHighlightNote extends INote, ISelectionParams {
   selectionString: string;
 }
 
@@ -47,11 +48,20 @@ interface INotesProviderProps {
 
 function isINote(arg: unknown): arg is INote {
   if (typeof arg !== "object" || arg === null) return false;
-  if ("content" in arg && typeof arg.content !== "string") return false;
-  if ("date" in arg && typeof arg.date !== "number") return false;
-  if ("author" in arg && typeof arg.author !== "string") return false;
-  if ("pageNumber" in arg && typeof arg.pageNumber !== "number") return false;
-  if ("version" in arg && typeof arg.version !== "string") return false;
+  if (!("content" in arg) || typeof arg.content !== "string") return false;
+  if (!("date" in arg) || typeof arg.date !== "number") return false;
+  if (!("author" in arg) || typeof arg.author !== "string") return false;
+  if (!("pageNumber" in arg) || typeof arg.pageNumber !== "number") return false;
+  if (!("version" in arg) || typeof arg.version !== "string") return false;
+
+  return true;
+}
+
+function isHighlightNote(arg: unknown): arg is IHighlightNote {
+  if (!isINote(arg)) return false;
+  if (!("selectionString" in arg) || typeof arg.selectionString !== "string") return false;
+  if (!("selectionStart" in arg)) return false;
+  if (!("selectionEnd" in arg)) return false;
 
   return true;
 }
@@ -93,8 +103,12 @@ function saveToLocalStorage(notes: TAnyNote[]): void {
 
 export function NotesProvider({ children }: INotesProviderProps) {
   const [notes, setNotes] = useState<TAnyNote[]>(loadFromLocalStorage());
+  const [notesMigrated, setNotesMigrated] = useState<TAnyNote[]>([]);
   const [history, setHistory] = useState<TAnyNote[][]>([]);
   const [hasLegacyNotes, setHasLegacyNotes] = useState<boolean>(false);
+  const { locationParams } = useContext(LocationContext) as ILocationContext;
+  const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
+
   const canUndo = useMemo(() => history.length > 0, [history]);
 
   const pushCurrentStateToHistory = useCallback(() => {
@@ -110,8 +124,43 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setHasLegacyNotes(!!localStorageContent && localStorageContent !== "[]");
   });
 
+  useEffect(() => {
+    async function preMigrateNotes() {
+      setNotesMigrated(
+        await Promise.all(
+          notes.map(async (note) => {
+            if (note.version === locationParams.version || !isHighlightNote(note)) {
+              return note;
+            }
+
+            const newSelection = await migrateSelection(
+              { selectionStart: note.selectionStart, selectionEnd: note.selectionEnd },
+              note.version,
+              locationParams.version,
+            );
+
+            if (!newSelection) {
+              return { ...note };
+            }
+
+            return {
+              ...note,
+              version: locationParams.version,
+              selectionStart: newSelection.selectionStart,
+              selectionEnd: newSelection.selectionEnd,
+              pageNumber: newSelection.selectionStart.pageNumber,
+            };
+          }),
+        ),
+      );
+    }
+
+    preMigrateNotes();
+  }, [notes, locationParams.version, migrateSelection]);
+
   const context: INotesContext = {
     notes,
+    notesMigrated,
     canUndo,
     hasLegacyNotes,
     handleAddNote: useCallback(

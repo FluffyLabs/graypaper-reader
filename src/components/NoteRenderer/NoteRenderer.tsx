@@ -5,13 +5,13 @@ import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 import { PointNote } from "./components/PointNote/PointNote";
 
 export function NoteRenderer() {
-  const { notes } = useContext(NotesContext) as INotesContext;
+  const { notesMigrated } = useContext(NotesContext) as INotesContext;
   const { viewer } = useContext(PdfContext) as IPdfContext;
   const { visiblePages, pageOffsets } = useContext(PdfContext) as IPdfContext;
 
   const notesToRender = useMemo(
-    () => notes.filter((note) => visiblePages.includes(note.pageNumber)),
-    [notes, visiblePages],
+    () => notesMigrated.filter((note) => visiblePages.includes(note.pageNumber)),
+    [notesMigrated, visiblePages],
   );
 
   return notesToRender.map((note) => {

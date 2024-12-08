@@ -1,12 +1,8 @@
+import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISelectionParams } from "@fluffylabs/types";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
-import type { ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
-
-interface ISelectionParams {
-  selectionStart?: { pageNumber: number; index: number };
-  selectionEnd?: { pageNumber: number; index: number };
-}
 
 export interface ILocationContext {
   locationParams: ILocationParams;
@@ -14,7 +10,7 @@ export interface ILocationContext {
   synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
 }
 
-interface ILocationParams extends ISelectionParams {
+interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
 }
 

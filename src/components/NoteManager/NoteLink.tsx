@@ -8,11 +8,12 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 
 type NoteLinkProps = {
   note: IHighlightNote;
+  noteMigrated: IHighlightNote;
   version: string;
   onEditNote: INotesContext["handleUpdateNote"];
 };
 
-export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
+export function NoteLink({ note, noteMigrated, version, onEditNote }: NoteLinkProps) {
   const [sectionTitle, setSectionTitle] = useState<string | null>("");
   const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
   const { selectedBlocks, setScrollToSelection } = useContext(SelectionContext) as ISelectionContext;
@@ -24,13 +25,13 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
   const migrationFlag = version !== note.version;
 
   useEffect(() => {
-    getSectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+    getSectionTitleAtSynctexBlock(noteMigrated.selectionStart).then((sectionTitleFromSource) =>
       setSectionTitle(sectionTitleFromSource),
     );
-    getSubsectionTitleAtSynctexBlock(note.selectionStart).then((sectionTitleFromSource) =>
+    getSubsectionTitleAtSynctexBlock(noteMigrated.selectionStart).then((sectionTitleFromSource) =>
       setSubsectionTitle(sectionTitleFromSource),
     );
-  }, [note, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+  }, [noteMigrated, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
   const handleOriginalClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -53,11 +54,11 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
       setScrollToSelection(true);
       setLocationParams({
         ...locationParams,
-        selectionStart: note.selectionStart,
-        selectionEnd: note.selectionEnd,
+        selectionStart: noteMigrated.selectionStart,
+        selectionEnd: noteMigrated.selectionEnd,
       });
     },
-    [setScrollToSelection, note, locationParams, setLocationParams],
+    [setScrollToSelection, noteMigrated, locationParams, setLocationParams],
   );
 
   const handleMigrateClick = useCallback<MouseEventHandler>(
@@ -67,9 +68,9 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
       if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
 
       if (
-        (!blockIdsEqual(locationParams.selectionStart, note.selectionStart) ||
-          !blockIdsEqual(locationParams.selectionEnd, note.selectionEnd)) &&
-        !confirm("Selection different than original. Are you sure you want to continue?")
+        (!blockIdsEqual(locationParams.selectionStart, noteMigrated.selectionStart) ||
+          !blockIdsEqual(locationParams.selectionEnd, noteMigrated.selectionEnd)) &&
+        !confirm("You manually changed the selection. Are you sure you want to continue?")
       ) {
         return;
       }
@@ -82,7 +83,7 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
         pageNumber: locationParams.selectionStart.pageNumber,
       });
     },
-    [locationParams, note, onEditNote],
+    [locationParams, note, noteMigrated, onEditNote],
   );
 
   return (
@@ -100,7 +101,7 @@ export function NoteLink({ note, version, onEditNote }: NoteLinkProps) {
         </a>
       )}
       <a href="#" onClick={handleNoteTitleClick}>
-        p. {note.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
+        p. {noteMigrated.pageNumber} &gt; {sectionTitle === null ? "[no section]" : sectionTitle}{" "}
         {subsectionTitle ? `> ${subsectionTitle}` : null}
       </a>
       {migrationFlag && (

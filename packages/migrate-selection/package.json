@@ -1,0 +1,25 @@
+{
+  "name": "@fluffylabs/migrate-selection",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "qa": "biome ci",
+    "qa-fix": "npm run format; npm run lint",
+    "format": "biome format --write",
+    "lint": "biome lint --write; biome check --write",
+    "start": "node --loader ts-node/esm ./index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0",
+  "description": "Migrate graypaper reader notes between versions.",
+  "devDependencies": {
+    "@fluffylabs/types": "^1.0.0",
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.7.5",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "fastest-levenshtein": "^1.0.16"
+  }
+}
