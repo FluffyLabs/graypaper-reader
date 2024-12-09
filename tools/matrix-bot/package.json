@@ -1,5 +1,5 @@
 {
-  "name": "matrix-bot",
+  "name": "@fluffylabs/matrix-bot",
   "version": "1.0.0",
   "main": "index.ts",
   "type": "module",
@@ -15,6 +15,7 @@
   "license": "MPL-2.0",
   "description": "Matrix bot that listens for messages containing GP Reader links.",
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^22.7.5",
     "typescript": "^5.6.3"

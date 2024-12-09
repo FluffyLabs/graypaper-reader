@@ -20,15 +20,16 @@ export type NotesItem = {
 type NoteProps = {
   version: string;
   note: TAnyNote;
+  noteMigrated: TAnyNote;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
-export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
+export function Note({ note, noteMigrated, onEditNote, onDeleteNote, version }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
   const [noteContentError, setNoteContentError] = useState("");
-  const editTimeoutIdRef = useRef<number>();
+  const editTimeoutIdRef = useRef<ReturnType<typeof setTimeout>>();
 
   const handleBlur = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
     (e) => {
@@ -77,7 +78,12 @@ export function Note({ note, onEditNote, onDeleteNote, version }: NoteProps) {
 
   return (
     <li>
-      <NoteLink note={note as IHighlightNote} version={version} onEditNote={onEditNote} />
+      <NoteLink
+        note={note as IHighlightNote}
+        noteMigrated={noteMigrated as IHighlightNote}
+        version={version}
+        onEditNote={onEditNote}
+      />
       {isEditing ? (
         <>
           <textarea

@@ -1,11 +1,10 @@
-import { createContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { migrateSelection } from "@fluffylabs/migrate-selection";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/types";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { PropsWithChildren } from "react";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { useCodeStore } from "./hooks/useCodeStore";
-
-export interface ISynctexBlockId {
-  pageNumber: number;
-  index: number;
-}
+import { useSynctexStore } from "./hooks/useSynctexStore";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
@@ -13,30 +12,11 @@ export interface ICodeSyncContext {
   getSynctexBlockRange(startBlockId: ISynctexBlockId, endBlockId: ISynctexBlockId): ISynctexBlock[];
   getSectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
   getSubsectionTitleAtSynctexBlock(blockId: ISynctexBlockId): Promise<string | null>;
-}
-
-interface ISynctexData {
-  files: {
-    [key: string]: string;
-  };
-  pages: {
-    [key: string]: ISynctexBlock[];
-  };
-}
-
-export interface ISynctexBlock extends ISynctexBlockId {
-  fileId: number;
-  line: number;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
-
-interface ICodeSyncProviderProps {
-  synctexUrl: string;
-  texDirectory: string;
-  children: ReactNode;
+  migrateSelection(
+    { selectionStart, selectionEnd }: ISelectionParams,
+    sourceVersion: string,
+    targetVersion: string,
+  ): Promise<ISelectionParams | null>;
 }
 
 const BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH = 0.00375;
@@ -48,38 +28,27 @@ const BIBLIOGRAPHY_TITLE = "References";
 
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
-export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSyncProviderProps) {
+export function CodeSyncProvider({ children }: PropsWithChildren) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
-  const { getByFilePath } = useCodeStore(texDirectory);
-
-  const getFilePathById = (id: number): string | null => {
-    if (!synctexData) return null;
-
-    return synctexData.files[id.toString()];
-  };
+  const { getTexAsLines, getTexAsString } = useCodeStore();
+  const { getSynctex } = useSynctexStore();
+  const { locationParams } = useContext(LocationContext) as ILocationContext;
 
   useEffect(() => {
     async function loadSynctex() {
-      try {
-        const response = await fetch(synctexUrl);
-        const fromJson = (await response.json()) as ISynctexData;
-        setSynctexData(fromJson);
-      } catch (error) {
-        console.error("Failed to load synctex data for this version.", error);
-        setSynctexData(undefined);
-      }
+      setSynctexData(await getSynctex(locationParams.version));
     }
 
-    if (synctexUrl) {
+    if (locationParams.version) {
       loadSynctex();
     }
-  }, [synctexUrl]);
+  }, [locationParams.version, getSynctex]);
 
   const context: ICodeSyncContext = {
     getSynctexBlockAtLocation(left, top, pageNumber) {
       if (!synctexData) return null;
 
-      const blocksInCurrPage = synctexData.pages[pageNumber];
+      const blocksInCurrPage = synctexData.blocksByPage.get(pageNumber) || [];
 
       let lastMatch: ISynctexBlock | null = null;
 
@@ -101,7 +70,7 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
       if (!synctexData) return null;
 
       try {
-        return synctexData.pages[blockId.pageNumber][blockId.index];
+        return synctexData.blocksByPage.get(blockId.pageNumber)?.[blockId.index] || null;
       } catch (e) {
         console.warn(`Synctex block not found at page ${blockId.pageNumber} and index ${blockId.index}.`, e);
       }
@@ -112,18 +81,20 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
       if (!synctexData || startBlockId.pageNumber !== endBlockId.pageNumber) return [];
 
       // todo: for now we assume selections are within one page
-      return synctexData.pages[startBlockId.pageNumber].slice(startBlockId.index, endBlockId.index + 1);
+      return (
+        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) || []
+      );
     },
     async getSectionTitleAtSynctexBlock(blockId) {
       const block = context.getSynctexBlockById(blockId);
 
       if (!block) return null;
 
-      const sourceFilePath = getFilePathById(block.fileId);
+      const sourceFilePath = synctexData?.filePathsByFileId.get(block.fileId);
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getByFilePath(sourceFilePath);
+      const sourceFileLines = await getTexAsLines(sourceFilePath);
 
       if (sourceFileLines[Math.max(block.line - 2, 0)].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
         return BIBLIOGRAPHY_TITLE;
@@ -144,11 +115,11 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
 
       if (!block) return null;
 
-      const sourceFilePath = getFilePathById(block.fileId);
+      const sourceFilePath = synctexData?.filePathsByFileId.get(block.fileId);
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getByFilePath(sourceFilePath);
+      const sourceFileLines = await getTexAsLines(sourceFilePath);
 
       for (let i = block.line - 1; i >= 0; i--) {
         const matches = sourceFileLines[i].match(LATEX_SUBSECTION_PATTERN);
@@ -159,6 +130,41 @@ export function CodeSyncProvider({ synctexUrl, texDirectory, children }: ICodeSy
       }
 
       return null;
+    },
+    async migrateSelection(
+      { selectionStart, selectionEnd }: ISelectionParams,
+      sourceVersion: string,
+      targetVersion: string,
+    ) {
+      const sourceSynctex = await getSynctex(sourceVersion);
+      const startBlock = sourceSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
+
+      if (!startBlock) return null;
+
+      const sourceFilePath = sourceSynctex.filePathsByFileId.get(startBlock.fileId);
+
+      if (!sourceFilePath) return null;
+
+      const [sourceContent, targetContent, targetSynctex] = await Promise.all([
+        getTexAsString(sourceFilePath, sourceVersion),
+        getTexAsString(sourceFilePath, targetVersion),
+        getSynctex(targetVersion),
+      ]);
+
+      const targetFileId = [...targetSynctex.filePathsByFileId.entries()].find(
+        ([_, filePath]) => filePath === sourceFilePath,
+      )?.[0];
+
+      if (!targetFileId) return null;
+
+      return migrateSelection(
+        { selectionStart, selectionEnd },
+        sourceContent,
+        sourceSynctex,
+        targetContent,
+        targetSynctex,
+        targetFileId,
+      );
     },
   };
 

@@ -16,6 +16,7 @@ export function NoteManager() {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
     notes,
+    notesMigrated,
     canUndo,
     hasLegacyNotes,
     handleAddNote,
@@ -111,15 +112,20 @@ export function NoteManager() {
         </button>
       </div>
       <ul>
-        {notes.map((note) => (
-          <Note
-            version={locationParams.version}
-            key={note.date}
-            note={note}
-            onEditNote={handleUpdateNote}
-            onDeleteNote={handleDeleteNote}
-          />
-        ))}
+        {notesMigrated.length === notes.length ? (
+          notes.map((note, index) => (
+            <Note
+              version={locationParams.version}
+              key={note.date}
+              note={note}
+              noteMigrated={notesMigrated[index]}
+              onEditNote={handleUpdateNote}
+              onDeleteNote={handleDeleteNote}
+            />
+          ))
+        ) : (
+          <li>Loading...</li>
+        )}
       </ul>
       <div className="actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}

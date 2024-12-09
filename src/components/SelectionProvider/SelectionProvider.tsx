@@ -1,3 +1,4 @@
+import type { ISynctexBlock } from "@fluffylabs/types";
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -10,7 +11,7 @@ import {
   useState,
 } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
-import { CodeSyncContext, type ICodeSyncContext, type ISynctexBlock } from "../CodeSyncProvider/CodeSyncProvider";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 export interface ISelectionContext {

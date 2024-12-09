@@ -1,0 +1,8 @@
+{
+  "name": "@fluffylabs/types",
+  "version": "1.0.0",
+  "types": "index.d.ts",
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0",
+  "description": "Shared types for graypaper reader."
+}
