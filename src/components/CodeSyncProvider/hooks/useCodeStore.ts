@@ -1,4 +1,3 @@
-import type { ISynctexData } from "@fluffylabs/types";
 import { useContext, useMemo, useRef } from "react";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
@@ -20,22 +19,12 @@ export function useCodeStore() {
       return "";
     };
 
-    const fetchAndCache = async (path: string): Promise<string> => {
-      if (!cacheRef.current.has(path)) cacheRef.current.set(path, fetchAsString(path));
-      return cacheRef.current.get(path) as Promise<string>;
-    };
-
     const fetchTex = async (path: string, version?: string): Promise<string> => {
       const texDirectory = urlGetters.texDirectory(version ?? locationParams.version);
       const versionedPath = `${texDirectory}/${path}`;
 
-      return fetchAndCache(versionedPath);
-    };
-
-    const fetchSynctex = async (version: string): Promise<string> => {
-      const synctexUrl = urlGetters.synctex(version);
-
-      return fetchAndCache(synctexUrl);
+      if (!cacheRef.current.has(versionedPath)) cacheRef.current.set(versionedPath, fetchAsString(versionedPath));
+      return cacheRef.current.get(versionedPath) as Promise<string>;
     };
 
     return {
@@ -44,9 +33,6 @@ export function useCodeStore() {
       },
       async getTexAsLines(path: string, version?: string): Promise<string[]> {
         return (await fetchTex(path, version)).split("\n");
-      },
-      async getSynctex(version: string): Promise<ISynctexData> {
-        return JSON.parse(await fetchSynctex(version)) as ISynctexData;
       },
     };
   }, [locationParams.version, urlGetters]);

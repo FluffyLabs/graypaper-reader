@@ -4,16 +4,6 @@ import * as levenshtein from "fastest-levenshtein";
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;
 const MIN_CONFIDENCE = 0.8;
 
-function getSiblingBlocks(synctex: ISynctexData, fileId: number, line: number): ISynctexBlock[] {
-  const siblingBlocks: ISynctexBlock[] = [];
-
-  for (const blocks of Object.values(synctex.pages)) {
-    siblingBlocks.push(...blocks.filter((block: ISynctexBlock) => block.fileId === fileId && block.line === line));
-  }
-
-  return siblingBlocks;
-}
-
 function getBlockId(block: ISynctexBlock): ISynctexBlockId {
   return {
     pageNumber: block.pageNumber,
@@ -89,9 +79,13 @@ export function migrateBlock(
   targetFileId: number,
 ): ISynctexBlock | null {
   const sourceLines = sourceContent.split("\n");
-  const sourceBlock = sourceSynctex.pages[blockId.pageNumber.toString()][blockId.index];
+  const sourceBlock = sourceSynctex.blocksByPage.get(blockId.pageNumber)?.[blockId.index];
 
-  const sourceSiblingBlocks = getSiblingBlocks(sourceSynctex, sourceBlock.fileId, sourceBlock.line);
+  if (!sourceBlock) return null;
+
+  const sourceSiblingBlocks = sourceSynctex.blocksByFileIdAndLine.get(sourceBlock.fileId)?.get(sourceBlock.line) || [
+    sourceBlock,
+  ];
   const relativePosition = sourceSiblingBlocks.indexOf(sourceBlock) / (sourceSiblingBlocks.length - 1);
 
   const targetLineNumber =
@@ -103,7 +97,8 @@ export function migrateBlock(
     return null;
   }
 
-  const targetSiblingBlocks = getSiblingBlocks(targetSynctex, targetFileId, targetLineNumber);
+  const targetSiblingBlocks = targetSynctex.blocksByFileIdAndLine.get(targetFileId)?.get(targetLineNumber);
+  if (!targetSiblingBlocks) return null;
   return targetSiblingBlocks[Math.round(relativePosition * (targetSiblingBlocks.length - 1))];
 }
 

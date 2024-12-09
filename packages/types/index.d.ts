@@ -3,13 +3,19 @@ export interface ISynctexBlockId {
   index: number;
 }
 
-export interface ISynctexData {
+export interface ISynctexJson {
   files: {
     [key: string]: string;
   };
   pages: {
     [key: string]: ISynctexBlock[];
   };
+}
+
+export interface ISynctexData {
+  filePathsByFileId: Map<number, string>;
+  blocksByPage: Map<number, ISynctexBlock[]>;
+  blocksByFileIdAndLine: Map<number, Map<number, ISynctexBlock[]>>;
 }
 
 export interface ISynctexBlock extends ISynctexBlockId {

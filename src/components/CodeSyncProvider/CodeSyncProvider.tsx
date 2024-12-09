@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { useCodeStore } from "./hooks/useCodeStore";
+import { useSynctexStore } from "./hooks/useSynctexStore";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;
@@ -29,14 +30,9 @@ export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
 export function CodeSyncProvider({ children }: PropsWithChildren) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
-  const { getTexAsLines, getTexAsString, getSynctex } = useCodeStore();
+  const { getTexAsLines, getTexAsString } = useCodeStore();
+  const { getSynctex } = useSynctexStore();
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-
-  const getFilePathById = (id: number): string | null => {
-    if (!synctexData) return null;
-
-    return synctexData.files[id.toString()];
-  };
 
   useEffect(() => {
     async function loadSynctex() {
@@ -52,7 +48,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
     getSynctexBlockAtLocation(left, top, pageNumber) {
       if (!synctexData) return null;
 
-      const blocksInCurrPage = synctexData.pages[pageNumber];
+      const blocksInCurrPage = synctexData.blocksByPage.get(pageNumber) || [];
 
       let lastMatch: ISynctexBlock | null = null;
 
@@ -74,7 +70,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       if (!synctexData) return null;
 
       try {
-        return synctexData.pages[blockId.pageNumber][blockId.index];
+        return synctexData.blocksByPage.get(blockId.pageNumber)?.[blockId.index] || null;
       } catch (e) {
         console.warn(`Synctex block not found at page ${blockId.pageNumber} and index ${blockId.index}.`, e);
       }
@@ -85,14 +81,16 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       if (!synctexData || startBlockId.pageNumber !== endBlockId.pageNumber) return [];
 
       // todo: for now we assume selections are within one page
-      return synctexData.pages[startBlockId.pageNumber].slice(startBlockId.index, endBlockId.index + 1);
+      return (
+        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) || []
+      );
     },
     async getSectionTitleAtSynctexBlock(blockId) {
       const block = context.getSynctexBlockById(blockId);
 
       if (!block) return null;
 
-      const sourceFilePath = getFilePathById(block.fileId);
+      const sourceFilePath = synctexData?.filePathsByFileId.get(block.fileId);
 
       if (!sourceFilePath) return null;
 
@@ -117,7 +115,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!block) return null;
 
-      const sourceFilePath = getFilePathById(block.fileId);
+      const sourceFilePath = synctexData?.filePathsByFileId.get(block.fileId);
 
       if (!sourceFilePath) return null;
 
@@ -139,11 +137,11 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       targetVersion: string,
     ) {
       const sourceSynctex = await getSynctex(sourceVersion);
-      const startBlock = sourceSynctex.pages[selectionStart.pageNumber][selectionStart.index];
+      const startBlock = sourceSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
 
       if (!startBlock) return null;
 
-      const sourceFilePath = sourceSynctex.files[startBlock.fileId.toString()];
+      const sourceFilePath = sourceSynctex.filePathsByFileId.get(startBlock.fileId);
 
       if (!sourceFilePath) return null;
 
@@ -153,7 +151,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
         getSynctex(targetVersion),
       ]);
 
-      const targetFileId = Object.entries(targetSynctex.files).find(
+      const targetFileId = [...targetSynctex.filePathsByFileId.entries()].find(
         ([_, filePath]) => filePath === sourceFilePath,
       )?.[0];
 
@@ -165,7 +163,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
         sourceSynctex,
         targetContent,
         targetSynctex,
-        Number.parseInt(targetFileId),
+        targetFileId,
       );
     },
   };
