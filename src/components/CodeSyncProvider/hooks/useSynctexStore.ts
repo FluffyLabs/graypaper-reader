@@ -1,6 +1,6 @@
+import type { ISynctexData, ISynctexJson } from "@fluffylabs/types";
 import { useContext, useMemo, useRef } from "react";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
-import type { ISynctexData, ISynctexJson } from "@fluffylabs/types";
 
 export function useSynctexStore() {
   const cacheRef = useRef<Map<string, Promise<ISynctexData>>>(new Map());

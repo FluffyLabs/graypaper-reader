@@ -112,16 +112,20 @@ export function NoteManager() {
         </button>
       </div>
       <ul>
-        {notes.map((note, index) => (
-          <Note
-            version={locationParams.version}
-            key={note.date}
-            note={note}
-            noteMigrated={notesMigrated[index]}
-            onEditNote={handleUpdateNote}
-            onDeleteNote={handleDeleteNote}
-          />
-        ))}
+        {notesMigrated.length === notes.length ? (
+          notes.map((note, index) => (
+            <Note
+              version={locationParams.version}
+              key={note.date}
+              note={note}
+              noteMigrated={notesMigrated[index]}
+              onEditNote={handleUpdateNote}
+              onDeleteNote={handleDeleteNote}
+            />
+          ))
+        ) : (
+          <li>Loading...</li>
+        )}
       </ul>
       <div className="actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
