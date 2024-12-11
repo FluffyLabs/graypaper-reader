@@ -16,6 +16,7 @@
     "@fluffylabs/types": "^1.0.0"
   },
   "dependencies": {
+    "@fluffylabs/synctex-store": "^1.0.0",
     "fastest-levenshtein": "^1.0.16"
   }
 }

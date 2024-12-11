@@ -3,7 +3,7 @@ import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } f
 import { createContext, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { useCodeStore } from "./hooks/useCodeStore";
+import { useTexStore } from "./hooks/useTexStore";
 import { useSynctexStore } from "./hooks/useSynctexStore";
 
 export interface ICodeSyncContext {
@@ -30,19 +30,19 @@ export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
 export function CodeSyncProvider({ children }: PropsWithChildren) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
-  const { getTexAsLines, getTexAsString } = useCodeStore();
-  const { getSynctex } = useSynctexStore();
+  const texStore = useTexStore();
+  const synctexStore = useSynctexStore();
   const { locationParams } = useContext(LocationContext) as ILocationContext;
 
   useEffect(() => {
     async function loadSynctex() {
-      setSynctexData(await getSynctex(locationParams.version));
+      setSynctexData(await synctexStore.getSynctex(locationParams.version));
     }
 
     if (locationParams.version) {
       loadSynctex();
     }
-  }, [locationParams.version, getSynctex]);
+  }, [locationParams.version, synctexStore]);
 
   const context: ICodeSyncContext = {
     getSynctexBlockAtLocation(left, top, pageNumber) {
@@ -94,7 +94,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getTexAsLines(sourceFilePath, locationParams.version);
+      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, locationParams.version);
 
       if (sourceFileLines[Math.max(block.line - 2, 0)].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
         return BIBLIOGRAPHY_TITLE;
@@ -119,7 +119,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getTexAsLines(sourceFilePath, locationParams.version);
+      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, locationParams.version);
 
       for (let i = block.line - 1; i >= 0; i--) {
         const matches = sourceFileLines[i].match(LATEX_SUBSECTION_PATTERN);
@@ -136,35 +136,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       sourceVersion: string,
       targetVersion: string,
     ) {
-      const sourceSynctex = await getSynctex(sourceVersion);
-      const startBlock = sourceSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
-
-      if (!startBlock) return null;
-
-      const sourceFilePath = sourceSynctex.filePathsByFileId.get(startBlock.fileId);
-
-      if (!sourceFilePath) return null;
-
-      const [sourceContent, targetContent, targetSynctex] = await Promise.all([
-        getTexAsString(sourceFilePath, sourceVersion),
-        getTexAsString(sourceFilePath, targetVersion),
-        getSynctex(targetVersion),
-      ]);
-
-      const targetFileId = [...targetSynctex.filePathsByFileId.entries()].find(
-        ([_, filePath]) => filePath === sourceFilePath,
-      )?.[0];
-
-      if (!targetFileId) return null;
-
-      return migrateSelection(
-        { selectionStart, selectionEnd },
-        sourceContent,
-        sourceSynctex,
-        targetContent,
-        targetSynctex,
-        targetFileId,
-      );
+      return migrateSelection({ selectionStart, selectionEnd }, sourceVersion, targetVersion, synctexStore, texStore);
     },
   };
 
