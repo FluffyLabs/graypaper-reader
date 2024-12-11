@@ -94,7 +94,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getTexAsLines(sourceFilePath);
+      const sourceFileLines = await getTexAsLines(sourceFilePath, locationParams.version);
 
       if (sourceFileLines[Math.max(block.line - 2, 0)].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
         return BIBLIOGRAPHY_TITLE;
@@ -119,7 +119,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await getTexAsLines(sourceFilePath);
+      const sourceFileLines = await getTexAsLines(sourceFilePath, locationParams.version);
 
       for (let i = block.line - 1; i >= 0; i--) {
         const matches = sourceFileLines[i].match(LATEX_SUBSECTION_PATTERN);
