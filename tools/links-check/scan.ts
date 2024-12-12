@@ -1,9 +1,9 @@
 import fs from "node:fs";
+import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
+import type { ISynctexData } from "../../packages/types";
 import { parseLink } from "./link";
 import { type Metadata, ORIGIN, synctexUrlGetter, texUrlGetter } from "./metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
-import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import type { ISynctexData } from "../../packages/types";
 
 class Timer {
   data = new Map();

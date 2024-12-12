@@ -1,7 +1,7 @@
 import { migrateSelection } from "@fluffylabs/migrate-selection";
 import type { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import { type Metadata, ORIGIN } from "./metadata";
 import type { ISynctexBlockId } from "@fluffylabs/types";
+import { type Metadata, ORIGIN } from "./metadata";
 
 export type Link = {
   url: string;
