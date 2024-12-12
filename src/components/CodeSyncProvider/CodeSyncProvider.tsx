@@ -3,8 +3,8 @@ import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } f
 import { createContext, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { useTexStore } from "./hooks/useTexStore";
 import { useSynctexStore } from "./hooks/useSynctexStore";
+import { useTexStore } from "./hooks/useTexStore";
 
 export interface ICodeSyncContext {
   getSynctexBlockAtLocation(left: number, top: number, pageNumber: number): ISynctexBlock | null;

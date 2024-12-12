@@ -1,6 +1,6 @@
+import { TexStore } from "@fluffylabs/synctex-store";
 import { useContext, useMemo, useRef } from "react";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
-import { TexStore } from "@fluffylabs/synctex-store";
 
 export function useTexStore() {
   const cacheRef = useRef<Map<string, Promise<string>>>(new Map());
