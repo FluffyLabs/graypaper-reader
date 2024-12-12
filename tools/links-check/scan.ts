@@ -37,7 +37,6 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
       const fileReport = await scanFile(file, metadata, synctexStore, texStore);
       timer.end(shortFileName, fileReport.allLinks.length > 0);
       printFileReport(fileReport);
-      console.info();
       return fileReport;
     }),
   );
