@@ -1,3 +1,4 @@
+import type { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
 import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/types";
 import * as levenshtein from "fastest-levenshtein";
 
@@ -102,14 +103,34 @@ export function migrateBlock(
   return targetSiblingBlocks[Math.round(relativePosition * (targetSiblingBlocks.length - 1))];
 }
 
-export function migrateSelection(
+export async function migrateSelection(
   { selectionStart, selectionEnd }: ISelectionParams,
-  sourceContent: string,
-  sourceSynctex: ISynctexData,
-  targetContent: string,
-  targetSynctex: ISynctexData,
-  targetFileId: number,
-): ISelectionParams | null {
+  sourceVersion: string,
+  targetVersion: string,
+  synctexStore: SynctexStore,
+  texStore: TexStore,
+): Promise<ISelectionParams | null> {
+  const sourceSynctex = await synctexStore.getSynctex(sourceVersion);
+  const startBlock = sourceSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
+
+  if (!startBlock) return null;
+
+  const sourceFilePath = sourceSynctex.filePathsByFileId.get(startBlock.fileId);
+
+  if (!sourceFilePath) return null;
+
+  const [sourceContent, targetContent, targetSynctex] = await Promise.all([
+    texStore.getTexAsString(sourceFilePath, sourceVersion),
+    texStore.getTexAsString(sourceFilePath, targetVersion),
+    synctexStore.getSynctex(targetVersion),
+  ]);
+
+  const targetFileId = [...targetSynctex.filePathsByFileId.entries()].find(
+    ([_, filePath]) => filePath === sourceFilePath,
+  )?.[0];
+
+  if (!targetFileId) return null;
+
   const selectionStartBlock = migrateBlock(
     selectionStart,
     sourceContent,

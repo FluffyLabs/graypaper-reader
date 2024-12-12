@@ -26,6 +26,8 @@ async function main() {
     console.timeEnd(label);
   }
   console.info();
+  console.info();
+
   if (!report) {
     return;
   }

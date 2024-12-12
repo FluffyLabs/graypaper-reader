@@ -1,5 +1,5 @@
 {
-  "name": "@fluffylabs/migrate-selection",
+  "name": "@fluffylabs/synctex-store",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -14,9 +14,5 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@fluffylabs/types": "^1.0.0"
-  },
-  "dependencies": {
-    "@fluffylabs/synctex-store": "^1.0.0",
-    "fastest-levenshtein": "^1.0.16"
   }
 }
