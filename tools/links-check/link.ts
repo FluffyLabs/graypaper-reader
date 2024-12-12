@@ -1,31 +1,39 @@
+import { migrateSelection } from "@fluffylabs/migrate-selection";
+import type { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
 import { type Metadata, ORIGIN } from "./metadata";
+import type { ISynctexBlockId } from "@fluffylabs/types";
 
 export type Link = {
-  raw: string;
+  url: string;
   lineNumber: number;
-  updated?: string;
+  updated: string | null;
+  migrated: boolean;
   version: string;
   versionName: string;
-  blocks: string;
-  isValidInLatest?: boolean;
   isOutdated: boolean;
 };
 
-export function parseLink(lineNumber: number, link: string, meta: Metadata): Link {
+export async function parseLink(
+  lineNumber: number,
+  url: string,
+  meta: Metadata,
+  synctexStore: SynctexStore,
+  texStore: TexStore,
+): Promise<Link> {
   // remove the URL
-  const href = link.replace(ORIGIN, "");
+  const href = url.replace(ORIGIN, "");
   // parse
   const parts = href.split("/");
   // seems like it's an old format of the links.
   if (parts[0] !== "#") {
     return {
       lineNumber,
-      raw: link,
+      url,
+      updated: null,
       version: "legacy",
       versionName: "legacy",
-      blocks: "",
-      isValidInLatest: false,
       isOutdated: true,
+      migrated: false,
     };
   }
 
@@ -36,35 +44,48 @@ export function parseLink(lineNumber: number, link: string, meta: Metadata): Lin
   const versionName = meta.metadata.versions[version]?.name || version;
 
   const isOutdated = version !== meta.metadata.latest;
-  let isValidInLatest = !isOutdated && blocks !== undefined;
+  let updated: string | null = null;
+  let migrated = false;
 
   // check if the blocks are still there in the latest metadata
   if (isOutdated && blocks) {
-    const hasLatestBlock = (encoded: string) => {
-      const selection = decodePageNumberAndIndex(encoded);
-      const blocks = meta.synctex.pages[selection.pageNumber];
-      return blocks.findIndex((b) => b.index === selection.index) > -1;
-    };
+    const selectionStart = decodePageNumberAndIndex(blocks.substring(0, 6));
+    const selectionEnd = decodePageNumberAndIndex(blocks.substring(6));
 
-    const hasStart = hasLatestBlock(blocks.substring(0, 6));
-    const hasEnd = hasLatestBlock(blocks.substring(6));
+    const migratedSelection = await migrateSelection(
+      { selectionStart, selectionEnd },
+      version,
+      meta.metadata.latest,
+      synctexStore,
+      texStore,
+    );
 
-    isValidInLatest = hasStart && hasEnd;
+    if (migratedSelection) {
+      updated = `${ORIGIN}#/${meta.latestShort}/${encodePageNumberAndIndex(migratedSelection.selectionStart)}${encodePageNumberAndIndex(migratedSelection.selectionEnd)}`;
+      migrated = true;
+    } else {
+      const latestSynctex = await synctexStore.getSynctex(meta.metadata.latest);
+      const hasStart = !!latestSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
+      const hasEnd = !!latestSynctex.blocksByPage.get(selectionEnd.pageNumber)?.[selectionEnd.index];
+
+      if (hasStart && hasEnd) {
+        updated = `${ORIGIN}#/${meta.latestShort}/${blocks}`;
+      }
+    }
   }
 
   return {
-    raw: link,
+    url,
     lineNumber,
-    updated: `${ORIGIN}#/${meta.latestShort}/${blocks || UNKNOWN}`,
+    updated,
     version,
     versionName,
-    blocks: blocks || UNKNOWN,
-    isValidInLatest,
     isOutdated,
+    migrated,
   };
 }
 
-function decodePageNumberAndIndex(s: string) {
+function decodePageNumberAndIndex(s: string): ISynctexBlockId {
   if (s.length !== 6) {
     return { pageNumber: 0, index: 0 };
   }
@@ -73,4 +94,9 @@ function decodePageNumberAndIndex(s: string) {
   let index = fromHex(s.substring(2, 4));
   index += fromHex(s.substring(4, 6)) << 8;
   return { pageNumber, index };
+}
+
+function encodePageNumberAndIndex({ pageNumber, index }: ISynctexBlockId) {
+  const asHexByte = (num: number) => (num & 0xff).toString(16).padStart(2, "0");
+  return `${asHexByte(pageNumber)}${asHexByte(index)}${asHexByte(index >> 8)}`;
 }

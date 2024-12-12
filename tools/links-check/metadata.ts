@@ -12,29 +12,8 @@ export type JsonMetadata = {
   };
 };
 
-export type SynctexBlock = {
-  fileId: number;
-  height: number;
-  index: number;
-  left: number;
-  line: number;
-  pageNumber: number;
-  top: number;
-  width: number;
-};
-
-export type JsonSynctex = {
-  files: {
-    [id: number]: string; // filename
-  };
-  pages: {
-    [page: number]: SynctexBlock[];
-  };
-};
-
 export type Metadata = {
   metadata: JsonMetadata;
-  synctex: JsonSynctex;
   latestShort: string;
   /** Maps short version identifier into commit hash. */
   shortMapping: Map<string, string>;
@@ -58,33 +37,22 @@ export async function fetchMetadata(): Promise<Metadata> {
   }
 
   const data = (await meta.json()) as JsonMetadata;
-  // now fetch also synctex data for the latest version
-  const synctexLink = `${ORIGIN}graypaper-${data.latest}.synctex.json`;
-  const synctex = await fetch(synctexLink, {
-    method: "GET",
-    keepalive: false,
-    signal: controller.signal,
-  });
-
-  let synctexData = {
-    files: {},
-    pages: {},
-  };
-
-  if (!synctex.ok) {
-    console.warn(`Unable to fetch synctex data for the latest version at ${synctexLink}`);
-  } else {
-    synctexData = (await synctex.json()) as JsonSynctex;
-  }
 
   clearTimeout(timeout);
 
   return {
     metadata: data,
-    synctex: synctexData,
     latestShort: shortVersionId(data.latest),
     shortMapping: getShortVersionMapping(data),
   };
+}
+
+export function synctexUrlGetter(version: string) {
+  return `${ORIGIN}graypaper-${version}.synctex.json`;
+}
+
+export function texUrlGetter(version: string) {
+  return `${ORIGIN}/tex-${version}`;
 }
 
 function getShortVersionMapping(data: JsonMetadata) {

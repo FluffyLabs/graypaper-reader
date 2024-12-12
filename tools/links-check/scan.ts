@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import { parseLink } from "./link";
-import { type Metadata, ORIGIN } from "./metadata";
+import { type Metadata, ORIGIN, synctexUrlGetter, texUrlGetter } from "./metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
+import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
+import type { ISynctexData } from "../../packages/types";
 
 class Timer {
   data = new Map();
@@ -24,13 +26,18 @@ class Timer {
 
 export async function scan(files: Path[], metadata: Metadata, commonPath: string): Promise<Report> {
   const timer = new Timer();
+  const synctexCache = new Map<string, Promise<ISynctexData>>();
+  const synctexStore = new SynctexStore(synctexUrlGetter, synctexCache);
+  const texCache = new Map<string, Promise<string>>();
+  const texStore = new TexStore(texUrlGetter, texCache);
   const results = await Promise.allSettled(
     files.map(async (file) => {
       const shortFileName = file.replace(commonPath, "");
       timer.start(shortFileName);
-      const fileReport = await scanFile(file, metadata);
+      const fileReport = await scanFile(file, metadata, synctexStore, texStore);
       timer.end(shortFileName, fileReport.allLinks.length > 0);
       printFileReport(fileReport);
+      console.info();
       return fileReport;
     }),
   );
@@ -59,29 +66,36 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
   return Promise.resolve(report);
 }
 
-async function scanFile(path: Path, metadata: Metadata): Promise<FileReport> {
+async function scanFile(
+  path: Path,
+  metadata: Metadata,
+  synctexStore: SynctexStore,
+  texStore: TexStore,
+): Promise<FileReport> {
+  const links: [number, string][] = [];
   const report: FileReport = {
     allLinks: [],
     outdated: [],
   };
 
-  await readLineByLine(path, (no, line) => {
+  await readLineByLine(path, (lineNumber, line) => {
     const linkStart = line.indexOf(ORIGIN);
     if (linkStart !== -1) {
       // extract raw link
       const linkLine = line.substring(linkStart);
       const whitespaceIdx = linkLine.indexOf(" ");
       const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
-      // attempt to parse version and blocks.
 
-      const linkData = parseLink(no, link, metadata);
-      report.allLinks.push(linkData);
-
-      if (linkData.isOutdated) {
-        report.outdated.push(linkData);
-      }
+      links.push([lineNumber, link]);
     }
   });
+
+  const linksParsed = await Promise.all(
+    links.map(([lineNumber, link]) => parseLink(lineNumber, link, metadata, synctexStore, texStore)),
+  );
+
+  report.allLinks = linksParsed;
+  report.outdated = linksParsed.filter((l) => l.isOutdated);
 
   return Promise.resolve(report);
 }

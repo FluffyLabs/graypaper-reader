@@ -24,6 +24,7 @@ async function main() {
     report = await scan(files, metadata, commonPath);
   } finally {
     console.timeEnd(label);
+    console.info();
   }
   console.info();
   if (!report) {
