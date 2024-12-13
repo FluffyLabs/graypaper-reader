@@ -44,7 +44,7 @@ export function printReport(report: Report): Summary {
       const line = link.lineNumber.toString().padStart(3, " ");
       console.info(`    ${line}: ${ico} ${link.url} (version: ${link.versionName})`);
 
-      let isBroken = link.updated === undefined;
+      let isBroken = link.updated === null;
       if (link.updated) {
         if (link.migrated) {
           console.info("      Can be migrated to (please check!):");
@@ -75,7 +75,8 @@ export function printReport(report: Report): Summary {
     console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}:`);
     console.info();
     for (const { file, link } of broken) {
-      console.info(`  ⚠️  ${link.url}`);
+      const ico = link.updated ? "⚠️" : "🦖";
+      console.info(`  ${ico}  ${link.url}`);
       console.info(`    at ${file}:${link.lineNumber}`);
       if (link.updated) {
         console.info(`    ☠️  ${link.updated}`);
