@@ -1,7 +1,7 @@
-import type { Report } from "./report";
-import * as readline from "node:readline";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as readline from "node:readline";
+import type { Report } from "./report";
 
 export async function promptUserForMigration(): Promise<boolean> {
   const rl = readline.createInterface({

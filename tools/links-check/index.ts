@@ -1,11 +1,11 @@
-import { fetchMetadata } from "./metadata";
-import { type Report, printReport } from "./report";
-import { getCommonPath, scan } from "./scan";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import ignore from "ignore";
 import fg from "fast-glob";
-import { promptUserForMigration, performMigrations } from "./migrate";
+import ignore from "ignore";
+import { fetchMetadata } from "./metadata";
+import { performMigrations, promptUserForMigration } from "./migrate";
+import { type Report, printReport } from "./report";
+import { getCommonPath, scan } from "./scan";
 
 main().catch((err: unknown) => {
   console.error(`🚨 ${err}`);
