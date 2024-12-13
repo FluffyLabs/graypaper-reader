@@ -5,6 +5,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import ignore from "ignore";
 import fg from "fast-glob";
+import { promptUserForMigration, performMigrations } from "./migrate";
 
 main().catch((err: unknown) => {
   console.error(`🚨 ${err}`);
@@ -95,4 +96,9 @@ async function main() {
   }
 
   printReport(report);
+
+  const applyMigrations = await promptUserForMigration();
+  if (applyMigrations) {
+    await performMigrations(report, commonPath);
+  }
 }
