@@ -1,11 +1,11 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
 import { fetchMetadata } from "./metadata";
 import { type Report, printReport } from "./report";
 import { getCommonPath, scan } from "./scan";
-import { program } from "commander";
 
 main().catch((err: unknown) => {
   console.error(`🚨 ${err}`);
@@ -64,9 +64,6 @@ async function main() {
       }
     });
 
+  program.showHelpAfterError();
   await program.parseAsync(process.argv);
-
-  if (!program.args.length) {
-    program.help();
-  }
 }
