@@ -35,25 +35,27 @@ export function printReport(report: Report): Summary {
 
   const outdated = Array.from(report.outdated.values()).reduce((a, b) => a + b.length, 0);
   const broken: { file: Path; link: Link }[] = [];
-  console.info(`⌛ Outdated links ${outdated}/${total}`);
+  console.info(`⌛ Outdated links ${outdated}/${total}:`);
+  console.info();
   for (const [path, links] of report.outdated) {
     console.info(`  📜 ${path}`);
     for (const link of links) {
       const ico = link.updated ? "🧹" : "🦖";
       const line = link.lineNumber.toString().padStart(3, " ");
-      console.info(`    ${line}: ${ico} ${link.raw} (version: ${link.versionName})`);
+      console.info(`    ${line}: ${ico} ${link.url} (version: ${link.versionName})`);
 
-      let isBroken = link.updated === undefined;
+      let isBroken = link.updated === null;
       if (link.updated) {
-        if (link.isValidInLatest) {
-          console.info("      Can be safely updated (but please check!):");
+        if (link.migrated) {
+          console.info("      Can be migrated to (please check!):");
           console.info(`      👉 ${link.updated} (version: ${report.latestVersion})`);
         } else {
           console.info("      Is most likely broken:");
-          console.info(`      ☠️  ${link.updated} (version: ${report.latestVersion}`);
+          console.info(`      ☠️  ${link.updated} (version: ${report.latestVersion})`);
           isBroken = true;
         }
       }
+      console.info();
       if (isBroken) {
         broken.push({
           file: path,
@@ -70,14 +72,16 @@ export function printReport(report: Report): Summary {
       console.info(`⚠️  Yet there are ${outdated} outdated links. See above.`);
     }
   } else {
-    console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}`);
+    console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}:`);
+    console.info();
     for (const { file, link } of broken) {
       const ico = link.updated ? "⚠️" : "🦖";
-      console.info(`  ${ico} ${link.raw}`);
+      console.info(`  ${ico}  ${link.url}`);
       console.info(`    at ${file}:${link.lineNumber}`);
       if (link.updated) {
-        console.info(`    ☠️ ${link.updated}`);
+        console.info(`    ☠️  ${link.updated}`);
       }
+      console.info();
     }
   }
 
@@ -90,6 +94,6 @@ export function printReport(report: Report): Summary {
 
 export function printFileReport(report: FileReport) {
   for (const l of report.allLinks) {
-    console.info(`\t 🔗 ${l.raw}`);
+    console.info(`\t 🔗 ${l.url}`);
   }
 }
