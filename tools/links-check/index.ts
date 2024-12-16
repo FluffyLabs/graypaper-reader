@@ -14,6 +14,7 @@ main().catch((err: unknown) => {
 
 async function main() {
   program
+    .showHelpAfterError()
     .argument("<paths...>", "Paths of files to be scanned. Supports glob patterns.")
     .option("--ignore-file <path>", "Path to the ignore file.")
     .action(async (paths, options) => {
@@ -64,6 +65,5 @@ async function main() {
       }
     });
 
-  program.showHelpAfterError();
   await program.parseAsync(process.argv);
 }
