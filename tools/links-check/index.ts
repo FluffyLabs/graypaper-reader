@@ -16,10 +16,11 @@ async function main() {
   program
     .showHelpAfterError()
     .argument("<paths...>", "Paths of files to be scanned. Supports glob patterns.")
-    .option("--ignore-file <path>", "Path to the ignore file.")
+    .option("--ignore-file <path>", "Path to a file containing patterns to ignore. Gitignore format applies.")
     .action(async (paths, options) => {
       let files = await fastGlob(paths);
       const commonPath = getCommonPath(files);
+      const globExpandedFileCount = files.length;
 
       if (options.ignoreFile) {
         let ignorePatterns: string[];
@@ -43,7 +44,7 @@ async function main() {
 
       const metadata = await fetchMetadata();
 
-      const label = `scanning ${files.length}`;
+      const label = `scanning ${files.length}${options.ignoreFile ? ` (${globExpandedFileCount - files.length} ignored)` : ""}`;
       console.time(label);
       let report: Report | null = null;
       try {
