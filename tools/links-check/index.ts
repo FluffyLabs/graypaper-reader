@@ -5,7 +5,7 @@ import fastGlob from "fast-glob";
 import ignore from "ignore";
 import { fetchMetadata } from "./metadata";
 import { type Report, printReport } from "./report";
-import { getCommonPath, scan } from "./scan";
+import { scan } from "./scan";
 
 main().catch((err: unknown) => {
   console.error(`🚨 ${err}`);
@@ -16,10 +16,12 @@ async function main() {
   program
     .showHelpAfterError()
     .argument("<paths...>", "Paths of files to be scanned. Supports glob patterns.")
-    .option("--ignore-file <path>", "Path to a file containing patterns to ignore. Gitignore format applies.")
+    .option(
+      "--ignore-file <path>",
+      "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
+    )
     .action(async (paths, options) => {
       let files = await fastGlob(paths);
-      const commonPath = getCommonPath(files);
       const globExpandedFileCount = files.length;
 
       if (options.ignoreFile) {
@@ -36,7 +38,7 @@ async function main() {
 
         if (ignorePatterns.length) {
           const ignoreManager = ignore().add(ignorePatterns);
-          files = files.filter((file) => !ignoreManager.ignores(path.relative(commonPath, file)));
+          files = files.filter((file) => !ignoreManager.ignores(path.relative(process.cwd(), file)));
         }
       }
 
@@ -48,7 +50,7 @@ async function main() {
       console.time(label);
       let report: Report | null = null;
       try {
-        report = await scan(files, metadata, commonPath);
+        report = await scan(files, metadata);
       } finally {
         console.timeEnd(label);
       }
