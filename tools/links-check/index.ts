@@ -38,7 +38,16 @@ async function main() {
 
         if (ignorePatterns.length) {
           const ignoreManager = ignore().add(ignorePatterns);
-          files = files.filter((file) => !ignoreManager.ignores(path.relative(process.cwd(), file)));
+          files = files.filter((file) => {
+            try {
+              return !ignoreManager.ignores(path.relative(process.cwd(), file));
+            } catch {
+              console.warn(
+                `Warning: Could not apply ignore patterns to ${file}. File might be outside of current working directory.`,
+              );
+              return true;
+            }
+          });
         }
       }
 
