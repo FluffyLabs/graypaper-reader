@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
 import type { ISynctexData } from "../../packages/types";
 import { parseLink } from "./link";
@@ -24,18 +25,19 @@ class Timer {
   }
 }
 
-export async function scan(files: Path[], metadata: Metadata, commonPath: string): Promise<Report> {
+export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
   const timer = new Timer();
   const synctexCache = new Map<string, Promise<ISynctexData>>();
   const synctexStore = new SynctexStore(synctexUrlGetter, synctexCache);
   const texCache = new Map<string, Promise<string>>();
   const texStore = new TexStore(texUrlGetter, texCache);
+  const cwd = process.cwd();
   const results = await Promise.allSettled(
     files.map(async (file) => {
-      const shortFileName = file.replace(commonPath, "");
-      timer.start(shortFileName);
+      const relativeFilePath = path.relative(cwd, file);
+      timer.start(relativeFilePath);
       const fileReport = await scanFile(file, metadata, synctexStore, texStore);
-      timer.end(shortFileName, fileReport.allLinks.length > 0);
+      timer.end(relativeFilePath, fileReport.allLinks.length > 0);
       printFileReport(fileReport);
       return fileReport;
     }),
@@ -49,15 +51,15 @@ export async function scan(files: Path[], metadata: Metadata, commonPath: string
   };
 
   for (const [idx, r] of results.entries()) {
-    const f = files[idx].replace(commonPath, "");
+    const relativeFilePath = path.relative(cwd, files[idx]);
     if (r.status === "rejected") {
-      report.failed.set(f, r.reason);
+      report.failed.set(relativeFilePath, r.reason);
     } else {
       if (r.value.allLinks.length) {
-        report.detected.set(f, r.value.allLinks);
+        report.detected.set(relativeFilePath, r.value.allLinks);
       }
       if (r.value.outdated.length) {
-        report.outdated.set(f, r.value.outdated);
+        report.outdated.set(relativeFilePath, r.value.outdated);
       }
     }
   }
@@ -137,18 +139,4 @@ function readLineByLine(path: Path, cb: (no: number, line: string) => void): Pro
       resolve();
     });
   });
-}
-
-export function getCommonPath(files: Path[]) {
-  let common = files[0];
-  for (const f of files) {
-    const len = Math.min(f.length, common.length);
-    for (let i = 0; i < len; i += 1) {
-      if (common.charAt(i) !== f.charAt(i)) {
-        common = common.substring(0, i);
-        break;
-      }
-    }
-  }
-  return common;
 }
