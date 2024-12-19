@@ -1,14 +1,12 @@
 import * as fs from "node:fs";
-import * as path from "node:path";
 import type { Report } from "./report";
 
-export async function performMigrations(report: Report, commonPath: string) {
+export async function performMigrations(report: Report) {
   console.info("🚀 Starting link migrations...\n");
   console.time("Migrations took");
 
   for (const [filePath, links] of report.outdated) {
-    const absoluteFilePath = path.resolve(commonPath, filePath);
-    const fileContent = await fs.promises.readFile(absoluteFilePath, "utf-8");
+    const fileContent = await fs.promises.readFile(filePath, "utf-8");
     let updatedContent = fileContent;
 
     for (const link of links) {
@@ -17,7 +15,7 @@ export async function performMigrations(report: Report, commonPath: string) {
       }
     }
 
-    await fs.promises.writeFile(absoluteFilePath, updatedContent, "utf-8");
+    await fs.promises.writeFile(filePath, updatedContent, "utf-8");
     console.info(`  🔄 ${filePath}`);
   }
 

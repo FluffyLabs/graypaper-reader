@@ -58,6 +58,8 @@ async function main() {
 
       const metadata = await fetchMetadata();
 
+      console.log(files);
+
       const label = `scanning ${files.length}${options.ignoreFile ? ` (${globExpandedFileCount - files.length} ignored)` : ""}`;
       console.time(label);
       let report: Report | null = null;
@@ -76,7 +78,7 @@ async function main() {
       const summary = printReport(report);
 
       if (options.write || options.fix) {
-        await performMigrations(report, commonPath);
+        await performMigrations(report);
       } else if (summary.broken > 0) {
         process.exit(1);
       }
