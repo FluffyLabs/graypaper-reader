@@ -58,8 +58,6 @@ async function main() {
 
       const metadata = await fetchMetadata();
 
-      console.log(files);
-
       const label = `scanning ${files.length}${options.ignoreFile ? ` (${globExpandedFileCount - files.length} ignored)` : ""}`;
       console.time(label);
       let report: Report | null = null;
