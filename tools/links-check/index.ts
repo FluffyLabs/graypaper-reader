@@ -4,6 +4,7 @@ import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
 import { fetchMetadata } from "./metadata";
+import { performMigrations } from "./migrate";
 import { type Report, printReport } from "./report";
 import { scan } from "./scan";
 
@@ -20,6 +21,8 @@ async function main() {
       "--ignore-file <path>",
       "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
     )
+    .option("--write", "Perform link migrations in provided source files.")
+    .option("--fix", "Alias for --write.")
     .action(async (paths, options) => {
       let files = await fastGlob(paths);
       const globExpandedFileCount = files.length;
@@ -72,7 +75,9 @@ async function main() {
 
       const summary = printReport(report);
 
-      if (summary.broken > 0) {
+      if (options.write || options.fix) {
+        await performMigrations(report);
+      } else if (summary.broken > 0) {
         process.exit(1);
       }
     });
