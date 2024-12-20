@@ -4,7 +4,13 @@ import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
-import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import {
+  type IHighlightNote,
+  type INotesContext,
+  LABEL_LOCAL,
+  NoteSource,
+  NotesContext,
+} from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
 
@@ -16,7 +22,6 @@ export function NoteManager() {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
     notes,
-    notesMigrated,
     canUndo,
     hasLegacyNotes,
     handleAddNote,
@@ -37,8 +42,9 @@ export function NoteManager() {
       pageNumber === null ||
       !locationParams.selectionStart ||
       !locationParams.selectionEnd
-    )
+    ) {
       throw new Error("Attempted saving a note without selection.");
+    }
 
     setNoteContentError("");
 
@@ -58,6 +64,9 @@ export function NoteManager() {
       selectionEnd: locationParams.selectionEnd,
       selectionString,
       version: locationParams.version,
+      source: NoteSource.Local,
+      // TODO [ToDr] user defined labels?
+      labels: [LABEL_LOCAL],
     };
 
     handleAddNote(newNote);
@@ -112,20 +121,9 @@ export function NoteManager() {
         </button>
       </div>
       <ul>
-        {notesMigrated.length === notes.length ? (
-          notes.map((note, index) => (
-            <Note
-              version={locationParams.version}
-              key={note.date}
-              note={note}
-              noteMigrated={notesMigrated[index]}
-              onEditNote={handleUpdateNote}
-              onDeleteNote={handleDeleteNote}
-            />
-          ))
-        ) : (
-          <li>Loading...</li>
-        )}
+        {notes.map((note) => (
+          <Note key={note.date} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+        ))}
       </ul>
       <div className="actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}

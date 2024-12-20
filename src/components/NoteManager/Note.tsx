@@ -18,14 +18,12 @@ export type NotesItem = {
 };
 
 type NoteProps = {
-  version: string;
   note: TAnyNote;
-  noteMigrated: TAnyNote;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
-export function Note({ note, noteMigrated, onEditNote, onDeleteNote, version }: NoteProps) {
+export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
   const [noteContentError, setNoteContentError] = useState("");
@@ -78,12 +76,7 @@ export function Note({ note, noteMigrated, onEditNote, onDeleteNote, version }: 
 
   return (
     <li>
-      <NoteLink
-        note={note as IHighlightNote}
-        noteMigrated={noteMigrated as IHighlightNote}
-        version={version}
-        onEditNote={onEditNote}
-      />
+      <NoteLink note={note as IHighlightNote} onEditNote={onEditNote} />
       {isEditing ? (
         <>
           <textarea
