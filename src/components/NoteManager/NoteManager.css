@@ -8,6 +8,7 @@
   resize: vertical;
   width: 100%;
   box-sizing: border-box;
+  border-radius: 6px;
 }
 
 .note-manager .validation-message {
@@ -19,19 +20,10 @@
   border: 1px solid #f22;
 }
 
-.note-manager button.remove {
-  color: #f22;
-}
-
 .note-manager blockquote {
-  cursor: zoom-in;
-  border: 1px solid transparent;
   padding: 0.5rem;
   margin: 0.5rem 0;
-}
-
-.note-manager blockquote:hover {
-  border: 1px solid #eee;
+  padding-bottom: 16px;
 }
 
 .note-manager .icon {
@@ -51,4 +43,57 @@
   text-decoration: none;
   color: light-dark(#ddd, #444);
   cursor: initial;
+}
+
+.note-manager .note {
+  padding: 8px;
+  border: 1px solid #eee;
+  margin-top: 5px;
+  border-radius: 6px;
+}
+
+.note-manager .notes-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.note-manager .note .actions {
+  display: flex;
+}
+.note-manager button.remove {
+  color: #f22;
+}
+
+.note-manager .fill {
+  flex: 1;
+}
+
+.note-manager button.save {
+  color: #2a2;
+}
+
+.note-manager button.edit {
+  font-size: 8px;
+  background: none;
+}
+
+.note-manager .labels.filter {
+  margin: 15px 0;
+}
+
+.note-manager .labels .label {
+  opacity: 50%;
+}
+
+.note-manager .labels .label.active {
+  opacity: 100%;
+}
+
+.note-manager .labels span {
+  padding: 1px 5px;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 6px;
+  color: #eee;
 }

@@ -47,9 +47,9 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
       Based only on the GrayPaper and within the context of the following quote located on page ${pageNumber}${
         sectionTitle !== null ? `, within section ${sectionTitle}` : ""
       }${subsectionTitle ? ` (subsection: ${subsectionTitle})` : ""}:
-      
+
       ${text}
-      
+
       provide a deep explanation of the above quote with description of all used symbols based on the "Index of Notation" appendix.
     `;
     window.navigator.clipboard.writeText(prompt);

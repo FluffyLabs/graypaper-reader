@@ -18,9 +18,12 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [noteIsShown, setNoteIsShown] = useState(true);
 
+  const selectionStart = note.canMigrateTo?.selectionStart ?? note.selectionStart;
+  const selectionEnd = note.canMigrateTo?.selectionEnd ?? note.selectionEnd;
+
   const blocks = useMemo(
-    () => getSynctexBlockRange(note.selectionStart, note.selectionEnd),
-    [note, getSynctexBlockRange],
+    () => getSynctexBlockRange(selectionStart, selectionEnd),
+    [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
   if (!blocks.length) return null;
