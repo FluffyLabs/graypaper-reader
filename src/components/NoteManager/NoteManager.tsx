@@ -13,6 +13,7 @@ import {
 } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
+import { LabelsFilter } from "./NoteLabels";
 
 const DEFAULT_AUTHOR = "";
 
@@ -22,6 +23,7 @@ export function NoteManager() {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
     notes,
+    labels,
     canUndo,
     hasLegacyNotes,
     handleAddNote,
@@ -31,6 +33,7 @@ export function NoteManager() {
     handleImport,
     handleExport,
     handleLegacyExport,
+    handleToggleLabel,
   } = useContext(NotesContext) as INotesContext;
   const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
     SelectionContext,
@@ -123,27 +126,26 @@ export function NoteManager() {
           Add
         </button>
       </div>
-      <ul>
-        {notes.map((note) => (
-          <Note key={note.date} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
-        ))}
-      </ul>
-      <div className="actions">
+      <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
+      {notes.map((note) => (
+        <Note key={note.date} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+      ))}
+      <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
         <button onClick={onImport}>import notes</button>
         <button onClick={handleExport}>export notes</button>
         {hasLegacyNotes ? (
           <button
             data-tooltip-id="legacy-export-tooltip"
-            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}/.`}
+            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}.`}
             data-tooltip-place="bottom"
             onClick={handleLegacyExport}
           >
             export old notes
           </button>
         ) : null}
-        <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ opacity: 0 }} />
       </div>
+      <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ opacity: 0 }} />
       <Tooltip id="legacy-export-tooltip" />
     </div>
   );

@@ -3,7 +3,7 @@ import { Tooltip } from "react-tooltip";
 import { blockIdsEqual } from "../../utils/blockIdsEqual";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import type { IHighlightNote, INotesContext } from "../NotesProvider/NotesProvider";
+import { type IHighlightNote, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
@@ -20,6 +20,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
   const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
 
   const migrationFlag = note.canMigrateTo?.version === locationParams.version;
+  const isEditable = note.source !== NoteSource.Remote;
 
   const selectionStart = note.canMigrateTo?.selectionStart ?? note.selectionStart;
   const selectionEnd = note.canMigrateTo?.selectionEnd ?? note.selectionEnd;
@@ -109,7 +110,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         p. {pageNumber} &gt; {section} {subSection ? `> ${subSection}` : null}
       </a>
 
-      {migrationFlag && (
+      {migrationFlag && isEditable && (
         <a
           onClick={handleMigrateClick}
           data-tooltip-id="note-link"

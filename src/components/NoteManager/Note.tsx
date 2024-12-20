@@ -1,15 +1,8 @@
-import {
-  type ChangeEvent,
-  type FocusEventHandler,
-  type KeyboardEventHandler,
-  type MouseEventHandler,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
+import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
-import type { IHighlightNote, INotesContext, TAnyNote } from "../NotesProvider/NotesProvider";
+import { type IHighlightNote, type INotesContext, NoteSource, type TAnyNote } from "../NotesProvider/NotesProvider";
 import { RenderMath } from "../RenderMath/RenderMath";
+import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
 export type NotesItem = {
@@ -27,55 +20,46 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState({ ...note });
   const [noteContentError, setNoteContentError] = useState("");
-  const editTimeoutIdRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const handleBlur = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
-    (e) => {
-      const target = e.currentTarget;
+  const isEditable = note.source !== NoteSource.Remote;
 
-      // defer change to prevent onBlur happening before clicks.
-      editTimeoutIdRef.current = setTimeout(() => {
-        const mathValidationError = validateMath(noteDirty.content);
-        setNoteContentError("");
+  const handleSaveClick = useCallback<MouseEventHandler>(() => {
+    const mathValidationError = validateMath(noteDirty.content);
+    setNoteContentError("");
 
-        if (mathValidationError) {
-          setNoteContentError(mathValidationError);
-          setTimeout(() => {
-            target.focus();
-          }, 0);
-          return;
-        }
+    if (mathValidationError) {
+      setNoteContentError(mathValidationError);
+      return;
+    }
 
-        onEditNote(note, noteDirty);
-        setIsEditing(false);
-      }, 300);
-    },
-    [note, noteDirty, onEditNote],
-  );
+    onEditNote(note, noteDirty);
+    setIsEditing(false);
+  }, [note, noteDirty, onEditNote]);
 
-  const handleEdit = useCallback(() => {
+  const handleEditClick = useCallback(() => {
+    if (!isEditable) {
+      return;
+    }
     setIsEditing(true);
     setNoteDirty({ ...note });
     setNoteContentError("");
-  }, [note]);
+  }, [note, isEditable]);
 
   const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
     setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
   };
 
   const handleDeleteClick = useCallback(() => {
-    clearTimeout(editTimeoutIdRef.current);
     onDeleteNote(note);
   }, [note, onDeleteNote]);
 
   const handleCancelClick = useCallback(() => {
-    clearTimeout(editTimeoutIdRef.current);
     setNoteContentError("");
     setIsEditing(false);
   }, []);
 
   return (
-    <li>
+    <div className="note">
       <NoteLink note={note as IHighlightNote} onEditNote={onEditNote} />
       {isEditing ? (
         <>
@@ -83,26 +67,34 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
             className={noteContentError ? "error" : ""}
             onChange={handleNoteContentChange}
             value={noteDirty.content}
-            onBlur={handleBlur}
             autoFocus
           />
           {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
         </>
       ) : (
-        <blockquote onClick={handleEdit as MouseEventHandler} onKeyUp={handleEdit as KeyboardEventHandler}>
+        <blockquote>
           <RenderMath content={note.content} />
         </blockquote>
       )}
-      {isEditing && noteContentError ? (
-        <button type="button" onClick={handleCancelClick}>
-          cancel
-        </button>
-      ) : null}
-      {isEditing ? (
-        <button className="remove" onClick={handleDeleteClick}>
-          delete
-        </button>
-      ) : null}
-    </li>
+      <div className="actions">
+        {!isEditing ? <NoteLabels note={note} /> : null}
+
+        {isEditing ? (
+          <button className="remove" onClick={handleDeleteClick}>
+            delete
+          </button>
+        ) : null}
+
+        <div className="fill" />
+
+        {isEditable ? (
+          <button className={isEditing ? "save" : "edit"} onClick={isEditing ? handleSaveClick : handleEditClick}>
+            {isEditing ? "save" : "✏️"}
+          </button>
+        ) : null}
+
+        {isEditing ? <button onClick={handleCancelClick}>cancel</button> : null}
+      </div>
+    </div>
   );
 }
