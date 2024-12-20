@@ -90,16 +90,19 @@ export function NoteManager() {
       if (!ev.target?.files?.length) {
         return;
       }
+      const fileToImport = ev.target.files[0];
+
       const f = new FileReader();
       f.onload = (e) => {
+        const fileContent = e.target?.result?.toString() || "";
         try {
-          handleImport(e.target?.result?.toString() || "");
+          handleImport(fileContent, fileToImport.name.substring(0, 12));
         } catch (e) {
           console.error(e);
           alert("Unable to load the notes file. Check console for details.");
         }
       };
-      f.readAsText(ev.target.files[0]);
+      f.readAsText(fileToImport);
     },
     [handleImport],
   );

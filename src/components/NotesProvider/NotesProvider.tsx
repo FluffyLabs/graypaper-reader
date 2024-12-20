@@ -4,6 +4,7 @@ import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/Code
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
+const BACKUP_STORAGE_KEY = "notes-v2-backup";
 const LEGACY_NOTES_LS_KEY = "notes";
 const HISTORY_STEPS_LIMIT = 10;
 
@@ -19,7 +20,7 @@ export interface INotesContext {
   handleUpdateNote(noteToReplace: TAnyNote, newNote: TAnyNote): void;
   handleDeleteNote(note: TAnyNote): void;
   handleUndo(): void;
-  handleImport(jsonStr: string): void;
+  handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
   handleLegacyExport(): void;
 }
@@ -30,26 +31,29 @@ export enum NoteSource {
   Remote = 2,
 }
 
-export interface INote {
+interface INoteV2 {
   content: string;
   date: number;
   author: string;
   pageNumber: number;
   version: string;
-  labels: string[];
-  source: NoteSource;
   canMigrateTo?: {
     version: string;
     pageNumber: number;
   };
 }
 
-export interface IPointNote extends INote {
+interface INoteV3 extends INoteV2 {
+  labels: string[];
+  source: NoteSource;
+}
+
+export interface IPointNote extends INoteV3 {
   left: number;
   top: number;
 }
 
-export interface IHighlightNote extends INote, ISelectionParams {
+export interface IHighlightNote extends INoteV3, ISelectionParams {
   selectionString: string;
   canMigrateTo?: {
     version: string;
@@ -63,21 +67,35 @@ interface INotesProviderProps {
   children: ReactNode;
 }
 
-function isINote(arg: unknown): arg is INote {
+function isINoteV2(arg: unknown): arg is INoteV2 {
   if (typeof arg !== "object" || arg === null) return false;
   if (!("content" in arg) || typeof arg.content !== "string") return false;
   if (!("date" in arg) || typeof arg.date !== "number") return false;
   if (!("author" in arg) || typeof arg.author !== "string") return false;
   if (!("pageNumber" in arg) || typeof arg.pageNumber !== "number") return false;
   if (!("version" in arg) || typeof arg.version !== "string") return false;
-  // NOTE we don't check for labels and source, because we are filling them with defaults
-  // when needed.
+
+  return true;
+}
+
+function isINoteV3(arg: unknown): arg is INoteV3 {
+  if (!isINoteV2(arg)) {
+    return false;
+  }
+
+  if (!("labels" in arg && Array.isArray(arg.labels))) {
+    return false;
+  }
+
+  if (!("source" in arg && Array.isArray(arg.source))) {
+    return false;
+  }
 
   return true;
 }
 
 function isHighlightNote(arg: unknown): arg is IHighlightNote {
-  if (!isINote(arg)) return false;
+  if (!isINoteV3(arg)) return false;
   if (!("selectionString" in arg) || typeof arg.selectionString !== "string") return false;
   if (!("selectionStart" in arg)) return false;
   if (!("selectionEnd" in arg)) return false;
@@ -85,15 +103,15 @@ function isHighlightNote(arg: unknown): arg is IHighlightNote {
   return true;
 }
 
-function parseJson(jsonStr: string): TAnyNote[] {
+function parseJson(jsonStr: string): INoteV2[] {
   try {
-    const parsed = JSON.parse(jsonStr) as TAnyNote[];
+    const parsed = JSON.parse(jsonStr) as INoteV2[];
 
     if (!Array.isArray(parsed)) {
       throw new Error("Notes JSON should be an array.");
     }
 
-    if (!parsed.every(isINote)) {
+    if (!parsed.every(isINoteV2)) {
       throw new Error("Invalid note format.");
     }
 
@@ -104,24 +122,27 @@ function parseJson(jsonStr: string): TAnyNote[] {
   }
 }
 
+function convertNoteV2toV3(noteV2: INoteV2, label: string): INoteV3 {
+  const note = noteV2 as INoteV3;
+  if (!Array.isArray(note.labels)) {
+    note.labels = [];
+  }
+
+  if (note.labels.indexOf(label) === -1) {
+    note.labels.unshift(label);
+  }
+
+  if (note.source === undefined) {
+    note.source = NoteSource.Local;
+  }
+
+  note.canMigrateTo = undefined;
+  return note;
+}
+
 function loadFromLocalStorage(): TAnyNote[] {
   const notes = parseJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
-  for (const note of notes) {
-    if (!Array.isArray(note.labels)) {
-      note.labels = [];
-    }
-
-    if (note.labels.indexOf(LABEL_LOCAL) === -1) {
-      note.labels.unshift(LABEL_LOCAL);
-    }
-
-    if (note.source === undefined) {
-      note.source = NoteSource.Local;
-    }
-
-    note.canMigrateTo = undefined;
-  }
-  return notes;
+  return notes.map((note) => convertNoteV2toV3(note, LABEL_LOCAL) as TAnyNote);
 }
 
 function loadLegacyFromLocalStorage(): string | null {
@@ -130,6 +151,11 @@ function loadLegacyFromLocalStorage(): string | null {
 
 function saveToLocalStorage(notes: TAnyNote[]): void {
   try {
+    const prev = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    // make a backup just for safety.
+    if (prev) {
+      window.localStorage.setItem(BACKUP_STORAGE_KEY, prev);
+    }
     window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
   } catch (e) {
     alert(`Unable to save notes: ${e}`);
@@ -203,7 +229,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     handleUpdateNote: useCallback(
       (noteToReplace, newNote) => {
         if (noteToReplace.source !== NoteSource.Local) {
-          console.warn("Refusing to edit non-local note.", noteToReplace);
+          console.warn("Refusing to edit remote note.", noteToReplace);
           return;
         }
         const updateIdx = localNotesMigrated.indexOf(noteToReplace);
@@ -214,8 +240,8 @@ export function NotesProvider({ children }: INotesProviderProps) {
     ),
     handleDeleteNote: useCallback(
       (noteToDelete) => {
-        if (noteToDelete.source !== NoteSource.Local) {
-          console.warn("Refusing to remove non-local note.", noteToDelete);
+        if (noteToDelete.source === NoteSource.Remote) {
+          console.warn("Refusing to remove remote note.", noteToDelete);
           return;
         }
         const noteToDeleteIdx = localNotesMigrated.indexOf(noteToDelete);
@@ -227,22 +253,37 @@ export function NotesProvider({ children }: INotesProviderProps) {
       [localNotes, localNotesMigrated, updateLocalNotes],
     ),
     handleUndo: useCallback(() => {
-      const newNotes = history[history.length - 1];
+      const newNotes = history.pop();
+      if (!newNotes) {
+        return;
+      }
+
       setLocalNotes(newNotes);
       saveToLocalStorage(newNotes);
-
-      setHistory((history) => history.slice(0, history.length - 1));
+      setHistory([...history]);
     }, [history]),
-    handleImport(jsonStr) {
-      // TODO [ToDr] Add with a new label.
-      const newNotes = parseJson(jsonStr);
-      const overwrite = confirm(
-        `Your current notes will be replaced with ${newNotes.length} notes loaded from the file. Continue?`,
-      );
-      if (overwrite) {
-        setLocalNotes(newNotes);
-      }
-    },
+    handleImport: useCallback(
+      (jsonStr: string, label: string) => {
+        let newNotes = [];
+        try {
+          newNotes = parseJson(jsonStr);
+        } catch (e) {
+          alert("Unable to read given notes file. See console for error.");
+          console.error(e);
+          return;
+        }
+
+        // merge notes together
+        const notes = newNotes.map((note) => {
+          const n = convertNoteV2toV3(note, `imported:${label}`);
+          n.source = NoteSource.Imported;
+          return n as TAnyNote;
+        });
+
+        updateLocalNotes([...localNotes, ...notes]);
+      },
+      [localNotes, updateLocalNotes],
+    ),
     handleExport() {
       const strNotes = JSON.stringify(localNotes);
       const fileName = `graypaper-notes-${new Date().toISOString()}.json`;
