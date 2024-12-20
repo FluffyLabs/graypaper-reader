@@ -296,7 +296,7 @@ export function useRemoteNotes(migrateNotes: ReturnType<typeof useNotesMigration
   const [remoteNotesMigrated, setRemoteNotesMigrated] = useState<TAnyNote[]>([]);
 
   // load remote notes
-  useMemo(() => {
+  useEffect(() => {
     (async () => {
       const remoteNotes = [];
       for (const source of remoteNotesSources) {
