@@ -219,7 +219,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     handleAddNote: useCallback((note) => updateLocalNotes([...localNotes, note]), [localNotes, updateLocalNotes]),
     handleUpdateNote: useCallback(
       (noteToReplace, newNote) => {
-        if (noteToReplace.source !== NoteSource.Local) {
+        if (noteToReplace.source === NoteSource.Remote) {
           console.warn("Refusing to edit remote note.", noteToReplace);
           return;
         }
