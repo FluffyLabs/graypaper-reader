@@ -291,7 +291,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 }
 
 export function useRemoteNotes(migrateNotes: ReturnType<typeof useNotesMigration>, currentVersion: string) {
-  const [remoteNotesSources] = useState(["http://localhost:5173/notes.json"]);
+  const [remoteNotesSources] = useState([]);
   const [remoteNotes, setRemoteNotes] = useState<TAnyNote[]>([]);
   const [remoteNotesMigrated, setRemoteNotesMigrated] = useState<TAnyNote[]>([]);
 
