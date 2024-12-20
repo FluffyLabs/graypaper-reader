@@ -19,7 +19,7 @@ function calculateConfidence(source: string, target: string, distance: number): 
 function findFirstNonEmptyLineUpwards(lines: string[], lineNumber: number): string {
   return (
     lines
-      .slice(0, lineNumber)
+      .slice(0, lineNumber - 1)
       .reverse()
       .find((line) => line !== "") ?? ""
   );
