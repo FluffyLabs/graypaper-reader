@@ -15,8 +15,10 @@ export async function performMigrations(report: Report) {
       }
     }
 
-    await fs.promises.writeFile(filePath, updatedContent, "utf-8");
-    console.info(`  🔄 ${filePath}`);
+    if (updatedContent !== fileContent) {
+      await fs.promises.writeFile(filePath, updatedContent, "utf-8");
+      console.info(`  🔄 ${filePath}`);
+    }
   }
 
   console.info("\n🎉 Link migrations completed.");
