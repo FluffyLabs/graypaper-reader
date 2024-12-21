@@ -12,8 +12,8 @@ import {
   NotesContext,
 } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { LabelsFilter } from "./LabelsFilter";
 import { Note } from "./Note";
-import { LabelsFilter } from "./NoteLabels";
 
 const DEFAULT_AUTHOR = "";
 

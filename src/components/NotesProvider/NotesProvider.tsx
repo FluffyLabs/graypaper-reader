@@ -34,6 +34,18 @@ export type Label = {
   isActive: boolean;
 };
 
+export function editableLabels(
+  labels: string[],
+  { onlyNonEditable }: { onlyNonEditable: boolean } = { onlyNonEditable: false },
+) {
+  return labels.filter((label) => {
+    if (label === LABEL_LOCAL || label === LABEL_REMOTE || label.startsWith(LABEL_IMPORTED)) {
+      return onlyNonEditable;
+    }
+    return !onlyNonEditable;
+  });
+}
+
 export enum NoteSource {
   Local = 0,
   Imported = 1,
