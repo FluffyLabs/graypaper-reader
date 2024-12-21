@@ -90,7 +90,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
 
   const { section, subSection } = sectionTitle;
   return (
-    <div>
+    <div className="note-link">
       {migrationFlag && (
         <a
           href="#"

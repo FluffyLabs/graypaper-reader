@@ -2,13 +2,18 @@
   width: 100%;
 }
 
-.note-manager textarea {
-  flex: 1;
+.note-manager textarea,
+.note-manager input {
   padding: 1rem;
   resize: vertical;
   width: 100%;
   box-sizing: border-box;
   border-radius: 6px;
+}
+
+.note-manager .note textarea,
+.note-manager .note input {
+  border: 1px solid #767676;
 }
 
 .note-manager .validation-message {
@@ -52,6 +57,10 @@
   border-radius: 6px;
 }
 
+.note-manager .note-link a {
+  font-weight: bold;
+}
+
 .note-manager .notes-actions {
   margin-top: 2rem;
   display: flex;
@@ -61,6 +70,7 @@
 .note-manager .note .actions {
   display: flex;
 }
+
 .note-manager button.remove {
   color: #f22;
 }
@@ -76,6 +86,13 @@
 .note-manager button.edit {
   font-size: 8px;
   background: none;
+  filter: grayscale(100%);
+  opacity: 30%;
+  transition: all 200ms ease-in-out;
+}
+.note-manager .note:hover button.edit {
+  filter: none;
+  opacity: 100%;
 }
 
 .note-manager .labels.filter {
@@ -93,7 +110,7 @@
 .note-manager .labels span {
   padding: 1px 5px;
   display: inline-block;
-  margin: 0 2px;
+  margin: 2px;
   border-radius: 6px;
   color: #eee;
 }
