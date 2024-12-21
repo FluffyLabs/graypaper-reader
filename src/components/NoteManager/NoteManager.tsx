@@ -21,11 +21,13 @@ export function NoteManager() {
     notes,
     labels,
     canUndo,
+    canRedo,
     hasLegacyNotes,
     handleAddNote,
     handleDeleteNote,
     handleUpdateNote,
     handleUndo,
+    handleRedo,
     handleImport,
     handleExport,
     handleLegacyExport,
@@ -124,6 +126,7 @@ export function NoteManager() {
       ))}
       <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
+        {canRedo && <button onClick={handleRedo}>redo</button>}
         <button onClick={onImport}>import notes</button>
         <button onClick={handleExport}>export notes</button>
         {hasLegacyNotes ? (

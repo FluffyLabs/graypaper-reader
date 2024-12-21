@@ -17,11 +17,13 @@ export interface INotesContext {
   notes: IDecoratedNote[];
   labels: ILabel[];
   canUndo: boolean;
+  canRedo: boolean;
   hasLegacyNotes: boolean;
   handleAddNote(note: IStorageNote): void;
   handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
   handleDeleteNote(note: IDecoratedNote): void;
   handleUndo(): void;
+  handleRedo(): void;
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
   handleLegacyExport(): void;
@@ -36,10 +38,12 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const [localNotes, setLocalNotes] = useState<INotesEnvelope>(loadFromLocalStorage());
   const [localNotesDecorated, setLocalNotesDecorated] = useState<IDecoratedNote[]>([]);
   const [history, setHistory] = useState<INotesEnvelope[]>([]);
+  const [redoHistory, setRedoHistory] = useState<INotesEnvelope[]>([]);
   const { locationParams } = useContext(LocationContext) as ILocationContext;
 
   const currentVersion = locationParams.version;
   const canUndo = history.length > 0;
+  const canRedo = redoHistory.length > 0;
 
   const decorateNotes = useDecoratedNotes();
   const remoteNotesDecorated = useRemoteNotes(decorateNotes, currentVersion);
@@ -76,6 +80,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     notes: filteredNotes,
     labels,
     canUndo,
+    canRedo,
     hasLegacyNotes,
     handleToggleLabel,
     handleAddNote: useCallback(
@@ -112,27 +117,36 @@ export function NotesProvider({ children }: INotesProviderProps) {
           const updatedNotes = localNotes.notes.slice();
           updatedNotes.splice(noteToDeleteIdx, 1);
 
-          updateLocalNotes(
-            { ...localNotes },
-            {
-              ...localNotes,
-              notes: updatedNotes,
-            },
-          );
+          updateLocalNotes(localNotes, {
+            ...localNotes,
+            notes: updatedNotes,
+          });
         }
       },
       [localNotes, localNotesDecorated, updateLocalNotes],
     ),
     handleUndo: useCallback(() => {
-      const newNotes = history.pop();
-      if (!newNotes) {
+      const currentNotes = localNotes;
+      const previousNotes = history.pop();
+      if (!previousNotes) {
         return;
       }
 
-      setLocalNotes(newNotes);
-      saveToLocalStorage(newNotes);
+      setRedoHistory((redoHistory) => [...redoHistory, currentNotes]);
+      setLocalNotes(previousNotes);
+      saveToLocalStorage(previousNotes);
       setHistory([...history]);
-    }, [history]),
+    }, [history, localNotes]),
+    handleRedo: useCallback(() => {
+      const currentNotes = localNotes;
+      const previousNotes = redoHistory.pop();
+      if (!previousNotes) {
+        return;
+      }
+
+      updateLocalNotes(currentNotes, previousNotes);
+      setRedoHistory([...redoHistory]);
+    }, [redoHistory, localNotes, updateLocalNotes]),
     handleImport: useCallback(
       (jsonStr: string, label: string) => {
         let newNotes = [];
