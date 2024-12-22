@@ -1,6 +1,5 @@
-import { migrateSelection } from "@fluffylabs/migrate-selection";
-import type { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import type { ISynctexBlockId } from "@fluffylabs/types";
+import { migrateSelection } from "@fluffylabs/links-metadata";
+import type { ISynctexBlockId, SynctexStore, TexStore } from "@fluffylabs/links-metadata";
 import { type Metadata, ORIGIN } from "./metadata";
 
 export type Link = {

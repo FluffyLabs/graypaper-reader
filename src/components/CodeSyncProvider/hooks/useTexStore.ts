@@ -1,4 +1,4 @@
-import { TexStore } from "@fluffylabs/synctex-store";
+import { TexStore } from "@fluffylabs/links-metadata";
 import { useContext, useMemo, useRef } from "react";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
 
