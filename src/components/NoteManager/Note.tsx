@@ -4,7 +4,7 @@ import type { INotesContext } from "../NotesProvider/NotesProvider";
 import { getEditableLabels } from "../NotesProvider/hooks/useLabels";
 import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
-import { RenderMath } from "../RenderMath/RenderMath";
+import { RenderNote } from "../RenderNote/RenderNote";
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
@@ -85,7 +85,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         </>
       ) : (
         <blockquote>
-          <RenderMath content={note.original.content} />
+          <RenderNote content={note.original.content} />
         </blockquote>
       )}
       {isEditing ? <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} /> : null}
