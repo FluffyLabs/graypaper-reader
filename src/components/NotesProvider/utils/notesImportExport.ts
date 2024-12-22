@@ -1,4 +1,4 @@
-import type { ISelectionParams } from "@fluffylabs/types";
+import type { ISelectionParams } from "@fluffylabs/links-metadata";
 import { LABEL_IMPORTED, LABEL_LOCAL } from "../consts/labels";
 import type { INoteV3, INotesEnvelope } from "../types/StorageNote";
 

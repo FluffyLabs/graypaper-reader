@@ -1,4 +1,4 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISynctexBlock } from "@fluffylabs/links-metadata";
 import { useContext, useEffect, useState } from "react";
 import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";

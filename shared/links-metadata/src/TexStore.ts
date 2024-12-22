@@ -1,7 +1,9 @@
+import { texUrlGetter as defaultGetter } from "./metadata";
+
 export class TexStore {
   constructor(
-    private readonly texUrlGetter: (version: string) => string,
-    private readonly cache: Map<string, Promise<string>>,
+    private readonly texUrlGetter: (version: string) => string = defaultGetter,
+    private readonly cache: Map<string, Promise<string>> = new Map(),
   ) {}
 
   private async fetchAsString(url: string): Promise<string> {

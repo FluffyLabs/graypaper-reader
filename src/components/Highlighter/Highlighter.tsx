@@ -1,5 +1,5 @@
 import "./Highlighter.css";
-import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISynctexBlock } from "@fluffylabs/links-metadata";
 
 const DEFAULT_HIGHLIGHT_OPACITY = 0.2;
 
