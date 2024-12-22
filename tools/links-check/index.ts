@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { fetchMetadata } from "@fluffylabs/links-metadata";
 import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
-import { fetchMetadata } from "./metadata";
 import { performMigrations } from "./migrate";
 import { type Report, printReport } from "./report";
 import { scan } from "./scan";

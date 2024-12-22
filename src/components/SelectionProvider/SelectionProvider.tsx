@@ -1,4 +1,4 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISynctexBlock } from "@fluffylabs/links-metadata";
 import {
   type Dispatch,
   type MouseEventHandler,

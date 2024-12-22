@@ -1,9 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { SynctexStore, TexStore } from "@fluffylabs/links-metadata";
-import type { ISynctexData } from "@fluffylabs/links-metadata";
-import { parseLink } from "./link";
-import { type Metadata, ORIGIN, synctexUrlGetter, texUrlGetter } from "./metadata";
+import { ORIGIN, SynctexStore, TexStore, parseLink } from "@fluffylabs/links-metadata";
+import type { Metadata } from "@fluffylabs/links-metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
 class Timer {
@@ -27,10 +25,8 @@ class Timer {
 
 export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
   const timer = new Timer();
-  const synctexCache = new Map<string, Promise<ISynctexData>>();
-  const synctexStore = new SynctexStore(synctexUrlGetter, synctexCache);
-  const texCache = new Map<string, Promise<string>>();
-  const texStore = new TexStore(texUrlGetter, texCache);
+  const synctexStore = new SynctexStore();
+  const texStore = new TexStore();
   const cwd = process.cwd();
   const results = await Promise.allSettled(
     files.map(async (file) => {
