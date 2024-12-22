@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import type { ISynctexData } from "../../packages/types";
+import { SynctexStore, TexStore } from "@fluffylabs/links-metadata";
+import type { ISynctexData } from "@fluffylabs/links-metadata";
 import { parseLink } from "./link";
 import { type Metadata, ORIGIN, synctexUrlGetter, texUrlGetter } from "./metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";

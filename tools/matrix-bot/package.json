@@ -9,7 +9,8 @@
     "lint": "biome lint --write; biome check --write",
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
-    "start": "node --loader ts-node/esm ./index.ts"
+    "start": "node --loader ts-node/esm ./index.ts",
+    "convert-to-notes": "node --loader ts-node/esm ./convert-to-notes.ts"
   },
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
