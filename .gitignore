@@ -25,3 +25,4 @@ graypaper-archive/*
 *.njsproj
 *.sln
 *.sw?
+messages.json

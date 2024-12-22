@@ -2,15 +2,14 @@
   "name": "@fluffylabs/matrix-bot",
   "version": "1.0.0",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "build": "tsc",
     "format": "biome format --write",
     "lint": "biome lint --write; biome check --write",
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
-    "start": "node --loader ts-node/esm ./index.ts",
-    "convert-to-notes": "node --loader ts-node/esm ./convert-to-notes.ts"
+    "start": "ts-node ./index.ts",
+    "convert-to-notes": "ts-node ./convert-to-notes.ts"
   },
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
@@ -19,7 +18,8 @@
     "@biomejs/biome": "^1.8.3",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^22.7.5",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "@fluffylabs/links-metadata": "1.0.0"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

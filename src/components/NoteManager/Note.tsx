@@ -3,7 +3,7 @@ import { validateMath } from "../../utils/validateMath";
 import type { INotesContext } from "../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
-import { RenderMath } from "../RenderMath/RenderMath";
+import { RenderNote } from "../RenderNote/RenderNote";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
@@ -75,7 +75,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         </>
       ) : (
         <blockquote>
-          <RenderMath content={note.original.content} />
+          <RenderNote content={note.original.content} />
         </blockquote>
       )}
       <div className="actions">

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ORIGIN, SynctexStore, TexStore, parseLink } from "@fluffylabs/links-metadata";
+import { SynctexStore, TexStore, findLink, parseAndMigrateLink } from "@fluffylabs/links-metadata";
 import type { Metadata } from "@fluffylabs/links-metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
@@ -76,19 +76,14 @@ async function scanFile(
   };
 
   await readLineByLine(path, (lineNumber, line) => {
-    const linkStart = line.indexOf(ORIGIN);
-    if (linkStart !== -1) {
-      // extract raw link
-      const linkLine = line.substring(linkStart);
-      const whitespaceIdx = linkLine.indexOf(" ");
-      const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
-
+    const link = findLink(line);
+    if (link !== null) {
       links.push([lineNumber, link]);
     }
   });
 
   const linksParsed = await Promise.all(
-    links.map(([lineNumber, link]) => parseLink(lineNumber, link, metadata, synctexStore, texStore)),
+    links.map(([lineNumber, link]) => parseAndMigrateLink(link, metadata, synctexStore, texStore, lineNumber)),
   );
 
   report.allLinks = linksParsed;
