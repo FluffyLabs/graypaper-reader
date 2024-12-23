@@ -1,4 +1,5 @@
 import type { ISelectionParams } from "@fluffylabs/types";
+import { xxhash32 } from "hash-wasm";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -15,13 +16,13 @@ export const LABEL_IMPORTED = "imported:";
 export const NotesContext = createContext<INotesContext | null>(null);
 
 export interface INotesContext {
-  notes: TAnyNote[];
+  notes: INote[];
   labels: Label[];
   canUndo: boolean;
   hasLegacyNotes: boolean;
-  handleAddNote(note: TAnyNote): void;
-  handleUpdateNote(noteToReplace: TAnyNote, newNote: TAnyNote): void;
-  handleDeleteNote(note: TAnyNote): void;
+  handleAddNote(note: INoteV3): void;
+  handleUpdateNote(noteToReplace: INote, newNote: INoteV3): void;
+  handleDeleteNote(note: INote): void;
   handleUndo(): void;
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
@@ -40,37 +41,40 @@ export enum NoteSource {
   Remote = 2,
 }
 
-interface INoteV2 {
+/** Note this type should not be changed since it describes an older format of the notes.*/
+interface INoteV2 extends ISelectionParams {
   content: string;
   date: number;
+  // Always empty
   author: string;
   pageNumber: number;
   version: string;
-  canMigrateTo?: {
-    version: string;
-    pageNumber: number;
-  };
-}
-
-interface INoteV3 extends INoteV2 {
-  labels: string[];
-  source: NoteSource;
-}
-
-export interface IPointNote extends INoteV3 {
-  left: number;
-  top: number;
-}
-
-export interface IHighlightNote extends INoteV3, ISelectionParams {
   selectionString: string;
-  canMigrateTo?: {
-    version: string;
-    pageNumber: number;
-  } & ISelectionParams;
 }
 
-export type TAnyNote = IPointNote | IHighlightNote;
+export interface INoteV3 extends ISelectionParams {
+  noteVersion: 3;
+  content: string;
+  date: number;
+  author: string;
+  version: string;
+  labels: string[];
+}
+
+interface INotesV3 {
+  version: 3;
+  notes: INoteV3[];
+}
+
+export type INote = ISelectionParams & {
+  /** Unique id of the note (date + content) */
+  hash: string;
+  original: INoteV3;
+  source: NoteSource;
+
+  canBeMigrated: boolean;
+  version: string;
+};
 
 interface INotesProviderProps {
   children: ReactNode;
@@ -88,93 +92,96 @@ function isINoteV2(arg: unknown): arg is INoteV2 {
 }
 
 function isINoteV3(arg: unknown): arg is INoteV3 {
-  if (!isINoteV2(arg)) {
-    return false;
-  }
-
-  if (!("labels" in arg && Array.isArray(arg.labels))) {
-    return false;
-  }
-
-  if (!("source" in arg)) {
-    return false;
-  }
+  if (!(typeof arg === "object" && arg !== null)) return false;
+  if (!("noteVersion" in arg && arg.noteVersion === 3)) return false;
+  if (!("content" in arg && typeof arg.content === "string")) return false;
+  if (!("date" in arg && typeof arg.date === "number")) return false;
+  if (!("author" in arg && typeof arg.author === "string")) return false;
+  if (!("version" in arg && typeof arg.version === "string")) return false;
+  if (!("labels" in arg && Array.isArray(arg.labels))) return false;
 
   return true;
 }
 
-function isHighlightNote(arg: unknown): arg is IHighlightNote {
-  if (!isINoteV3(arg)) return false;
-  if (!("selectionString" in arg) || typeof arg.selectionString !== "string") return false;
-  if (!("selectionStart" in arg)) return false;
-  if (!("selectionEnd" in arg)) return false;
+function isINotesV3(arg: unknown): arg is INotesV3 {
+  if (!(typeof arg === "object" && arg !== null)) return false;
+  if (!("version" in arg && arg.version === 3)) return false;
+  if (!("notes" in arg && Array.isArray(arg.notes))) return false;
 
-  return true;
+  return arg.notes.every(isINoteV3);
 }
 
-function parseJson(jsonStr: string): INoteV2[] {
+function parseNotesFromJson(jsonStr: string, defaultLabel: string): INotesV3 {
   try {
-    const parsed = JSON.parse(jsonStr) as INoteV2[];
+    const parsed: unknown = JSON.parse(jsonStr);
+    // V3
+    if (isINotesV3(parsed)) {
+      return parsed;
+    }
 
-    if (!Array.isArray(parsed)) {
+    // V2
+    if (Array.isArray(parsed)) {
+      if (parsed.every(isINoteV2)) {
+        return {
+          version: 3,
+          notes: parsed.map((note) => convertNoteV2toV3(note, defaultLabel)),
+        };
+      }
       throw new Error("Notes JSON should be an array.");
     }
 
-    if (!parsed.every(isINoteV2)) {
-      throw new Error("Invalid note format.");
-    }
-
-    return parsed;
+    throw new Error("Invalid notes format.");
   } catch (e) {
     console.error("Error loading notes.", e);
-    return [];
+    return {
+      version: 3,
+      notes: [],
+    };
   }
 }
 
-function convertNoteV2toV3(noteV2: INoteV2, label: string): INoteV3 {
-  const note = noteV2 as INoteV3;
-  if (!Array.isArray(note.labels)) {
-    note.labels = [];
-  }
-
-  if (note.labels.indexOf(label) === -1) {
-    note.labels.unshift(label);
-  }
-
-  if (note.source === undefined) {
-    note.source = NoteSource.Local;
-  }
-
-  note.canMigrateTo = undefined;
-  return note;
+function convertNoteV2toV3(note: INoteV2, label: string): INoteV3 {
+  return {
+    noteVersion: 3,
+    content: note.content,
+    date: note.date,
+    author: note.author,
+    version: note.version,
+    labels: [label],
+    selectionStart: note.selectionStart,
+    selectionEnd: note.selectionEnd,
+  };
 }
 
-function loadFromLocalStorage(): TAnyNote[] {
-  const notes = parseJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
-  return notes.map((note) => convertNoteV2toV3(note, LABEL_LOCAL) as TAnyNote);
+function loadFromLocalStorage(): INotesV3 {
+  return parseNotesFromJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]", LABEL_LOCAL);
 }
 
 function loadLegacyFromLocalStorage(): string | null {
   return window.localStorage.getItem(LEGACY_NOTES_LS_KEY);
 }
 
-function saveToLocalStorage(notes: TAnyNote[]): void {
+function saveToLocalStorage(notes: INoteV3[]): void {
+  const notesWrapper: INotesV3 = {
+    version: 3,
+    notes,
+  };
   try {
     const prev = window.localStorage.getItem(LOCAL_STORAGE_KEY);
     // make a backup just for safety.
     if (prev) {
       window.localStorage.setItem(BACKUP_STORAGE_KEY, prev);
     }
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notesWrapper));
   } catch (e) {
     alert(`Unable to save notes: ${e}`);
   }
 }
 
 export function NotesProvider({ children }: INotesProviderProps) {
-  const [localNotes, setLocalNotes] = useState<TAnyNote[]>(loadFromLocalStorage());
-  const [localNotesMigrated, setLocalNotesMigrated] = useState<TAnyNote[]>([]);
-  const [history, setHistory] = useState<TAnyNote[][]>([]);
+  const [localNotes, setLocalNotes] = useState<INoteV3[]>(loadFromLocalStorage().notes);
+  const [localNotesMigrated, setLocalNotesMigrated] = useState<INote[]>([]);
+  const [history, setHistory] = useState<INoteV3[][]>([]);
   const [hasLegacyNotes, setHasLegacyNotes] = useState<boolean>(false);
   const { locationParams } = useContext(LocationContext) as ILocationContext;
 
@@ -184,10 +191,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const migrateNotes = useNotesMigration();
   const remoteNotesMigrated = useRemoteNotes(migrateNotes, currentVersion);
 
-  const updateLocalNotes = useCallback((localNotes: TAnyNote[]) => {
-    setHistory((history) => [...history, localNotes].slice(-1 * HISTORY_STEPS_LIMIT));
-    setLocalNotes(localNotes);
-    saveToLocalStorage(localNotes);
+  const updateLocalNotes = useCallback((currentNotes: INoteV3[], newNotes: INoteV3[]) => {
+    setHistory((history) => [...history, currentNotes].slice(-1 * HISTORY_STEPS_LIMIT));
+    setLocalNotes(newNotes);
+    saveToLocalStorage(newNotes);
   }, []);
 
   // Legacy notes export indicator
@@ -198,7 +205,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   // Local notes migration
   useEffect(() => {
-    migrateNotes(localNotes, currentVersion).then((notes) => {
+    migrateNotes(localNotes, NoteSource.Local, currentVersion).then((notes) => {
       setLocalNotesMigrated(notes);
     });
   }, [localNotes, currentVersion, migrateNotes]);
@@ -216,7 +223,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
     canUndo,
     hasLegacyNotes,
     handleToggleLabel,
-    handleAddNote: useCallback((note) => updateLocalNotes([...localNotes, note]), [localNotes, updateLocalNotes]),
+    handleAddNote: useCallback(
+      (note) => updateLocalNotes(localNotes, [...localNotes, note]),
+      [localNotes, updateLocalNotes],
+    ),
     handleUpdateNote: useCallback(
       (noteToReplace, newNote) => {
         if (noteToReplace.source === NoteSource.Remote) {
@@ -225,7 +235,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
         }
         const updateIdx = localNotesMigrated.indexOf(noteToReplace);
         const newNotes = localNotes.map((note, idx) => (updateIdx === idx ? newNote : note));
-        updateLocalNotes(newNotes);
+        updateLocalNotes(localNotes, newNotes);
       },
       [localNotes, localNotesMigrated, updateLocalNotes],
     ),
@@ -237,8 +247,9 @@ export function NotesProvider({ children }: INotesProviderProps) {
         }
         const noteToDeleteIdx = localNotesMigrated.indexOf(noteToDelete);
         if (noteToDeleteIdx !== -1) {
+          const currentNotes = localNotes.slice();
           localNotes.splice(noteToDeleteIdx, 1);
-          updateLocalNotes([...localNotes]);
+          updateLocalNotes(currentNotes, [...localNotes]);
         }
       },
       [localNotes, localNotesMigrated, updateLocalNotes],
@@ -257,7 +268,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       (jsonStr: string, label: string) => {
         let newNotes = [];
         try {
-          newNotes = parseJson(jsonStr);
+          newNotes = parseNotesFromJson(jsonStr, `${LABEL_IMPORTED}${label}`).notes;
         } catch (e) {
           alert("Unable to read given notes file. See console for error.");
           console.error(e);
@@ -265,13 +276,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
         }
 
         // merge notes together
-        const notes = newNotes.map((note) => {
-          const n = convertNoteV2toV3(note, `${LABEL_IMPORTED}${label}`);
-          n.source = NoteSource.Imported;
-          return n as TAnyNote;
-        });
-
-        updateLocalNotes([...localNotes, ...notes]);
+        updateLocalNotes(localNotes, [...localNotes, ...newNotes]);
       },
       [localNotes, updateLocalNotes],
     ),
@@ -292,34 +297,30 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
 export function useRemoteNotes(migrateNotes: ReturnType<typeof useNotesMigration>, currentVersion: string) {
   const [remoteNotesSources] = useState([]);
-  const [remoteNotes, setRemoteNotes] = useState<TAnyNote[]>([]);
-  const [remoteNotesMigrated, setRemoteNotesMigrated] = useState<TAnyNote[]>([]);
+  const [remoteNotes, setRemoteNotes] = useState<INoteV3[]>([]);
+  const [remoteNotesMigrated, setRemoteNotesMigrated] = useState<INote[]>([]);
 
   // load remote notes
   useEffect(() => {
     (async () => {
-      const remoteNotes = [];
+      const newRemoteNotes = [];
       for (const source of remoteNotesSources) {
         try {
           const data = await fetch(source);
           const content = await data.text();
-          const notes = parseJson(content).map((note) => {
-            const n = convertNoteV2toV3(note, LABEL_REMOTE) as TAnyNote;
-            n.source = NoteSource.Remote;
-            return n;
-          });
-          remoteNotes.push(...notes);
+          const notes = parseNotesFromJson(content, LABEL_REMOTE);
+          newRemoteNotes.push(...notes.notes);
         } catch (e) {
           console.warn(`Error loading remote notes from ${source}`, e);
         }
       }
-      setRemoteNotes(remoteNotes);
+      setRemoteNotes(newRemoteNotes);
     })();
   }, [remoteNotesSources]);
 
   // auto-migrate remote notes
   useEffect(() => {
-    migrateNotes(remoteNotes, currentVersion).then((notes) => {
+    migrateNotes(remoteNotes, NoteSource.Remote, currentVersion).then((notes) => {
       setRemoteNotesMigrated(notes);
     });
   }, [remoteNotes, currentVersion, migrateNotes]);
@@ -327,7 +328,7 @@ export function useRemoteNotes(migrateNotes: ReturnType<typeof useNotesMigration
   return remoteNotesMigrated;
 }
 
-function useLabels(allNotes: TAnyNote[]): [TAnyNote[], Label[], (label: string) => void] {
+function useLabels(allNotes: INote[]): [INote[], Label[], (label: string) => void] {
   const [labels, setLabels] = useState<Label[]>([]);
 
   // toggle label visibility
@@ -344,16 +345,16 @@ function useLabels(allNotes: TAnyNote[]): [TAnyNote[], Label[], (label: string) 
 
   // Re-create labels on change in notes
   useEffect(() => {
-    const labelsMap = new Map<string, boolean>();
+    const uniqueLabels = new Set<string>();
     allNotes.map((note) => {
-      note.labels.map((label) => {
-        labelsMap.set(label, true);
+      note.original.labels.map((label) => {
+        uniqueLabels.add(label);
       });
     });
 
     setLabels((oldLabels) => {
       const justNames = oldLabels.map((x) => x.label);
-      return Array.from(labelsMap.keys()).map((label) => {
+      return Array.from(uniqueLabels.values()).map((label) => {
         const oldLabelIdx = justNames.indexOf(label as string);
         if (oldLabelIdx === -1) {
           return { label: label as string, isActive: true };
@@ -371,7 +372,7 @@ function useLabels(allNotes: TAnyNote[]): [TAnyNote[], Label[], (label: string) 
 
     // filter out notes
     return allNotes.filter((note) => {
-      const activeLabels = note.labels.filter((label) => active.get(label));
+      const activeLabels = note.original.labels.filter((label) => active.get(label));
       return activeLabels.length > 0;
     });
   }, [allNotes, labels]);
@@ -382,33 +383,47 @@ function useLabels(allNotes: TAnyNote[]): [TAnyNote[], Label[], (label: string) 
 function useNotesMigration() {
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
   const migrateNotes = useCallback(
-    (notes: TAnyNote[], currentVersion: string) => {
+    (notes: INoteV3[], source: NoteSource, currentVersion: string) => {
       return Promise.all(
-        notes.map(async (note) => {
+        notes.map(async (note): Promise<INote> => {
           // TODO [ToDr] We can potentially cache that by re-using the migrations
           // that were already done.
-          if (note.version === currentVersion || !isHighlightNote(note)) {
-            return note;
+          const { version, selectionStart, selectionEnd } = note;
+          const hash = await xxhash32(`${source}-${note.version}-${note.date}-${note.content}`);
+          if (note.version === currentVersion) {
+            return {
+              hash,
+              original: note,
+              source,
+              canBeMigrated: false,
+              version,
+              selectionStart,
+              selectionEnd,
+            };
           }
 
-          const newSelection = await migrateSelection(
-            { selectionStart: note.selectionStart, selectionEnd: note.selectionEnd },
-            note.version,
-            currentVersion,
-          );
+          const newSelection = await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion);
 
           if (!newSelection) {
-            return note;
+            return {
+              hash,
+              original: note,
+              source,
+              canBeMigrated: false,
+              version,
+              selectionStart,
+              selectionEnd,
+            };
           }
 
           return {
-            ...note,
-            canMigrateTo: {
-              version: currentVersion,
-              selectionStart: newSelection.selectionStart,
-              selectionEnd: newSelection.selectionEnd,
-              pageNumber: newSelection.selectionStart.pageNumber,
-            },
+            hash,
+            original: note,
+            source,
+            canBeMigrated: true,
+            version: currentVersion,
+            selectionStart: newSelection.selectionStart,
+            selectionEnd: newSelection.selectionEnd,
           };
         }),
       );

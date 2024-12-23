@@ -4,13 +4,7 @@ import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
-import {
-  type IHighlightNote,
-  type INotesContext,
-  LABEL_LOCAL,
-  NoteSource,
-  NotesContext,
-} from "../NotesProvider/NotesProvider";
+import { type INoteV3, type INotesContext, LABEL_LOCAL, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
 import { LabelsFilter } from "./NoteLabels";
@@ -35,9 +29,7 @@ export function NoteManager() {
     handleLegacyExport,
     handleToggleLabel,
   } = useContext(NotesContext) as INotesContext;
-  const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
-    SelectionContext,
-  ) as ISelectionContext;
+  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
     if (
@@ -58,23 +50,21 @@ export function NoteManager() {
       return;
     }
 
-    const newNote: IHighlightNote = {
+    const newNote: INoteV3 = {
+      noteVersion: 3,
       content: noteContent,
       date: Date.now(),
       author: DEFAULT_AUTHOR,
-      pageNumber,
       selectionStart: locationParams.selectionStart,
       selectionEnd: locationParams.selectionEnd,
-      selectionString,
       version: locationParams.version,
-      source: NoteSource.Local,
       // TODO [ToDr] user defined labels?
       labels: [LABEL_LOCAL],
     };
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectionString, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
+  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -128,7 +118,7 @@ export function NoteManager() {
       </div>
       <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
       {notes.map((note) => (
-        <Note key={note.date} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+        <Note key={note.hash} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
       ))}
       <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}

@@ -2,11 +2,11 @@ import "./HighlightNote.css";
 import { useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
-import type { IHighlightNote } from "../../../NotesProvider/NotesProvider";
+import type { INote } from "../../../NotesProvider/NotesProvider";
 import { RenderMath } from "../../../RenderMath/RenderMath";
 
 interface HighlightNoteProps {
-  note: IHighlightNote;
+  note: INote;
   pageOffset: DOMRect;
 }
 
@@ -18,8 +18,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [noteIsShown, setNoteIsShown] = useState(true);
 
-  const selectionStart = note.canMigrateTo?.selectionStart ?? note.selectionStart;
-  const selectionEnd = note.canMigrateTo?.selectionEnd ?? note.selectionEnd;
+  const { selectionStart, selectionEnd } = note;
 
   const blocks = useMemo(
     () => getSynctexBlockRange(selectionStart, selectionEnd),
@@ -61,7 +60,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
         onMouseEnter={() => setNoteIsShown(false)}
         onMouseLeave={() => setNoteIsShown(true)}
       >
-        <RenderMath content={note.content} />
+        <RenderMath content={note.original.content} />
       </div>
     </>
   );

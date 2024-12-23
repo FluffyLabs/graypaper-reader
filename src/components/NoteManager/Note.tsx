@@ -1,6 +1,6 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
-import { type IHighlightNote, type INotesContext, NoteSource, type TAnyNote } from "../NotesProvider/NotesProvider";
+import { type INote, type INoteV3, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
 import { RenderMath } from "../RenderMath/RenderMath";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
@@ -11,14 +11,14 @@ export type NotesItem = {
 };
 
 type NoteProps = {
-  note: TAnyNote;
+  note: INote;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
 export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [noteDirty, setNoteDirty] = useState({ ...note });
+  const [noteDirty, setNoteDirty] = useState<INoteV3>({ ...note.original });
   const [noteContentError, setNoteContentError] = useState("");
 
   const isEditable = note.source !== NoteSource.Remote;
@@ -41,7 +41,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
       return;
     }
     setIsEditing(true);
-    setNoteDirty({ ...note });
+    setNoteDirty({ ...note.original });
     setNoteContentError("");
   }, [note, isEditable]);
 
@@ -60,7 +60,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
 
   return (
     <div className="note">
-      <NoteLink note={note as IHighlightNote} onEditNote={onEditNote} />
+      <NoteLink note={note} onEditNote={onEditNote} />
       {isEditing ? (
         <>
           <textarea
@@ -73,7 +73,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         </>
       ) : (
         <blockquote>
-          <RenderMath content={note.content} />
+          <RenderMath content={note.original.content} />
         </blockquote>
       )}
       <div className="actions">

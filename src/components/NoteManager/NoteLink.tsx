@@ -3,11 +3,11 @@ import { Tooltip } from "react-tooltip";
 import { blockIdsEqual } from "../../utils/blockIdsEqual";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type IHighlightNote, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
+import { type INote, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
-  note: IHighlightNote;
+  note: INote;
   onEditNote: INotesContext["handleUpdateNote"];
 };
 
@@ -19,12 +19,11 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
   ) as ICodeSyncContext;
   const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
 
-  const migrationFlag = note.canMigrateTo?.version === locationParams.version;
+  const migrationFlag = note.canBeMigrated;
   const isEditable = note.source !== NoteSource.Remote;
 
-  const selectionStart = note.canMigrateTo?.selectionStart ?? note.selectionStart;
-  const selectionEnd = note.canMigrateTo?.selectionEnd ?? note.selectionEnd;
-  const pageNumber = note.canMigrateTo?.pageNumber ?? note.pageNumber;
+  const { selectionStart, selectionEnd } = note;
+  const { pageNumber } = selectionStart;
 
   useEffect(() => {
     (async () => {
@@ -43,8 +42,8 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
       e.preventDefault();
       setLocationParams({
         ...locationParams,
-        selectionStart: selectionStart,
-        selectionEnd: selectionEnd,
+        selectionStart,
+        selectionEnd,
       });
       setScrollToSelection(true);
     },
@@ -55,9 +54,9 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
     (e) => {
       e.preventDefault();
       setLocationParams({
-        version: note.version,
-        selectionStart: note.selectionStart,
-        selectionEnd: note.selectionEnd,
+        version: note.original.version,
+        selectionStart: note.original.selectionStart,
+        selectionEnd: note.original.selectionEnd,
       });
       setScrollToSelection(true);
     },
@@ -79,12 +78,10 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
       }
 
       onEditNote(note, {
-        ...note,
+        ...note.original,
         selectionStart: locationParams.selectionStart,
         selectionEnd: locationParams.selectionEnd,
         version: locationParams.version,
-        pageNumber: locationParams.selectionStart.pageNumber,
-        canMigrateTo: undefined,
       });
     },
     [locationParams, note, selectionStart, selectionEnd, onEditNote],

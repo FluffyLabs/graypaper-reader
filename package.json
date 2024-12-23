@@ -21,6 +21,7 @@
     "@fluffylabs/migrate-selection": "^1.0.0",
     "@fluffylabs/synctex-store": "^1.0.0",
     "dompurify": "^3.2.0",
+    "hash-wasm": "^4.12.0",
     "katex": "^0.16.11",
     "pdfjs-dist": "^4.5.136",
     "react": "^18.3.1",

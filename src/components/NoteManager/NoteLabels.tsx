@@ -1,5 +1,5 @@
 import { type MouseEventHandler, useCallback, useMemo } from "react";
-import type { Label, TAnyNote } from "../NotesProvider/NotesProvider";
+import type { INote, Label } from "../NotesProvider/NotesProvider";
 
 function SingleLabel({ label, prefix = "" }: { label: string; prefix?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
@@ -10,10 +10,10 @@ function SingleLabel({ label, prefix = "" }: { label: string; prefix?: string })
   );
 }
 
-export function NoteLabels({ note }: { note: TAnyNote }) {
+export function NoteLabels({ note }: { note: INote }) {
   return (
     <div className="labels">
-      {note.labels.map((label) => (
+      {note.original.labels.map((label) => (
         <SingleLabel key={label} label={label} />
       ))}
     </div>
@@ -49,10 +49,10 @@ function LabelLink({ label, onToggleLabel }: LabelLinkProps) {
     [label, onToggleLabel],
   );
 
-  const clazz = `label ${label.isActive && "active"}`;
+  const className = `label ${label.isActive && "active"}`;
   const ico = label.isActive ? "⊙" : "∅";
   return (
-    <a href="#" className={clazz} onClick={selectLabel}>
+    <a href="#" className={className} onClick={selectLabel}>
       <SingleLabel label={label.label} prefix={ico} />
     </a>
   );
