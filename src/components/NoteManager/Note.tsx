@@ -1,9 +1,11 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
-import { type INote, type INoteV3, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
+import { type INotesContext } from "../NotesProvider/NotesProvider";
 import { RenderMath } from "../RenderMath/RenderMath";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
+import {IDecoratedNote, NoteSource} from "../NotesProvider/types/DecoratedNote";
+import {IStorageNote} from "../NotesProvider/types/StorageNote";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -11,14 +13,14 @@ export type NotesItem = {
 };
 
 type NoteProps = {
-  note: INote;
+  note: IDecoratedNote;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
 export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [noteDirty, setNoteDirty] = useState<INoteV3>({ ...note.original });
+  const [noteDirty, setNoteDirty] = useState<IStorageNote>({ ...note.original });
   const [noteContentError, setNoteContentError] = useState("");
 
   const isEditable = note.source !== NoteSource.Remote;

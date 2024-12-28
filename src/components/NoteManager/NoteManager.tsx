@@ -4,10 +4,12 @@ import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
-import { type INoteV3, type INotesContext, LABEL_LOCAL, NotesContext } from "../NotesProvider/NotesProvider";
+import {type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
 import { LabelsFilter } from "./NoteLabels";
+import {IStorageNote} from "../NotesProvider/types/StorageNote";
+import {LABEL_LOCAL} from "../NotesProvider/consts/labels";
 
 const DEFAULT_AUTHOR = "";
 
@@ -50,7 +52,7 @@ export function NoteManager() {
       return;
     }
 
-    const newNote: INoteV3 = {
+    const newNote: IStorageNote = {
       noteVersion: 3,
       content: noteContent,
       date: Date.now(),
@@ -118,7 +120,7 @@ export function NoteManager() {
       </div>
       <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
       {notes.map((note) => (
-        <Note key={note.hash} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+        <Note key={note.id} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
       ))}
       <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}

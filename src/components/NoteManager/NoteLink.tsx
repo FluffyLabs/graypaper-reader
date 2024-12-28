@@ -3,11 +3,12 @@ import { Tooltip } from "react-tooltip";
 import { blockIdsEqual } from "../../utils/blockIdsEqual";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type INote, type INotesContext, NoteSource } from "../NotesProvider/NotesProvider";
+import { type INotesContext} from "../NotesProvider/NotesProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import {IDecoratedNote, NoteSource} from "../NotesProvider/types/DecoratedNote";
 
 type NoteLinkProps = {
-  note: INote;
+  note: IDecoratedNote;
   onEditNote: INotesContext["handleUpdateNote"];
 };
 

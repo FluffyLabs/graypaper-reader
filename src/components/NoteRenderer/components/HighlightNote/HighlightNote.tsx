@@ -2,11 +2,11 @@ import "./HighlightNote.css";
 import { useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
-import type { INote } from "../../../NotesProvider/NotesProvider";
 import { RenderMath } from "../../../RenderMath/RenderMath";
+import {IDecoratedNote} from "../../../NotesProvider/types/DecoratedNote";
 
 interface HighlightNoteProps {
-  note: INote;
+  note: IDecoratedNote;
   pageOffset: DOMRect;
 }
 

@@ -17,6 +17,6 @@ export function NoteRenderer() {
     if (!viewer) return;
 
     const pageNumber = note.selectionStart.pageNumber;
-    return <HighlightNote note={note} pageOffset={pageOffsets[pageNumber]} key={note.hash} />;
+    return <HighlightNote note={note} pageOffset={pageOffsets[pageNumber]} key={note.id} />;
   });
 }

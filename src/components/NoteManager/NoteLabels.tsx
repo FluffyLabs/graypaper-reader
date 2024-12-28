@@ -1,5 +1,6 @@
 import { type MouseEventHandler, useCallback, useMemo } from "react";
-import type { INote, Label } from "../NotesProvider/NotesProvider";
+import {IDecoratedNote} from "../NotesProvider/types/DecoratedNote";
+import {ILabel} from "../NotesProvider/hooks/useLabels";
 
 function SingleLabel({ label, prefix = "" }: { label: string; prefix?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
@@ -10,7 +11,7 @@ function SingleLabel({ label, prefix = "" }: { label: string; prefix?: string })
   );
 }
 
-export function NoteLabels({ note }: { note: INote }) {
+export function NoteLabels({ note }: { note: IDecoratedNote }) {
   return (
     <div className="labels">
       {note.original.labels.map((label) => (
@@ -21,7 +22,7 @@ export function NoteLabels({ note }: { note: INote }) {
 }
 
 type LabelsFilterProps = {
-  labels: Label[];
+  labels: ILabel[];
   onToggleLabel: (label: string) => void;
 };
 
@@ -36,7 +37,7 @@ export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
 }
 
 type LabelLinkProps = {
-  label: Label;
+  label: ILabel;
   onToggleLabel: LabelsFilterProps["onToggleLabel"];
 };
 
