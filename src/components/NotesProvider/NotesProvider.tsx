@@ -82,7 +82,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       (note) =>
         updateLocalNotes(localNotes, {
           ...localNotes,
-          notes: [...localNotes.notes, note],
+          notes: [note, ...localNotes.notes],
         }),
       [localNotes, updateLocalNotes],
     ),

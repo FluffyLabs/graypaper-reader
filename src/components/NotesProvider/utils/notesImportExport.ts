@@ -43,38 +43,30 @@ export function exportNotesAsJson(wrapper: INotesEnvelope, clearLabels: boolean)
  * them to recent wrapper type.
  */
 export function importNotesFromJson(jsonStr: string, defaultLabel: string): INotesEnvelope {
-  try {
-    const parsed: unknown = JSON.parse(jsonStr);
-    // V3
-    if (isINotesEnvelopeV3(parsed)) {
-      parsed.notes.map((note) => {
-        if (note.labels.indexOf(defaultLabel) === -1) {
-          note.labels.unshift(defaultLabel);
-        }
-      });
-      return parsed;
-    }
-
-    // V2
-    if (Array.isArray(parsed)) {
-      if (parsed.every(isINoteV2)) {
-        return {
-          version: 3,
-          notes: parsed.map((note) => convertNoteV2toV3(note, defaultLabel)),
-        };
+  const parsed: unknown = JSON.parse(jsonStr);
+  // V3
+  if (isINotesEnvelopeV3(parsed)) {
+    parsed.notes.map((note) => {
+      if (note.labels.indexOf(defaultLabel) === -1) {
+        note.labels.unshift(defaultLabel);
       }
+    });
+    return parsed;
+  }
 
-      throw new Error("(V2) Notes JSON should be an array of note object.");
+  // V2
+  if (Array.isArray(parsed)) {
+    if (parsed.every(isINoteV2)) {
+      return {
+        version: 3,
+        notes: parsed.map((note) => convertNoteV2toV3(note, defaultLabel)),
+      };
     }
 
-    throw new Error("Invalid notes format.");
-  } catch (e) {
-    console.error("Error loading notes.", e);
-    return {
-      version: 3,
-      notes: [],
-    };
+    throw new Error("(V2) Notes JSON should be an array of note object.");
   }
+
+  throw new Error("Invalid notes format.");
 }
 
 function isINotesEnvelopeV3(arg: unknown): arg is INotesEnvelope {

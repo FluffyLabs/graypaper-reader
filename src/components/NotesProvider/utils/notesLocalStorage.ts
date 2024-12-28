@@ -7,7 +7,15 @@ const BACKUP_STORAGE_KEY = "notes-v2-backup";
 const LEGACY_NOTES_LS_KEY = "notes";
 
 export function loadFromLocalStorage(): INotesEnvelope {
-  return importNotesFromJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]", LABEL_LOCAL);
+  try {
+    return importNotesFromJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]", LABEL_LOCAL);
+  } catch (e) {
+    console.error("Error loading notes from local storage!", e);
+    return {
+      version: 3,
+      notes: [],
+    };
+  }
 }
 
 export function loadLegacyFromLocalStorage(): string | null {
