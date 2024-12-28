@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": ["tools/*", "packages/*"],
+  "workspaces": [
+    "tools/*",
+    "packages/*"
+  ],
   "scripts": {
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
@@ -12,7 +15,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "echo yolo",
+    "test": "vitest",
     "cp-gp": "mkdir -p ./public && cp -r ./graypaper-archive/dist/* ./public/",
     "prebuild": "git submodule update --init && npm run cp-gp",
     "predev": "npm run cp-gp"
@@ -37,6 +40,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
-    "vite-plugin-prefetch-chunk": "^0.1.2"
+    "vite-plugin-prefetch-chunk": "^0.1.2",
+    "vitest": "^2.1.8"
   }
 }

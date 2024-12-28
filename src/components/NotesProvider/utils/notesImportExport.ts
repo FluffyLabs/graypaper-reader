@@ -34,6 +34,11 @@ export function importNotesFromJson(jsonStr: string, defaultLabel: string): INot
     const parsed: unknown = JSON.parse(jsonStr);
     // V3
     if (isINotesEnvelopeV3(parsed)) {
+      parsed.notes.map(note => {
+        if (note.labels.indexOf(defaultLabel) === -1) {
+          note.labels.unshift(defaultLabel);
+        }
+      });
       return parsed;
     }
 
@@ -80,7 +85,7 @@ function isINoteV3(arg: unknown): arg is INoteV3 {
 }
 
 /** Version 2 of the note format. */
-interface INoteV2 extends ISelectionParams {
+export interface INoteV2 extends ISelectionParams {
   content: string;
   date: number;
   // Always empty
