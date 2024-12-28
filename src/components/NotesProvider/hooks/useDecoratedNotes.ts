@@ -1,7 +1,7 @@
-import {useCallback, useContext} from "react";
-import {IDecoratedNote, NoteSource} from "../types/DecoratedNote";
-import {CodeSyncContext, ICodeSyncContext} from "../../CodeSyncProvider/CodeSyncProvider";
-import {IStorageNote} from "../types/StorageNote";
+import { useCallback, useContext } from "react";
+import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
+import type { IDecoratedNote, NoteSource } from "../types/DecoratedNote";
+import type { IStorageNote } from "../types/StorageNote";
 
 /**
  * Decorate notes coming from storage (or remote source) and attach additional details, like:
@@ -20,9 +20,10 @@ export function useDecoratedNotes() {
           // that were already done.
           const { version, selectionStart, selectionEnd } = note;
           const key = `${note.date}-${idx}`;
-          const newSelection = note.version !== currentVersion
-            ? await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion)
-            : null;
+          const newSelection =
+            note.version !== currentVersion
+              ? await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion)
+              : null;
 
           if (!newSelection) {
             return {

@@ -1,11 +1,11 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
-import { type INotesContext } from "../NotesProvider/NotesProvider";
+import type { INotesContext } from "../NotesProvider/NotesProvider";
+import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
+import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { RenderMath } from "../RenderMath/RenderMath";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
-import {IDecoratedNote, NoteSource} from "../NotesProvider/types/DecoratedNote";
-import {IStorageNote} from "../NotesProvider/types/StorageNote";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection

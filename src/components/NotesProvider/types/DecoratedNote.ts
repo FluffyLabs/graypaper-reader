@@ -1,5 +1,5 @@
-import {ISelectionParams} from "@fluffylabs/types";
-import {IStorageNote} from "./StorageNote";
+import type { ISelectionParams } from "@fluffylabs/types";
+import type { IStorageNote } from "./StorageNote";
 
 // TODO [ToDr] move ISelectionParams to a prop
 export type IDecoratedNote = ISelectionParams & {

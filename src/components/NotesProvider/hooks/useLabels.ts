@@ -1,5 +1,5 @@
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {IDecoratedNote} from "../types/DecoratedNote";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { IDecoratedNote } from "../types/DecoratedNote";
 
 export type ILabel = {
   label: string;

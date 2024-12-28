@@ -3,9 +3,9 @@ import { Tooltip } from "react-tooltip";
 import { blockIdsEqual } from "../../utils/blockIdsEqual";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type INotesContext} from "../NotesProvider/NotesProvider";
+import type { INotesContext } from "../NotesProvider/NotesProvider";
+import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import {IDecoratedNote, NoteSource} from "../NotesProvider/types/DecoratedNote";
 
 type NoteLinkProps = {
   note: IDecoratedNote;

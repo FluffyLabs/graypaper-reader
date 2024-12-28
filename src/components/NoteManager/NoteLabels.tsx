@@ -1,6 +1,6 @@
 import { type MouseEventHandler, useCallback, useMemo } from "react";
-import {IDecoratedNote} from "../NotesProvider/types/DecoratedNote";
-import {ILabel} from "../NotesProvider/hooks/useLabels";
+import type { ILabel } from "../NotesProvider/hooks/useLabels";
+import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 
 function SingleLabel({ label, prefix = "" }: { label: string; prefix?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);

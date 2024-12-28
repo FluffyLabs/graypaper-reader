@@ -1,6 +1,6 @@
-import {LABEL_LOCAL} from "../consts/labels";
-import {INotesEnvelope} from "../types/StorageNote";
-import {exportNotesAsJson, importNotesFromJson} from "./notesImportExport";
+import { LABEL_LOCAL } from "../consts/labels";
+import type { INotesEnvelope } from "../types/StorageNote";
+import { exportNotesAsJson, importNotesFromJson } from "./notesImportExport";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
 const BACKUP_STORAGE_KEY = "notes-v2-backup";

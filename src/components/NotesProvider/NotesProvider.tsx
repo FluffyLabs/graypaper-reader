@@ -1,13 +1,13 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import {useDecoratedNotes} from "./hooks/useDecoratedNotes";
-import {IDecoratedNote, NoteSource} from "./types/DecoratedNote";
-import {ILabel, useLabels} from "./hooks/useLabels";
-import {INotesEnvelope, IStorageNote} from "./types/StorageNote";
-import {loadFromLocalStorage, loadLegacyFromLocalStorage, saveToLocalStorage} from "./utils/notesLocalStorage";
-import {useRemoteNotes} from "./hooks/useRemoteNotes";
-import {LABEL_IMPORTED} from "./consts/labels";
-import {downloadJsonFile, downloadNotesAsJson, importNotesFromJson} from "./utils/notesImportExport";
+import { LABEL_IMPORTED } from "./consts/labels";
+import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
+import { type ILabel, useLabels } from "./hooks/useLabels";
+import { useRemoteNotes } from "./hooks/useRemoteNotes";
+import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
+import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
+import { downloadJsonFile, downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
+import { loadFromLocalStorage, loadLegacyFromLocalStorage, saveToLocalStorage } from "./utils/notesLocalStorage";
 
 const HISTORY_STEPS_LIMIT = 10;
 
@@ -79,10 +79,11 @@ export function NotesProvider({ children }: INotesProviderProps) {
     hasLegacyNotes,
     handleToggleLabel,
     handleAddNote: useCallback(
-      (note) => updateLocalNotes(localNotes, {
-        ...localNotes,
-        notes: [...localNotes.notes, note]
-      }),
+      (note) =>
+        updateLocalNotes(localNotes, {
+          ...localNotes,
+          notes: [...localNotes.notes, note],
+        }),
       [localNotes, updateLocalNotes],
     ),
     handleUpdateNote: useCallback(
@@ -111,10 +112,13 @@ export function NotesProvider({ children }: INotesProviderProps) {
           const updatedNotes = localNotes.notes.slice();
           updatedNotes.splice(noteToDeleteIdx, 1);
 
-          updateLocalNotes({...localNotes}, {
-            ...localNotes,
-            notes: updatedNotes
-          });
+          updateLocalNotes(
+            { ...localNotes },
+            {
+              ...localNotes,
+              notes: updatedNotes,
+            },
+          );
         }
       },
       [localNotes, localNotesDecorated, updateLocalNotes],
@@ -143,7 +147,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
         // merge notes together
         updateLocalNotes(localNotes, {
           ...localNotes,
-          notes: [...localNotes.notes, ...newNotes]
+          notes: [...localNotes.notes, ...newNotes],
         });
       },
       [localNotes, updateLocalNotes],
@@ -161,4 +165,3 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
 }
-

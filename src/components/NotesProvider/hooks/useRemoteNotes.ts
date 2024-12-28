@@ -1,12 +1,12 @@
-import {useEffect, useState} from "react";
-import {useDecoratedNotes} from "./useDecoratedNotes";
-import {LABEL_REMOTE} from "../consts/labels";
-import {importNotesFromJson} from "../utils/notesImportExport";
-import {INotesEnvelope, IStorageNote} from "../types/StorageNote";
-import {IDecoratedNote, NoteSource} from "../types/DecoratedNote";
+import { useEffect, useState } from "react";
+import { LABEL_REMOTE } from "../consts/labels";
+import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
+import type { INotesEnvelope, IStorageNote } from "../types/StorageNote";
+import { importNotesFromJson } from "../utils/notesImportExport";
+import type { useDecoratedNotes } from "./useDecoratedNotes";
 
 export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
-  const [remoteNotesSources] = useState(['/notes.json']);
+  const [remoteNotesSources] = useState(["/notes.json"]);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);
 
@@ -24,7 +24,7 @@ export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNote
           console.warn(`Error loading remote notes from ${source}`, e);
         }
       }
-      setRemoteNotes(envelope => ({
+      setRemoteNotes((envelope) => ({
         ...envelope,
         notes: newRemoteNotes,
       }));

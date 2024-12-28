@@ -4,12 +4,12 @@ import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
-import {type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
+import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
 import { LabelsFilter } from "./NoteLabels";
-import {IStorageNote} from "../NotesProvider/types/StorageNote";
-import {LABEL_LOCAL} from "../NotesProvider/consts/labels";
 
 const DEFAULT_AUTHOR = "";
 

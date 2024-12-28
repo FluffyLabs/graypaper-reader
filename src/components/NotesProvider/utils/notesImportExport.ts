@@ -1,6 +1,6 @@
-import {ISelectionParams} from "@fluffylabs/types";
-import {INoteV3, INotesEnvelope} from "../types/StorageNote";
-import {LABEL_IMPORTED, LABEL_LOCAL} from "../consts/labels";
+import type { ISelectionParams } from "@fluffylabs/types";
+import { LABEL_IMPORTED, LABEL_LOCAL } from "../consts/labels";
+import type { INoteV3, INotesEnvelope } from "../types/StorageNote";
 
 /** Download given string as a JSON file. */
 export function downloadJsonFile(strNotes: string, fileName: string) {
@@ -24,10 +24,12 @@ export function downloadNotesAsJson(notes: INotesEnvelope, fileName: string) {
  */
 export function exportNotesAsJson(wrapper: INotesEnvelope, clearLabels: boolean): string {
   const notes = wrapper.notes.slice();
-  const newNotes = clearLabels ? notes.map(note => ({
-    ...note,
-    labels: note.labels.filter(label => !(label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED))),
-  })) : notes;
+  const newNotes = clearLabels
+    ? notes.map((note) => ({
+        ...note,
+        labels: note.labels.filter((label) => !(label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED))),
+      }))
+    : notes;
   return JSON.stringify({
     ...wrapper,
     notes: newNotes,
@@ -45,7 +47,7 @@ export function importNotesFromJson(jsonStr: string, defaultLabel: string): INot
     const parsed: unknown = JSON.parse(jsonStr);
     // V3
     if (isINotesEnvelopeV3(parsed)) {
-      parsed.notes.map(note => {
+      parsed.notes.map((note) => {
         if (note.labels.indexOf(defaultLabel) === -1) {
           note.labels.unshift(defaultLabel);
         }
