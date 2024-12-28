@@ -5,10 +5,10 @@ import {importNotesFromJson} from "../utils/notesImportExport";
 import {INotesEnvelope, IStorageNote} from "../types/StorageNote";
 import {IDecoratedNote, NoteSource} from "../types/DecoratedNote";
 
-export function useRemoteNotes(migrateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
-  const [remoteNotesSources] = useState([]);
+export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
+  const [remoteNotesSources] = useState(['/notes.json']);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
-  const [remoteNotesMigrated, setRemoteNotesMigrated] = useState<IDecoratedNote[]>([]);
+  const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);
 
   // load remote notes
   useEffect(() => {
@@ -31,12 +31,12 @@ export function useRemoteNotes(migrateNotes: ReturnType<typeof useDecoratedNotes
     })();
   }, [remoteNotesSources]);
 
-  // auto-migrate remote notes
+  // auto-decorate remote notes
   useEffect(() => {
-    migrateNotes(remoteNotes.notes, NoteSource.Remote, currentVersion).then((notes) => {
-      setRemoteNotesMigrated(notes);
+    decorateNotes(remoteNotes.notes, NoteSource.Remote, currentVersion).then((notes) => {
+      setRemoteNotesDecorated(notes);
     });
-  }, [remoteNotes, currentVersion, migrateNotes]);
+  }, [remoteNotes, currentVersion, decorateNotes]);
 
-  return remoteNotesMigrated;
+  return remoteNotesDecorated;
 }

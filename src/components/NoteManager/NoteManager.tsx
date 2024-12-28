@@ -120,7 +120,7 @@ export function NoteManager() {
       </div>
       <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
       {notes.map((note) => (
-        <Note key={note.id} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+        <Note key={note.key} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
       ))}
       <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}

@@ -24,18 +24,18 @@ test('should export v3 envelope', () => {
   expect(exportNotesAsJson({
     version: 3,
     notes: exampleNotes
-  })).toBe('{"version":3,"notes":[{"noteVersion":3,"content":"Hello world!","date":123456789,"author":"test","version":"deadbeef","labels":["local"],"selectionStart":{"index":0,"pageNumber":0},"selectionEnd":{"index":0,"pageNumber":0}}]}');
+  }, true)).toBe('{"version":3,"notes":[{"noteVersion":3,"content":"Hello world!","date":123456789,"author":"test","version":"deadbeef","labels":[],"selectionStart":{"index":0,"pageNumber":0},"selectionEnd":{"index":0,"pageNumber":0}}]}');
 });
 
 test('should import v3 envelope', () => {
   const notesStr = exportNotesAsJson({
     version: 3,
     notes: exampleNotes
-  });
+  }, true);
   expect(importNotesFromJson(notesStr, 'must-have-label')).toStrictEqual({
     notes: [{
       ...exampleNotes[0],
-      labels: ['must-have-label', LABEL_LOCAL],
+      labels: ['must-have-label'],
     }],
     version: 3
   });

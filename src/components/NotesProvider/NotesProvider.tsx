@@ -62,7 +62,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     decorateNotes(localNotes.notes, NoteSource.Local, currentVersion).then((notes) => {
       setLocalNotesDecorated(notes);
     });
-  }, [localNotes, currentVersion, decorateNotes]);
+  }, [localNotes.notes, currentVersion, decorateNotes]);
 
   // Local and remote notes merged together.
   const allNotes = useMemo(
@@ -111,7 +111,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
           const updatedNotes = localNotes.notes.slice();
           updatedNotes.splice(noteToDeleteIdx, 1);
 
-          updateLocalNotes(localNotes, {
+          updateLocalNotes({...localNotes}, {
             ...localNotes,
             notes: updatedNotes
           });

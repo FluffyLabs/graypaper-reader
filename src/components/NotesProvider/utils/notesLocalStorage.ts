@@ -21,7 +21,7 @@ export function saveToLocalStorage(notes: INotesEnvelope): void {
     if (prev) {
       window.localStorage.setItem(BACKUP_STORAGE_KEY, prev);
     }
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, exportNotesAsJson(notes));
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, exportNotesAsJson(notes, false));
   } catch (e) {
     alert(`Unable to save notes: ${e}`);
   }

@@ -3,8 +3,7 @@ import {IStorageNote} from "./StorageNote";
 
 // TODO [ToDr] move ISelectionParams to a prop
 export type IDecoratedNote = ISelectionParams & {
-  /** Unique id of the note. */
-  id: string;
+  key: string;
   original: IStorageNote;
   source: NoteSource;
 

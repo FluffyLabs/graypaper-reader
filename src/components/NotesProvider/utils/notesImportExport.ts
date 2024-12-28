@@ -1,5 +1,6 @@
 import {ISelectionParams} from "@fluffylabs/types";
 import {INoteV3, INotesEnvelope} from "../types/StorageNote";
+import {LABEL_IMPORTED, LABEL_LOCAL} from "../consts/labels";
 
 /** Download given string as a JSON file. */
 export function downloadJsonFile(strNotes: string, fileName: string) {
@@ -11,16 +12,26 @@ export function downloadJsonFile(strNotes: string, fileName: string) {
 
 /** Export and download a JSON file with notes. */
 export function downloadNotesAsJson(notes: INotesEnvelope, fileName: string) {
-  return downloadJsonFile(exportNotesAsJson(notes), fileName);
+  return downloadJsonFile(exportNotesAsJson(notes, true), fileName);
 }
 
 /**
  * Export a collection of notes to a JSON string.
  *
  * Note the format needs to be compatible with `importNotesFromJson`.
+ *
+ * Removes non-user defined labels if `clearLabels` flag is set.
  */
-export function exportNotesAsJson(notes: INotesEnvelope): string {
-  return JSON.stringify(notes);
+export function exportNotesAsJson(wrapper: INotesEnvelope, clearLabels: boolean): string {
+  const notes = wrapper.notes.slice();
+  const newNotes = clearLabels ? notes.map(note => ({
+    ...note,
+    labels: note.labels.filter(label => !(label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED))),
+  })) : notes;
+  return JSON.stringify({
+    ...wrapper,
+    notes: newNotes,
+  });
 }
 
 /**
