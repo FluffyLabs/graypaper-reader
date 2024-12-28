@@ -1,14 +1,18 @@
 import type { ISelectionParams } from "@fluffylabs/types";
 import type { IStorageNote } from "./StorageNote";
 
-// TODO [ToDr] move ISelectionParams to a prop
-export type IDecoratedNote = ISelectionParams & {
+export type IDecoratedNote = {
+  /** Key to be used when displaying react collection. */
   key: string;
-  original: IStorageNote;
+  /** Source of the note. */
   source: NoteSource;
-
-  canBeMigrated: boolean;
-  version: string;
+  /** Original note, as stored in LocalStorage or fetched from remote source. */
+  original: IStorageNote;
+  /** Synctex data migrated to current version (or original data if migration is not possible). */
+  current: ISelectionParams & {
+    canBeMigrated: boolean;
+    version: string;
+  };
 };
 
 export enum NoteSource {

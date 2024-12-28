@@ -25,26 +25,25 @@ export function useDecoratedNotes() {
               ? await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion)
               : null;
 
-          if (!newSelection) {
-            return {
-              key,
-              original: note,
-              source,
-              canBeMigrated: false,
-              version,
-              selectionStart,
-              selectionEnd,
-            };
-          }
+          const current = !newSelection
+            ? {
+                canBeMigrated: false,
+                version,
+                selectionStart,
+                selectionEnd,
+              }
+            : {
+                canBeMigrated: true,
+                version: currentVersion,
+                selectionStart: newSelection.selectionStart,
+                selectionEnd: newSelection.selectionEnd,
+              };
 
           return {
             key,
-            original: note,
             source,
-            canBeMigrated: true,
-            version: currentVersion,
-            selectionStart: newSelection.selectionStart,
-            selectionEnd: newSelection.selectionEnd,
+            original: note,
+            current,
           };
         }),
       );

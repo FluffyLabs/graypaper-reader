@@ -20,10 +20,10 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
   ) as ICodeSyncContext;
   const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
 
-  const migrationFlag = note.canBeMigrated;
+  const migrationFlag = note.current.canBeMigrated;
   const isEditable = note.source !== NoteSource.Remote;
 
-  const { selectionStart, selectionEnd } = note;
+  const { selectionStart, selectionEnd } = note.current;
   const { pageNumber } = selectionStart;
 
   useEffect(() => {

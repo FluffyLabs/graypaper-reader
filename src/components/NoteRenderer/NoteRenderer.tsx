@@ -9,14 +9,14 @@ export function NoteRenderer() {
   const { visiblePages, pageOffsets } = useContext(PdfContext) as IPdfContext;
 
   const notesToRender = useMemo(
-    () => notes.filter((note) => visiblePages.includes(note.selectionStart.pageNumber)),
+    () => notes.filter((note) => visiblePages.includes(note.current.selectionStart.pageNumber)),
     [notes, visiblePages],
   );
 
   return notesToRender.map((note) => {
     if (!viewer) return;
 
-    const pageNumber = note.selectionStart.pageNumber;
+    const pageNumber = note.current.selectionStart.pageNumber;
     return <HighlightNote note={note} pageOffset={pageOffsets[pageNumber]} key={note.key} />;
   });
 }

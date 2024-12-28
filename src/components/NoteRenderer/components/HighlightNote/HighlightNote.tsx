@@ -18,7 +18,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [noteIsShown, setNoteIsShown] = useState(true);
 
-  const { selectionStart, selectionEnd } = note;
+  const { selectionStart, selectionEnd } = note.current;
 
   const blocks = useMemo(
     () => getSynctexBlockRange(selectionStart, selectionEnd),
