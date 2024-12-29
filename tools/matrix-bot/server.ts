@@ -1,7 +1,12 @@
-import { ClientEvent, RoomEvent, createClient } from "matrix-js-sdk";
 import type { MessagesLogger } from "./logger.js";
 
-export function listenToMessages(homeserverUrl: string, accessToken: string, roomId: string, msgLog: MessagesLogger) {
+export async function listenToMessages(
+  homeserverUrl: string,
+  accessToken: string,
+  roomId: string,
+  msgLog: MessagesLogger,
+) {
+  const { ClientEvent, RoomEvent, createClient } = await import("matrix-js-sdk");
   // Create a Matrix client
   const client = createClient({
     baseUrl: homeserverUrl,
