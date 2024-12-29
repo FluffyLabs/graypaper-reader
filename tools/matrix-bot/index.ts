@@ -12,13 +12,17 @@ if (!accessToken) {
   throw new Error("Provide .env file or ENV variable `ACCESS_TOKEN`");
 }
 
-// Call the function to start listening
-const logger = new MessagesLogger(roomId, "output/messages.json");
-const client = listenToMessages(homeserverUrl, accessToken, roomId, logger);
+async function main(accessToken: string) {
+  // Call the function to start listening
+  const logger = new MessagesLogger(roomId, "output/messages.json");
+  const client = await listenToMessages(homeserverUrl, accessToken, roomId, logger);
 
-const cleanup = () => {
-  logger.flush();
-  client.stopClient();
-};
-process.once("SIGTERM", cleanup);
-process.once("SIGINT", cleanup);
+  const cleanup = () => {
+    logger.flush();
+    client.stopClient();
+  };
+  process.once("SIGTERM", cleanup);
+  process.once("SIGINT", cleanup);
+}
+
+main(accessToken);
