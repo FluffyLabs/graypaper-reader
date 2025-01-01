@@ -1,6 +1,10 @@
+
+> @fluffylabs/matrix-bot@1.0.0 convert-to-notes
+> ts-node ./convert-to-notes.ts
+
 [
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1wmrXo5RzSeEGbVpy3W88d4kqsP4_8bnISgU0KzqSTg\n\n---> I need clarification on how is pageProof being used in CE139/CE140? Our understanding is that page proof is quite large as it's encoded with Justification & ↕si⋅⋅⋅+64 in https://graypaper.fluffylabs.dev/#/c71229b/1a15001a1500. So it's probably possible to recover exported segments from pageproof alone;\n\nThe proof pages contain Merkle proofs from the segment root to the exported segments. Each proof page/segment contains proofs for 64 exported segments. You certainly can't reconstruct the exported segments themselves from these proof pages. CE139/140 is intended to be used to fetch proof page shards as well as exported segment shards. You need to explicitly request proof page shards by passing the appropriate segment indices.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1wmrXo5RzSeEGbVpy3W88d4kqsP4_8bnISgU0KzqSTg\n\n---\n> I need clarification on how is pageProof being used in CE139/CE140? Our understanding is that page proof is quite large as it's encoded with Justification & ↕si⋅⋅⋅+64 in https://graypaper.fluffylabs.dev/#/c71229b/1a15001a1500. So it's probably possible to recover exported segments from pageproof alone;\n\nThe proof pages contain Merkle proofs from the segment root to the exported segments. Each proof page/segment contains proofs for 64 exported segments. You certainly can't reconstruct the exported segments themselves from these proof pages. CE139/140 is intended to be used to fetch proof page shards as well as exported segment shards. You need to explicitly request proof page shards by passing the appropriate segment indices.",
     "date": 1728993068386,
     "author": "@dave:parity.io",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/1a15001a1500.",
@@ -18,7 +22,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Nxt8Rz8gcQmljuqJ6dM4cbbOYbnZxnZRKHN2gWmwAps\n\n---In the 'new' hostcall (https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n- in case of OOB | CASH, we are assigning 2 elements to a tuple of 3 elements\n- we are referencing X_T, which I'm unable to find defined in any other part of the paper ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Nxt8Rz8gcQmljuqJ6dM4cbbOYbnZxnZRKHN2gWmwAps\n\n---\nIn the 'new' hostcall (https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n- in case of OOB | CASH, we are assigning 2 elements to a tuple of 3 elements\n- we are referencing X_T, which I'm unable to find defined in any other part of the paper ",
     "date": 1729063057714,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n-",
@@ -36,7 +40,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$JOBZo9QKQ10uOY5uRnn5heYdE1ApPtX6qUF6L2bjMks\n\n---> <@dakkk:matrix.org> In the 'new' hostcall (https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n> - in case of OOB | CASH, we are assigning 2 elements to a tuple of 3 elements\n> - we are referencing X_T, which I'm unable to find defined in any other part of the paper\n\nWill be fixed in 0.4.3",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$JOBZo9QKQ10uOY5uRnn5heYdE1ApPtX6qUF6L2bjMks\n\n---\n> <@dakkk:matrix.org> In the 'new' hostcall (https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n> - in case of OOB | CASH, we are assigning 2 elements to a tuple of 3 elements\n> - we are referencing X_T, which I'm unable to find defined in any other part of the paper\n\nWill be fixed in 0.4.3",
     "date": 1729077317181,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/2e9a022ee302):\n>",
@@ -54,7 +58,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XtP7wRvjPSJ0AL0G3TpEGUZYOVUsj7ZR3Kpgm4ccfY0\n\n---Hi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIs eq 196 in the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G)  ?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XtP7wRvjPSJ0AL0G3TpEGUZYOVUsj7ZR3Kpgm4ccfY0\n\n---\nHi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIs eq 196 in the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G)  ?",
     "date": 1729207336060,
     "author": "@stanleyli:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIs",
@@ -72,7 +76,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$cz9gjNZWwW3ydkTh9T_M6t_kqAsk8oxlXr1KG5-xvhs\n\n--- * Hi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIn eq 196, is the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G) ?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$cz9gjNZWwW3ydkTh9T_M6t_kqAsk8oxlXr1KG5-xvhs\n\n---\n * Hi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIn eq 196, is the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G) ?",
     "date": 1729207545409,
     "author": "@stanleyli:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n\nIn",
@@ -90,7 +94,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$J7LKXoOczVtAhVDfRRsJogCqetELdLJYpDm4FwsRse4\n\n---> <@stanleyli:matrix.org> Hi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n> \n> In eq 196, is the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G) ?\n\nYes, as David Emett suggested, there should be a `H^#(...)` around the `s_{i...+64}`",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$J7LKXoOczVtAhVDfRRsJogCqetELdLJYpDm4FwsRse4\n\n---\n> <@stanleyli:matrix.org> Hi gav: is there a typo in the Page proof function here? https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n> \n> In eq 196, is the ↕s referring to the actual segment or the segment hash? If it’s the segment, then each element within the page proof (encoded as 6Hash + G) would make this page proof extremely large (up to 64 G) ?\n\nYes, as David Emett suggested, there should be a `H^#(...)` around the `s_{i...+64}`",
     "date": 1729250637752,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/1a4f001a5100\n>",
@@ -108,7 +112,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YfwR6hPQTpjzprVQjwjG2C4353_WdLDn-FRCV99TrAo\n\n---what is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YfwR6hPQTpjzprVQjwjG2C4353_WdLDn-FRCV99TrAo\n\n---\nwhat is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600",
     "date": 1729500741651,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600",
@@ -126,7 +130,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$KGYE2PJIcsXnpVu37hq-SYNNDPISAv7aqjuRgg5mmjE\n\n---in quit hostcall, `a` is never used: https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$KGYE2PJIcsXnpVu37hq-SYNNDPISAv7aqjuRgg5mmjE\n\n---\nin quit hostcall, `a` is never used: https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01",
     "date": 1729500903293,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01",
@@ -144,7 +148,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$vuiBnvMCE3V1P6hHEHzsGi70Y7UhSIeYuQ8ArHfksf8\n\n---in historical_lookup hostcall, `k` is undefined: https://graypaper.fluffylabs.dev/#/293bf5a/307102307102 ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$vuiBnvMCE3V1P6hHEHzsGi70Y7UhSIeYuQ8ArHfksf8\n\n---\nin historical_lookup hostcall, `k` is undefined: https://graypaper.fluffylabs.dev/#/293bf5a/307102307102 ",
     "date": 1729502033186,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/307102307102",
@@ -162,7 +166,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$St53uQRlLvCknLadt1Ntmr_1VQF6lHRR3l7GFgpK9xw\n\n---`i` is undefined in poke hostcall: https://graypaper.fluffylabs.dev/#/293bf5a/316d02317402",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$St53uQRlLvCknLadt1Ntmr_1VQF6lHRR3l7GFgpK9xw\n\n---\n`i` is undefined in poke hostcall: https://graypaper.fluffylabs.dev/#/293bf5a/316d02317402",
     "date": 1729502762463,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/316d02317402",
@@ -180,7 +184,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$IUZ8rlLm3J3vMptqW6vvcBjc5ArvSSbUdoXuzuYuH7Y\n\n---> <@dakkk:matrix.org> in quit hostcall, `a` is never used: https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01\n\na is used to construct t: https://graypaper.fluffylabs.dev/#/293bf5a/2f97012f9801",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$IUZ8rlLm3J3vMptqW6vvcBjc5ArvSSbUdoXuzuYuH7Y\n\n---\n> <@dakkk:matrix.org> in quit hostcall, `a` is never used: https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01\n\na is used to construct t: https://graypaper.fluffylabs.dev/#/293bf5a/2f97012f9801",
     "date": 1729513307809,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/2f55012f5e01\n\na",
@@ -198,7 +202,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$fQtNcZ6-WTFwKkZNb4NQLaV9khM6cIe5q2-9T06pBdc\n\n---> <@dakkk:matrix.org> what is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\nIt is the third item of (x_s)_l[h, z] with the assertion that it's a three-item array ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$fQtNcZ6-WTFwKkZNb4NQLaV9khM6cIe5q2-9T06pBdc\n\n---\n> <@dakkk:matrix.org> what is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\nIt is the third item of (x_s)_l[h, z] with the assertion that it's a three-item array ",
     "date": 1729513378119,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\nIt",
@@ -216,7 +220,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$qFjw3L15Xj_tLcX2SG8rMhQHX2ur-SQMOmC2FVmYQIw\n\n---> <@dakkk:matrix.org> what is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\n * It is the third item of (x\\_s)\\_l\\[h, z\\] with the condition that it's a three-item array (notice it's behind the \"if\" condition)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$qFjw3L15Xj_tLcX2SG8rMhQHX2ur-SQMOmC2FVmYQIw\n\n---\n> <@dakkk:matrix.org> what is the `w` referenced in the forget host call? https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\n * It is the third item of (x\\_s)\\_l\\[h, z\\] with the condition that it's a three-item array (notice it's behind the \"if\" condition)",
     "date": 1729513515868,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/30e60030e600\n\n",
@@ -234,7 +238,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$pHFk1v8vCbTCDAu0Lebbpf_vfOltAjCDSQK51r2jDTc\n\n---No debate on that, thanks for explaining.  But  on this last nitpick I mean  the work items in the work package, as of 0.4.x have this $H^\\boxplus$ source here: \nhttps://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\nAs far as I can tell, I could have an old work package hash from a long time ago -- \"whereas a value drawn from H⊞ implies the hash value is\nthe hash of the exporting work-package. In the latter case, it must be converted into a segment-root by the guarantor and this conversion reported in the work-report for on-chain validation.\"   If you believe this last statement is only applied for around an epoch (with the circular buffer mechanics, as you mention) then we should ensure this is clear in GP, don't you think?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$pHFk1v8vCbTCDAu0Lebbpf_vfOltAjCDSQK51r2jDTc\n\n---\nNo debate on that, thanks for explaining.  But  on this last nitpick I mean  the work items in the work package, as of 0.4.x have this $H^\\boxplus$ source here: \nhttps://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\nAs far as I can tell, I could have an old work package hash from a long time ago -- \"whereas a value drawn from H⊞ implies the hash value is\nthe hash of the exporting work-package. In the latter case, it must be converted into a segment-root by the guarantor and this conversion reported in the work-report for on-chain validation.\"   If you believe this last statement is only applied for around an epoch (with the circular buffer mechanics, as you mention) then we should ensure this is clear in GP, don't you think?",
     "date": 1729554298235,
     "author": "@sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\nAs",
@@ -252,7 +256,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uIXFINEAf0WBRqxNImjdhsJmy_WR6I5i_J4bcUqXxFg\n\n---in export hostcall, constant W_X is not defined: https://graypaper.fluffylabs.dev/#/439ca37/31ab0031ae00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uIXFINEAf0WBRqxNImjdhsJmy_WR6I5i_J4bcUqXxFg\n\n---\nin export hostcall, constant W_X is not defined: https://graypaper.fluffylabs.dev/#/439ca37/31ab0031ae00",
     "date": 1729581759829,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/31ab0031ae00",
@@ -270,7 +274,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$_2zp4kuuza8JoLRPh2cx7Ntt76LErgzpznToli0up8A\n\n---> <@sourabhniyogi:matrix.org> No debate on that, thanks for explaining.  But  on this last nitpick I mean  the work items in the work package, as of 0.4.x have this $H^\\boxplus$ source here: \n> https://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\n> As far as I can tell, I could have an old work package hash from a long time ago -- \"whereas a value drawn from H⊞ implies the hash value is\n> the hash of the exporting work-package. In the latter case, it must be converted into a segment-root by the guarantor and this conversion reported in the work-report for on-chain validation.\"   If you believe this last statement is only applied for around an epoch (with the circular buffer mechanics, as you mention) then we should ensure this is clear in GP, don't you think?\n\nThe guarantor will not be punished for introducing a WR with an old/unvalidatable SR lookup entry. They might just not get rewarded.\nAnd it beyond the scope of the GP (at least currently) to go deep into the optimum strategies across all off-chain behaviour. ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$_2zp4kuuza8JoLRPh2cx7Ntt76LErgzpznToli0up8A\n\n---\n> <@sourabhniyogi:matrix.org> No debate on that, thanks for explaining.  But  on this last nitpick I mean  the work items in the work package, as of 0.4.x have this $H^\\boxplus$ source here: \n> https://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\n> As far as I can tell, I could have an old work package hash from a long time ago -- \"whereas a value drawn from H⊞ implies the hash value is\n> the hash of the exporting work-package. In the latter case, it must be converted into a segment-root by the guarantor and this conversion reported in the work-report for on-chain validation.\"   If you believe this last statement is only applied for around an epoch (with the circular buffer mechanics, as you mention) then we should ensure this is clear in GP, don't you think?\n\nThe guarantor will not be punished for introducing a WR with an old/unvalidatable SR lookup entry. They might just not get rewarded.\nAnd it beyond the scope of the GP (at least currently) to go deep into the optimum strategies across all off-chain behaviour. ",
     "date": 1729593471159,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/199e0019a500\n>",
@@ -288,7 +292,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-saFidYRXn0EHwtwqBHV8gMaDGOJZxubmURAO_XVJtQ\n\n---In state merklization of validator statistic (pi) (https://graypaper.fluffylabs.dev/#/439ca37/345702345802), I don't understand why we are using E_4 for serialization",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-saFidYRXn0EHwtwqBHV8gMaDGOJZxubmURAO_XVJtQ\n\n---\nIn state merklization of validator statistic (pi) (https://graypaper.fluffylabs.dev/#/439ca37/345702345802), I don't understand why we are using E_4 for serialization",
     "date": 1729609990549,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/345702345802),",
@@ -306,7 +310,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$oQq5EXf1n-bE-NP7DZs65M7YIlIdFZ-8X6uQq7wSRU8\n\n---> <@bmaas:matrix.org> Are we guaranteed to have deterministic ordering here: https://graypaper.fluffylabs.dev/#/293bf5a/346502346f02 ? I could not find any mention of how to handle (small) sets when encoding—whether to sort them or not. When I read about Theta as defined here:  https://graypaper.fluffylabs.dev/#/c71229b/154402154e02, where `{H}` is a set of work-package hashes, it raises a question. Should this set containing work-package hashes be ordered before encoding?\n\nGP should state that sets of encodable items should be encoded in order. \n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$nJi8y5cC2ERd0CGy10p59EKSYpWzGQK3imWlgKWuH94\n\n---Are we guaranteed to have deterministic ordering here: https://graypaper.fluffylabs.dev/#/293bf5a/346502346f02 ? I could not find any mention of how to handle (small) sets when encoding—whether to sort them or not. When I read about Theta as defined here:  https://graypaper.fluffylabs.dev/#/c71229b/154402154e02, where `{H}` is a set of work-package hashes, it raises a question. Should this set containing work-package hashes be ordered before encoding?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$oQq5EXf1n-bE-NP7DZs65M7YIlIdFZ-8X6uQq7wSRU8\n\n---\n> <@bmaas:matrix.org> Are we guaranteed to have deterministic ordering here: https://graypaper.fluffylabs.dev/#/293bf5a/346502346f02 ? I could not find any mention of how to handle (small) sets when encoding—whether to sort them or not. When I read about Theta as defined here:  https://graypaper.fluffylabs.dev/#/c71229b/154402154e02, where `{H}` is a set of work-package hashes, it raises a question. Should this set containing work-package hashes be ordered before encoding?\n\nGP should state that sets of encodable items should be encoded in order. \n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$nJi8y5cC2ERd0CGy10p59EKSYpWzGQK3imWlgKWuH94\n\n---\nAre we guaranteed to have deterministic ordering here: https://graypaper.fluffylabs.dev/#/293bf5a/346502346f02 ? I could not find any mention of how to handle (small) sets when encoding—whether to sort them or not. When I read about Theta as defined here:  https://graypaper.fluffylabs.dev/#/c71229b/154402154e02, where `{H}` is a set of work-package hashes, it raises a question. Should this set containing work-package hashes be ordered before encoding?",
     "date": 1729674463621,
     "author": "@bmaas:matrix.org, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/293bf5a/346502346f02",
@@ -324,7 +328,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iLOHWG8Tq6E9lkT43j4uh-GqsQ0MLzSSj4NQyz7EdDw\n\n---https://graypaper.fluffylabs.dev/#/439ca37/121503121503\nIs this supposed to be `ρ[c]_w`?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iLOHWG8Tq6E9lkT43j4uh-GqsQ0MLzSSj4NQyz7EdDw\n\n---\nhttps://graypaper.fluffylabs.dev/#/439ca37/121503121503\nIs this supposed to be `ρ[c]_w`?",
     "date": 1729674460264,
     "author": "@0xjunha:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/121503121503\nIs",
@@ -342,7 +346,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iuRjnBkCiXBaUkUGzCi4LcCS1xiVuNBxrUnIKkW4lbY\n\n---> <@0xjunha:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/121503121503\n> Is this supposed to be `ρ[c]_w`?\n\nYes. Will be fixed in next release. ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iuRjnBkCiXBaUkUGzCi4LcCS1xiVuNBxrUnIKkW4lbY\n\n---\n> <@0xjunha:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/121503121503\n> Is this supposed to be `ρ[c]_w`?\n\nYes. Will be fixed in next release. ",
     "date": 1729674624183,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/121503121503\n>",
@@ -360,7 +364,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$kqiQtlExxCIVxfrU717mwbNzlet0aK4DFJqvG_Q-IOY\n\n---https://graypaper.fluffylabs.dev/#/439ca37/348a02349202 about here",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$kqiQtlExxCIVxfrU717mwbNzlet0aK4DFJqvG_Q-IOY\n\n---\nhttps://graypaper.fluffylabs.dev/#/439ca37/348a02349202 about here",
     "date": 1729755588569,
     "author": "@prematurata:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/348a02349202",
@@ -378,7 +382,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YvCwBtMZgrEkmewWcECgxp0NXw_uhEk4UrLf3PcTo1c\n\n--- * In formula 268, psi\\_i definition:\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n\n↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n\nWhat is pc? I believe there is a typo in the argument, since work packages do not have a field 'c'\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$VnrI2_EqbSRh9UsyTwW5UJXiUvV6_jYzfFUbbXhpgek\n\n---In formula 268, psi_i definition:\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n\n↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n\nWhat is pc? I believe there is a typo in the correct field, since work packages do not have a field 'c'",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YvCwBtMZgrEkmewWcECgxp0NXw_uhEk4UrLf3PcTo1c\n\n---\n * In formula 268, psi\\_i definition:\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n\n↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n\nWhat is pc? I believe there is a typo in the argument, since work packages do not have a field 'c'\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$VnrI2_EqbSRh9UsyTwW5UJXiUvV6_jYzfFUbbXhpgek\n\n---\nIn formula 268, psi_i definition:\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n\n↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n\nWhat is pc? I believe there is a typo in the correct field, since work packages do not have a field 'c'",
     "date": 1729804451210,
     "author": "@danicuki:matrix.org, @danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n\n↦",
@@ -396,7 +400,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$6h1K8LI-cx7B8qgoHNkSioGXW7NiBQoDPOP71glMbvE\n\n---> <@danicuki:matrix.org> In formula 268, psi\\_i definition:\n> \n> https://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n> \n> ↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n> \n> What is pc? I believe there is a typo in the argument, since work packages do not have a field 'c'\n\nBold c is defined as the preimage of regular c. ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$6h1K8LI-cx7B8qgoHNkSioGXW7NiBQoDPOP71glMbvE\n\n---\n> <@danicuki:matrix.org> In formula 268, psi\\_i definition:\n> \n> https://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n> \n> ↦ r where (g, r, ∅) = ΨM (pc, 0, GI , E(p, c), F, ∅)\n> \n> What is pc? I believe there is a typo in the argument, since work packages do not have a field 'c'\n\nBold c is defined as the preimage of regular c. ",
     "date": 1729847435786,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/29f80229fc02\n>",
@@ -414,7 +418,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$SndgjtLhK88Q_XNi3HR-eAG7orUjHd4SkQqSVb-2Pko\n\n---Where do I get the value of GI from in psi_I? Is it a constant? Or how should I calculate it? \nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$SndgjtLhK88Q_XNi3HR-eAG7orUjHd4SkQqSVb-2Pko\n\n---\nWhere do I get the value of GI from in psi_I? Is it a constant? Or how should I calculate it? \nhttps://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02",
     "date": 1729867335040,
     "author": "@danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02",
@@ -432,7 +436,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$kGZUr0yJqWsRjJAaRSC47FSHe3zDe4ENb1wvdNukwD8\n\n--- * What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \nhttps://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$kGZUr0yJqWsRjJAaRSC47FSHe3zDe4ENb1wvdNukwD8\n\n---\n * What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \nhttps://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000",
     "date": 1729869614561,
     "author": "@danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000",
@@ -450,7 +454,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$2gd6mn5C981DoBAKpqUR70WMuZi9Jks2hm0ymTt9CWE\n\n---> <@danicuki:matrix.org> What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \n> https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nThat's how I understand it as well. You assign ω0=WHAT, ω1 = ω8, and the rest stays the same. The same notation is used later as parameters pass-through (e.g. Omega_G).",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$2gd6mn5C981DoBAKpqUR70WMuZi9Jks2hm0ymTt9CWE\n\n---\n> <@danicuki:matrix.org> What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \n> https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nThat's how I understand it as well. You assign ω0=WHAT, ω1 = ω8, and the rest stays the same. The same notation is used later as parameters pass-through (e.g. Omega_G).",
     "date": 1729872616542,
     "author": "@tomusdrw:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nThat's",
@@ -468,7 +472,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$V9WU2h2dpNynw5DYhwbZzW6rY0aW_kgI0TQMEKDvMFo\n\n---> <@danicuki:matrix.org> Where do I get the value of GI from in psi_I? Is it a constant? Or how should I calculate it? \n> https://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02\n\nI'll put some values in.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$V9WU2h2dpNynw5DYhwbZzW6rY0aW_kgI0TQMEKDvMFo\n\n---\n> <@danicuki:matrix.org> Where do I get the value of GI from in psi_I? Is it a constant? Or how should I calculate it? \n> https://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02\n\nI'll put some values in.",
     "date": 1729940809838,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/29f80229fd02\n\nI'll",
@@ -486,7 +490,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$W9KlvXdQCqDS6-5IOAW4j9_K8y4BN3IUAG_vw_OGDgY\n\n---> <@danicuki:matrix.org> What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \n> https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nPVM Invocations: Correct fallback condition",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$W9KlvXdQCqDS6-5IOAW4j9_K8y4BN3IUAG_vw_OGDgY\n\n---\n> <@danicuki:matrix.org> What does \\[WHAT, ω8, . . . \\] mean here? What do I put on ...? I assume to pass through ω2, ω3, ... ? \n> https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nPVM Invocations: Correct fallback condition",
     "date": 1729942261734,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2a60002a6000\n\nPVM",
@@ -504,7 +508,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ZJAMjenepoT-YpsUG9O-X4cS6s16ky9XmDd4eA4-1z8\n\n---I did not understand yet how do we have access to d and s (bold) in these formulas:\n\nX(w ∈ I) ≡ [d ∣ (H(d),∣d∣) −< wx]\nS(w ∈ I) ≡ [s[n] ∣ M(s) = L(r),(r,n) <− wi]\nJ ( w ∈ I ) ≡ [ ↕ J ( s , n ) ∣ M ( s ) = L ( r ) , ( r , n ) <− w i ]\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n\nAnyone has a clue?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ZJAMjenepoT-YpsUG9O-X4cS6s16ky9XmDd4eA4-1z8\n\n---\nI did not understand yet how do we have access to d and s (bold) in these formulas:\n\nX(w ∈ I) ≡ [d ∣ (H(d),∣d∣) −< wx]\nS(w ∈ I) ≡ [s[n] ∣ M(s) = L(r),(r,n) <− wi]\nJ ( w ∈ I ) ≡ [ ↕ J ( s , n ) ∣ M ( s ) = L ( r ) , ( r , n ) <− w i ]\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n\nAnyone has a clue?",
     "date": 1729967176437,
     "author": "@danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n\nAnyone",
@@ -522,7 +526,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$u_EZvDXVvfflPGxmY7B5vlk11C8L3lvVll0izQwauwg\n\n---I also did not see any usage of P in other parts of the Gray Paper. https://graypaper.fluffylabs.dev/#/439ca37/1a1f001a7400\n\nMaybe I am missing something... Where is P used?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$u_EZvDXVvfflPGxmY7B5vlk11C8L3lvVll0izQwauwg\n\n---\nI also did not see any usage of P in other parts of the Gray Paper. https://graypaper.fluffylabs.dev/#/439ca37/1a1f001a7400\n\nMaybe I am missing something... Where is P used?",
     "date": 1729967223204,
     "author": "@danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/1a1f001a7400\n\nMaybe",
@@ -540,7 +544,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YJAGygWhIS53LRlbcLWUNze7rSG3RTw8R5uGssrBw6c\n\n---> <@danicuki:matrix.org> I did not understand yet how do we have access to d and s (bold) in these formulas:\n> \n> X(w ∈ I) ≡ [d ∣ (H(d),∣d∣) −< wx]\n> S(w ∈ I) ≡ [s[n] ∣ M(s) = L(r),(r,n) <− wi]\n> J ( w ∈ I ) ≡ [ ↕ J ( s , n ) ∣ M ( s ) = L ( r ) , ( r , n ) <− w i ]\n> \n> https://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n> \n> Anyone has a clue?\n\nExtrinsics are expected to be passed alongside the work package by the block builder.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$YJAGygWhIS53LRlbcLWUNze7rSG3RTw8R5uGssrBw6c\n\n---\n> <@danicuki:matrix.org> I did not understand yet how do we have access to d and s (bold) in these formulas:\n> \n> X(w ∈ I) ≡ [d ∣ (H(d),∣d∣) −< wx]\n> S(w ∈ I) ≡ [s[n] ∣ M(s) = L(r),(r,n) <− wi]\n> J ( w ∈ I ) ≡ [ ↕ J ( s , n ) ∣ M ( s ) = L ( r ) , ( r , n ) <− w i ]\n> \n> https://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n> \n> Anyone has a clue?\n\nExtrinsics are expected to be passed alongside the work package by the block builder.",
     "date": 1729973915814,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/1a98011ad401\n>",
@@ -558,7 +562,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$JtKmyt9i1Pvq1y6BOFgq_aGFrycerMZySvV0MKGLyCc\n\n---https://graypaper.fluffylabs.dev/#/439ca37/2cf9012cfc01 It seems to me that the extra hashing here is redundant, unless the keys in preimage dictionary are double-hashed (which I didn't find info about in section 9)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$JtKmyt9i1Pvq1y6BOFgq_aGFrycerMZySvV0MKGLyCc\n\n---\nhttps://graypaper.fluffylabs.dev/#/439ca37/2cf9012cfc01 It seems to me that the extra hashing here is redundant, unless the keys in preimage dictionary are double-hashed (which I didn't find info about in section 9)",
     "date": 1730017869114,
     "author": "@tomusdrw:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2cf9012cfc01",
@@ -576,7 +580,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$WswtoOqQkmSwM6CEj4me4BmdgjG3yHQCN_yKz85e5t0\n\n--- * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)\n\nbut the preimage section does not seem to mention any mechanism of storing/fetching preimage for the service. I marked my code with a TODO and now i am fixing all the leftovers.\n\nomega_n (new service host call) does not seem to have access of such preimage but rather codehash is being directly provided in memory.... so I'm a bit lost of where the preimage is being handled\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uJxYETHaeZnZmBvOvzgArYkqHnCUdahC_HlzGM5sY_s\n\n--- * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)sdfsdf\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$VMJ1zbmlXUqCjlLdYdavmoHoEgbHvWef7JFsZxOJJRU\n\n--- * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-kHr6UKBEOLV9UgdczwqViT2LESZRmGmQdply_CSkdg\n\n---Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation.\n\nd[s]_bold_c)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$WswtoOqQkmSwM6CEj4me4BmdgjG3yHQCN_yKz85e5t0\n\n---\n * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)\n\nbut the preimage section does not seem to mention any mechanism of storing/fetching preimage for the service. I marked my code with a TODO and now i am fixing all the leftovers.\n\nomega_n (new service host call) does not seem to have access of such preimage but rather codehash is being directly provided in memory.... so I'm a bit lost of where the preimage is being handled\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uJxYETHaeZnZmBvOvzgArYkqHnCUdahC_HlzGM5sY_s\n\n---\n * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)sdfsdf\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$VMJ1zbmlXUqCjlLdYdavmoHoEgbHvWef7JFsZxOJJRU\n\n---\n * Something i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation. (d\\[s\\]\\_bold\\_c)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-kHr6UKBEOLV9UgdczwqViT2LESZRmGmQdply_CSkdg\n\n---\nSomething i might be missing. https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800 here preimage code ( i guess) is provided to the argument invocation.\n\nd[s]_bold_c)",
     "date": 1730134040181,
     "author": "@prematurata:matrix.org, @prematurata:matrix.org, @prematurata:matrix.org, @prematurata:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2bb6002bb800",
@@ -594,7 +598,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Jc8Tv_PnKi7P3MDDffIqdTDHp0HVOi4ahZISeBezJKE\n\n---> <@tomusdrw:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.\n\nYes. Will be corrected in next revision\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$mZth8PfrI4p_ylKLSbuvSRChojWqw_NvdBVEMaFYsd8\n\n---> <@tomusdrw:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.\n\nits basically `delta`\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$UtjQfXjYpAnIJijOJ36WeR4MS2gk83aWew85UZ0U6b0\n\n---https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Jc8Tv_PnKi7P3MDDffIqdTDHp0HVOi4ahZISeBezJKE\n\n---\n> <@tomusdrw:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.\n\nYes. Will be corrected in next revision\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$mZth8PfrI4p_ylKLSbuvSRChojWqw_NvdBVEMaFYsd8\n\n---\n> <@tomusdrw:matrix.org> https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.\n\nits basically `delta`\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$UtjQfXjYpAnIJijOJ36WeR4MS2gk83aWew85UZ0U6b0\n\n---\nhttps://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100 Should this `d` that's being subscripted here be just `\\mi`? I'm having a hard time to figure out where is the data necessary to build that dictionary coming from. In other context `d` is just a dictionary indexed by service id afaict.",
     "date": 1730157353105,
     "author": "@tomusdrw:matrix.org, @prematurata:matrix.org, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2e70002e7100",
@@ -612,7 +616,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$gtUANGzcIWLoXWs-4ZL4cRdZhB8-ZKSePM3XuJr5bvw\n\n---Is JAMNP intended to socialize individual vs aggregated BLS signatures ie\nhttps://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\nIf not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?  ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$gtUANGzcIWLoXWs-4ZL4cRdZhB8-ZKSePM3XuJr5bvw\n\n---\nIs JAMNP intended to socialize individual vs aggregated BLS signatures ie\nhttps://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\nIf not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?  ",
     "date": 1730230897874,
     "author": "@sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\nIf",
@@ -630,7 +634,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$KYefad5GvDaQ5ACS910gJvZJxQnZrt8WbxXxJUDcNms\n\n---> <@sourabhniyogi:matrix.org> Is JAMNP intended to socialize individual vs aggregated BLS signatures ie\n> https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\n> If not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?  \n\n* Currently, JAMNP does not incorporate any Beefy-related messaging. This gadget will need to be implemented on top of GRANDPA, which itself is not described by JAMNP yet.\nI would tentatively assume that the protocol won’t diverge _significantly_ from the one described for Polkadot. Of course, there are some differences, such as constructing the MMR with accumulation outputs, and using only BLS instead of BLS or ECDSA for signatures. However, for context, there are numerous introductory resources on these concepts available.\nRegarding the state of the \"BEEFY Distribution\" section in GP, it currently suggests signing each finalized block B. I'm not sure if this will later shift to a \"sign every X blocks\" approach similar to Beefy on Polkadot.\nThe signatures are for sure BLS signatures, which can be later aggregated for efficient light client verification. Aggregated signatures will necessitate an aggregated key, and APK proofs might be introduced to verify the validity of these aggregated keys (there is at least a talk and one excellent tutorial from Syed  online).\nWho is in charge of aggregation of BLS keys in JAM? Who is in charge of maintaining the keys commitment eventually required for APK proofs? Probably this aspect is outside of the core JAM protocol per se.\nThese aspects likely warrants further discussion, and it is probably not worth for you (or anyone else) to focus on it right now, given that GRANDPA is not on M1, and potentially not even on M2 either, meaning BEEFY is further down the line (it may be the last component indeed). I believe further details will be provided when the time is appropriate.\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MAfD4vPMBoZLRBb86owDkDYXE875jEmzc0DwY1a7LzY\n\n---> <@sourabhniyogi:matrix.org> Is JAMNP intended to socialize individual vs aggregated BLS signatures ie\n> https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\n> If not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?\n\nCurrently, JAMNP does not incorporate any Beefy-related messaging. This gadget will need to be implemented\non top of GRANDPA, which itself is not described by JAMNP yet.\n\nI would tentatively assume that the protocol won’t diverge _significantly_ from the one described by Polkadot.\nOf course, there are some differences, such as constructing the MMR with accumulation outputs, and using only BLS instead of BLS or ECDSA for signatures. However, for context, there are numerous introductory\nresources on these concepts available.\n\nRegarding the state of the \"BEEFY Distribution\" section in GP, it currently suggests signing each finalized block B.\nI'm not sure if this will later shift to a \"sign every X blocks\" approach similar to Polkadot Beefy.\n\nThe signatures are for sure BLS signatures, which can be later aggregated for efficient light client verification.\nAggregated signatures will necessitate an aggregated key, and APK proofs might be introduced to verify the validity of these aggregated keys (there is at least a talk and one good tutorial from Syed  online).\n\nWho is in charge of aggregation of BLS keys in JAM? Who is in charge of maintaining the keys commitment eventually required for APK proofs? Maybe a dedicated Beefy service (I'm just speculating)? In that case this aspect may be outside of the core JAM protocol per se.\n\nThese aspects likely warrants further discussion, and it is probably not worth for you (or anyone else) to focus on it right now, given that GRANDPA is not on M1, and potentially not even on M2 either, meaning BEEFY is further down the line (it may be the last component indeed). I believe further details will be provided when the time is appropriate.\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$KYefad5GvDaQ5ACS910gJvZJxQnZrt8WbxXxJUDcNms\n\n---\n> <@sourabhniyogi:matrix.org> Is JAMNP intended to socialize individual vs aggregated BLS signatures ie\n> https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\n> If not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?  \n\n* Currently, JAMNP does not incorporate any Beefy-related messaging. This gadget will need to be implemented on top of GRANDPA, which itself is not described by JAMNP yet.\nI would tentatively assume that the protocol won’t diverge _significantly_ from the one described for Polkadot. Of course, there are some differences, such as constructing the MMR with accumulation outputs, and using only BLS instead of BLS or ECDSA for signatures. However, for context, there are numerous introductory resources on these concepts available.\nRegarding the state of the \"BEEFY Distribution\" section in GP, it currently suggests signing each finalized block B. I'm not sure if this will later shift to a \"sign every X blocks\" approach similar to Beefy on Polkadot.\nThe signatures are for sure BLS signatures, which can be later aggregated for efficient light client verification. Aggregated signatures will necessitate an aggregated key, and APK proofs might be introduced to verify the validity of these aggregated keys (there is at least a talk and one excellent tutorial from Syed  online).\nWho is in charge of aggregation of BLS keys in JAM? Who is in charge of maintaining the keys commitment eventually required for APK proofs? Probably this aspect is outside of the core JAM protocol per se.\nThese aspects likely warrants further discussion, and it is probably not worth for you (or anyone else) to focus on it right now, given that GRANDPA is not on M1, and potentially not even on M2 either, meaning BEEFY is further down the line (it may be the last component indeed). I believe further details will be provided when the time is appropriate.\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MAfD4vPMBoZLRBb86owDkDYXE875jEmzc0DwY1a7LzY\n\n---\n> <@sourabhniyogi:matrix.org> Is JAMNP intended to socialize individual vs aggregated BLS signatures ie\n> https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\n> If not, what does a validator do with ${\\bf F}_v$?  Should these be aggregated into EpochMarkers or into BridgeHub somehow?\n\nCurrently, JAMNP does not incorporate any Beefy-related messaging. This gadget will need to be implemented\non top of GRANDPA, which itself is not described by JAMNP yet.\n\nI would tentatively assume that the protocol won’t diverge _significantly_ from the one described by Polkadot.\nOf course, there are some differences, such as constructing the MMR with accumulation outputs, and using only BLS instead of BLS or ECDSA for signatures. However, for context, there are numerous introductory\nresources on these concepts available.\n\nRegarding the state of the \"BEEFY Distribution\" section in GP, it currently suggests signing each finalized block B.\nI'm not sure if this will later shift to a \"sign every X blocks\" approach similar to Polkadot Beefy.\n\nThe signatures are for sure BLS signatures, which can be later aggregated for efficient light client verification.\nAggregated signatures will necessitate an aggregated key, and APK proofs might be introduced to verify the validity of these aggregated keys (there is at least a talk and one good tutorial from Syed  online).\n\nWho is in charge of aggregation of BLS keys in JAM? Who is in charge of maintaining the keys commitment eventually required for APK proofs? Maybe a dedicated Beefy service (I'm just speculating)? In that case this aspect may be outside of the core JAM protocol per se.\n\nThese aspects likely warrants further discussion, and it is probably not worth for you (or anyone else) to focus on it right now, given that GRANDPA is not on M1, and potentially not even on M2 either, meaning BEEFY is further down the line (it may be the last component indeed). I believe further details will be provided when the time is appropriate.\n",
     "date": 1730290404788,
     "author": "@davxy:matrix.org, @davxy:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/1e7a001e7a00\n>",
@@ -648,7 +652,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$PaBlhdzspjv8HoB6CsvzHd3KJ3vQnTbpeTsqROaDcZ8\n\n---> <@gav:polkadot.io> Images are a bit broken in matrix currently. \n\nhttps://graypaper.fluffylabs.dev/#/439ca37/0f8a010f9601",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$PaBlhdzspjv8HoB6CsvzHd3KJ3vQnTbpeTsqROaDcZ8\n\n---\n> <@gav:polkadot.io> Images are a bit broken in matrix currently. \n\nhttps://graypaper.fluffylabs.dev/#/439ca37/0f8a010f9601",
     "date": 1730383704596,
     "author": "@jaymansfield:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/0f8a010f9601",
@@ -666,7 +670,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$8hkO9lWcs-8y4NwG4_6QmFbEHTYG2ZO13qyv9tWfMEc\n\n---> <@jaymansfield:matrix.org> Thanks I’ll take a look. Confusing though as there is no mention of C in 177 either.\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/179e02179e02",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$8hkO9lWcs-8y4NwG4_6QmFbEHTYG2ZO13qyv9tWfMEc\n\n---\n> <@jaymansfield:matrix.org> Thanks I’ll take a look. Confusing though as there is no mention of C in 177 either.\n\nhttps://graypaper.fluffylabs.dev/#/439ca37/179e02179e02",
     "date": 1730384177556,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/179e02179e02",
@@ -684,7 +688,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$jvRHjhPYDPQ8QiLrQ3tyDLjdcrvSBFtATbmmWsi1UBA\n\n--- * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K((x_s)l)` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from? (edit and _t_ as well)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1_ZSbnNVpbNpttUSQ7vSyBUNAwWH47cOqbu6PL8RJd8\n\n--- * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from? (edit and *t* as well)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Sv7jwLbVBrR98m5LVowUgLna99AyS8ww-CHe6p1TJpw\n\n--- * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$lFzvzQJYZrCczqKTqT9SyqWBpb8wezG1fFq7B_PnnZQ\n\n---Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions \n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the *x* and *y* (italic) come from?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$jvRHjhPYDPQ8QiLrQ3tyDLjdcrvSBFtATbmmWsi1UBA\n\n---\n * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K((x_s)l)` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from? (edit and _t_ as well)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1_ZSbnNVpbNpttUSQ7vSyBUNAwWH47cOqbu6PL8RJd8\n\n---\n * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from? (edit and *t* as well)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Sv7jwLbVBrR98m5LVowUgLna99AyS8ww-CHe6p1TJpw\n\n---\n * Hello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions\n\n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the _x_ and _y_ (italic) come from?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$lFzvzQJYZrCczqKTqT9SyqWBpb8wezG1fFq7B_PnnZQ\n\n---\nHello, I have a few questions about the [solicit](https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002) host call for the accumulation host functions \n1: This condition: `if h ≠ ∇ ∧ (h, z) /∈ (x_s)l` I assume should be `if h ≠ ∇ ∧ (h, z) /∈ K(x_s)l` since `l` is a dictionary so here we are trying to verify if the key is in the dictionary\n2: one line bellow here: `if (x_s)l[(h, z)] = [x, y]` I can't figure out where do the *x* and *y* (italic) come from?",
     "date": 1730398252833,
     "author": "@dvladco:matrix.org, @dvladco:matrix.org, @dvladco:matrix.org, @dvladco:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/439ca37/2f20022f2002)",
@@ -702,7 +706,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$eof0N2GjQmE649L9d8SNpuyvL4pYcLsKUtxJ3yIDqFg\n\n---In 150 (https://graypaper.fluffylabs.dev/#/364735a/159a00159e00) for every element `q` of `theta`, we are getting keys of `q`, but `theta` has this type: List[List[Tuple[WorkReport, Set[Hash]]]\nSo elements of `theta` are Lists, and I don't understand the use of `K` on lists (It's possible that I'm misunderstanding the formula)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$eof0N2GjQmE649L9d8SNpuyvL4pYcLsKUtxJ3yIDqFg\n\n---\nIn 150 (https://graypaper.fluffylabs.dev/#/364735a/159a00159e00) for every element `q` of `theta`, we are getting keys of `q`, but `theta` has this type: List[List[Tuple[WorkReport, Set[Hash]]]\nSo elements of `theta` are Lists, and I don't understand the use of `K` on lists (It's possible that I'm misunderstanding the formula)",
     "date": 1730633048401,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/159a00159e00)",
@@ -720,7 +724,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1-okfKzVzdKK3gIc1HjjxMOM6zdHEXNWX0zgB7fSSio\n\n---> <@dvladco:matrix.org> Hello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo\n\n* Copy-paste error. g should be 10\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$va3VmyhGjQRwmrOp8BnjKImB6KdzdRJKjF6ygxtcAis\n\n---> <@dvladco:matrix.org> Hello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo\n\nCopy-paste error. g should be 1\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$wcH1VPNuEPCz51S_f56yFSGh84mAtglqv9zl5Z3DcC0\n\n---Hello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1-okfKzVzdKK3gIc1HjjxMOM6zdHEXNWX0zgB7fSSio\n\n---\n> <@dvladco:matrix.org> Hello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo\n\n* Copy-paste error. g should be 10\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$va3VmyhGjQRwmrOp8BnjKImB6KdzdRJKjF6ygxtcAis\n\n---\n> <@dvladco:matrix.org> Hello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo\n\nCopy-paste error. g should be 1\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$wcH1VPNuEPCz51S_f56yFSGh84mAtglqv9zl5Z3DcC0\n\n---\nHello, I would like to confirm if the gas calculation [here](https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01) is correct, it seems to me that `ω8` contains the memory address for memo",
     "date": 1730717805065,
     "author": "@dvladco:matrix.org, @gav:polkadot.io, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2f38012f3b01)",
@@ -738,7 +742,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$V_lgUfeQQTdv6BfQQmB1Ng60iHNs5-AHsH3_gu6zduM\n\n--- * https://graypaper.fluffylabs.dev/#/364735a/0f59020f6e02\n\nIn phi, is correct that the size of the inner list is exactly Q? Q is `the maximum number of items in the authorizations queue`, so I expect to be `:Q`\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$pVtBGfPPNLK3XEA428VA-pLY2x4QYBVCQNqHKIAaiDI\n\n---https://graypaper.fluffylabs.dev/#/364735a/0f59020f6e02\n\nIn phi, is correct that the size of the inner list is exactly Q? Q is the maximum number of element in the authorizer_queue, so I expect to be `:Q`",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$V_lgUfeQQTdv6BfQQmB1Ng60iHNs5-AHsH3_gu6zduM\n\n---\n * https://graypaper.fluffylabs.dev/#/364735a/0f59020f6e02\n\nIn phi, is correct that the size of the inner list is exactly Q? Q is `the maximum number of items in the authorizations queue`, so I expect to be `:Q`\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$pVtBGfPPNLK3XEA428VA-pLY2x4QYBVCQNqHKIAaiDI\n\n---\nhttps://graypaper.fluffylabs.dev/#/364735a/0f59020f6e02\n\nIn phi, is correct that the size of the inner list is exactly Q? Q is the maximum number of element in the authorizer_queue, so I expect to be `:Q`",
     "date": 1730739073784,
     "author": "@dakkk:matrix.org, @dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/0f59020f6e02\n\nIn",
@@ -756,7 +760,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5Vm1hiDPUvD-TDey7_1pug7cC3JfJc6HoDCq4n5Fk_s\n\n--- * here (appendix I):  https://graypaper.fluffylabs.dev/#/364735a/3d6c003d6e00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$mY_BCEpvjMNvLgwgZSoLQ3VeMIGdGLoNDRgLtEq8S6U\n\n---here: https://graypaper.fluffylabs.dev/#/364735a/3d6c003d6e00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5Vm1hiDPUvD-TDey7_1pug7cC3JfJc6HoDCq4n5Fk_s\n\n---\n * here (appendix I):  https://graypaper.fluffylabs.dev/#/364735a/3d6c003d6e00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$mY_BCEpvjMNvLgwgZSoLQ3VeMIGdGLoNDRgLtEq8S6U\n\n---\nhere: https://graypaper.fluffylabs.dev/#/364735a/3d6c003d6e00",
     "date": 1730739241443,
     "author": "@dakkk:matrix.org, @dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/3d6c003d6e00",
@@ -774,7 +778,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$wlq9zZUhqitpR15ZDDklz64LFC0YVjRHvu7moBsexpU\n\n--- * Hey, is `d` [here](https://graypaper.fluffylabs.dev/#/364735a/2bb1002bb100) taken from `u` ? I don't see it being explicitly defined anywhere\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$flPUqR8HX4S80Y3AmAs_Hfvuiyug-uv3KAWy6N0usnU\n\n---Hey, is `d` [here](https://graypaper.fluffylabs.dev/#/364735a/2bb1002bb100) from `u` ? I don't see it being explicitly defined anywhere ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$wlq9zZUhqitpR15ZDDklz64LFC0YVjRHvu7moBsexpU\n\n---\n * Hey, is `d` [here](https://graypaper.fluffylabs.dev/#/364735a/2bb1002bb100) taken from `u` ? I don't see it being explicitly defined anywhere\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$flPUqR8HX4S80Y3AmAs_Hfvuiyug-uv3KAWy6N0usnU\n\n---\nHey, is `d` [here](https://graypaper.fluffylabs.dev/#/364735a/2bb1002bb100) from `u` ? I don't see it being explicitly defined anywhere ",
     "date": 1730992822097,
     "author": "@dvladco:matrix.org, @dvladco:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2bb1002bb100)",
@@ -792,7 +796,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XuKS4Lcwu656djeZ6-V8HZ0Ug-hVQ7yGvF-rUZVj1RE\n\n---Shouldn't this `G` function in the definition of the `Accumulate` invocation take the status from the host call as well in the first argument?\n\nhttps://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n\nDefinition of the host call: https://graypaper.fluffylabs.dev/#/364735a/28a80228a802",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XuKS4Lcwu656djeZ6-V8HZ0Ug-hVQ7yGvF-rUZVj1RE\n\n---\nShouldn't this `G` function in the definition of the `Accumulate` invocation take the status from the host call as well in the first argument?\n\nhttps://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n\nDefinition of the host call: https://graypaper.fluffylabs.dev/#/364735a/28a80228a802",
     "date": 1731556739402,
     "author": "@cisco:parity.io",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n\nDefinition",
@@ -810,7 +814,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$9aFii1vrpIUvy092wQbPcTMbCwUR3GzFiVrDy7KGSaU\n\n---> <@cisco:parity.io> Shouldn't this `G` function in the definition of the `Accumulate` invocation take the status from the host call as well in the first argument?\n> \n> https://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n> \n> Definition of the host call: https://graypaper.fluffylabs.dev/#/364735a/28a80228a802\n\nYes the triangle sign is in fact missing from a few places. Will be corrected in next release.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$9aFii1vrpIUvy092wQbPcTMbCwUR3GzFiVrDy7KGSaU\n\n---\n> <@cisco:parity.io> Shouldn't this `G` function in the definition of the `Accumulate` invocation take the status from the host call as well in the first argument?\n> \n> https://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n> \n> Definition of the host call: https://graypaper.fluffylabs.dev/#/364735a/28a80228a802\n\nYes the triangle sign is in fact missing from a few places. Will be corrected in next release.",
     "date": 1731586603635,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/2b6f022b6f02\n>",
@@ -828,7 +832,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ygimQYgO5gVWV-dEZk2EaU5U6k3p3tr0eBrC3pYrKIY\n\n---Here, R looks like a function but it is multiplying with the inner term (t'/R -1)\n\nhttps://graypaper.fluffylabs.dev/#/364735a/14f40214ff02",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ygimQYgO5gVWV-dEZk2EaU5U6k3p3tr0eBrC3pYrKIY\n\n---\nHere, R looks like a function but it is multiplying with the inner term (t'/R -1)\n\nhttps://graypaper.fluffylabs.dev/#/364735a/14f40214ff02",
     "date": 1731594557347,
     "author": "@amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/14f40214ff02",
@@ -846,7 +850,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5fb4aISpNjPvfEWPjittjTAYP2zvE10Jxpyr7k6Xz3M\n\n---https://graypaper.fluffylabs.dev/#/c71229b/3d6b003d6d00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5fb4aISpNjPvfEWPjittjTAYP2zvE10Jxpyr7k6Xz3M\n\n---\nhttps://graypaper.fluffylabs.dev/#/c71229b/3d6b003d6d00",
     "date": 1731597116120,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/c71229b/3d6b003d6d00",
@@ -864,7 +868,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uCmeEHmmXZdNWCK8mMy19ZGT3cDkYHL4qnNeGmUSGwM\n\n---> <@cisco:parity.io> The prerequisites of a work report are already a set, so shouldn't [the D function](https://graypaper.fluffylabs.dev/#/364735a/16c70016c900) just do w_x_p U ...?\n\nYes. Will be fixed in next release\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$DrTTYOtfA1KCXgWBSWkKSBpjKXfQTMAGf5X8PRsPjJk\n\n---The prerequisites of a work report are already a set, so shouldn't [the D function](https://graypaper.fluffylabs.dev/#/364735a/16c70016c900) just do w_x_p U ...?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$uCmeEHmmXZdNWCK8mMy19ZGT3cDkYHL4qnNeGmUSGwM\n\n---\n> <@cisco:parity.io> The prerequisites of a work report are already a set, so shouldn't [the D function](https://graypaper.fluffylabs.dev/#/364735a/16c70016c900) just do w_x_p U ...?\n\nYes. Will be fixed in next release\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$DrTTYOtfA1KCXgWBSWkKSBpjKXfQTMAGf5X8PRsPjJk\n\n---\nThe prerequisites of a work report are already a set, so shouldn't [the D function](https://graypaper.fluffylabs.dev/#/364735a/16c70016c900) just do w_x_p U ...?",
     "date": 1731619632565,
     "author": "@cisco:parity.io, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/16c70016c900)",
@@ -882,7 +886,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$yEm1pXzvvgvEESPOR0G3yhqjeOx_9NN5jhnrVobaE4M\n\n---> <@prematurata:matrix.org> I have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n> \n> When merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended\n\nthis is an oversight. It will be fixed in 0.5.0 (state encoding of curly E will have a length prefixes)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$GL85_7zd1iu3goxFdnwym6NLUfZx63xTdUXhysfgQOI\n\n---> <@prematurata:matrix.org> I have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n> \n> When merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended\n\nYour assumptions seems correct, but the state merklization is not intendeed to be \"reversible\"\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$t4o_TTB2bKLau2BbEvjiiwLRSf7NZwkNYx6sq7M-ukQ\n\n---I have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n\nWhen merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$yEm1pXzvvgvEESPOR0G3yhqjeOx_9NN5jhnrVobaE4M\n\n---\n> <@prematurata:matrix.org> I have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n> \n> When merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended\n\nthis is an oversight. It will be fixed in 0.5.0 (state encoding of curly E will have a length prefixes)\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$GL85_7zd1iu3goxFdnwym6NLUfZx63xTdUXhysfgQOI\n\n---\n> <@prematurata:matrix.org> I have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n> \n> When merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended\n\nYour assumptions seems correct, but the state merklization is not intendeed to be \"reversible\"\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$t4o_TTB2bKLau2BbEvjiiwLRSf7NZwkNYx6sq7M-ukQ\n\n---\nI have a question about acc history. According to https://graypaper.fluffylabs.dev/#/364735a/162000162800 , its a `E long sequence of Hash sets` \n\nWhen merkleizing https://graypaper.fluffylabs.dev/#/364735a/34fa0234fc02 we're asked to serialize it but C.1.7 https://graypaper.fluffylabs.dev/#/364735a/33d70033d700 defines set serialization which if intended to be used for ξ encoding, then it means we won't be able to decode it (due to not containing length discriminator). Right now we don't really need to decode it but not sure this is intended",
     "date": 1731665133361,
     "author": "@prematurata:matrix.org, @dakkk:matrix.org, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/162000162800",
@@ -900,7 +904,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$rWT7qKxY13BqCB-elTJ93OUUQLhSmfx6jyZOESVFVHg\n\n---Is there any particular reason why `lower` and `higher` bits of the two U64s are in a different order in registers than in case of `new` and `transfer`? My OCD is killing me:\nhttps://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$rWT7qKxY13BqCB-elTJ93OUUQLhSmfx6jyZOESVFVHg\n\n---\nIs there any particular reason why `lower` and `higher` bits of the two U64s are in a different order in registers than in case of `new` and `transfer`? My OCD is killing me:\nhttps://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03",
     "date": 1731666310833,
     "author": "@tomusdrw:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03",
@@ -918,7 +922,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$4yej_tvX7qNWbvtsYYo3MHA3PTjLULKJYa85MnM6A9s\n\n---> <@tomusdrw:matrix.org> Is there any particular reason why `lower` and `higher` bits of the two U64s are in a different order in registers than in case of `new` and `transfer`? My OCD is killing me:\n> https://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03\n\nIt's not an issue in 0.5.0",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$4yej_tvX7qNWbvtsYYo3MHA3PTjLULKJYa85MnM6A9s\n\n---\n> <@tomusdrw:matrix.org> Is there any particular reason why `lower` and `higher` bits of the two U64s are in a different order in registers than in case of `new` and `transfer`? My OCD is killing me:\n> https://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03\n\nIt's not an issue in 0.5.0",
     "date": 1731671877724,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2e0d032e0d03\n\nIt's",
@@ -936,7 +940,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$d5ufrCFVyPus8JALCp1S2W5VWDgRhT4R8TLe26WSrEY\n\n---Might be a dumb question, but shouldn't creating a service with code larger than `W_C` be disallowed? AFAIU it will not run yielding `BIG`, but why allow `new` host call to succeed at all? https://graypaper.fluffylabs.dev/#/364735a/2e80022e8002",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$d5ufrCFVyPus8JALCp1S2W5VWDgRhT4R8TLe26WSrEY\n\n---\nMight be a dumb question, but shouldn't creating a service with code larger than `W_C` be disallowed? AFAIU it will not run yielding `BIG`, but why allow `new` host call to succeed at all? https://graypaper.fluffylabs.dev/#/364735a/2e80022e8002",
     "date": 1731700585034,
     "author": "@tomusdrw:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2e80022e8002",
@@ -954,7 +958,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$gLFHh8TVlaM0YDKEEDVA5mOv-mYWtk3vul3MyhH0UeU\n\n--- * Hello guys, I have a question about the pageproof, according to the definition in the GP, constructing a Merkle Tree appears to follow the diagram provided. In this context, B(1,2) represents the branch of leaf 1 and leaf 2, and its calculation method is described as H($node ⌢ N(v\\_{...|v|/2}, H) ⌢ N(v\\_{|v|/2...}, H)).https://graypaper.fluffylabs.dev/#/364735a/354e0135ac01",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$gLFHh8TVlaM0YDKEEDVA5mOv-mYWtk3vul3MyhH0UeU\n\n---\n * Hello guys, I have a question about the pageproof, according to the definition in the GP, constructing a Merkle Tree appears to follow the diagram provided. In this context, B(1,2) represents the branch of leaf 1 and leaf 2, and its calculation method is described as H($node ⌢ N(v\\_{...|v|/2}, H) ⌢ N(v\\_{|v|/2...}, H)).https://graypaper.fluffylabs.dev/#/364735a/354e0135ac01",
     "date": 1731842233254,
     "author": "@stanleyli:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/354e0135ac01",
@@ -972,7 +976,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$4zSGTFFydIq3dZMj44ud18LKt_IPvWQCpJvfY_gHhmA\n\n---Meanwhile, when calculating the Trace path, the method outlined in the GP is N(P(v, i), H).https://graypaper.fluffylabs.dev/#/364735a/364500360301",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$4zSGTFFydIq3dZMj44ud18LKt_IPvWQCpJvfY_gHhmA\n\n---\nMeanwhile, when calculating the Trace path, the method outlined in the GP is N(P(v, i), H).https://graypaper.fluffylabs.dev/#/364735a/364500360301",
     "date": 1731842290413,
     "author": "@stanleyli:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/364500360301",
@@ -990,7 +994,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1lGqZwI7hAxnJm79qRcW6AbxCoba_fdJhGeyVN8F-NU\n\n---https://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n\nHere we are fetching 32 bytes preimage hash from memory and then hashing it again, is it right?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1lGqZwI7hAxnJm79qRcW6AbxCoba_fdJhGeyVN8F-NU\n\n---\nhttps://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n\nHere we are fetching 32 bytes preimage hash from memory and then hashing it again, is it right?",
     "date": 1731920260854,
     "author": "@amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n\nHere",
@@ -1008,7 +1012,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Aaupm21Vr0XDmQfQO17gTwLbcs16gAVVAs8F_X10ABY\n\n---> <@amritj:matrix.org> https://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n> \n> Here we are fetching 32 bytes preimage hash from memory and then hashing it again, is it right?\n\nCorrect.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Aaupm21Vr0XDmQfQO17gTwLbcs16gAVVAs8F_X10ABY\n\n---\n> <@amritj:matrix.org> https://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n> \n> Here we are fetching 32 bytes preimage hash from memory and then hashing it again, is it right?\n\nCorrect.",
     "date": 1731924268720,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/364735a/2cfc012cfc01\n>",
@@ -1026,7 +1030,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$7BkURz3PeFS_yzdOYCqic-qAXwIDMd9x67bqVWuafaQ\n\n--- * Some candidate 32=>64:\n\n- service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\nthus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\nhttps://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n- invoke 60 byte is 8+13\\*8=112 byte with 4 => 8\nhttps://graypaper.fluffylabs.dev/#/911af30/342a01342a01\nhttps://graypaper.fluffylabs.dev/#/911af30/346101346101\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ihyXZ925hd0DqWY_a7u-fpvbYGDeSwkqaFtopXW6qSQ\n\n---Some candidate 32=>64:\n* service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\nthus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\nhttps://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n* invoke 60 byte is 8+13*8=125 byte with 4 => 8\nhttps://graypaper.fluffylabs.dev/#/911af30/342a01342a01\nhttps://graypaper.fluffylabs.dev/#/911af30/346101346101\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$7BkURz3PeFS_yzdOYCqic-qAXwIDMd9x67bqVWuafaQ\n\n---\n * Some candidate 32=>64:\n\n- service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\nthus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\nhttps://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n- invoke 60 byte is 8+13\\*8=112 byte with 4 => 8\nhttps://graypaper.fluffylabs.dev/#/911af30/342a01342a01\nhttps://graypaper.fluffylabs.dev/#/911af30/346101346101\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ihyXZ925hd0DqWY_a7u-fpvbYGDeSwkqaFtopXW6qSQ\n\n---\nSome candidate 32=>64:\n* service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\nthus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\nhttps://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n* invoke 60 byte is 8+13*8=125 byte with 4 => 8\nhttps://graypaper.fluffylabs.dev/#/911af30/342a01342a01\nhttps://graypaper.fluffylabs.dev/#/911af30/346101346101\n",
     "date": 1732228118802,
     "author": "@sourabhniyogi:matrix.org, @sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\nthus",
@@ -1044,7 +1048,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$G44EHMzgHaZQtG5uhy_J-oHIZ5y87ux4x2QQyp6SRPY\n\n---> <@sourabhniyogi:matrix.org> Some candidate 32=>64:\n> * service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\n> thus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\n> https://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n> * invoke 60 byte is 8+13*8=125 byte with 4 => 8\n> https://graypaper.fluffylabs.dev/#/911af30/342a01342a01\n> https://graypaper.fluffylabs.dev/#/911af30/346101346101\n> \n\nService ID remains 32-bit (for now)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$G44EHMzgHaZQtG5uhy_J-oHIZ5y87ux4x2QQyp6SRPY\n\n---\n> <@sourabhniyogi:matrix.org> Some candidate 32=>64:\n> * service id might be 64-bit? https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\n> thus new's check/bump would need adjustment https://graypaper.fluffylabs.dev/#/911af30/30e00230e002\n> https://graypaper.fluffylabs.dev/#/911af30/2da2032da203\n> * invoke 60 byte is 8+13*8=125 byte with 4 => 8\n> https://graypaper.fluffylabs.dev/#/911af30/342a01342a01\n> https://graypaper.fluffylabs.dev/#/911af30/346101346101\n> \n\nService ID remains 32-bit (for now)",
     "date": 1732181501765,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/10da0010da00\n>",
@@ -1062,7 +1066,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Z2gqXRK09RNSnB-o-upgSNPalmFgcj1xooI4hLwbuVM\n\n---> <@sourabhniyogi:matrix.org> Small suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\\\eta\\_0$ and $\\\\eta\\_1$ instead of $\\\\eta\\_1'$ and $\\\\eta\\_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean and easy to reason about -- its equivalent based on https://graypaper.fluffylabs.dev/#/911af30/0e57020e5702\n\nFeel free to make a PR.\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$aEK524AUNVbrP5gKpn39ajw04Z9pt75Nn7ciqM8-pPA\n\n--- * Small suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\\\eta\\_0$ and $\\\\eta\\_1$ instead of $\\\\eta\\_1'$ and $\\\\eta\\_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean and easy to reason about -- its equivalent based on https://graypaper.fluffylabs.dev/#/911af30/0e57020e5702\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iBhL-k_zwrqEceK35wHD8E7C0TyEK_yBDS2VhbPyXOs\n\n---Small suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\eta_0$ and $\\eta_1$ instead of $\\eta_1'$ and $\\eta_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Z2gqXRK09RNSnB-o-upgSNPalmFgcj1xooI4hLwbuVM\n\n---\n> <@sourabhniyogi:matrix.org> Small suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\\\eta\\_0$ and $\\\\eta\\_1$ instead of $\\\\eta\\_1'$ and $\\\\eta\\_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean and easy to reason about -- its equivalent based on https://graypaper.fluffylabs.dev/#/911af30/0e57020e5702\n\nFeel free to make a PR.\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$aEK524AUNVbrP5gKpn39ajw04Z9pt75Nn7ciqM8-pPA\n\n---\n * Small suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\\\eta\\_0$ and $\\\\eta\\_1$ instead of $\\\\eta\\_1'$ and $\\\\eta\\_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean and easy to reason about -- its equivalent based on https://graypaper.fluffylabs.dev/#/911af30/0e57020e5702\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iBhL-k_zwrqEceK35wHD8E7C0TyEK_yBDS2VhbPyXOs\n\n---\nSmall suggestion: the epoch marker here https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203 may use $\\eta_0$ and $\\eta_1$ instead of $\\eta_1'$ and $\\eta_2'$ to keep the dependency graph here https://graypaper.fluffylabs.dev/#/911af30/098001098001 clean",
     "date": 1732469256043,
     "author": "@sourabhniyogi:matrix.org, @sourabhniyogi:matrix.org, @gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/0e52030e5203",
@@ -1080,7 +1084,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$zfVWy_IoLVz5FBqoo9OFF6MkmUlyioJpiWDvnoDxPsE\n\n--- * https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\nHello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. While the equation itself appears valid, it could lead to misunderstanding when reading the entire GP. Is there a better way to express this equation to avoid ambiguity\"\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$M8IhMfad1Yi5DIX99WNAY_rwLydQmqiIpqnWPBIEbrg\n\n---https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\nHello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. Is there any better expression for this equation?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$zfVWy_IoLVz5FBqoo9OFF6MkmUlyioJpiWDvnoDxPsE\n\n---\n * https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\nHello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. While the equation itself appears valid, it could lead to misunderstanding when reading the entire GP. Is there a better way to express this equation to avoid ambiguity\"\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$M8IhMfad1Yi5DIX99WNAY_rwLydQmqiIpqnWPBIEbrg\n\n---\nhttps://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\nHello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. Is there any better expression for this equation?",
     "date": 1732473769122,
     "author": "@yu2c:matrix.org, @yu2c:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\nHello,",
@@ -1098,7 +1102,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$QmGHTHtl5h_rneUwYbX2FUh-N8gUPoiajyu5yX-5pGk\n\n--- * Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ttVhXXF5tuxB8cL283QAZNwiuQVFi31YrmHkK2f4yDU\n\n--- * Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `|v|` and `l` in case `l > |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$WKLxe4Gm_Sa9Y2Lay7TTLf3nnZPUFwF-SEQXpzPt28Y\n\n---Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$QmGHTHtl5h_rneUwYbX2FUh-N8gUPoiajyu5yX-5pGk\n\n---\n * Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ttVhXXF5tuxB8cL283QAZNwiuQVFi31YrmHkK2f4yDU\n\n---\n * Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `|v|` and `l` in case `l > |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$WKLxe4Gm_Sa9Y2Lay7TTLf3nnZPUFwF-SEQXpzPt28Y\n\n---\nPerhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\nhttps://graypaper.fluffylabs.dev/#/911af30/32e20232e202",
     "date": 1732472189745,
     "author": "@tomusdrw:matrix.org, @tomusdrw:matrix.org, @tomusdrw:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/32e20232e202",
@@ -1116,7 +1120,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5ZNAtlFGJ7hvri2-qRSDfBCvas4WUAr8FvgtIs-7qQw\n\n---> <@yu2c:matrix.org> https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\n> Hello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. Is there any better expression for this equation?\n\nIt is pretty standard (e.g. [here](https://study.com/academy/lesson/remainder-in-math-definition-theorem-examples.html#:~:text=The%20expression%20for%20division%20is,long%20division%20method%20is%20used) ) But I can probably circle it or something to make it more explicit.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$5ZNAtlFGJ7hvri2-qRSDfBCvas4WUAr8FvgtIs-7qQw\n\n---\n> <@yu2c:matrix.org> https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\n> Hello, (6.2) this R as remainder will strongly misunderstand by the constant R in Appendix. Is there any better expression for this equation?\n\nIt is pretty standard (e.g. [here](https://study.com/academy/lesson/remainder-in-math-definition-theorem-examples.html#:~:text=The%20expression%20for%20division%20is,long%20division%20method%20is%20used) ) But I can probably circle it or something to make it more explicit.",
     "date": 1732468857577,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/0d63000d7c00\n>",
@@ -1134,7 +1138,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$thZiUEiBXJteE5j0KcB1bNkEyuHcEoKCHp5QXRrUCSg\n\n---> <@tomusdrw:matrix.org> Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\n> https://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n\nthat should have bold `v` replaced with bold `v_...l`",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$thZiUEiBXJteE5j0KcB1bNkEyuHcEoKCHp5QXRrUCSg\n\n---\n> <@tomusdrw:matrix.org> Perhaps I'm missing something, but it's not clear to me what should happen with memory cells between `l` and `|v|` in case `l < |v|` in `import`. Should these be zeroed or just left as is?\n> https://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n\nthat should have bold `v` replaced with bold `v_...l`",
     "date": 1732468948413,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/32e20232e202\n\nthat",
@@ -1152,7 +1156,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$aNi_eGbX2GxDTqRR2NFQJraOpS3LA7Jt_zRYyRHuIms\n\n---could someone clarify please\n\nin chapter 4 we have PVM memory with page size of 2^12 https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n\nin appendix A, in (A.31) (A.34) we have page size of 2^14 https://graypaper.fluffylabs.dev/#/911af30/2afe022afe02\nwhich one is it?\n\nthanks\n\n\n\n\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$aNi_eGbX2GxDTqRR2NFQJraOpS3LA7Jt_zRYyRHuIms\n\n---\ncould someone clarify please\n\nin chapter 4 we have PVM memory with page size of 2^12 https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n\nin appendix A, in (A.31) (A.34) we have page size of 2^14 https://graypaper.fluffylabs.dev/#/911af30/2afe022afe02\nwhich one is it?\n\nthanks\n\n\n\n\n",
     "date": 1732521736962,
     "author": "@luke_fishman:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n\nin",
@@ -1170,7 +1174,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Cyaq8s0JNxlfJ2KWAeHG18c6inwM_J6FuVBtmXOlYBk\n\n---> <@luke_fishman:matrix.org> could someone clarify please\n> \n> in chapter 4 we have PVM memory with page size of 2^12 https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n> \n> in appendix A, in (A.31) (A.34) we have page size of 2^14 https://graypaper.fluffylabs.dev/#/911af30/2afe022afe02\n> which one is it?\n> \n> thanks\n\nSome of those instances of Z_P should have been renamed to Z_G. Will be [fixed](https://github.com/gavofyork/graypaper/pull/150/commits/10e09e6d1bfb0e3ec37e8007ee9deef850059abd) in 0.5.1",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Cyaq8s0JNxlfJ2KWAeHG18c6inwM_J6FuVBtmXOlYBk\n\n---\n> <@luke_fishman:matrix.org> could someone clarify please\n> \n> in chapter 4 we have PVM memory with page size of 2^12 https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n> \n> in appendix A, in (A.31) (A.34) we have page size of 2^14 https://graypaper.fluffylabs.dev/#/911af30/2afe022afe02\n> which one is it?\n> \n> thanks\n\nSome of those instances of Z_P should have been renamed to Z_G. Will be [fixed](https://github.com/gavofyork/graypaper/pull/150/commits/10e09e6d1bfb0e3ec37e8007ee9deef850059abd) in 0.5.1",
     "date": 1732522183648,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/2b94002b9400\n>",
@@ -1188,7 +1192,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$m7Agn1vl8XXXm15n8jmKY3lt7vzNcPeL9Urq0CiVS6U\n\n---davyx raised a dilemma over gas constants; if `G_T` is `the total gas allocated across all cores for accumulation`, and `G_A` is `the total gass allocated to a core for accumulation`, should `G_A` be `G_T / C`?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/3f43003f5200",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$m7Agn1vl8XXXm15n8jmKY3lt7vzNcPeL9Urq0CiVS6U\n\n---\ndavyx raised a dilemma over gas constants; if `G_T` is `the total gas allocated across all cores for accumulation`, and `G_A` is `the total gass allocated to a core for accumulation`, should `G_A` be `G_T / C`?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/3f43003f5200",
     "date": 1732551867142,
     "author": "@dakkk:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/3f43003f5200",
@@ -1206,7 +1210,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$UCOIVF4Fkrc08-xGMuGgp9I2bEqJNHECTLh8WOPhPqo\n\n---> <@dakkk:matrix.org> davyx raised a dilemma over gas constants; if `G_T` is `the total gas allocated across all cores for accumulation`, and `G_A` is `the total gass allocated to a core for accumulation`, should `G_A` be `G_T / C`?\n> \n> https://graypaper.fluffylabs.dev/#/911af30/3f43003f5200\n\nNo not any more",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$UCOIVF4Fkrc08-xGMuGgp9I2bEqJNHECTLh8WOPhPqo\n\n---\n> <@dakkk:matrix.org> davyx raised a dilemma over gas constants; if `G_T` is `the total gas allocated across all cores for accumulation`, and `G_A` is `the total gass allocated to a core for accumulation`, should `G_A` be `G_T / C`?\n> \n> https://graypaper.fluffylabs.dev/#/911af30/3f43003f5200\n\nNo not any more",
     "date": 1732552147353,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/3f43003f5200\n\nNo",
@@ -1224,7 +1228,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TZIVf0NKs1IoiccBfxkqAJmH7VZL5NnwcrsO8Uch4dI\n\n--- * https://graypaper.fluffylabs.dev/#/911af30/36cb02362803\n\nCan state-key constructor functions C be enhanced with a \"type\" identifier? something like:\n\n```\n(i ∈ N28, t ∈ N2) ↦ [i, 0, 0, . . . ,t]\n(i, s ∈ NS, t ∈ N2) ↦ [i, n0, 0, n1, 0, n2, 0, n3, 0, 0, . . . ,t] where n = E4(s) \n(s, h, t) ↦ [n0, h0, n1, h1, n2, h2, n3, h3, h4, h5, . . . , h26, t] where n = E4(s)\n```\n\nso that we can determine the expected type (δ, a\\_s, a\\_p, a\\_l) from the C key alone?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ofa5_9Bmffk4k73CwX6eSmtJoHiz3LXB0pklcOPDzOw\n\n---https://graypaper.fluffylabs.dev/#/911af30/36cb02362803\n\nCan state-key constructor functions C be enhanced with a \"type\" identifier? something like: \n\n```\n(i ∈ N28, t ∈ N2) ↦ [i, t, 0, 0, . . . ]\n(i, s ∈ NS, t ∈ N2) ↦ [i, t, n0, 0, n1, 0, n2, 0, n3, 0, 0, . . . ] where n = E4(s) \n(s, h, t) ↦ [t, n0, h0, n1, h1, n2, h2, n3, h3, h4, h5, . . . , h26] where n = E4(s)\n```\nso that we can determine the expected type (δ, a_s, a_p, a_l) from the C key alone?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TZIVf0NKs1IoiccBfxkqAJmH7VZL5NnwcrsO8Uch4dI\n\n---\n * https://graypaper.fluffylabs.dev/#/911af30/36cb02362803\n\nCan state-key constructor functions C be enhanced with a \"type\" identifier? something like:\n\n```\n(i ∈ N28, t ∈ N2) ↦ [i, 0, 0, . . . ,t]\n(i, s ∈ NS, t ∈ N2) ↦ [i, n0, 0, n1, 0, n2, 0, n3, 0, 0, . . . ,t] where n = E4(s) \n(s, h, t) ↦ [n0, h0, n1, h1, n2, h2, n3, h3, h4, h5, . . . , h26, t] where n = E4(s)\n```\n\nso that we can determine the expected type (δ, a\\_s, a\\_p, a\\_l) from the C key alone?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ofa5_9Bmffk4k73CwX6eSmtJoHiz3LXB0pklcOPDzOw\n\n---\nhttps://graypaper.fluffylabs.dev/#/911af30/36cb02362803\n\nCan state-key constructor functions C be enhanced with a \"type\" identifier? something like: \n\n```\n(i ∈ N28, t ∈ N2) ↦ [i, t, 0, 0, . . . ]\n(i, s ∈ NS, t ∈ N2) ↦ [i, t, n0, 0, n1, 0, n2, 0, n3, 0, 0, . . . ] where n = E4(s) \n(s, h, t) ↦ [t, n0, h0, n1, h1, n2, h2, n3, h3, h4, h5, . . . , h26] where n = E4(s)\n```\nso that we can determine the expected type (δ, a_s, a_p, a_l) from the C key alone?",
     "date": 1732581274826,
     "author": "@mkchung:matrix.org, @mkchung:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/36cb02362803\n\nCan",
@@ -1242,7 +1246,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$IdDrt12C_CaI6KWFfd7OvaI_B_OmNuB-OnUVpYWZlV0\n\n--- * to include the original inputs\n(a) s for δ https://graypaper.fluffylabs.dev/#/911af30/371402371402\n(b) k (original 32-bit) for a\\_s https://graypaper.fluffylabs.dev/#/911af30/372a02372a02\n(c) h (original 32-bit) for a\\_p https://graypaper.fluffylabs.dev/#/911af30/373d02373d02\n(d) (h, l) for [a\\_l](https://graypaper.fluffylabs.dev/#/911af30/375002375002)\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.   \n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TmkvDJvyEy81rJFlVahzghQD4ux2GfNdoCscCmKVWeg\n\n---to include the original inputs\n(a) s for δ https://graypaper.fluffylabs.dev/#/911af30/371402371402\n(b) k (original 32-bit) for a_s https://graypaper.fluffylabs.dev/#/911af30/372a02372a02\n(c) h (original 32-bit) for a_p\n(d) (h, l) for a_l\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.   ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$IdDrt12C_CaI6KWFfd7OvaI_B_OmNuB-OnUVpYWZlV0\n\n---\n * to include the original inputs\n(a) s for δ https://graypaper.fluffylabs.dev/#/911af30/371402371402\n(b) k (original 32-bit) for a\\_s https://graypaper.fluffylabs.dev/#/911af30/372a02372a02\n(c) h (original 32-bit) for a\\_p https://graypaper.fluffylabs.dev/#/911af30/373d02373d02\n(d) (h, l) for [a\\_l](https://graypaper.fluffylabs.dev/#/911af30/375002375002)\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.   \n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TmkvDJvyEy81rJFlVahzghQD4ux2GfNdoCscCmKVWeg\n\n---\nto include the original inputs\n(a) s for δ https://graypaper.fluffylabs.dev/#/911af30/371402371402\n(b) k (original 32-bit) for a_s https://graypaper.fluffylabs.dev/#/911af30/372a02372a02\n(c) h (original 32-bit) for a_p\n(d) (h, l) for a_l\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.   ",
     "date": 1732644063884,
     "author": "@sourabhniyogi:matrix.org, @sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/371402371402\n(b)",
@@ -1260,7 +1264,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$xe3BS8pgSONs0Syzf5LR0ye1Rcq4K6xIJi2o9KqRG5w\n\n--- * to include the original inputs to C\n(a) s for [δ](https://graypaper.fluffylabs.dev/#/911af30/371402371402)\n(b) k (original 32-bit) for [a\\_s]( https://graypaper.fluffylabs.dev/#/911af30/372a02372a02)\n(c) h (original 32-bit) for [a\\_p]( https://graypaper.fluffylabs.dev/#/911af30/373d02373d02)\n(d) (h, l) for [a\\_l](https://graypaper.fluffylabs.dev/#/911af30/375002375002)\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$xe3BS8pgSONs0Syzf5LR0ye1Rcq4K6xIJi2o9KqRG5w\n\n---\n * to include the original inputs to C\n(a) s for [δ](https://graypaper.fluffylabs.dev/#/911af30/371402371402)\n(b) k (original 32-bit) for [a\\_s]( https://graypaper.fluffylabs.dev/#/911af30/372a02372a02)\n(c) h (original 32-bit) for [a\\_p]( https://graypaper.fluffylabs.dev/#/911af30/373d02373d02)\n(d) (h, l) for [a\\_l](https://graypaper.fluffylabs.dev/#/911af30/375002375002)\n\nThis would require that implementers keep all the metadata { s, k, h, l } for all of (a)-(d), and is useful for implementers to debug in M1-M4.  May I suggest that we have a nice human reasonable JSON format and a matching state trie dump codec  test vector that is not just raw key-vals but organized by serviceID complete with this additional metadata { k, h, l }.",
     "date": 1732644091198,
     "author": "@sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/371402371402)\n(b)",
@@ -1278,7 +1282,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$yOJbcuUsTtzunZ5o5Eawt1zIUYKtMaLHyzCvEw_nnEU\n\n---Concerning the accumulation queue, we are struggling to come up with a test case where we have 12.3 https://graypaper.fluffylabs.dev/#/911af30/167100167100 filled with anything because 11.38 https://graypaper.fluffylabs.dev/#/911af30/156001156001 makes it difficult to impossible to do so.   \n\nConcretely, if package M has package F as a prerequisite, because of 11.38 requirement, M can't even get a work report in for 12.3 to matter.   Put another way, 11.38 has prereqs constraining refine of M before 12.3 accumulation can matter.  \nHow can we get a good test case for accumulation queue then?  \n\nWe must be misunderstanding something here.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$yOJbcuUsTtzunZ5o5Eawt1zIUYKtMaLHyzCvEw_nnEU\n\n---\nConcerning the accumulation queue, we are struggling to come up with a test case where we have 12.3 https://graypaper.fluffylabs.dev/#/911af30/167100167100 filled with anything because 11.38 https://graypaper.fluffylabs.dev/#/911af30/156001156001 makes it difficult to impossible to do so.   \n\nConcretely, if package M has package F as a prerequisite, because of 11.38 requirement, M can't even get a work report in for 12.3 to matter.   Put another way, 11.38 has prereqs constraining refine of M before 12.3 accumulation can matter.  \nHow can we get a good test case for accumulation queue then?  \n\nWe must be misunderstanding something here.",
     "date": 1732727215160,
     "author": "@sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/167100167100",
@@ -1296,7 +1300,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MokkZyJEFtMqJPHzPBUAb0vMHbKkFOeOyxoOWpzYooY\n\n---Here is the thing -- by 11.38 B cannot become available before A because of this requirement https://graypaper.fluffylabs.dev/#/911af30/156001156001",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MokkZyJEFtMqJPHzPBUAb0vMHbKkFOeOyxoOWpzYooY\n\n---\nHere is the thing -- by 11.38 B cannot become available before A because of this requirement https://graypaper.fluffylabs.dev/#/911af30/156001156001",
     "date": 1732727670703,
     "author": "@sourabhniyogi:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/156001156001",
@@ -1314,7 +1318,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ljbfMY0h2tGWl_9y0HX8-qRBNCX0zKMDjnQ7MCYA4rw\n\n---https://graypaper.fluffylabs.dev/#/911af30/162e02162f02\nPotential typo: \"the queue of work-reports\" should be \"the queue of authorizers\"?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ljbfMY0h2tGWl_9y0HX8-qRBNCX0zKMDjnQ7MCYA4rw\n\n---\nhttps://graypaper.fluffylabs.dev/#/911af30/162e02162f02\nPotential typo: \"the queue of work-reports\" should be \"the queue of authorizers\"?",
     "date": 1732858303182,
     "author": "@0xjunha:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/162e02162f02\nPotential",
@@ -1332,7 +1336,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$oHQsgpCWqHO_c-aaL29uZrSgUfigJ27oNqq1ruezMGM\n\n---https://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\nhttps://graypaper.fluffylabs.dev/#/911af30/23b20123c401\n^ It seems type for the instruction counter is missing in these definitions\n\nhttps://graypaper.fluffylabs.dev/#/911af30/2bd8012bd801\n^ And type for the instruction could be `N_R`, it is currently marked as `N`.",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$oHQsgpCWqHO_c-aaL29uZrSgUfigJ27oNqq1ruezMGM\n\n---\nhttps://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\nhttps://graypaper.fluffylabs.dev/#/911af30/23b20123c401\n^ It seems type for the instruction counter is missing in these definitions\n\nhttps://graypaper.fluffylabs.dev/#/911af30/2bd8012bd801\n^ And type for the instruction could be `N_R`, it is currently marked as `N`.",
     "date": 1732885539474,
     "author": "@0xjunha:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\nhttps://graypaper.fluffylabs.dev/#/911af30/23b20123c401\n^",
@@ -1350,7 +1354,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iUwZ7VrBsb0ZHOi24Il14G14GyiJ9DR0dAIQNFPkmk8\n\n---> <@0xjunha:matrix.org> https://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\n> https://graypaper.fluffylabs.dev/#/911af30/23b20123c401\n> ^ It seems type for the instruction counter is missing in these definitions\n> \n> https://graypaper.fluffylabs.dev/#/911af30/2bd8012bd801\n> ^ And type for the instruction could be `N_R`, it is currently marked as `N`.\n\nWill be corrected in 0.5.1: PVM: Don't forget the instruction counter in prototype",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$iUwZ7VrBsb0ZHOi24Il14G14GyiJ9DR0dAIQNFPkmk8\n\n---\n> <@0xjunha:matrix.org> https://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\n> https://graypaper.fluffylabs.dev/#/911af30/23b20123c401\n> ^ It seems type for the instruction counter is missing in these definitions\n> \n> https://graypaper.fluffylabs.dev/#/911af30/2bd8012bd801\n> ^ And type for the instruction could be `N_R`, it is currently marked as `N`.\n\nWill be corrected in 0.5.1: PVM: Don't forget the instruction counter in prototype",
     "date": 1732893574152,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/2af3002a0801\n>",
@@ -1368,7 +1372,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$HqMBgVxHzhknDhZ54wuL0ivPR4T1qTU3sEAQzUIAb70\n\n---Another small correction for consistency: wrapping the `(x_s)_l` with `\\keys{}` here\nhttps://graypaper.fluffylabs.dev/#/911af30/31b30231b302\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$HqMBgVxHzhknDhZ54wuL0ivPR4T1qTU3sEAQzUIAb70\n\n---\nAnother small correction for consistency: wrapping the `(x_s)_l` with `\\keys{}` here\nhttps://graypaper.fluffylabs.dev/#/911af30/31b30231b302\n",
     "date": 1732973296486,
     "author": "@0xjunha:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/31b30231b302\n",
@@ -1386,7 +1390,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TEjBv_txXfeqwWUHcUk4Egt2hl9LO7YDQKx7pISaj7Q\n\n--- * Hello, guess i am missing something.\nin [Refine Invocation](https://graypaper.fluffylabs.dev/#/911af30/2c5b012c5b01) we only ever call the Argument Invocation with **x = (∅, \\[\\])**\nthis then passes on through ΨM and ΨH and eventually one of the Omegas in [B.8](https://graypaper.fluffylabs.dev/#/911af30/322101322101) is getting called with this pair as an argument\n\nso if we only ever pass \"empty\" pair, how will the internal Omegas ever operate on non empty argument?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$f1bGJfRFIdgU16WChAdxpoVxXbhXz2iUdQ-EdZw7pbw\n\n---Hello, guess i am missing something.\nin [Refine Invocation](https://graypaper.fluffylabs.dev/#/911af30/2c5b012c5b01) we only ever call the Argument Invocation with x = (∅, [])\nthis then passes on through ΨM and ΨH and eventually one of the Omegas in [B.8](https://graypaper.fluffylabs.dev/#/911af30/322101322101) is getting called with this pair as an argument\n\nso if we only ever pass \"empty\" pair, how will the internal Omegas ever operate on non empty argument?\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$TEjBv_txXfeqwWUHcUk4Egt2hl9LO7YDQKx7pISaj7Q\n\n---\n * Hello, guess i am missing something.\nin [Refine Invocation](https://graypaper.fluffylabs.dev/#/911af30/2c5b012c5b01) we only ever call the Argument Invocation with **x = (∅, \\[\\])**\nthis then passes on through ΨM and ΨH and eventually one of the Omegas in [B.8](https://graypaper.fluffylabs.dev/#/911af30/322101322101) is getting called with this pair as an argument\n\nso if we only ever pass \"empty\" pair, how will the internal Omegas ever operate on non empty argument?\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$f1bGJfRFIdgU16WChAdxpoVxXbhXz2iUdQ-EdZw7pbw\n\n---\nHello, guess i am missing something.\nin [Refine Invocation](https://graypaper.fluffylabs.dev/#/911af30/2c5b012c5b01) we only ever call the Argument Invocation with x = (∅, [])\nthis then passes on through ΨM and ΨH and eventually one of the Omegas in [B.8](https://graypaper.fluffylabs.dev/#/911af30/322101322101) is getting called with this pair as an argument\n\nso if we only ever pass \"empty\" pair, how will the internal Omegas ever operate on non empty argument?\n",
     "date": 1733396751184,
     "author": "@luke_fishman:matrix.org, @luke_fishman:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/2c5b012c5b01)",
@@ -1404,7 +1408,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$LosTLneyAYiYR0WRDpFqUjnh-BAwAYbAZQ-CvJTXzfQ\n\n--- * We use the paged proof hashed segments for building segment justification.\n\nThe segment root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n\nShouldn't we also prepend \"$leaf\" here?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Q8UWy1Lq0ir4YiBOTPxmKKwSW0Mw4X46ouUpAdh-vPs\n\n---When we are building paged proof, we will use the paged proof 64 hashed segments data for building segment justification.\n\nThe export root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n\nShouldn't we also prepend \"$leaf\" here?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$LosTLneyAYiYR0WRDpFqUjnh-BAwAYbAZQ-CvJTXzfQ\n\n---\n * We use the paged proof hashed segments for building segment justification.\n\nThe segment root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n\nShouldn't we also prepend \"$leaf\" here?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Q8UWy1Lq0ir4YiBOTPxmKKwSW0Mw4X46ouUpAdh-vPs\n\n---\nWhen we are building paged proof, we will use the paged proof 64 hashed segments data for building segment justification.\n\nThe export root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n\nShouldn't we also prepend \"$leaf\" here?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01",
     "date": 1733456286697,
     "author": "@amritj:matrix.org, @amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01",
@@ -1422,7 +1426,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$T-P0S-AaKCpb161GHhcldweFPEs4kcDDbrQzLLBllFo\n\n---> <@amritj:matrix.org> We use the paged proof hashed segments for building segment justification.\n> \n> The segment root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n> \n> Shouldn't we also prepend \"$leaf\" here?\n> \n> https://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01\n\nYes in the present system it would be needed. I might alter things so that for the pages proofs tree we don’t bother with the leaf/node prefixes at all since they’re redundant here. ",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$T-P0S-AaKCpb161GHhcldweFPEs4kcDDbrQzLLBllFo\n\n---\n> <@amritj:matrix.org> We use the paged proof hashed segments for building segment justification.\n> \n> The segment root is built with a constancy preprocessor that prepends \"$leaf\" to the data.\n> \n> Shouldn't we also prepend \"$leaf\" here?\n> \n> https://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01\n\nYes in the present system it would be needed. I might alter things so that for the pages proofs tree we don’t bother with the leaf/node prefixes at all since they’re redundant here. ",
     "date": 1733472349347,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1a18011a1f01\n\nYes",
@@ -1440,7 +1444,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$zyZZhfKQfFUh3L5tX7th3sYbgomRK77QRHLFut0UCqI\n\n--- * One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$q7dG-92mT-9SKiEt3fwqKwuDZYdsGx9O107YOMf_odc\n\n--- * One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item as node might calculate the next work item export start using the export\\_count variable\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$44qeyha6EArT07UjYH97UnHpPmqNKK51J3QaJWBVC_o\n\n---One more suggestions, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2**11) and I think may even overwrite index of the export segment of next work item as node might calculate the next work item export start using the export_count variable\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$zyZZhfKQfFUh3L5tX7th3sYbgomRK77QRHLFut0UCqI\n\n---\n * One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$q7dG-92mT-9SKiEt3fwqKwuDZYdsGx9O107YOMf_odc\n\n---\n * One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item as node might calculate the next work item export start using the export\\_count variable\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$44qeyha6EArT07UjYH97UnHpPmqNKK51J3QaJWBVC_o\n\n---\nOne more suggestions, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n\nOtherwise, work item can export more segments than Wm (2**11) and I think may even overwrite index of the export segment of next work item as node might calculate the next work item export start using the export_count variable\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02",
     "date": 1733499354567,
     "author": "@amritj:matrix.org, @amritj:matrix.org, @amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02",
@@ -1458,7 +1462,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-w4-V-6N3vdBt-1_Ld76vQ_OkGuTkki3UzwRDNrEamE\n\n--- * Also, I can find any such constant named Wx, I think it should be Wm\n\nhttps://graypaper.fluffylabs.dev/#/911af30/33ae0033ae00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$AmRvy5MmgolTCZqtODhaVVYWfeJaEXFJVYfXvGiql14\n\n---Also, there is no such constant like Wx here, I think it should be Wm\n\nhttps://graypaper.fluffylabs.dev/#/911af30/33ae0033ae00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$-w4-V-6N3vdBt-1_Ld76vQ_OkGuTkki3UzwRDNrEamE\n\n---\n * Also, I can find any such constant named Wx, I think it should be Wm\n\nhttps://graypaper.fluffylabs.dev/#/911af30/33ae0033ae00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$AmRvy5MmgolTCZqtODhaVVYWfeJaEXFJVYfXvGiql14\n\n---\nAlso, there is no such constant like Wx here, I think it should be Wm\n\nhttps://graypaper.fluffylabs.dev/#/911af30/33ae0033ae00",
     "date": 1733497604023,
     "author": "@amritj:matrix.org, @amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/33ae0033ae00",
@@ -1476,7 +1480,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$sDdh4cmBZ27xCI-5TpXRMftXk7aOOS4i7yxUQjXeIfo\n\n---> <@amritj:matrix.org> One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n> \n> Otherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item\n> \n> https://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n\nIt's technically impossible to validly export more items than W_M already due to the condition in the `export` host-call (the only way to validly append an export)",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$sDdh4cmBZ27xCI-5TpXRMftXk7aOOS4i7yxUQjXeIfo\n\n---\n> <@amritj:matrix.org> One more suggestion, I think we should also check the export count in the work package items to be equal to the length of the actually exported segments.\n> \n> Otherwise, work item can export more segments than Wm (2\\*\\*11) and I think may even overwrite index of the export segment of next work item\n> \n> https://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n\nIt's technically impossible to validly export more items than W_M already due to the condition in the `export` host-call (the only way to validly append an export)",
     "date": 1733502813128,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1a0c021a0c02\n\nIt's",
@@ -1494,7 +1498,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ZXZQmGn1ibjEU_FinhZqgTDhueGsPpB-Sp1p8TXwJog\n\n---But in any case, there's a required limitation placed on work-packages here: https://graypaper.fluffylabs.dev/#/911af30/19f500190501",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$ZXZQmGn1ibjEU_FinhZqgTDhueGsPpB-Sp1p8TXwJog\n\n---\nBut in any case, there's a required limitation placed on work-packages here: https://graypaper.fluffylabs.dev/#/911af30/19f500190501",
     "date": 1733502908685,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/19f500190501",
@@ -1512,7 +1516,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XHj2Rb4I_iLCM6h8vJmZ0qi0xK0cGq4ldNgRMchvfAw\n\n--- * Question:\n\nIn auditing, we consider the report audited if the report have no negative judgement and there exists some tranche where all validators required to audit have positive judgement about the report.\n\nIn case some validator announced a audit but failed to deliver the judgement, and new audits are announced to cover that.\n\nSo, the new tranche A_n will be = old tranche auditors + new auditors just announced - auditors failed to deliver judgement ?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1eab001eae00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$XHj2Rb4I_iLCM6h8vJmZ0qi0xK0cGq4ldNgRMchvfAw\n\n---\n * Question:\n\nIn auditing, we consider the report audited if the report have no negative judgement and there exists some tranche where all validators required to audit have positive judgement about the report.\n\nIn case some validator announced a audit but failed to deliver the judgement, and new audits are announced to cover that.\n\nSo, the new tranche A_n will be = old tranche auditors + new auditors just announced - auditors failed to deliver judgement ?\n\nhttps://graypaper.fluffylabs.dev/#/911af30/1eab001eae00",
     "date": 1733569129048,
     "author": "@amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1eab001eae00",
@@ -1530,7 +1534,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$95gqBKgPLHIAYohKN2IEofxpODQS92ten8CSBF40Q0c\n\n---This is described in the paragraph here: https://graypaper.fluffylabs.dev/#/911af30/1e18001e2000",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$95gqBKgPLHIAYohKN2IEofxpODQS92ten8CSBF40Q0c\n\n---\nThis is described in the paragraph here: https://graypaper.fluffylabs.dev/#/911af30/1e18001e2000",
     "date": 1733572865701,
     "author": "@gav:polkadot.io",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/1e18001e2000",
@@ -1548,7 +1552,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$K8xH-7U2RzDGBCKZlr5PIVJgT2NWz7ttnZndC3Y174U\n\n--- * I have a doubt about this formula:\n(7.2) β† ≡ β except β†\\[|β| − 1\\]s = Hr\n\nWhat is the correct interpretation:\n\n1. β† is a copy of β except that in the last element of β† we replace s for the value of Hr\n2. β† is a copy of β only if the value of s in the last element is equal to Hr, otherwise β† is nil\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/0fd5010fde01\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$evTLZSkNdglsrHtDDaEgfk7QUXCvxMOG4faryKbLzqU\n\n---I have a doubt about this formula: \n(7.2) β† ≡ β except β†[|β| − 1]s = Hr\n\nWhat is the correct interpretation:\n1) β† is a copy of β except that in the last element of β† we replace s for the value of Hr\n2) β† a copy of β only if the value of s in the last element is equal to Hr, otherwise β† is nil \n\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/0fd5010fde01",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$K8xH-7U2RzDGBCKZlr5PIVJgT2NWz7ttnZndC3Y174U\n\n---\n * I have a doubt about this formula:\n(7.2) β† ≡ β except β†\\[|β| − 1\\]s = Hr\n\nWhat is the correct interpretation:\n\n1. β† is a copy of β except that in the last element of β† we replace s for the value of Hr\n2. β† is a copy of β only if the value of s in the last element is equal to Hr, otherwise β† is nil\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/0fd5010fde01\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$evTLZSkNdglsrHtDDaEgfk7QUXCvxMOG4faryKbLzqU\n\n---\nI have a doubt about this formula: \n(7.2) β† ≡ β except β†[|β| − 1]s = Hr\n\nWhat is the correct interpretation:\n1) β† is a copy of β except that in the last element of β† we replace s for the value of Hr\n2) β† a copy of β only if the value of s in the last element is equal to Hr, otherwise β† is nil \n\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/0fd5010fde01",
     "date": 1733950711100,
     "author": "@danicuki:matrix.org, @danicuki:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/0fd5010fde01",
@@ -1566,7 +1570,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$hLpBBbtDDAa2JJOoD4JwK5EvaaQP0RvH-Vp-xalD9hg\n\n--- * The work report's authorizer\\_hash is removed from the authorizer pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$z0dL-vbFHofG6w9cLL6IuIOD6lqP9j8jWV3_5hrlRDM\n\n--- * The work report's authorizer\\_hash is removed from the authoriser pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MMU_rQID9FD8gUhHEX6WrqKFVDralLUZ3Obs6ayluGg\n\n--- * I think the work report's authorizer\\_hash is removed from the authoriser pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$hLpBBbtDDAa2JJOoD4JwK5EvaaQP0RvH-Vp-xalD9hg\n\n---\n * The work report's authorizer\\_hash is removed from the authorizer pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$z0dL-vbFHofG6w9cLL6IuIOD6lqP9j8jWV3_5hrlRDM\n\n---\n * The work report's authorizer\\_hash is removed from the authoriser pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$MMU_rQID9FD8gUhHEX6WrqKFVDralLUZ3Obs6ayluGg\n\n---\n * I think the work report's authorizer\\_hash is removed from the authoriser pool when it is placed on the core. https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00",
     "date": 1733955444535,
     "author": "@vinsystems:matrix.org, @vinsystems:matrix.org, @vinsystems:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/911af30/10b50010ba00",
@@ -1584,7 +1588,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Jx-piEiLaFGcpGAfrA0CCX8jldQA3LRUyLU-CkGNNhU\n\n---Work Package bundle = work package, work items extrinsics, work items import segements, work items justifications\n\n\nWe are encoding this Work package bundle here: https://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00\n\nI think we should encode the import segment with length as we don't have the length information of import segments in work report like extrinsics or constant length (hash) like Justifications\n\nor is there some other way to get the length of import segments?\n\n\n\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Jx-piEiLaFGcpGAfrA0CCX8jldQA3LRUyLU-CkGNNhU\n\n---\nWork Package bundle = work package, work items extrinsics, work items import segements, work items justifications\n\n\nWe are encoding this Work package bundle here: https://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00\n\nI think we should encode the import segment with length as we don't have the length information of import segments in work report like extrinsics or constant length (hash) like Justifications\n\nor is there some other way to get the length of import segments?\n\n\n\n",
     "date": 1733977868835,
     "author": "@amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00\n\nI",
@@ -1602,7 +1606,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$nOfL1ArP48rICKA1ROmx0dQOcuX5zPkXu8NilnBURkk\n\n--- * We are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? What am I missing here?\n\n\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$xXpISs-MwcbtqVZjknlgU3q5qRrnyCp8FaKURfInsJU\n\n--- * We are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? What am I missing something here?\n\n\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$y5TqhLGEEiYMKBgQyX_IVk1wOzpQDO5OLVwcPnfDVbE\n\n---We are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? Maybe I am missing something here\n\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$nOfL1ArP48rICKA1ROmx0dQOcuX5zPkXu8NilnBURkk\n\n---\n * We are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? What am I missing here?\n\n\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$xXpISs-MwcbtqVZjknlgU3q5qRrnyCp8FaKURfInsJU\n\n---\n * We are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? What am I missing something here?\n\n\n---\nhttps://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$y5TqhLGEEiYMKBgQyX_IVk1wOzpQDO5OLVwcPnfDVbE\n\n---\nWe are removing the starting 1 bit from the left sub-trie identity\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut as this is a hash, we don't know exactly if the starting bit of the left sub-trie identity will be 0 or 1.\n\nSo, how do we decode this hash value? Maybe I am missing something here\n\n",
     "date": 1734286903978,
     "author": "@amritj:matrix.org, @amritj:matrix.org, @amritj:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/37ab0237af02\n\nBut",
@@ -1620,7 +1624,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$bnuwOPEVHTkDKIJusxHuClkGO4jiJUu_v406V6tJISQ\n\n---Suggestion for an inconsistency fix in the designate host function.\nPR: https://github.com/gavofyork/graypaper/pull/166\n(GP: https://graypaper.fluffylabs.dev/#/5b732de/306401306401)\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$bnuwOPEVHTkDKIJusxHuClkGO4jiJUu_v406V6tJISQ\n\n---\nSuggestion for an inconsistency fix in the designate host function.\nPR: https://github.com/gavofyork/graypaper/pull/166\n(GP: https://graypaper.fluffylabs.dev/#/5b732de/306401306401)\n",
     "date": 1734390353861,
     "author": "@emielsebastiaan:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/306401306401)\n",
@@ -1638,7 +1642,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Tq_XrFxr6C_OX77ZLBYYCBToG2Qu7OfJmNmIrymUsKQ\n\n---https://graypaper.fluffylabs.dev/#/5b732de/1b9d001b9f00 this have a description of it, but it leaves some ambiguity of the encoding format. e.g. how exactly are the extrinsic data and the proofs are encoded?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Tq_XrFxr6C_OX77ZLBYYCBToG2Qu7OfJmNmIrymUsKQ\n\n---\nhttps://graypaper.fluffylabs.dev/#/5b732de/1b9d001b9f00 this have a description of it, but it leaves some ambiguity of the encoding format. e.g. how exactly are the extrinsic data and the proofs are encoded?",
     "date": 1734483528944,
     "author": "@xlchen:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/1b9d001b9f00",
@@ -1656,7 +1660,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$McyqhhkalPDzJjejo85KWAAgLtRkovvDSkCE8Ra_fcY\n\n---https://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$McyqhhkalPDzJjejo85KWAAgLtRkovvDSkCE8Ra_fcY\n\n---\nhttps://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00",
     "date": 1734483824653,
     "author": "@dave:parity.io",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/1b5d001b5d00",
@@ -1674,7 +1678,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$B5X09WudkNE7RriKIhwoWYuUfR12c1V4UYAZwz19M20\n\n---Hello, question here : \n[\\mathbb{H}^0](https://graypaper.fluffylabs.dev/#/5b732de/377b02377c02)  = [0]_32 in Ch3.8.1 called \"zero-hash\"\nHowever, [\\mathbb{H}_0](https://graypaper.fluffylabs.dev/#/5b732de/391200391200) called \"zero hash\"\nIs there any difference between these terms? \nDoes \"zero hash\" also refer to [0]_32 or does it take 0 as input of hash func?",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$B5X09WudkNE7RriKIhwoWYuUfR12c1V4UYAZwz19M20\n\n---\nHello, question here : \n[\\mathbb{H}^0](https://graypaper.fluffylabs.dev/#/5b732de/377b02377c02)  = [0]_32 in Ch3.8.1 called \"zero-hash\"\nHowever, [\\mathbb{H}_0](https://graypaper.fluffylabs.dev/#/5b732de/391200391200) called \"zero hash\"\nIs there any difference between these terms? \nDoes \"zero hash\" also refer to [0]_32 or does it take 0 as input of hash func?",
     "date": 1734545541867,
     "author": "@yu2c:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/377b02377c02)",
@@ -1692,7 +1696,7 @@
     "labels": []
   },
   {
-    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Ttwf_44q-miJfoWvtZLVRuWh7_tXJQaw0DyhnYubm0c\n\n---in accumulate host function (Appendix B), the transfer function:\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/311401311401\n\n\nthe \"otherwise if ϱ < g \" branch\ndoes the g here refer the g = value of register #9\nor g = 10 + ω8 + 232 ⋅ ω9 the gas cost?\nThanks :)\n\n",
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$Ttwf_44q-miJfoWvtZLVRuWh7_tXJQaw0DyhnYubm0c\n\n---\nin accumulate host function (Appendix B), the transfer function:\n\nhttps://graypaper.fluffylabs.dev/#/5b732de/311401311401\n\n\nthe \"otherwise if ϱ < g \" branch\ndoes the g here refer the g = value of register #9\nor g = 10 + ω8 + 232 ⋅ ω9 the gas cost?\nThanks :)\n\n",
     "date": 1734600214225,
     "author": "@luke_fishman:matrix.org",
     "link": "https://graypaper.fluffylabs.dev/#/5b732de/311401311401\n\n\nthe",
@@ -1702,6 +1706,78 @@
     "selectionStart": {
       "pageNumber": 49,
       "index": 276
+    },
+    "selectionEnd": {
+      "pageNumber": 0,
+      "index": 0
+    },
+    "labels": []
+  },
+  {
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$13n85sFSbsEZ4hr3-l0DDN2ELeeiyyvMcFKTptzo41E\n\n---\nHello, I have a question about the structure of recent history $beta$, in the GP [(7.1)](https://graypaper.fluffylabs.dev/#/5b732de/0fb6010fca01) is (header hash, accumulation-result MMR, state root, work-report dict.), however in [(7.3)](https://graypaper.fluffylabs.dev/#/5b732de/0f41020f6c02) the item $n$ is (work-report dict., header hash, accumulation-result MMR, state root).\nThe order seems inconsistent. Which one should I follow? I assume this is a tuple, so the order is important for implementation because they will concat. at the end",
+    "date": 1735221090782,
+    "author": "@yu2c:matrix.org",
+    "link": "https://graypaper.fluffylabs.dev/#/5b732de/0fb6010fca01)",
+    "version": "5b732de277d9d2b8f5ce10d8fd26e079d45fc786",
+    "pageNumber": 15,
+    "selectionString": "",
+    "selectionStart": {
+      "pageNumber": 15,
+      "index": 438
+    },
+    "selectionEnd": {
+      "pageNumber": 0,
+      "index": 0
+    },
+    "labels": []
+  },
+  {
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$j6MQekKmJHWv_vfti5-BAoj7SplsEL7Pl-j7XV0lAgA\n\n---\nSorry, I'm a bit confused about the definition of serialization of guarantee extrinsic $Eg$.\nIn GP [5.6](https://graypaper.fluffylabs.dev/#/6e1c0cd/0ce0000cf200), $\\mathbf{g}$ is defined\nHowever, in appendix [C.16](https://graypaper.fluffylabs.dev/#/6e1c0cd/36870036ab00), there's already a definition for the serialization of $Eg$.\nIs $\\mathbf{g}$ specifically defined for $H_x$? Or which definition should we follow? Thanks",
+    "date": 1735531278220,
+    "author": "@yu2c:matrix.org",
+    "link": "https://graypaper.fluffylabs.dev/#/6e1c0cd/0ce0000cf200),",
+    "version": "6e1c0cdf82b09b4b738591380c0fc3ccfed955ba",
+    "pageNumber": 12,
+    "selectionString": "",
+    "selectionStart": {
+      "pageNumber": 12,
+      "index": 224
+    },
+    "selectionEnd": {
+      "pageNumber": 0,
+      "index": 0
+    },
+    "labels": []
+  },
+  {
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$n9bActShHBHc4msB0mwqPsGQt6j5YMdBy2xzJydrN8U\n\n---\na doubt about the encoding of service storage and pre-image lookups in D.2:\nhttps://graypaper.fluffylabs.dev/#/6e1c0cd/373302377802\n\n\nif i am reading this correctly, after encoding it would be impossible to reconstruct the original hash keys when decoding\n\n\n    ∀(s ↦ a) ∈ δ, (k ↦ v) ∈ as ∶ C(s, E4(232 − 1) ⌢ k0...28) ↦ v \n\n\nam i missing something?\n\n\nthank you and a happy new year \n\n\n",
+    "date": 1735639100598,
+    "author": "@luke_fishman:matrix.org",
+    "link": "https://graypaper.fluffylabs.dev/#/6e1c0cd/373302377802\n\n\nif",
+    "version": "6e1c0cdf82b09b4b738591380c0fc3ccfed955ba",
+    "pageNumber": 55,
+    "selectionString": "",
+    "selectionStart": {
+      "pageNumber": 55,
+      "index": 563
+    },
+    "selectionEnd": {
+      "pageNumber": 0,
+      "index": 0
+    },
+    "labels": []
+  },
+  {
+    "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$PPWGxydORvICmsKWLsOK2qAWOa7xln8fIAcfNgKMP7A\n\n---\n> <@luke_fishman:matrix.org> a doubt about the encoding of service storage and pre-image lookups in D.2:\n> https://graypaper.fluffylabs.dev/#/6e1c0cd/373302377802\n> \n> \n> if i am reading this correctly, after encoding it would be impossible to reconstruct the original hash keys when decoding\n> \n> \n>     ∀(s ↦ a) ∈ δ, (k ↦ v) ∈ as ∶ C(s, E4(232 − 1) ⌢ k0...28) ↦ v \n> \n> \n> am i missing something?\n> \n> \n> thank you and a happy new year \n> \n> \n> \n\nYou’re not missing anything. HNY:)",
+    "date": 1735639350716,
+    "author": "@gav:polkadot.io",
+    "link": "https://graypaper.fluffylabs.dev/#/6e1c0cd/373302377802\n>",
+    "version": "6e1c0cdf82b09b4b738591380c0fc3ccfed955ba",
+    "pageNumber": 55,
+    "selectionString": "",
+    "selectionStart": {
+      "pageNumber": 55,
+      "index": 563
     },
     "selectionEnd": {
       "pageNumber": 0,
