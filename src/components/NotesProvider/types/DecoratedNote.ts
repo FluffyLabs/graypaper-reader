@@ -10,7 +10,10 @@ export type IDecoratedNote = {
   original: IStorageNote;
   /** Synctex data migrated to current version (or original data if migration is not possible). */
   current: ISelectionParams & {
-    canBeMigrated: boolean;
+    /** Is this note already in the latest/current version? */
+    isUpToDate: boolean;
+    /** If not in latest version, did we find a migration? */
+    isMigrated: boolean;
     version: string;
   };
 };

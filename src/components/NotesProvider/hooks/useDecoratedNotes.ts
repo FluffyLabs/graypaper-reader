@@ -20,20 +20,22 @@ export function useDecoratedNotes() {
           // that were already done.
           const { version, selectionStart, selectionEnd } = note;
           const key = `${note.date}-${idx}`;
-          const newSelection =
-            note.version !== currentVersion
-              ? await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion)
-              : null;
+          const isUpToDate = note.version === currentVersion;
+          const newSelection = !isUpToDate
+            ? await migrateSelection({ selectionStart, selectionEnd }, version, currentVersion)
+            : null;
 
           const current = !newSelection
             ? {
-                canBeMigrated: false,
+                isUpToDate,
+                isMigrated: false,
                 version,
                 selectionStart,
                 selectionEnd,
               }
             : {
-                canBeMigrated: true,
+                isUpToDate,
+                isMigrated: true,
                 version: currentVersion,
                 selectionStart: newSelection.selectionStart,
                 selectionEnd: newSelection.selectionEnd,
