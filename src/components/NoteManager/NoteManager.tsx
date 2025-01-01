@@ -4,9 +4,12 @@ import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
-import { type IHighlightNote, type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
+import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { Note } from "./Note";
+import { LabelsFilter } from "./NoteLabels";
 
 const DEFAULT_AUTHOR = "";
 
@@ -16,7 +19,7 @@ export function NoteManager() {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
     notes,
-    notesMigrated,
+    labels,
     canUndo,
     hasLegacyNotes,
     handleAddNote,
@@ -26,10 +29,9 @@ export function NoteManager() {
     handleImport,
     handleExport,
     handleLegacyExport,
+    handleToggleLabel,
   } = useContext(NotesContext) as INotesContext;
-  const { selectionString, selectedBlocks, pageNumber, handleClearSelection } = useContext(
-    SelectionContext,
-  ) as ISelectionContext;
+  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
     if (
@@ -37,8 +39,9 @@ export function NoteManager() {
       pageNumber === null ||
       !locationParams.selectionStart ||
       !locationParams.selectionEnd
-    )
+    ) {
       throw new Error("Attempted saving a note without selection.");
+    }
 
     setNoteContentError("");
 
@@ -49,20 +52,21 @@ export function NoteManager() {
       return;
     }
 
-    const newNote: IHighlightNote = {
+    const newNote: IStorageNote = {
+      noteVersion: 3,
       content: noteContent,
       date: Date.now(),
       author: DEFAULT_AUTHOR,
-      pageNumber,
       selectionStart: locationParams.selectionStart,
       selectionEnd: locationParams.selectionEnd,
-      selectionString,
       version: locationParams.version,
+      // TODO [ToDr] user defined labels?
+      labels: [LABEL_LOCAL],
     };
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectionString, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
+  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -81,16 +85,19 @@ export function NoteManager() {
       if (!ev.target?.files?.length) {
         return;
       }
+      const fileToImport = ev.target.files[0];
+
       const f = new FileReader();
       f.onload = (e) => {
+        const fileContent = e.target?.result?.toString() || "";
         try {
-          handleImport(e.target?.result?.toString() || "");
+          handleImport(fileContent, fileToImport.name.substring(0, 12));
         } catch (e) {
           console.error(e);
           alert("Unable to load the notes file. Check console for details.");
         }
       };
-      f.readAsText(ev.target.files[0]);
+      f.readAsText(fileToImport);
     },
     [handleImport],
   );
@@ -111,38 +118,26 @@ export function NoteManager() {
           Add
         </button>
       </div>
-      <ul>
-        {notesMigrated.length === notes.length ? (
-          notes.map((note, index) => (
-            <Note
-              version={locationParams.version}
-              key={note.date}
-              note={note}
-              noteMigrated={notesMigrated[index]}
-              onEditNote={handleUpdateNote}
-              onDeleteNote={handleDeleteNote}
-            />
-          ))
-        ) : (
-          <li>Loading...</li>
-        )}
-      </ul>
-      <div className="actions">
+      <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
+      {notes.map((note) => (
+        <Note key={note.key} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+      ))}
+      <div className="notes-actions">
         {canUndo && <button onClick={handleUndo}>undo</button>}
         <button onClick={onImport}>import notes</button>
         <button onClick={handleExport}>export notes</button>
         {hasLegacyNotes ? (
           <button
             data-tooltip-id="legacy-export-tooltip"
-            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}/.`}
+            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}.`}
             data-tooltip-place="bottom"
             onClick={handleLegacyExport}
           >
             export old notes
           </button>
         ) : null}
-        <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ opacity: 0 }} />
       </div>
+      <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ opacity: 0 }} />
       <Tooltip id="legacy-export-tooltip" />
     </div>
   );
