@@ -1,10 +1,11 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
 import type { INotesContext } from "../NotesProvider/NotesProvider";
+import { editableLabels } from "../NotesProvider/hooks/useLabels";
 import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { RenderMath } from "../RenderMath/RenderMath";
-import { NoteLabels } from "./NoteLabels";
+import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
 export type NotesItem = {
@@ -24,6 +25,15 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [noteContentError, setNoteContentError] = useState("");
 
   const isEditable = note.source !== NoteSource.Remote;
+
+  const handleEditLabels = useCallback(
+    (labels: string[]) => {
+      const nonEditable = editableLabels(noteDirty.labels, { onlyNonEditable: true });
+      noteDirty.labels = [...new Set([...nonEditable, ...labels])];
+      setNoteDirty({ ...noteDirty });
+    },
+    [noteDirty],
+  );
 
   const handleSaveClick = useCallback<MouseEventHandler>(() => {
     const mathValidationError = validateMath(noteDirty.content);
@@ -78,6 +88,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
           <RenderMath content={note.original.content} />
         </blockquote>
       )}
+      {isEditing ? <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} /> : null}
       <div className="actions">
         {!isEditing ? <NoteLabels note={note} /> : null}
 
