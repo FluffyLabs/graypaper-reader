@@ -1,5 +1,4 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
-import type { ISelectionParams } from "@fluffylabs/types";
+import type { ISelectionParams, ISynctexBlock } from "@fluffylabs/links-metadata";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";

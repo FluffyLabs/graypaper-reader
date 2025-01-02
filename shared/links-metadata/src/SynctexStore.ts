@@ -1,9 +1,10 @@
-import type { ISynctexData, ISynctexJson } from "../../types";
+import { synctexUrlGetter as defaultGetter } from "./metadata";
+import type { ISynctexData, ISynctexJson } from "./types";
 
 export class SynctexStore {
   constructor(
-    private readonly synctexUrlGetter: (version: string) => string,
-    private readonly cache: Map<string, Promise<ISynctexData>>,
+    private readonly synctexUrlGetter: (version: string) => string = defaultGetter,
+    private readonly cache: Map<string, Promise<ISynctexData>> = new Map(),
   ) {}
 
   private async fetchAndTransform(url: string): Promise<ISynctexData> {

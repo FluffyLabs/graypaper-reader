@@ -1,9 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import type { ISynctexData } from "../../packages/types";
-import { parseLink } from "./link";
-import { type Metadata, ORIGIN, synctexUrlGetter, texUrlGetter } from "./metadata";
+import { SynctexStore, TexStore, findLink, parseAndMigrateLink } from "@fluffylabs/links-metadata";
+import type { Metadata } from "@fluffylabs/links-metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
 class Timer {
@@ -27,10 +25,8 @@ class Timer {
 
 export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
   const timer = new Timer();
-  const synctexCache = new Map<string, Promise<ISynctexData>>();
-  const synctexStore = new SynctexStore(synctexUrlGetter, synctexCache);
-  const texCache = new Map<string, Promise<string>>();
-  const texStore = new TexStore(texUrlGetter, texCache);
+  const synctexStore = new SynctexStore();
+  const texStore = new TexStore();
   const cwd = process.cwd();
   const results = await Promise.allSettled(
     files.map(async (file) => {
@@ -80,19 +76,14 @@ async function scanFile(
   };
 
   await readLineByLine(path, (lineNumber, line) => {
-    const linkStart = line.indexOf(ORIGIN);
-    if (linkStart !== -1) {
-      // extract raw link
-      const linkLine = line.substring(linkStart);
-      const whitespaceIdx = linkLine.indexOf(" ");
-      const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
-
+    const link = findLink(line);
+    if (link !== null) {
       links.push([lineNumber, link]);
     }
   });
 
   const linksParsed = await Promise.all(
-    links.map(([lineNumber, link]) => parseLink(lineNumber, link, metadata, synctexStore, texStore)),
+    links.map(([lineNumber, link]) => parseAndMigrateLink(link, metadata, synctexStore, texStore, lineNumber)),
   );
 
   report.allLinks = linksParsed;

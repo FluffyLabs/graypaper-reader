@@ -1,4 +1,4 @@
-import type { ISelectionParams } from "@fluffylabs/types";
+import type { ISelectionParams } from "@fluffylabs/links-metadata";
 import type { IStorageNote } from "./StorageNote";
 
 export type IDecoratedNote = {

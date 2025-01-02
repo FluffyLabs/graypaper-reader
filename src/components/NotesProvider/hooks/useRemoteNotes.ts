@@ -6,7 +6,7 @@ import { importNotesFromJson } from "../utils/notesImportExport";
 import type { useDecoratedNotes } from "./useDecoratedNotes";
 
 export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
-  const [remoteNotesSources] = useState([]);
+  const [remoteNotesSources] = useState(["/remote-notes.json"]);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);
 

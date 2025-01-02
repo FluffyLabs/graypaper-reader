@@ -1,4 +1,4 @@
-import type { Link } from "./link";
+import type { Link } from "@fluffylabs/links-metadata";
 
 export type Path = string;
 

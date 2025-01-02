@@ -3,7 +3,7 @@ import { useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import type { IDecoratedNote } from "../../../NotesProvider/types/DecoratedNote";
-import { RenderMath } from "../../../RenderMath/RenderMath";
+import { RenderNote } from "../../../RenderNote/RenderNote";
 
 interface HighlightNoteProps {
   note: IDecoratedNote;
@@ -60,7 +60,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
         onMouseEnter={() => setNoteIsShown(false)}
         onMouseLeave={() => setNoteIsShown(true)}
       >
-        <RenderMath content={note.original.content} />
+        <RenderNote content={note.original.content} />
       </div>
     </>
   );
