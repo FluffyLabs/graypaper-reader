@@ -1,7 +1,3 @@
-
-> @fluffylabs/matrix-bot@1.0.0 convert-to-notes
-> ts-node ./convert-to-notes.ts
-
 [
   {
     "content": "https://matrix.to/#/!ddsEwXlCWnreEGuqXZ:polkadot.io/$1wmrXo5RzSeEGbVpy3W88d4kqsP4_8bnISgU0KzqSTg\n\n---\n> I need clarification on how is pageProof being used in CE139/CE140? Our understanding is that page proof is quite large as it's encoded with Justification & ↕si⋅⋅⋅+64 in https://graypaper.fluffylabs.dev/#/c71229b/1a15001a1500. So it's probably possible to recover exported segments from pageproof alone;\n\nThe proof pages contain Merkle proofs from the segment root to the exported segments. Each proof page/segment contains proofs for 64 exported segments. You certainly can't reconstruct the exported segments themselves from these proof pages. CE139/140 is intended to be used to fetch proof page shards as well as exported segment shards. You need to explicitly request proof page shards by passing the appropriate segment indices.",
