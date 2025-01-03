@@ -20,25 +20,22 @@ type Message = {
 };
 
 type NoteV3 = {
+  noteVersion: 3;
   content: string;
   /** local-tz timestamp (from Date.now()) */
   date: number;
   /** empty for local notes. */
   author: string;
-  /** duplicated in selectionStart/selectionEnd? */
-  pageNumber: number;
   /** Full version number. */
   version: string;
   /** Labels. */
   labels: string[];
 
-  /** selection */
-  selectionString: string;
   selectionStart: ISynctexBlockId;
   selectionEnd: ISynctexBlockId;
 };
 
-async function main(file = "./output/messages.json") {
+async function main(file = "./messages.json") {
   const content = fs.readFileSync(path.resolve(file), "utf-8");
   // note that the file is not a valid JSON as-is (it's appended to),
   // so let's convert it to an array.
@@ -68,6 +65,7 @@ async function main(file = "./output/messages.json") {
       prevNote.content = `${content}\n---\n${prevNote.content}`;
     } else {
       notes.set(linkData.link, {
+        noteVersion: 3,
         content,
         date,
         author: msg.sender,
@@ -78,7 +76,11 @@ async function main(file = "./output/messages.json") {
   }
 
   const notesArray = Array.from(notes.values());
-  console.info(JSON.stringify(notesArray, null, 2));
+  // INotesEnvelope
+  console.info(JSON.stringify({
+    verson: 3,
+    notes: notesArray
+  }, null, 2));
 }
 
 async function findAndParseLink(content: string, meta: Metadata) {
@@ -95,9 +97,6 @@ async function findAndParseLink(content: string, meta: Metadata) {
   return {
     link,
     version: linkData.version,
-    pageNumber: linkData.selectionStart.pageNumber,
-    // TODO [ToDr] do I need to fill it up?
-    selectionString: "",
     selectionStart: linkData.selectionStart,
     selectionEnd: linkData.selectionEnd,
   };
