@@ -1,4 +1,4 @@
-import type { ISynctexBlock } from "@fluffylabs/links-metadata";
+import { type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
 import { useContext, useEffect, useState } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
@@ -11,7 +11,7 @@ const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
   const { viewer, eventBus } = useContext(PdfContext) as IPdfContext;
-  const { selectedBlocks, pageNumber, lastScrolledTo, setLastScrolledTo, setSelectionString } = useContext(
+  const { selectedBlocks, pageNumber, lastScrolledTo, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
@@ -27,14 +27,9 @@ export function SelectionRenderer() {
     // too often!
     console.debug("scroll: checking if we need to scroll");
     // we don't need to scroll.
-    if (
-      selectedBlocks[0].pageNumber === lastScrolledTo?.pageNumber &&
-      selectedBlocks[0].index === lastScrolledTo?.index
-    ) {
+    if (isSameBlock(selectedBlocks[0], lastScrolledTo.current)) {
       return;
     }
-
-    console.debug("scroll: scrolling to", selectedBlocks);
 
     const pageOffset = pageOffsets.current[selectedBlocks[0].pageNumber];
     if (!pageOffset) {
@@ -55,8 +50,8 @@ export function SelectionRenderer() {
     viewer.container.scrollTo({ top: topBlockOffset - SCROLL_TO_OFFSET_PX });
 
     // update last scrolled to location.
-    setLastScrolledTo(selectedBlocks[0]);
-  }, [selectedBlocks, viewer, lastScrolledTo, setLastScrolledTo, retryScrolling, pageOffsets]);
+    lastScrolledTo.current = selectedBlocks[0];
+  }, [selectedBlocks, viewer, lastScrolledTo, retryScrolling, pageOffsets]);
 
   useEffect(() => {
     const handleTextLayerRendered = (e: { pageNumber: number }) => {

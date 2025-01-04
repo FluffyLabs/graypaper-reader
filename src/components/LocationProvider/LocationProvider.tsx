@@ -1,4 +1,4 @@
-import type { ISelectionParams, ISynctexBlock } from "@fluffylabs/links-metadata";
+import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
@@ -9,7 +9,7 @@ export interface ILocationContext {
   synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
 }
 
-export interface ILocationParams extends Partial<ISelectionParams> {
+interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
 }
 
@@ -95,7 +95,19 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       }
     }
 
-    setLocationParams(processedParams);
+    // Update location but only if it has REALLY changed.
+    setLocationParams((params) => {
+      if (!isSameBlock(params?.selectionStart, processedParams.selectionStart)) {
+        return processedParams;
+      }
+      if (!isSameBlock(params?.selectionEnd, processedParams.selectionEnd)) {
+        return processedParams;
+      }
+      if (params?.version !== processedParams.version) {
+        return processedParams;
+      }
+      return params;
+    });
   }, [handleSetLocationParams, metadata]);
 
   const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = useCallback((blocks) => {

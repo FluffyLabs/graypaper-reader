@@ -1,7 +1,6 @@
 import type { SynctexStore } from "./SynctexStore";
 import type { TexStore } from "./TexStore";
 import { type Metadata, ORIGIN } from "./metadata";
-import { migrateSelection } from "./migrate";
 import type { ISynctexBlockId } from "./types";
 
 export type Link = {
@@ -82,7 +81,7 @@ export async function parseAndMigrateLink(
 
   // check if the blocks are still there in the latest metadata
   if (isOutdated && selectionStart && selectionEnd) {
-    const migratedSelection = await migrateSelection(
+    const migratedSelection = await migrateSelectionRaw(
       { selectionStart, selectionEnd },
       version,
       meta.metadata.latest,

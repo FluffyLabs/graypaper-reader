@@ -112,6 +112,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     if (pdfUrl) {
       setServices({});
       setViewer(undefined);
+      pageOffsets.current = [];
       setupPdfServices();
     }
   }, [pdfUrl]);
