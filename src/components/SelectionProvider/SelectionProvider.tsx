@@ -8,15 +8,15 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
-  useEffect,
 } from "react";
+import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import {usePrevious} from "../../hooks/usePrevious";
 
 export interface ISelectionContext {
   selectionString: string;
@@ -58,7 +58,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
       lastScrolledTo.current = null;
     }
   }, [previousVersion, locationParams]);
-
 
   const handleViewerMouseUp = useCallback(() => {
     const selection = document.getSelection();

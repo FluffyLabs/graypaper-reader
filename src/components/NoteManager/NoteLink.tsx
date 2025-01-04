@@ -1,6 +1,6 @@
+import { isSameBlock } from "@fluffylabs/links-metadata";
 import { type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { blockIdsEqual } from "../../utils/blockIdsEqual";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import type { INotesContext } from "../NotesProvider/NotesProvider";
@@ -69,8 +69,8 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
       if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
 
       if (
-        (!blockIdsEqual(locationParams.selectionStart, selectionStart) ||
-          !blockIdsEqual(locationParams.selectionEnd, selectionEnd)) &&
+        (!isSameBlock(locationParams.selectionStart, selectionStart) ||
+          !isSameBlock(locationParams.selectionEnd, selectionEnd)) &&
         !confirm("The selection has been altered. Are you sure you want to update the note?")
       ) {
         return;
