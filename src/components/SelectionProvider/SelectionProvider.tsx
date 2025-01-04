@@ -107,8 +107,11 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
   ]);
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
+    console.log("Looking up selected block", locationParams.selectionStart, locationParams.selectionEnd);
     if (locationParams.selectionStart && locationParams.selectionEnd) {
-      return getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
+      const blocks = getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
+      console.log("Found blocks", blocks);
+      return blocks;
     }
 
     return [];

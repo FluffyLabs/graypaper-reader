@@ -34,6 +34,8 @@ export function SelectionRenderer() {
       return;
     }
 
+    console.debug("scroll: scrolling to", selectedBlocks);
+
     const pageOffset = pageOffsets.current[selectedBlocks[0].pageNumber];
     if (!pageOffset) {
       // we don't have an offset yet, so we will retry in a second or so.

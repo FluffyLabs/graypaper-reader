@@ -79,8 +79,15 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
         return null;
       },
-      getSynctexBlockRange(startBlockId, endBlockId) {
-        if (!synctexData || startBlockId.pageNumber !== endBlockId.pageNumber) return [];
+      getSynctexBlockRange(startBlockId, givenEndBlockId) {
+        if (!synctexData) return [];
+
+        let endBlockId = givenEndBlockId;
+        // Since we don't really know how to handle multi-page selections yet,
+        // let's just assume that only start block is selected.
+        if (startBlockId.pageNumber !== givenEndBlockId.pageNumber) {
+          endBlockId = startBlockId;
+        }
 
         // todo: for now we assume selections are within one page
         return (
