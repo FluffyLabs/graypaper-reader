@@ -14,6 +14,7 @@ const HISTORY_STEPS_LIMIT = 10;
 export const NotesContext = createContext<INotesContext | null>(null);
 
 export interface INotesContext {
+  notesReady: boolean;
   notes: IDecoratedNote[];
   labels: ILabel[];
   canUndo: boolean;
@@ -35,8 +36,9 @@ interface INotesProviderProps {
 }
 
 export function NotesProvider({ children }: INotesProviderProps) {
-  const [localNotes, setLocalNotes] = useState<INotesEnvelope>(loadFromLocalStorage());
+  const [localNotes, setLocalNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [localNotesDecorated, setLocalNotesDecorated] = useState<IDecoratedNote[]>([]);
+  const [localNotesReady, setLocalNotesReady] = useState<boolean>(false);
   const [history, setHistory] = useState<INotesEnvelope[]>([]);
   const [redoHistory, setRedoHistory] = useState<INotesEnvelope[]>([]);
   const { locationParams } = useContext(LocationContext) as ILocationContext;
@@ -45,8 +47,13 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const canUndo = history.length > 0;
   const canRedo = redoHistory.length > 0;
 
+  // load local notes
+  useEffect(() => {
+    setLocalNotes(loadFromLocalStorage());
+  }, []);
+
   const decorateNotes = useDecoratedNotes();
-  const remoteNotesDecorated = useRemoteNotes(decorateNotes, currentVersion);
+  const { remoteNotesDecorated, remoteNotesReady } = useRemoteNotes(decorateNotes, currentVersion);
 
   // Legacy notes export indicator
   const hasLegacyNotes = useMemo(() => {
@@ -63,8 +70,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   // Decorate all local notes.
   useEffect(() => {
+    setLocalNotesReady(false);
     decorateNotes(localNotes.notes, NoteSource.Local, currentVersion).then((notes) => {
       setLocalNotesDecorated(notes);
+      setLocalNotesReady(true);
     });
   }, [localNotes.notes, currentVersion, decorateNotes]);
 
@@ -74,9 +83,12 @@ export function NotesProvider({ children }: INotesProviderProps) {
     [localNotesDecorated, remoteNotesDecorated],
   );
 
+  const allNotesReady = useMemo(() => localNotesReady && remoteNotesReady, [localNotesReady, remoteNotesReady]);
+
   const [filteredNotes, labels, handleToggleLabel] = useLabels(allNotes);
 
   const context: INotesContext = {
+    notesReady: allNotesReady,
     notes: filteredNotes,
     labels,
     canUndo,
@@ -166,15 +178,15 @@ export function NotesProvider({ children }: INotesProviderProps) {
       },
       [localNotes, updateLocalNotes],
     ),
-    handleExport() {
+    handleExport: useCallback(() => {
       const fileName = `graypaper-notes-${new Date().toISOString()}.json`;
       downloadNotesAsJson(localNotes, fileName);
-    },
-    handleLegacyExport() {
+    }, [localNotes]),
+    handleLegacyExport: useCallback(() => {
       const strNotes = loadLegacyFromLocalStorage() ?? "[]";
       const fileName = `old-graypaper-notes-${new Date().toISOString()}.json`;
       downloadJsonFile(strNotes, fileName);
-    },
+    }, []),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;

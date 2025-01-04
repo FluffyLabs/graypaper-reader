@@ -1,5 +1,5 @@
 import type { ISelectionParams, ISynctexBlock } from "@fluffylabs/links-metadata";
-import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
@@ -9,7 +9,7 @@ export interface ILocationContext {
   synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
 }
 
-interface ILocationParams extends Partial<ISelectionParams> {
+export interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
 }
 
@@ -83,9 +83,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     }
 
     const processedParams: ILocationParams = {
-      version:
-        Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ||
-        metadata.latest,
+      version: fullVersion,
     };
 
     if (rawParams[SELECTION_SEGMENT_INDEX]) {
@@ -100,7 +98,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     setLocationParams(processedParams);
   }, [handleSetLocationParams, metadata]);
 
-  const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = (blocks) => {
+  const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = useCallback((blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
     const lowestBlockId = blockIds.reduce((result, blockId) => {
       if (blockId.pageNumber < result.pageNumber) return blockId;
@@ -119,23 +117,32 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       selectionStart: lowestBlockId,
       selectionEnd: highestBlockId,
     };
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("hashchange", handleHashChange);
+    handleHashChange();
 
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, [handleHashChange]);
 
-  useEffect(() => {
-    handleHashChange();
-  }, [handleHashChange]);
+  const context = useMemo(() => {
+    if (!locationParams) {
+      return null;
+    }
 
-  if (!locationParams) return null;
+    return {
+      locationParams,
+      setLocationParams: handleSetLocationParams,
+      synctexBlocksToSelectionParams,
+    };
+  }, [locationParams, handleSetLocationParams, synctexBlocksToSelectionParams]);
 
-  const context = { locationParams, setLocationParams: handleSetLocationParams, synctexBlocksToSelectionParams };
+  if (!context) {
+    return null;
+  }
 
   return <LocationContext.Provider value={context}>{children}</LocationContext.Provider>;
 }

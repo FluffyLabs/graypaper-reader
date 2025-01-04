@@ -14,7 +14,7 @@ type NoteLinkProps = {
 
 export function NoteLink({ note, onEditNote }: NoteLinkProps) {
   const [sectionTitle, setTitle] = useState({ section: "", subSection: "" as string | null });
-  const { selectedBlocks, setScrollToSelection } = useContext(SelectionContext) as ISelectionContext;
+  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
@@ -46,9 +46,8 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         selectionStart,
         selectionEnd,
       });
-      setScrollToSelection(true);
     },
-    [selectionStart, selectionEnd, locationParams, setLocationParams, setScrollToSelection],
+    [selectionStart, selectionEnd, locationParams, setLocationParams],
   );
 
   const handleOriginalClick = useCallback<MouseEventHandler>(
@@ -59,9 +58,8 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         selectionStart: note.original.selectionStart,
         selectionEnd: note.original.selectionEnd,
       });
-      setScrollToSelection(true);
     },
-    [note, setLocationParams, setScrollToSelection],
+    [note, setLocationParams],
   );
 
   const handleMigrateClick = useCallback<MouseEventHandler>(

@@ -85,6 +85,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         </>
       ) : (
         <blockquote>
+          {note.original.author}
           <RenderNote content={note.original.content} />
         </blockquote>
       )}

@@ -8,6 +8,7 @@ import type { useDecoratedNotes } from "./useDecoratedNotes";
 export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
   const [remoteNotesSources] = useState(["/remote-notes.json"]);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
+  const [remoteNotesReady, setRemoteNotesReady] = useState<boolean>(false);
   const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);
 
   // load remote notes
@@ -33,10 +34,15 @@ export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNote
 
   // auto-decorate remote notes
   useEffect(() => {
+    setRemoteNotesReady(false);
     decorateNotes(remoteNotes.notes, NoteSource.Remote, currentVersion).then((notes) => {
       setRemoteNotesDecorated(notes);
+      setRemoteNotesReady(true);
     });
   }, [remoteNotes, currentVersion, decorateNotes]);
 
-  return remoteNotesDecorated;
+  return {
+    remoteNotesDecorated,
+    remoteNotesReady,
+  };
 }

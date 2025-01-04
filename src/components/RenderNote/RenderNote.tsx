@@ -27,21 +27,35 @@ function renderMath(content: string): string {
 }
 
 function renderLinks(content: string): string {
-  let newContent = content;
-  const links = newContent.match(URL_REGEX);
+  const links = content.match(URL_REGEX);
   if (links === null) {
-    return newContent;
+    return content;
   }
+  let newContent = "";
+  let haystack = content;
   for (const link of links) {
-    newContent = newContent.replace(link, `<a target="_blank" href="${link}">${shortenLink(link)}</a>`);
+    // to support the same links multiple times we need to move forward in the content.
+    const indexOf = haystack.indexOf(link);
+    // convert reader links to local links
+    const localLink = link.replace("https://graypaper.fluffylabs.dev", "");
+    const linkData = `<a target="_blank" href="${localLink}">${shortenLink(localLink)}</a>`;
+    haystack = haystack.replace(link, linkData);
+    // add that stuff already to the newcontent
+    newContent += haystack.substring(0, indexOf + linkData.length);
+    // and move forward
+    haystack = haystack.substring(indexOf + linkData.length);
   }
-  return newContent;
+  // return the new content and whatever is left.
+  return newContent + haystack;
 }
 
 function shortenLink(link: string) {
   let newLink = link;
   newLink = newLink.replace("https://", "");
   const [domain, ...rest] = newLink.split("/");
+  if (!domain) {
+    return rest.join("/");
+  }
   const restStr = rest.join("/");
   const SPLIT = 6;
   const start = restStr.substring(0, Math.min(SPLIT, restStr.length));

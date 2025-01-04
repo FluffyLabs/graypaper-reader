@@ -18,6 +18,7 @@ export function NoteManager() {
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
+    notesReady,
     notes,
     labels,
     canUndo,
@@ -105,7 +106,7 @@ export function NoteManager() {
   );
 
   return (
-    <div className="note-manager">
+    <div className="note-manager" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
       <div className="new-note">
         <textarea
           disabled={selectedBlocks.length === 0}

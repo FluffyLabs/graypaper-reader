@@ -19,7 +19,7 @@ export function PdfViewer() {
   const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale, theme } = useContext(
     PdfContext,
   ) as IPdfContext;
-  const { handleViewerMouseDown, handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
+  const { handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
 
   const handleWheel: WheelEventHandler = (e) => {
     if (!viewer) return;
@@ -104,13 +104,7 @@ export function PdfViewer() {
 
   return (
     <>
-      <div
-        ref={handleRootRef}
-        className="pdf-viewer-root"
-        onMouseDown={handleViewerMouseDown}
-        onMouseUp={handleViewerMouseUp}
-        onWheel={handleWheel}
-      >
+      <div ref={handleRootRef} className="pdf-viewer-root" onMouseUp={handleViewerMouseUp} onWheel={handleWheel}>
         {pagesLoaded ? (
           <>
             <NoteRenderer key={`${scale}-NoteRenderer`} />

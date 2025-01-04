@@ -7,13 +7,14 @@ import { RenderNote } from "../../../RenderNote/RenderNote";
 
 interface HighlightNoteProps {
   note: IDecoratedNote;
-  pageOffset: DOMRect;
+  pageOffset?: DOMRect;
+  isVisible: boolean;
 }
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
 
-export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
+export function HighlightNote({ note, pageOffset, isVisible }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [noteIsShown, setNoteIsShown] = useState(true);
@@ -25,7 +26,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  if (!blocks.length) return null;
+  if (!blocks.length || !pageOffset) return null;
 
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
   const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
@@ -50,7 +51,7 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
 
   return (
-    <>
+    <div style={{ visibility: isVisible ? "visible" : "hidden" }}>
       <Highlighter blocks={blocks} pageOffset={pageOffset} color={NOTE_COLOR} opacity={NOTE_OPACITY} />
 
       <div
@@ -59,9 +60,12 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
         style={style}
         onMouseEnter={() => setNoteIsShown(false)}
         onMouseLeave={() => setNoteIsShown(true)}
+        onClick={() => setNoteIsShown(!noteIsShown)}
+        onKeyPress={() => setNoteIsShown(!noteIsShown)}
       >
+        {note.original.author}
         <RenderNote content={note.original.content} />
       </div>
-    </>
+    </div>
   );
 }

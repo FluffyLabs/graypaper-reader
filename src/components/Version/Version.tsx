@@ -1,23 +1,35 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
 import { type ChangeEventHandler, useCallback, useContext } from "react";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
-  const {
-    locationParams: { version },
-    setLocationParams,
-  } = useContext(LocationContext) as ILocationContext;
+  const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
+  const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
   const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
-  const currentVersionHash = metadata.versions[version].hash;
+  const currentVersionHash = metadata.versions[locationParams.version].hash;
 
   const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     (e) => {
-      setLocationParams({ version: e.target.value });
+      const newVersion = e.target.value;
+      const { selectionStart, selectionEnd, version } = locationParams;
+      if (!selectionStart || !selectionEnd) {
+        setLocationParams({ version: newVersion });
+      } else {
+        migrateSelection({ selectionStart, selectionEnd }, version, newVersion).then((newSelection) => {
+          setLocationParams({
+            ...locationParams,
+            selectionStart: newSelection?.selectionStart ?? selectionStart,
+            selectionEnd: newSelection?.selectionEnd ?? selectionEnd,
+            version: newVersion,
+          });
+        });
+      }
     },
-    [setLocationParams],
+    [setLocationParams, locationParams, migrateSelection],
   );
 
   return (
@@ -32,14 +44,14 @@ export function Version() {
           ⚠
         </span>
       )}
-      <select onChange={handleChange} value={version}>
+      <select onChange={handleChange} value={locationParams.version}>
         {versions.map((v) => (
           <Option key={v.hash} id={v.hash} version={v} latest={metadata.latest} />
         ))}
       </select>
       <a
         data-tooltip-id="version"
-        data-tooltip-content="Open GrayPaper github commit."
+        data-tooltip-content="Open Gray Paper github commit."
         data-tooltip-place="top"
         target="_blank"
         href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}

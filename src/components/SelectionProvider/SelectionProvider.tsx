@@ -19,9 +19,8 @@ export interface ISelectionContext {
   setSelectionString: Dispatch<SetStateAction<string>>;
   selectedBlocks: ISynctexBlock[];
   pageNumber: number | null;
-  scrollToSelection: boolean;
-  setScrollToSelection: Dispatch<SetStateAction<boolean>>;
-  handleViewerMouseDown: MouseEventHandler;
+  lastScrolledTo: ISynctexBlock | null;
+  setLastScrolledTo: Dispatch<SetStateAction<ISynctexBlock | null>>;
   handleViewerMouseUp: MouseEventHandler;
   handleClearSelection: () => void;
 }
@@ -40,7 +39,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
   ) as ILocationContext;
   const { getSynctexBlockAtLocation, getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [selectionString, setSelectionString] = useState<string>("");
-  const [scrollToSelection, setScrollToSelection] = useState<boolean>(true);
+  const [lastScrolledTo, setLastScrolledTo] = useState<ISynctexBlock | null>(null);
 
   const handleClearSelection = useCallback(() => {
     const { selectionStart, selectionEnd, ...otherParams } = locationParams;
@@ -48,12 +47,13 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     window.getSelection()?.empty();
   }, [setLocationParams, locationParams]);
 
-  const handleViewerMouseDown = () => handleClearSelection();
-
-  const handleViewerMouseUp = () => {
+  const handleViewerMouseUp = useCallback(() => {
     const selection = document.getSelection();
 
-    if (!selection || !selection.anchorNode) return;
+    if (!selection || !selection.anchorNode) {
+      handleClearSelection();
+      return;
+    }
 
     const anchorElement = "closest" in selection.anchorNode ? selection.anchorNode : selection.anchorNode.parentElement;
     const focusElement =
@@ -91,11 +91,20 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
 
     if (!synctexBlocks.length) return;
 
-    setLocationParams({
+    const newLocation = {
       ...locationParams,
       ...synctexBlocksToSelectionParams(synctexBlocks),
-    });
-  };
+    };
+    // set the new location already to avoid scrolling.
+    setLastScrolledTo(synctexBlocks[0]);
+    setLocationParams(newLocation);
+  }, [
+    setLocationParams,
+    locationParams,
+    handleClearSelection,
+    getSynctexBlockAtLocation,
+    synctexBlocksToSelectionParams,
+  ]);
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selectionStart && locationParams.selectionEnd) {
@@ -114,9 +123,8 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     setSelectionString,
     selectedBlocks,
     pageNumber,
-    scrollToSelection,
-    setScrollToSelection,
-    handleViewerMouseDown,
+    lastScrolledTo,
+    setLastScrolledTo,
     handleViewerMouseUp,
     handleClearSelection,
   };

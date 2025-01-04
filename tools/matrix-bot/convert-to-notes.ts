@@ -35,7 +35,7 @@ type NoteV3 = {
   selectionEnd: ISynctexBlockId;
 };
 
-async function main(file = "./messages.json") {
+async function main(file = "./output/messages.json") {
   const content = fs.readFileSync(path.resolve(file), "utf-8");
   // note that the file is not a valid JSON as-is (it's appended to),
   // so let's convert it to an array.
@@ -77,10 +77,16 @@ async function main(file = "./messages.json") {
 
   const notesArray = Array.from(notes.values());
   // INotesEnvelope
-  console.info(JSON.stringify({
-    verson: 3,
-    notes: notesArray
-  }, null, 2));
+  console.info(
+    JSON.stringify(
+      {
+        version: 3,
+        notes: notesArray,
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 async function findAndParseLink(content: string, meta: Metadata) {

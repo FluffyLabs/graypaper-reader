@@ -30,7 +30,7 @@ export function App() {
                 <>
                   <Banner />
                   <div className="pdf-viewer-container">
-                    <PdfViewer key={version} />
+                    <PdfViewer />
                   </div>
                   <div className="controls">
                     <LightThemeToggle />
