@@ -100,11 +100,21 @@ export function PdfViewer() {
     rootElement.querySelector(".pdfViewer")?.classList.add(theme);
   }, [theme, rootElement, viewer]);
 
+  const removeSelection = useCallback(() => {
+    window.getSelection()?.empty();
+  }, []);
+
   if (!pdfDocument) return <div className="pdf-viewer-loading">Loading...</div>;
 
   return (
     <>
-      <div ref={handleRootRef} className="pdf-viewer-root" onMouseUp={handleViewerMouseUp} onWheel={handleWheel}>
+      <div
+        ref={handleRootRef}
+        className="pdf-viewer-root"
+        onMouseDown={removeSelection}
+        onMouseUp={handleViewerMouseUp}
+        onWheel={handleWheel}
+      >
         {pagesLoaded ? (
           <>
             <NoteRenderer key={`${scale}-NoteRenderer`} />

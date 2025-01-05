@@ -14,6 +14,8 @@ const HISTORY_STEPS_LIMIT = 10;
 export const NotesContext = createContext<INotesContext | null>(null);
 
 export interface INotesContext {
+  notesPinned: boolean;
+  setNotesPinned: (v: boolean) => void;
   notesReady: boolean;
   notes: IDecoratedNote[];
   labels: ILabel[];
@@ -36,6 +38,7 @@ interface INotesProviderProps {
 }
 
 export function NotesProvider({ children }: INotesProviderProps) {
+  const [notesPinned, setNotesPinned] = useState<boolean>(false);
   const [localNotes, setLocalNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [localNotesDecorated, setLocalNotesDecorated] = useState<IDecoratedNote[]>([]);
   const [localNotesReady, setLocalNotesReady] = useState<boolean>(false);
@@ -88,6 +91,8 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const [filteredNotes, labels, handleToggleLabel] = useLabels(allNotes);
 
   const context: INotesContext = {
+    notesPinned,
+    setNotesPinned,
     notesReady: allNotesReady,
     notes: filteredNotes,
     labels,

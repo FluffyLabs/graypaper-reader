@@ -9,6 +9,7 @@
   overflow: auto;
   max-height: 50vh;
   z-index: 3;
+  padding: 20px 10px 0;
 }
 .highlight-note-content a.close {
   cursor: pointer;

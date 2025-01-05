@@ -9,6 +9,7 @@ import { type IMetadataContext, MetadataContext } from "./components/MetadataPro
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
+import { PinNotesToggle } from "./components/PinNotesToggle/PinNotesToggle";
 import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
@@ -33,6 +34,7 @@ export function App() {
                     <PdfViewer />
                   </div>
                   <div className="controls">
+                    <PinNotesToggle />
                     <LightThemeToggle />
                     <ZoomControls />
                   </div>

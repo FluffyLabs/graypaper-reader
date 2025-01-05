@@ -5,7 +5,7 @@ import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 
 export function NoteRenderer() {
-  const { notes } = useContext(NotesContext) as INotesContext;
+  const { notes, notesPinned } = useContext(NotesContext) as INotesContext;
   const { viewer } = useContext(PdfContext) as IPdfContext;
   const { visiblePages, pageOffsets } = useContext(PdfContext) as IPdfContext;
 
@@ -34,6 +34,14 @@ export function NoteRenderer() {
     const isVisible = visiblePages.includes(pageNumber);
     // NOTE: we control visibility internally, to maintain the state of the component
     // (i.e. visibility of the note).
-    return <HighlightNote notes={notes} isVisible={isVisible} pageOffset={pageOffsets.current[pageNumber]} key={id} />;
+    return (
+      <HighlightNote
+        notes={notes}
+        notesPinned={notesPinned}
+        isVisible={isVisible}
+        pageOffset={pageOffsets.current[pageNumber]}
+        key={id}
+      />
+    );
   });
 }

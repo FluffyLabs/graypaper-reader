@@ -8,18 +8,25 @@ import { RenderNote } from "../../../RenderNote/RenderNote";
 interface HighlightNoteProps {
   notes: IDecoratedNote[];
   pageOffset?: DOMRect;
+  notesPinned: boolean;
   isVisible: boolean;
 }
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
 
-export function HighlightNote({ notes, pageOffset, isVisible }: HighlightNoteProps) {
+export function HighlightNote({ notes, pageOffset, isVisible, notesPinned }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
+  // if the note is getting in the way the user may click it to make it translucent (without pining)
   const [noteTranslucent, setNoteTranslucent] = useState(false);
-  const [noteDisplayed, setNoteDisplayed] = useState(true);
+  // by default the note state is controlled by `notesPinned`, but the user might change that.
+  const [noteDisplayed, setNoteDisplayed] = useState<boolean | null>(null);
+  // when note is not displayed, it may be temporarily by hovering the annotation
+  const [noteHover, setNoteHover] = useState(false);
 
+  // state of the note content display
+  const isNoteDisplayedNow = noteDisplayed ?? notesPinned;
   const { selectionStart, selectionEnd } = notes[0].current;
 
   const blocks = useMemo(
@@ -27,7 +34,21 @@ export function HighlightNote({ notes, pageOffset, isVisible }: HighlightNotePro
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  if (!blocks.length || !pageOffset) return null;
+  const handleTranslucentToggle = useCallback(() => setNoteTranslucent((noteIsShown) => !noteIsShown), []);
+  const handleNoteHoverOn = useCallback(() => setNoteHover(true), []);
+  const handleNoteHoverOff = useCallback(() => setNoteHover(false), []);
+  const handleNoteDisplayed = useCallback<MouseEventHandler>((e) => {
+    // stop propagation to avoid changing the translucens as well.
+    e.stopPropagation();
+    e.preventDefault();
+    setNoteDisplayed((x) => !x);
+  }, []);
+
+  // do not render anything if we don't have selection, pageOffsets are not loaded yet
+  // or the note is inactive because it's on some other page.
+  if (!blocks.length || !pageOffset || !isVisible) {
+    return null;
+  }
 
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
   const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
@@ -44,25 +65,13 @@ export function HighlightNote({ notes, pageOffset, isVisible }: HighlightNotePro
         };
 
   const style = {
-    display: noteDisplayed ? "block" : "none",
+    display: isNoteDisplayedNow || noteHover ? "block" : "none",
     opacity: noteTranslucent ? 0.1 : 1.0,
     ...position,
   };
 
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
-
-  const noteTranslucentToggle = useCallback(() => setNoteTranslucent((noteIsShown) => !noteIsShown), []);
-  const noteToggle = useCallback<MouseEventHandler>((e) => {
-    // stop propagation to avoid changing the translucens as well.
-    e.stopPropagation();
-    e.preventDefault();
-    setNoteDisplayed((x) => !x);
-  }, []);
-
-  if (!isVisible) {
-    return null;
-  }
 
   // TODO [ToDr] Highlighting should be split out from this code.
   // We might have multiple notes that have different selections,
@@ -77,19 +86,23 @@ export function HighlightNote({ notes, pageOffset, isVisible }: HighlightNotePro
         pageOffset={pageOffset}
         color={NOTE_COLOR}
         opacity={NOTE_OPACITY}
-        isActive={noteDisplayed}
-        onClick={noteToggle}
+        isActive={isNoteDisplayedNow}
+        onClick={handleNoteDisplayed}
+        onHoverOn={handleNoteHoverOn}
+        onHoverOff={handleNoteHoverOff}
       />
 
       <div
         className="highlight-note-content"
         ref={handleNoteContentRef}
         style={style}
-        onClick={noteTranslucentToggle}
-        onKeyPress={noteTranslucentToggle}
+        onClick={handleTranslucentToggle}
+        onKeyPress={handleTranslucentToggle}
+        onMouseEnter={handleNoteHoverOn}
+        onMouseLeave={handleNoteHoverOff}
       >
-        <a className="close" onClick={noteToggle}>
-          X
+        <a className="close" onClick={handleNoteDisplayed}>
+          {isNoteDisplayedNow ? "📍" : "📌"}
         </a>
         {notes.map((note) => (
           <Fragment key={note.key}>

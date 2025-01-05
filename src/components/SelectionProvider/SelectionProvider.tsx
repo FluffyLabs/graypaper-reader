@@ -63,7 +63,6 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     const selection = document.getSelection();
 
     if (!selection || !selection.anchorNode) {
-      handleClearSelection();
       return;
     }
 
@@ -111,13 +110,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     // auto-scrolling that would happen otherwise.
     lastScrolledTo.current = newLocation.selectionStart;
     setLocationParams(newLocation);
-  }, [
-    setLocationParams,
-    locationParams,
-    handleClearSelection,
-    getSynctexBlockAtLocation,
-    synctexBlocksToSelectionParams,
-  ]);
+  }, [setLocationParams, locationParams, getSynctexBlockAtLocation, synctexBlocksToSelectionParams]);
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selectionStart && locationParams.selectionEnd) {
