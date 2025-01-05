@@ -87,8 +87,11 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       const justNames = oldLabels.map((x) => x.label);
       return Array.from(uniqueLabels.values()).map((label) => {
         const oldLabelIdx = justNames.indexOf(label);
+        const activeByDefault = label !== LABEL_REMOTE;
+        const isActive = !inactiveInStorage.has(label) && activeByDefault;
+
         if (oldLabelIdx === -1) {
-          return { label, isActive: !inactiveInStorage.has(label) };
+          return { label, isActive };
         }
         return oldLabels[oldLabelIdx];
       });
