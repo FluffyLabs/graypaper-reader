@@ -70,8 +70,12 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, []);
 
   // maintain a set of labels inactive in local storage.
-  const inactiveInStorage = useMemo(() => {
-    return new Set(storageLabels.filter((x) => !x.isActive).map((x) => x.label));
+  const storageActivity = useMemo(() => {
+    const activity = new Map<string, boolean>();
+    for (const label of storageLabels) {
+      activity.set(label.label, label.isActive);
+    }
+    return activity;
   }, [storageLabels]);
 
   // Re-create labels on change in notes
@@ -88,7 +92,8 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       return Array.from(uniqueLabels.values()).map((label) => {
         const oldLabelIdx = justNames.indexOf(label);
         const activeByDefault = label !== LABEL_REMOTE;
-        const isActive = !inactiveInStorage.has(label) && activeByDefault;
+        const activeInStorage = storageActivity.get(label);
+        const isActive = activeInStorage ?? activeByDefault;
 
         if (oldLabelIdx === -1) {
           return { label, isActive };
@@ -96,7 +101,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
         return oldLabels[oldLabelIdx];
       });
     });
-  }, [allNotes, inactiveInStorage]);
+  }, [allNotes, storageActivity]);
 
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {

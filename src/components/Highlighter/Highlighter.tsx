@@ -1,3 +1,4 @@
+import type { EventHandler, KeyboardEvent, MouseEvent } from "react";
 import "./Highlighter.css";
 import type { ISynctexBlock } from "@fluffylabs/links-metadata";
 
@@ -18,14 +19,27 @@ interface IHighlighterProps {
   blocks: ISynctexBlock[];
   pageOffset: DOMRect;
   color: IHighlighterColor;
+  isActive?: boolean;
   opacity?: number;
+  onClick?: EventHandler<MouseEvent<unknown> | KeyboardEvent<unknown>>;
 }
 
-export function Highlighter({ blocks, pageOffset, color, opacity = DEFAULT_HIGHLIGHT_OPACITY }: IHighlighterProps) {
+export function Highlighter({
+  blocks,
+  pageOffset,
+  color,
+  onClick,
+  isActive = true,
+  opacity = DEFAULT_HIGHLIGHT_OPACITY,
+}: IHighlighterProps) {
   return blocks.map((block) => (
     <div
       className="highlighter-highlight"
+      onClick={onClick}
+      onKeyPress={onClick}
       style={{
+        // move active highlights on top, so they can be closed
+        zIndex: isActive ? 2 : 1,
         left: `${pageOffset.left + pageOffset.width * block.left}px`,
         top: `${pageOffset.top + pageOffset.height * block.top - pageOffset.height * block.height}px`,
         width: `${pageOffset.width * block.width + WIDTH_OFFSET}px`,
