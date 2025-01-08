@@ -7,7 +7,7 @@ export type ILabel = {
   isActive: boolean;
 };
 
-export function editableLabels(
+export function getEditableLabels(
   labels: string[],
   { onlyNonEditable }: { onlyNonEditable: boolean } = { onlyNonEditable: false },
 ) {

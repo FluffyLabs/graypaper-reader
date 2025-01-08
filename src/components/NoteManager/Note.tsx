@@ -1,7 +1,7 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../utils/validateMath";
 import type { INotesContext } from "../NotesProvider/NotesProvider";
-import { editableLabels } from "../NotesProvider/hooks/useLabels";
+import { getEditableLabels } from "../NotesProvider/hooks/useLabels";
 import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { RenderMath } from "../RenderMath/RenderMath";
@@ -28,7 +28,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
 
   const handleEditLabels = useCallback(
     (labels: string[]) => {
-      const nonEditable = editableLabels(noteDirty.labels, { onlyNonEditable: true });
+      const nonEditable = getEditableLabels(noteDirty.labels, { onlyNonEditable: true });
       noteDirty.labels = [...new Set([...nonEditable, ...labels])];
       setNoteDirty({ ...noteDirty });
     },

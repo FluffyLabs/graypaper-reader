@@ -1,5 +1,5 @@
 import { type ChangeEventHandler, useCallback, useState } from "react";
-import { editableLabels } from "../NotesProvider/hooks/useLabels";
+import { getEditableLabels } from "../NotesProvider/hooks/useLabels";
 import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import { Label } from "./Label";
 
@@ -25,7 +25,7 @@ const SEPARATOR = ",";
 const JOINER = ", ";
 
 export function NoteLabelsEdit({ note, onNewLabels }: NoteLabelsEditProps) {
-  const labels = editableLabels(note.original.labels).join(JOINER);
+  const labels = getEditableLabels(note.original.labels).join(JOINER);
   const [currentInput, setCurrentInput] = useState(labels);
 
   const updateLabels = useCallback<ChangeEventHandler<HTMLInputElement>>(
