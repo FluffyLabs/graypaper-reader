@@ -8,7 +8,7 @@
   white-space: pre-wrap;
   overflow: auto;
   max-height: 50vh;
-  z-index: 3;
+  z-index: 4;
   padding: 20px 10px 0;
 }
 .highlight-note-content a.close {

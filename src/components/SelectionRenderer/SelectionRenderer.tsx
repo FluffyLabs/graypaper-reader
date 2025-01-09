@@ -7,6 +7,7 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 
 const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
 const SELECTION_OPACITY = 0.5;
+const SELECTION_ZINDEX = 2;
 const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
@@ -124,7 +125,13 @@ export function SelectionRenderer() {
   if (!viewer || !pageOffset) return null;
 
   return (
-    <Highlighter blocks={selectedBlocks} pageOffset={pageOffset} color={SELECTION_COLOR} opacity={SELECTION_OPACITY} />
+    <Highlighter
+      blocks={selectedBlocks}
+      pageOffset={pageOffset}
+      color={SELECTION_COLOR}
+      opacity={SELECTION_OPACITY}
+      zIndex={SELECTION_ZINDEX}
+    />
   );
 }
 

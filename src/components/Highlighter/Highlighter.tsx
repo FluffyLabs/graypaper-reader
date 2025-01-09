@@ -9,6 +9,12 @@ const WIDTH_OFFSET = 5;
 // aribtrarily set offset to make sure that the entirety of the letters is selected.
 const HEIGHT_OFFSET = 5;
 
+// We control the z-index manually, for two reasons:
+// 1. selection highlight to be below the annotation/note highlight.
+// 2. notes/tooltips to be on top of the annotations (see `HighlightNote.css`)
+// 3. multiple notes annotations should be reversly ordered
+const DEFAULT_ZINDEX = 3;
+
 export interface IHighlighterColor {
   r: number;
   g: number;
@@ -24,6 +30,7 @@ interface IHighlighterProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: EventHandler<MouseEvent<unknown> | KeyboardEvent<unknown>>;
+  zIndex?: number;
 }
 
 export function Highlighter({
@@ -35,6 +42,7 @@ export function Highlighter({
   onMouseLeave,
   isActive = true,
   opacity = DEFAULT_HIGHLIGHT_OPACITY,
+  zIndex = DEFAULT_ZINDEX,
 }: IHighlighterProps) {
   return blocks.map((block) => (
     <div
@@ -45,7 +53,7 @@ export function Highlighter({
       onMouseLeave={onMouseLeave}
       style={{
         // move active highlights on top, so they can be closed
-        zIndex: isActive ? 2 : 1,
+        zIndex: isActive ? zIndex : zIndex - 1,
         left: `${pageOffset.left + pageOffset.width * block.left}px`,
         top: `${pageOffset.top + pageOffset.height * block.top - pageOffset.height * block.height}px`,
         width: `${pageOffset.width * block.width + WIDTH_OFFSET}px`,
