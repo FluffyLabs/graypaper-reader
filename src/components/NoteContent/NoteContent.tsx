@@ -3,11 +3,11 @@ import DOMPurify from "dompurify";
 import { useMemo } from "react";
 import { renderMathToString } from "../../utils/renderMathToString";
 
-export type RenderNoteProps = {
+export type NoteContentProps = {
   content: string;
 };
 
-export const RenderNote: React.FC<RenderNoteProps> = ({ content }) => {
+export const NoteContent: React.FC<NoteContentProps> = ({ content }) => {
   const renderedContent = useMemo(() => {
     const math = renderMath(content);
     const links = renderLinks(math);

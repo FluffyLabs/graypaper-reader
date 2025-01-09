@@ -1,7 +1,7 @@
 import { type ChangeEventHandler, useCallback, useState } from "react";
-import { getEditableLabels } from "../NotesProvider/hooks/useLabels";
-import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
-import { Label } from "./Label";
+import { getEditableLabels } from "../../NotesProvider/hooks/useLabels";
+import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
+import { Label } from "../../Label/Label";
 
 type NoteLabelsProps = {
   note: IDecoratedNote;

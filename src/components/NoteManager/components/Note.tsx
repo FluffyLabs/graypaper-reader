@@ -1,10 +1,10 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
-import { validateMath } from "../../utils/validateMath";
-import type { INotesContext } from "../NotesProvider/NotesProvider";
-import { getEditableLabels } from "../NotesProvider/hooks/useLabels";
-import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
-import type { IStorageNote } from "../NotesProvider/types/StorageNote";
-import { RenderNote } from "../RenderNote/RenderNote";
+import { validateMath } from "../../../utils/validateMath";
+import type { INotesContext } from "../../NotesProvider/NotesProvider";
+import { getEditableLabels } from "../../NotesProvider/hooks/useLabels";
+import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
+import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import { NoteContent } from "../../NoteContent/NoteContent";
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
@@ -86,7 +86,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
       ) : (
         <blockquote>
           {note.original.author}
-          <RenderNote content={note.original.content} />
+          <NoteContent content={note.original.content} />
         </blockquote>
       )}
       {isEditing ? <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} /> : null}

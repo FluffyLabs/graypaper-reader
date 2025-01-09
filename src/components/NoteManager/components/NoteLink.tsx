@@ -1,11 +1,11 @@
 import { isSameBlock } from "@fluffylabs/links-metadata";
 import { type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import type { INotesContext } from "../NotesProvider/NotesProvider";
-import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
-import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
+import type { INotesContext } from "../../NotesProvider/NotesProvider";
+import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
+import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
   note: IDecoratedNote;
