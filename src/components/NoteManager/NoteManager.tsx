@@ -2,13 +2,13 @@ import { type ChangeEventHandler, useCallback, useContext, useEffect, useRef, us
 import "./NoteManager.css";
 import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
+import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
 import { Note } from "./components/Note";
 
 const DEFAULT_AUTHOR = "";

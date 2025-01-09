@@ -19,6 +19,11 @@ type Message = {
   msg: string;
 };
 
+// TODO [ToDr] Note these types could be shared between the `matrix-bot`
+// and the reader, however since we want to avoid having too many shared
+// packages (to simplify publishing to npm) and this type does not really
+// fit the `links-metadata`, I've decided to duplicate it here.
+// Note it's a historical format, so it SHOULD NOT change anyway.
 type NoteV3 = {
   noteVersion: 3;
   content: string;
@@ -33,6 +38,10 @@ type NoteV3 = {
 
   selectionStart: ISynctexBlockId;
   selectionEnd: ISynctexBlockId;
+};
+type INotesEnvelopeV3 = {
+  version: 3;
+  notes: NoteV3[];
 };
 
 async function main(file = "./output/messages.json") {
@@ -76,17 +85,11 @@ async function main(file = "./output/messages.json") {
   }
 
   const notesArray = Array.from(notes.values());
-  // INotesEnvelope
-  console.info(
-    JSON.stringify(
-      {
-        version: 3,
-        notes: notesArray,
-      },
-      null,
-      2,
-    ),
-  );
+  const envelope: INotesEnvelopeV3 = {
+    version: 3,
+    notes: notesArray,
+  };
+  console.info(JSON.stringify(envelope, null, 2));
 }
 
 async function findAndParseLink(content: string, meta: Metadata) {

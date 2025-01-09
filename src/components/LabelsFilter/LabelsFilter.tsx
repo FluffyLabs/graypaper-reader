@@ -1,6 +1,6 @@
 import { type MouseEventHandler, useCallback } from "react";
-import type { ILabel } from "../NotesProvider/hooks/useLabels";
 import { Label } from "../Label/Label";
+import type { ILabel } from "../NotesProvider/hooks/useLabels";
 
 export type LabelsFilterProps = {
   labels: ILabel[];

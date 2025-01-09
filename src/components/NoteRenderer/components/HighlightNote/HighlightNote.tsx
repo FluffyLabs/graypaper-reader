@@ -2,8 +2,8 @@ import "./HighlightNote.css";
 import { Fragment, useCallback, useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
+import { NoteContent } from "../../../NoteContent/NoteContent";
 import type { IDecoratedNote } from "../../../NotesProvider/types/DecoratedNote";
-import {NoteContent} from "../../../NoteContent/NoteContent";
 
 interface HighlightNoteProps {
   notes: IDecoratedNote[];

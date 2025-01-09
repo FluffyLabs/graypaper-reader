@@ -1,10 +1,10 @@
 import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
+import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { getEditableLabels } from "../../NotesProvider/hooks/useLabels";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
-import { NoteContent } from "../../NoteContent/NoteContent";
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
