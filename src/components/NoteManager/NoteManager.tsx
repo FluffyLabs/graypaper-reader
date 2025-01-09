@@ -8,8 +8,8 @@ import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { LabelsFilter } from "./LabelsFilter";
 import { Note } from "./Note";
-import { LabelsFilter } from "./NoteLabels";
 
 const DEFAULT_AUTHOR = "";
 

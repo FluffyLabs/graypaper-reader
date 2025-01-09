@@ -1,10 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
 import type { IDecoratedNote } from "../types/DecoratedNote";
 
 export type ILabel = {
   label: string;
   isActive: boolean;
 };
+
+export function getEditableLabels(
+  labels: string[],
+  { onlyNonEditable }: { onlyNonEditable: boolean } = { onlyNonEditable: false },
+) {
+  return labels.filter((label) => {
+    if (label === LABEL_LOCAL || label === LABEL_REMOTE || label.startsWith(LABEL_IMPORTED)) {
+      return onlyNonEditable;
+    }
+    return !onlyNonEditable;
+  });
+}
 
 /**
  * Maintains a list list of all labels (across all nodes) and allow to activate/deactivate them
