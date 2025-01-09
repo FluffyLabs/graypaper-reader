@@ -6,7 +6,7 @@ import { importNotesFromJson } from "../utils/notesImportExport";
 import type { useDecoratedNotes } from "./useDecoratedNotes";
 
 export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
-  const [remoteNotesSources] = useState(["/remote-notes.json"]);
+  const [remoteNotesSources] = useState(["https://fluffylabs.dev/graypaper-notes/2024-element.json"]);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [remoteNotesReady, setRemoteNotesReady] = useState<boolean>(false);
   const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);
