@@ -21,8 +21,8 @@ interface IHighlighterProps {
   color: IHighlighterColor;
   isActive?: boolean;
   opacity?: number;
-  onHoverOn?: () => void;
-  onHoverOff?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   onClick?: EventHandler<MouseEvent<unknown> | KeyboardEvent<unknown>>;
 }
 
@@ -31,8 +31,8 @@ export function Highlighter({
   pageOffset,
   color,
   onClick,
-  onHoverOn,
-  onHoverOff,
+  onMouseEnter,
+  onMouseLeave,
   isActive = true,
   opacity = DEFAULT_HIGHLIGHT_OPACITY,
 }: IHighlighterProps) {
@@ -41,8 +41,8 @@ export function Highlighter({
       className="highlighter-highlight"
       onClick={onClick}
       onKeyPress={onClick}
-      onMouseEnter={onHoverOn}
-      onMouseLeave={onHoverOff}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         // move active highlights on top, so they can be closed
         zIndex: isActive ? 2 : 1,

@@ -1,5 +1,5 @@
 import "./HighlightNote.css";
-import { Fragment, type MouseEventHandler, useCallback, useContext, useMemo, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import type { IDecoratedNote } from "../../../NotesProvider/types/DecoratedNote";
@@ -8,25 +8,23 @@ import { RenderNote } from "../../../RenderNote/RenderNote";
 interface HighlightNoteProps {
   notes: IDecoratedNote[];
   pageOffset?: DOMRect;
-  notesPinned: boolean;
-  isVisible: boolean;
+  isPinnedByDefault: boolean;
+  isInViewport: boolean;
 }
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
 
-export function HighlightNote({ notes, pageOffset, isVisible, notesPinned }: HighlightNoteProps) {
+export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
-  // if the note is getting in the way the user may click it to make it translucent (without pining)
-  const [noteTranslucent, setNoteTranslucent] = useState(false);
-  // by default the note state is controlled by `notesPinned`, but the user might change that.
-  const [noteDisplayed, setNoteDisplayed] = useState<boolean | null>(null);
+  // by default the note state is controlled by `isPinnedByDefault`, but the user might change that.
+  const [isPinned, setPinned] = useState<boolean | null>(null);
   // when note is not displayed, it may be temporarily by hovering the annotation
-  const [noteHover, setNoteHover] = useState(false);
+  const [isHovered, setHovered] = useState(false);
 
   // state of the note content display
-  const isNoteDisplayedNow = noteDisplayed ?? notesPinned;
+  const isDisplayed = isPinned ?? isPinnedByDefault;
   const { selectionStart, selectionEnd } = notes[0].current;
 
   const blocks = useMemo(
@@ -34,19 +32,13 @@ export function HighlightNote({ notes, pageOffset, isVisible, notesPinned }: Hig
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  const handleTranslucentToggle = useCallback(() => setNoteTranslucent((noteIsShown) => !noteIsShown), []);
-  const handleNoteHoverOn = useCallback(() => setNoteHover(true), []);
-  const handleNoteHoverOff = useCallback(() => setNoteHover(false), []);
-  const handleNoteDisplayed = useCallback<MouseEventHandler>((e) => {
-    // stop propagation to avoid changing the translucens as well.
-    e.stopPropagation();
-    e.preventDefault();
-    setNoteDisplayed((x) => !x);
-  }, []);
+  const handleNoteHoverOn = useCallback(() => setHovered(true), []);
+  const handleNoteHoverOff = useCallback(() => setHovered(false), []);
+  const handleNotePinnedToggle = useCallback(() => setPinned((x) => !x), []);
 
   // do not render anything if we don't have selection, pageOffsets are not loaded yet
   // or the note is inactive because it's on some other page.
-  if (!blocks.length || !pageOffset || !isVisible) {
+  if (!blocks.length || !pageOffset || !isInViewport) {
     return null;
   }
 
@@ -65,8 +57,7 @@ export function HighlightNote({ notes, pageOffset, isVisible, notesPinned }: Hig
         };
 
   const style = {
-    display: isNoteDisplayedNow || noteHover ? "block" : "none",
-    opacity: noteTranslucent ? 0.1 : 1.0,
+    display: isDisplayed || isHovered ? "block" : "none",
     ...position,
   };
 
@@ -86,23 +77,21 @@ export function HighlightNote({ notes, pageOffset, isVisible, notesPinned }: Hig
         pageOffset={pageOffset}
         color={NOTE_COLOR}
         opacity={NOTE_OPACITY}
-        isActive={isNoteDisplayedNow}
-        onClick={handleNoteDisplayed}
-        onHoverOn={handleNoteHoverOn}
-        onHoverOff={handleNoteHoverOff}
+        isActive={isDisplayed}
+        onClick={handleNotePinnedToggle}
+        onMouseEnter={handleNoteHoverOn}
+        onMouseLeave={handleNoteHoverOff}
       />
 
       <div
         className="highlight-note-content"
         ref={handleNoteContentRef}
         style={style}
-        onClick={handleTranslucentToggle}
-        onKeyPress={handleTranslucentToggle}
         onMouseEnter={handleNoteHoverOn}
         onMouseLeave={handleNoteHoverOff}
       >
-        <a className="close" onClick={handleNoteDisplayed}>
-          {isNoteDisplayedNow ? "📍" : "📌"}
+        <a className="close" onClick={handleNotePinnedToggle}>
+          {isDisplayed ? "📍" : "📌"}
         </a>
         {notes.map((note) => (
           <Fragment key={note.key}>

@@ -31,14 +31,14 @@ export function NoteRenderer() {
     if (!viewer) return;
 
     const pageNumber = notes[0].current.selectionStart.pageNumber;
-    const isVisible = visiblePages.includes(pageNumber);
+    const isInViewport = visiblePages.includes(pageNumber);
     // NOTE: we control visibility internally, to maintain the state of the component
     // (i.e. visibility of the note).
     return (
       <HighlightNote
         notes={notes}
-        notesPinned={notesPinned}
-        isVisible={isVisible}
+        isPinnedByDefault={notesPinned}
+        isInViewport={isInViewport}
         pageOffset={pageOffsets.current[pageNumber]}
         key={id}
       />
