@@ -2,14 +2,14 @@ import { type ChangeEventHandler, useCallback, useContext, useEffect, useRef, us
 import "./NoteManager.css";
 import { Tooltip } from "react-tooltip";
 import { validateMath } from "../../utils/validateMath";
+import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LEGACY_READER_HOST } from "../MetadataProvider/MetadataProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import { LabelsFilter } from "./LabelsFilter";
-import { Note } from "./Note";
+import { Note } from "./components/Note";
 
 const DEFAULT_AUTHOR = "";
 
@@ -18,6 +18,7 @@ export function NoteManager() {
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const {
+    notesReady,
     notes,
     labels,
     canUndo,
@@ -105,7 +106,7 @@ export function NoteManager() {
   );
 
   return (
-    <div className="note-manager">
+    <div className="note-manager" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
       <div className="new-note">
         <textarea
           disabled={selectedBlocks.length === 0}

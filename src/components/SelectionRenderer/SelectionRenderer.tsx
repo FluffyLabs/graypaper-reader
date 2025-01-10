@@ -1,6 +1,5 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
+import { type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
 import { useContext, useEffect, useState } from "react";
-import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
@@ -8,37 +7,52 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 
 const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
 const SELECTION_OPACITY = 0.5;
+const SELECTION_ZINDEX = 2;
 const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
   const { viewer, eventBus } = useContext(PdfContext) as IPdfContext;
-  const { selectedBlocks, pageNumber, scrollToSelection, setScrollToSelection, setSelectionString } = useContext(
+  const { selectedBlocks, pageNumber, lastScrolledTo, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
   const [textLayerRendered, setTextLayerRendered] = useState<number[]>([]);
-  const previousScrollToSelection = usePrevious(scrollToSelection);
-
-  const pageOffset = pageNumber ? pageOffsets[pageNumber] : null;
+  const [retryScrolling, setRetryScrolling] = useState(0);
 
   useEffect(() => {
-    if (!viewer || (!previousScrollToSelection && scrollToSelection)) return;
+    // not ready yet
+    if (!viewer) return;
+    if (!selectedBlocks.length) return;
 
-    if (scrollToSelection) {
-      if (selectedBlocks.length && pageOffset) {
-        const topBlock = selectedBlocks.reduce<ISynctexBlock>((result, block) => {
-          if (block.top - block.height < result.top - result.height) return block;
-          return result;
-        }, selectedBlocks[0]);
-
-        const topBlockOffset = pageOffset.top + (topBlock.top - topBlock.height) * pageOffset.height;
-
-        viewer.container.scrollTo({ top: topBlockOffset - SCROLL_TO_OFFSET_PX });
-      }
-
-      setScrollToSelection(false);
+    // NOTE: if there is too much of this in the console, it means the effect is firing
+    // too often!
+    console.debug("scroll: checking if we need to scroll");
+    // we don't need to scroll.
+    if (isSameBlock(selectedBlocks[0], lastScrolledTo.current)) {
+      return;
     }
-  }, [selectedBlocks, viewer, pageOffset, scrollToSelection, setScrollToSelection, previousScrollToSelection]);
+
+    const pageOffset = pageOffsets.current[selectedBlocks[0].pageNumber];
+    if (!pageOffset) {
+      // we don't have an offset yet, so we will retry in a second or so.
+      setTimeout(() => {
+        setRetryScrolling(retryScrolling + 1);
+      }, 100);
+      return;
+    }
+
+    const topBlock = selectedBlocks.reduce<ISynctexBlock>((result, block) => {
+      if (block.top - block.height < result.top - result.height) return block;
+      return result;
+    }, selectedBlocks[0]);
+
+    const topBlockOffset = pageOffset.top + (topBlock.top - topBlock.height) * pageOffset.height;
+
+    viewer.container.scrollTo({ top: topBlockOffset - SCROLL_TO_OFFSET_PX });
+
+    // update last scrolled to location.
+    lastScrolledTo.current = selectedBlocks[0];
+  }, [selectedBlocks, viewer, lastScrolledTo, retryScrolling, pageOffsets]);
 
   useEffect(() => {
     const handleTextLayerRendered = (e: { pageNumber: number }) => {
@@ -106,10 +120,18 @@ export function SelectionRenderer() {
     setSelectionString(document.getSelection()?.toString() || "");
   }, [selectedBlocks, pageNumber, viewer, textLayerRendered, setSelectionString]);
 
+  const pageOffset = pageNumber ? pageOffsets.current[pageNumber] : null;
+
   if (!viewer || !pageOffset) return null;
 
   return (
-    <Highlighter blocks={selectedBlocks} pageOffset={pageOffset} color={SELECTION_COLOR} opacity={SELECTION_OPACITY} />
+    <Highlighter
+      blocks={selectedBlocks}
+      pageOffset={pageOffset}
+      color={SELECTION_COLOR}
+      opacity={SELECTION_OPACITY}
+      zIndex={SELECTION_ZINDEX}
+    />
   );
 }
 

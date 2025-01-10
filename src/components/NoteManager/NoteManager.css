@@ -29,6 +29,7 @@
   padding: 0.5rem;
   margin: 0.5rem 0;
   padding-bottom: 16px;
+  white-space: pre-wrap;
 }
 
 .note-manager .icon {

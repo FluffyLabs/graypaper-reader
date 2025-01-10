@@ -1,5 +1,5 @@
-import { SynctexStore } from "@fluffylabs/synctex-store";
-import type { ISynctexData } from "@fluffylabs/types";
+import { SynctexStore } from "@fluffylabs/links-metadata";
+import type { ISynctexData } from "@fluffylabs/links-metadata";
 import { useContext, useMemo, useRef } from "react";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
 

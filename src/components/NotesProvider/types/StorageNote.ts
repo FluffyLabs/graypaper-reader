@@ -1,4 +1,4 @@
-import type { ISelectionParams } from "@fluffylabs/types";
+import type { ISelectionParams } from "@fluffylabs/links-metadata";
 
 /** Latest version of the stored note. */
 export type IStorageNote = INoteV3;

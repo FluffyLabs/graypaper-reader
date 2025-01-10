@@ -1,15 +1,19 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
+import type { ISynctexBlock, ISynctexBlockId } from "@fluffylabs/links-metadata";
 import {
   type Dispatch,
   type MouseEventHandler,
+  type MutableRefObject,
   type ReactNode,
   type SetStateAction,
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
+import { usePrevious } from "../../hooks/usePrevious";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -19,9 +23,7 @@ export interface ISelectionContext {
   setSelectionString: Dispatch<SetStateAction<string>>;
   selectedBlocks: ISynctexBlock[];
   pageNumber: number | null;
-  scrollToSelection: boolean;
-  setScrollToSelection: Dispatch<SetStateAction<boolean>>;
-  handleViewerMouseDown: MouseEventHandler;
+  lastScrolledTo: MutableRefObject<ISynctexBlockId | null>;
   handleViewerMouseUp: MouseEventHandler;
   handleClearSelection: () => void;
 }
@@ -40,20 +42,29 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
   ) as ILocationContext;
   const { getSynctexBlockAtLocation, getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
   const [selectionString, setSelectionString] = useState<string>("");
-  const [scrollToSelection, setScrollToSelection] = useState<boolean>(true);
+  const lastScrolledTo = useRef<ISynctexBlockId | null>(null);
 
   const handleClearSelection = useCallback(() => {
     const { selectionStart, selectionEnd, ...otherParams } = locationParams;
     setLocationParams(otherParams);
     window.getSelection()?.empty();
+    lastScrolledTo.current = null;
   }, [setLocationParams, locationParams]);
 
-  const handleViewerMouseDown = () => handleClearSelection();
+  // reset scroll position when version changes.
+  const previousVersion = usePrevious(locationParams.version);
+  useEffect(() => {
+    if (previousVersion !== locationParams.version) {
+      lastScrolledTo.current = null;
+    }
+  }, [previousVersion, locationParams]);
 
-  const handleViewerMouseUp = () => {
+  const handleViewerMouseUp = useCallback(() => {
     const selection = document.getSelection();
 
-    if (!selection || !selection.anchorNode) return;
+    if (!selection || !selection.anchorNode) {
+      return;
+    }
 
     const anchorElement = "closest" in selection.anchorNode ? selection.anchorNode : selection.anchorNode.parentElement;
     const focusElement =
@@ -91,19 +102,22 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
 
     if (!synctexBlocks.length) return;
 
-    setLocationParams({
+    const newLocation = {
       ...locationParams,
       ...synctexBlocksToSelectionParams(synctexBlocks),
-    });
-  };
+    };
+    // since the selection comes from the user we want to suppress
+    // auto-scrolling that would happen otherwise.
+    lastScrolledTo.current = newLocation.selectionStart;
+    setLocationParams(newLocation);
+  }, [setLocationParams, locationParams, getSynctexBlockAtLocation, synctexBlocksToSelectionParams]);
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
     if (locationParams.selectionStart && locationParams.selectionEnd) {
       return getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
     }
-
     return [];
-  }, [getSynctexBlockRange, locationParams.selectionStart, locationParams.selectionEnd]);
+  }, [getSynctexBlockRange, locationParams]);
 
   const pageNumber: number | null = useMemo(() => {
     return selectedBlocks[0]?.pageNumber || null;
@@ -114,9 +128,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     setSelectionString,
     selectedBlocks,
     pageNumber,
-    scrollToSelection,
-    setScrollToSelection,
-    handleViewerMouseDown,
+    lastScrolledTo,
     handleViewerMouseUp,
     handleClearSelection,
   };

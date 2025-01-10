@@ -19,7 +19,7 @@ export function PdfViewer() {
   const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale, theme } = useContext(
     PdfContext,
   ) as IPdfContext;
-  const { handleViewerMouseDown, handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
+  const { handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
 
   const handleWheel: WheelEventHandler = (e) => {
     if (!viewer) return;
@@ -100,6 +100,10 @@ export function PdfViewer() {
     rootElement.querySelector(".pdfViewer")?.classList.add(theme);
   }, [theme, rootElement, viewer]);
 
+  const removeSelection = useCallback(() => {
+    window.getSelection()?.empty();
+  }, []);
+
   if (!pdfDocument) return <div className="pdf-viewer-loading">Loading...</div>;
 
   return (
@@ -107,7 +111,7 @@ export function PdfViewer() {
       <div
         ref={handleRootRef}
         className="pdf-viewer-root"
-        onMouseDown={handleViewerMouseDown}
+        onMouseDown={removeSelection}
         onMouseUp={handleViewerMouseUp}
         onWheel={handleWheel}
       >

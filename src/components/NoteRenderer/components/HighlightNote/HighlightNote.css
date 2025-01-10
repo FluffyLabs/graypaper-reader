@@ -1,8 +1,20 @@
 .highlight-note-content {
   position: absolute;
-  background: #000;
-  color: #fff;
-  border: 1px solid #fff;
+  background: #222;
+  color: #ddd;
+  border: 1px solid #ddd;
   padding: 10px;
   max-width: 300px;
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 50vh;
+  z-index: 4;
+  padding: 20px 10px 0;
+}
+.highlight-note-content a.close {
+  cursor: pointer;
+  position: absolute;
+  top: 1px;
+  right: 4px;
+  color: #ddd;
 }

@@ -1,6 +1,6 @@
-import { migrateSelection } from "@fluffylabs/migrate-selection";
-import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/types";
-import { createContext, useContext, useEffect, useState } from "react";
+import { migrateSelection as migrateSelectionRaw } from "@fluffylabs/links-metadata";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/links-metadata";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { useSynctexStore } from "./hooks/useSynctexStore";
@@ -33,19 +33,20 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
   const texStore = useTexStore();
   const synctexStore = useSynctexStore();
   const { locationParams } = useContext(LocationContext) as ILocationContext;
+  const { version } = locationParams;
 
   useEffect(() => {
     async function loadSynctex() {
-      setSynctexData(await synctexStore.getSynctex(locationParams.version));
+      setSynctexData(await synctexStore.getSynctex(version));
     }
 
-    if (locationParams.version) {
+    if (version) {
       loadSynctex();
     }
-  }, [locationParams.version, synctexStore]);
+  }, [version, synctexStore]);
 
-  const context: ICodeSyncContext = {
-    getSynctexBlockAtLocation(left, top, pageNumber) {
+  const getSynctexBlockAtLocation = useCallback(
+    (left: number, top: number, pageNumber: number) => {
       if (!synctexData) return null;
 
       const blocksInCurrPage = synctexData.blocksByPage.get(pageNumber) || [];
@@ -66,7 +67,11 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       return lastMatch || null;
     },
-    getSynctexBlockById(blockId) {
+    [synctexData],
+  );
+
+  const getSynctexBlockById = useCallback(
+    (blockId: ISynctexBlockId) => {
       if (!synctexData) return null;
 
       try {
@@ -77,16 +82,31 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       return null;
     },
-    getSynctexBlockRange(startBlockId, endBlockId) {
-      if (!synctexData || startBlockId.pageNumber !== endBlockId.pageNumber) return [];
+    [synctexData],
+  );
+
+  const getSynctexBlockRange = useCallback(
+    (startBlockId: ISynctexBlockId, givenEndBlockId: ISynctexBlockId) => {
+      if (!synctexData) return [];
+
+      let endBlockId = givenEndBlockId;
+      // Since we don't really know how to handle multi-page selections yet,
+      // let's just assume that only start block is selected.
+      if (startBlockId.pageNumber !== givenEndBlockId.pageNumber) {
+        endBlockId = startBlockId;
+      }
 
       // todo: for now we assume selections are within one page
       return (
         synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) || []
       );
     },
-    async getSectionTitleAtSynctexBlock(blockId) {
-      const block = context.getSynctexBlockById(blockId);
+    [synctexData],
+  );
+
+  const getSectionTitleAtSynctexBlock = useCallback(
+    async (blockId: ISynctexBlockId) => {
+      const block = getSynctexBlockById(blockId);
 
       if (!block) return null;
 
@@ -94,14 +114,15 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, locationParams.version);
+      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, version);
+      const line = sourceFileLines[Math.max(block.line - 2, 0)];
 
-      if (sourceFileLines[Math.max(block.line - 2, 0)].startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
+      if (line?.startsWith(LATEX_BIBLIOGRAPHY_PATTERN)) {
         return BIBLIOGRAPHY_TITLE;
       }
 
       for (let i = block.line - 1; i >= 0; i--) {
-        const matches = sourceFileLines[i].match(LATEX_SECTION_PATTERN);
+        const matches = sourceFileLines[i]?.match(LATEX_SECTION_PATTERN);
 
         if (matches) {
           return matches[1];
@@ -110,8 +131,12 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       return null;
     },
-    async getSubsectionTitleAtSynctexBlock(blockId) {
-      const block = context.getSynctexBlockById(blockId);
+    [version, getSynctexBlockById, synctexData, texStore],
+  );
+
+  const getSubsectionTitleAtSynctexBlock = useCallback(
+    async (blockId: ISynctexBlockId) => {
+      const block = getSynctexBlockById(blockId);
 
       if (!block) return null;
 
@@ -119,10 +144,10 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       if (!sourceFilePath) return null;
 
-      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, locationParams.version);
+      const sourceFileLines = await texStore.getTexAsLines(sourceFilePath, version);
 
       for (let i = block.line - 1; i >= 0; i--) {
-        const matches = sourceFileLines[i].match(LATEX_SUBSECTION_PATTERN);
+        const matches = sourceFileLines[i]?.match(LATEX_SUBSECTION_PATTERN);
 
         if (matches) {
           return matches[1];
@@ -131,13 +156,29 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       return null;
     },
-    async migrateSelection(
-      { selectionStart, selectionEnd }: ISelectionParams,
-      sourceVersion: string,
-      targetVersion: string,
-    ) {
-      return migrateSelection({ selectionStart, selectionEnd }, sourceVersion, targetVersion, synctexStore, texStore);
+    [version, getSynctexBlockById, synctexData, texStore],
+  );
+
+  const migrateSelection = useCallback(
+    async ({ selectionStart, selectionEnd }: ISelectionParams, sourceVersion: string, targetVersion: string) => {
+      return migrateSelectionRaw(
+        { selectionStart, selectionEnd },
+        sourceVersion,
+        targetVersion,
+        synctexStore,
+        texStore,
+      );
     },
+    [synctexStore, texStore],
+  );
+
+  const context = {
+    getSynctexBlockAtLocation,
+    getSynctexBlockById,
+    getSynctexBlockRange,
+    getSectionTitleAtSynctexBlock,
+    getSubsectionTitleAtSynctexBlock,
+    migrateSelection,
   };
 
   return <CodeSyncContext.Provider value={context}>{children}</CodeSyncContext.Provider>;

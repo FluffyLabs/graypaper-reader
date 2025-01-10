@@ -1,31 +1,46 @@
 import "./HighlightNote.css";
-import { useContext, useMemo, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
+import { NoteContent } from "../../../NoteContent/NoteContent";
 import type { IDecoratedNote } from "../../../NotesProvider/types/DecoratedNote";
-import { RenderMath } from "../../../RenderMath/RenderMath";
 
 interface HighlightNoteProps {
-  note: IDecoratedNote;
-  pageOffset: DOMRect;
+  notes: IDecoratedNote[];
+  pageOffset?: DOMRect;
+  isPinnedByDefault: boolean;
+  isInViewport: boolean;
 }
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
 
-export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
+export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
   const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const [noteIsShown, setNoteIsShown] = useState(true);
+  // by default the note state is controlled by `isPinnedByDefault`, but the user might change that.
+  const [isPinned, setPinned] = useState<boolean | null>(null);
+  // when note is not displayed, it may be temporarily by hovering the annotation
+  const [isHovered, setHovered] = useState(false);
 
-  const { selectionStart, selectionEnd } = note.current;
+  // state of the note content display
+  const isDisplayed = isPinned ?? isPinnedByDefault;
+  const { selectionStart, selectionEnd } = notes[0].current;
 
   const blocks = useMemo(
     () => getSynctexBlockRange(selectionStart, selectionEnd),
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  if (!blocks.length) return null;
+  const handleNoteHoverOn = useCallback(() => setHovered(true), []);
+  const handleNoteHoverOff = useCallback(() => setHovered(false), []);
+  const handleNotePinnedToggle = useCallback(() => setPinned((x) => !x), []);
+
+  // do not render anything if we don't have selection, pageOffsets are not loaded yet
+  // or the note is inactive because it's on some other page.
+  if (!blocks.length || !pageOffset || !isInViewport) {
+    return null;
+  }
 
   const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
   const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
@@ -42,26 +57,49 @@ export function HighlightNote({ note, pageOffset }: HighlightNoteProps) {
         };
 
   const style = {
-    opacity: noteIsShown ? 1.0 : 0.1,
+    display: isDisplayed || isHovered ? "block" : "none",
     ...position,
   };
 
   const handleNoteContentRef = (noteContentElement: HTMLDivElement) =>
     setNoteContentHeight(noteContentElement?.offsetHeight || 0);
 
+  // TODO [ToDr] Highlighting should be split out from this code.
+  // We might have multiple notes that have different selections,
+  // but there is some overlap. Currently we display two highlights
+  // on top of each other, which makes it impossible to click both.
+  // We should rather display one highlight and have it open both notes,
+  // or be able to select which note to open.
   return (
-    <>
-      <Highlighter blocks={blocks} pageOffset={pageOffset} color={NOTE_COLOR} opacity={NOTE_OPACITY} />
+    <div>
+      <Highlighter
+        blocks={blocks}
+        pageOffset={pageOffset}
+        color={NOTE_COLOR}
+        opacity={NOTE_OPACITY}
+        onClick={handleNotePinnedToggle}
+        onMouseEnter={handleNoteHoverOn}
+        onMouseLeave={handleNoteHoverOff}
+      />
 
       <div
         className="highlight-note-content"
         ref={handleNoteContentRef}
         style={style}
-        onMouseEnter={() => setNoteIsShown(false)}
-        onMouseLeave={() => setNoteIsShown(true)}
+        onMouseEnter={handleNoteHoverOn}
+        onMouseLeave={handleNoteHoverOff}
       >
-        <RenderMath content={note.original.content} />
+        <a className="close" onClick={handleNotePinnedToggle}>
+          {isDisplayed ? "📍" : "📌"}
+        </a>
+        {notes.map((note) => (
+          <Fragment key={note.key}>
+            {note.original.author}
+            <NoteContent content={note.original.content} />
+            <br />
+          </Fragment>
+        ))}
       </div>
-    </>
+    </div>
   );
 }

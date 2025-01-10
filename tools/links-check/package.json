@@ -26,8 +26,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@fluffylabs/migrate-selection": "^1.0.0",
-    "@fluffylabs/synctex-store": "^1.0.0",
+    "@fluffylabs/links-metadata": "^1.0.0",
     "commander": "^12.1.0",
     "fast-glob": "^3.3.2",
     "ignore": "^6.0.2"

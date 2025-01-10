@@ -1,13 +1,11 @@
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
-import { createContext, useEffect, useState } from "react";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
-import { useThrottle } from "../../hooks/useThrottle";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Dispatch, MutableRefObject, ReactNode, SetStateAction } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
-const DIMENSION_ADJUSTMENT_THROTTLE_MS = 100;
 
 export const PdfContext = createContext<IPdfContext | null>(null);
 
@@ -30,7 +28,7 @@ export interface IPdfContext extends IPdfServices {
   theme: ITheme;
   setTheme: Dispatch<SetStateAction<ITheme>>;
   visiblePages: number[];
-  pageOffsets: DOMRect[];
+  pageOffsets: MutableRefObject<DOMRect[]>;
 }
 
 interface IPdfProviderProps {
@@ -79,7 +77,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [scale, setScale] = useState<number>(0);
   const [theme, setTheme] = useState<ITheme>(loadThemeSettingFromLocalStorage());
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
-  const [pageOffsets, setPageOffsets] = useState<DOMRect[]>([]);
+  const pageOffsets = useRef([]);
 
   // Initial setup
   useEffect(() => {
@@ -114,6 +112,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     if (pdfUrl) {
       setServices({});
       setViewer(undefined);
+      pageOffsets.current = [];
       setupPdfServices();
     }
   }, [pdfUrl]);
@@ -129,22 +128,24 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   }, [theme]);
 
   useScrolling({
-    setPageOffsets,
+    pageOffsets,
     setVisiblePages,
     viewer,
-    visiblePages,
   });
 
-  const context = {
-    ...services,
-    viewer,
-    setViewer,
-    scale,
-    theme,
-    setTheme,
-    visiblePages,
-    pageOffsets,
-  };
+  const context = useMemo(
+    () => ({
+      ...services,
+      viewer,
+      setViewer,
+      scale,
+      theme,
+      setTheme,
+      visiblePages,
+      pageOffsets,
+    }),
+    [theme, viewer, visiblePages, services, scale],
+  );
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
 }
@@ -184,15 +185,14 @@ function useScaleUpdater({
 function useScrolling({
   viewer,
   setVisiblePages,
-  visiblePages,
-  setPageOffsets,
+  pageOffsets,
 }: {
   viewer?: pdfJsViewer.PDFViewer;
-  setVisiblePages: (s: number[]) => void;
-  visiblePages: number[];
-  setPageOffsets: (o: DOMRect[]) => void;
+  setVisiblePages: Dispatch<SetStateAction<number[]>>;
+  pageOffsets: MutableRefObject<DOMRect[]>;
 }) {
-  const handleViewChanged = useThrottle(() => {
+  const handleViewChanged = useCallback(() => {
+    // TODO [ToDr] throttle?
     if (!viewer) return;
 
     const visiblePagesAfterEvent: number[] = [];
@@ -203,23 +203,22 @@ function useScrolling({
       }
     }
 
-    if (visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
-      setVisiblePages(visiblePagesAfterEvent);
-    }
-
-    const newPageOffsets: DOMRect[] = [];
+    setVisiblePages((visiblePages) => {
+      if (visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
+        return visiblePagesAfterEvent;
+      }
+      return visiblePages;
+    });
 
     for (let page = 1; page <= viewer.pagesCount; page++) {
       const pageElement = viewer.getPageView(page - 1)?.div;
 
-      newPageOffsets[page] = subtractBorder(
+      pageOffsets.current[page] = subtractBorder(
         new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
         pageElement,
       );
     }
-
-    setPageOffsets(newPageOffsets);
-  }, DIMENSION_ADJUSTMENT_THROTTLE_MS);
+  }, [viewer, setVisiblePages, pageOffsets]);
 
   useEffect(() => {
     if (!viewer?.container) return;

@@ -1,6 +1,7 @@
-import type { SynctexStore, TexStore } from "@fluffylabs/synctex-store";
-import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/types";
 import * as levenshtein from "fastest-levenshtein";
+import type { SynctexStore } from "./SynctexStore";
+import type { TexStore } from "./TexStore";
+import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "./types";
 
 const MULTI_LINE_BLOCK_PATTERN = /^\\begin{(.*?)}(.*?)^\\end{\1}/gms;
 const MIN_CONFIDENCE = 0.8;

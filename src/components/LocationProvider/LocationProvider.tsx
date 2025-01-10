@@ -1,6 +1,5 @@
-import type { ISynctexBlock } from "@fluffylabs/types";
-import type { ISelectionParams } from "@fluffylabs/types";
-import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
@@ -84,9 +83,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     }
 
     const processedParams: ILocationParams = {
-      version:
-        Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ||
-        metadata.latest,
+      version: fullVersion,
     };
 
     if (rawParams[SELECTION_SEGMENT_INDEX]) {
@@ -98,10 +95,22 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       }
     }
 
-    setLocationParams(processedParams);
+    // Update location but only if it has REALLY changed.
+    setLocationParams((params) => {
+      if (!isSameBlock(params?.selectionStart, processedParams.selectionStart)) {
+        return processedParams;
+      }
+      if (!isSameBlock(params?.selectionEnd, processedParams.selectionEnd)) {
+        return processedParams;
+      }
+      if (params?.version !== processedParams.version) {
+        return processedParams;
+      }
+      return params;
+    });
   }, [handleSetLocationParams, metadata]);
 
-  const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = (blocks) => {
+  const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = useCallback((blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
     const lowestBlockId = blockIds.reduce((result, blockId) => {
       if (blockId.pageNumber < result.pageNumber) return blockId;
@@ -120,23 +129,32 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       selectionStart: lowestBlockId,
       selectionEnd: highestBlockId,
     };
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("hashchange", handleHashChange);
+    handleHashChange();
 
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, [handleHashChange]);
 
-  useEffect(() => {
-    handleHashChange();
-  }, [handleHashChange]);
+  const context = useMemo(() => {
+    if (!locationParams) {
+      return null;
+    }
 
-  if (!locationParams) return null;
+    return {
+      locationParams,
+      setLocationParams: handleSetLocationParams,
+      synctexBlocksToSelectionParams,
+    };
+  }, [locationParams, handleSetLocationParams, synctexBlocksToSelectionParams]);
 
-  const context = { locationParams, setLocationParams: handleSetLocationParams, synctexBlocksToSelectionParams };
+  if (!context) {
+    return null;
+  }
 
   return <LocationContext.Provider value={context}>{children}</LocationContext.Provider>;
 }

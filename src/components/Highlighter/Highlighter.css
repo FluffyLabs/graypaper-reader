@@ -1,4 +1,4 @@
 .highlighter-highlight {
   position: absolute;
-  pointer-events: none;
+  cursor: pointer;
 }
