@@ -25,7 +25,6 @@ interface IHighlighterProps {
   blocks: ISynctexBlock[];
   pageOffset: DOMRect;
   color: IHighlighterColor;
-  isActive?: boolean;
   opacity?: number;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -40,7 +39,6 @@ export function Highlighter({
   onClick,
   onMouseEnter,
   onMouseLeave,
-  isActive = true,
   opacity = DEFAULT_HIGHLIGHT_OPACITY,
   zIndex = DEFAULT_ZINDEX,
 }: IHighlighterProps) {
@@ -53,7 +51,7 @@ export function Highlighter({
       onMouseLeave={onMouseLeave}
       style={{
         // move active highlights on top, so they can be closed
-        zIndex: isActive ? zIndex : zIndex - 1,
+        zIndex,
         left: `${pageOffset.left + pageOffset.width * block.left}px`,
         top: `${pageOffset.top + pageOffset.height * block.top - pageOffset.height * block.height}px`,
         width: `${pageOffset.width * block.width + WIDTH_OFFSET}px`,

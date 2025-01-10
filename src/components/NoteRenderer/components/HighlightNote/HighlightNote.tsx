@@ -77,7 +77,6 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         pageOffset={pageOffset}
         color={NOTE_COLOR}
         opacity={NOTE_OPACITY}
-        isActive={isDisplayed}
         onClick={handleNotePinnedToggle}
         onMouseEnter={handleNoteHoverOn}
         onMouseLeave={handleNoteHoverOff}
