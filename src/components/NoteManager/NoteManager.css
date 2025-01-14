@@ -1,3 +1,20 @@
+.notes-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-wrapper .note-manager {
+  flex: 1;
+  overflow: auto;
+}
+
+.notes-wrapper .notes-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+}
+
 .note-manager .new-note button {
   width: 100%;
 }
@@ -60,12 +77,6 @@
 
 .note-manager .note-link a {
   font-weight: bold;
-}
-
-.note-manager .notes-actions {
-  margin-top: 2rem;
-  display: flex;
-  gap: 2rem;
 }
 
 .note-manager .note .actions {
