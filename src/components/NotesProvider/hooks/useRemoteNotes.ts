@@ -1,15 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LABEL_REMOTE } from "../consts/labels";
 import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
+import type { IRemoteSource } from "../types/RemoteSource";
 import type { INotesEnvelope, IStorageNote } from "../types/StorageNote";
 import { importNotesFromJson } from "../utils/notesImportExport";
 import type { useDecoratedNotes } from "./useDecoratedNotes";
 
-export function useRemoteNotes(decorateNotes: ReturnType<typeof useDecoratedNotes>, currentVersion: string) {
-  const [remoteNotesSources] = useState([
-    "https://fluffylabs.dev/graypaper-notes/2024-element.json",
-    "https://fluffylabs.dev/graypaper-notes/version-0.5.4.json",
-  ]);
+export function useRemoteNotes(
+  sources: IRemoteSource[],
+  decorateNotes: ReturnType<typeof useDecoratedNotes>,
+  currentVersion: string,
+) {
+  const remoteNotesSources = useMemo(() => {
+    return (
+      sources
+        // only enabled sources
+        .filter((x) => x.isEnabled)
+        // only if version is supported
+        .filter((x) => x.versions === null || x.versions.includes(currentVersion))
+        .map((x) => x.url)
+    );
+  }, [sources, currentVersion]);
   const [remoteNotes, setRemoteNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [remoteNotesReady, setRemoteNotesReady] = useState<boolean>(false);
   const [remoteNotesDecorated, setRemoteNotesDecorated] = useState<IDecoratedNote[]>([]);

@@ -5,9 +5,11 @@ import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
 import { type ILabel, useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
+import type { IRemoteSource } from "./types/RemoteSource";
 import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
-import { downloadJsonFile, downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
-import { loadFromLocalStorage, loadLegacyFromLocalStorage, saveToLocalStorage } from "./utils/notesLocalStorage";
+import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
+import * as notes from "./utils/notesLocalStorage";
+import * as remote from "./utils/remoteSources";
 
 const HISTORY_STEPS_LIMIT = 10;
 
@@ -21,7 +23,8 @@ export interface INotesContext {
   labels: ILabel[];
   canUndo: boolean;
   canRedo: boolean;
-  hasLegacyNotes: boolean;
+  remoteSources: IRemoteSource[];
+  handleSetRemoteSources(r: IRemoteSource[]): void;
   handleAddNote(note: IStorageNote): void;
   handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
   handleDeleteNote(note: IDecoratedNote): void;
@@ -29,7 +32,6 @@ export interface INotesContext {
   handleRedo(): void;
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
-  handleLegacyExport(): void;
   handleToggleLabel(label: string): void;
 }
 
@@ -38,6 +40,8 @@ interface INotesProviderProps {
 }
 
 export function NotesProvider({ children }: INotesProviderProps) {
+  const [remoteSources, setRemoteSources] = useState<IRemoteSource[]>([]);
+
   const [notesPinned, setNotesPinned] = useState<boolean>(false);
   const [localNotes, setLocalNotes] = useState<INotesEnvelope>({ version: 3, notes: [] });
   const [localNotesDecorated, setLocalNotesDecorated] = useState<IDecoratedNote[]>([]);
@@ -52,23 +56,22 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   // load local notes
   useEffect(() => {
-    setLocalNotes(loadFromLocalStorage());
+    setLocalNotes(notes.loadFromLocalStorage());
+  }, []);
+
+  // load remote sources
+  useEffect(() => {
+    setRemoteSources(remote.loadFromLocalStorage());
   }, []);
 
   const decorateNotes = useDecoratedNotes();
-  const { remoteNotesDecorated, remoteNotesReady } = useRemoteNotes(decorateNotes, currentVersion);
-
-  // Legacy notes export indicator
-  const hasLegacyNotes = useMemo(() => {
-    const localStorageContent = loadLegacyFromLocalStorage();
-    return !!localStorageContent && localStorageContent !== "[]";
-  }, []);
+  const { remoteNotesDecorated, remoteNotesReady } = useRemoteNotes(remoteSources, decorateNotes, currentVersion);
 
   // Set in-state local notes, but also update history and local storage.
   const updateLocalNotes = useCallback((currentNotes: INotesEnvelope, newNotes: INotesEnvelope) => {
     setHistory((history) => [...history, currentNotes].slice(-1 * HISTORY_STEPS_LIMIT));
     setLocalNotes(newNotes);
-    saveToLocalStorage(newNotes);
+    notes.saveToLocalStorage(newNotes);
   }, []);
 
   // Decorate all local notes.
@@ -95,10 +98,11 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setNotesPinned,
     notesReady: allNotesReady,
     notes: filteredNotes,
+    remoteSources,
     labels,
     canUndo,
     canRedo,
-    hasLegacyNotes,
+    handleSetRemoteSources: setRemoteSources,
     handleToggleLabel,
     handleAddNote: useCallback(
       (note) =>
@@ -151,7 +155,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
       setRedoHistory((redoHistory) => [...redoHistory, currentNotes]);
       setLocalNotes(previousNotes);
-      saveToLocalStorage(previousNotes);
+      notes.saveToLocalStorage(previousNotes);
       setHistory([...history]);
     }, [history, localNotes]),
     handleRedo: useCallback(() => {
@@ -187,11 +191,6 @@ export function NotesProvider({ children }: INotesProviderProps) {
       const fileName = `graypaper-notes-${new Date().toISOString()}.json`;
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
-    handleLegacyExport: useCallback(() => {
-      const strNotes = loadLegacyFromLocalStorage() ?? "[]";
-      const fileName = `old-graypaper-notes-${new Date().toISOString()}.json`;
-      downloadJsonFile(strNotes, fileName);
-    }, []),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;

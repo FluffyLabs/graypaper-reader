@@ -12,7 +12,8 @@
 .notes-wrapper .notes-actions {
   margin-top: 2rem;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+  font-size: 0.8rem;
 }
 
 .note-manager .new-note button {

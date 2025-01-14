@@ -1,11 +1,36 @@
-import { type ChangeEventHandler, useCallback, useContext, useRef } from "react";
-import { Tooltip } from "react-tooltip";
-import { LEGACY_READER_HOST } from "../../MetadataProvider/MetadataProvider";
+import "./NotesActions.css";
+import { type ChangeEventHandler, useCallback, useContext, useRef, useState } from "react";
+import Modal from "react-modal";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
+import type { IRemoteSource } from "../../NotesProvider/types/RemoteSource";
+import { RemoteSources } from "../../RemoteSources/RemoteSources";
+
+const modalStyles = {
+  content: {
+    minWidth: "50vw",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+  overlay: { zIndex: 5 },
+};
 
 export function NotesActions() {
-  const { canUndo, canRedo, hasLegacyNotes, handleUndo, handleRedo, handleImport, handleExport, handleLegacyExport } =
-    useContext(NotesContext) as INotesContext;
+  const {
+    remoteSources,
+    canUndo,
+    canRedo,
+    handleUndo,
+    handleRedo,
+    handleImport,
+    handleExport,
+    handleSetRemoteSources,
+  } = useContext(NotesContext) as INotesContext;
+
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const fileImport = useRef<HTMLInputElement>(null);
   const onImport = useCallback(() => {
@@ -34,30 +59,53 @@ export function NotesActions() {
     [handleImport],
   );
 
+  const toggleModal = useCallback(() => {
+    setModalOpen((x) => !x);
+  }, []);
+
+  const handleRemoteSourcesChange = useCallback(
+    (newVal: IRemoteSource, remove?: true) => {
+      console.log(newVal);
+      if (newVal.id === -1) {
+        newVal.id = Math.max(0, ...remoteSources.map((x) => x.id)) + 1;
+        handleSetRemoteSources([...remoteSources, newVal]);
+      } else {
+        handleSetRemoteSources(
+          remoteSources
+            .map((x) => (x.id === newVal.id ? newVal : x))
+            .filter((x) => (remove === true ? x.id !== newVal.id : true)),
+        );
+      }
+    },
+    [remoteSources, handleSetRemoteSources],
+  );
+
   return (
     <>
       <div className="notes-actions">
         <button onClick={handleUndo} disabled={!canUndo}>
-          undo
+          ↺ undo
         </button>
         <button onClick={handleRedo} disabled={!canRedo}>
-          redo
+          ↻ redo
         </button>
-        <button onClick={onImport}>import notes</button>
-        <button onClick={handleExport}>export notes</button>
-        {hasLegacyNotes ? (
-          <button
-            data-tooltip-id="legacy-export-tooltip"
-            data-tooltip-content={`Notes from the old version of graypaper reader have been detected. You may export them for use with ${LEGACY_READER_HOST}.`}
-            data-tooltip-place="bottom"
-            onClick={handleLegacyExport}
-          >
-            export old notes
-          </button>
-        ) : null}
+        <button onClick={onImport}>📂 import</button>
+        <button onClick={handleExport}>💾 export</button>
+        <button onClick={toggleModal}>⚙︎</button>
       </div>
       <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />
-      <Tooltip id="legacy-export-tooltip" />
+      <Modal style={modalStyles} isOpen={isModalOpen} onRequestClose={toggleModal} contentLabel="Settings">
+        <button className="settings-close" onClick={toggleModal}>
+          ✖︎
+        </button>
+        <div className="settings-title">Settings</div>
+        <RemoteSources remoteSources={remoteSources} onChange={handleRemoteSourcesChange} />
+
+        <br />
+        <button className="settings-close" onClick={toggleModal}>
+          close
+        </button>
+      </Modal>
     </>
   );
 }
