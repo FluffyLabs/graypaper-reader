@@ -7,13 +7,34 @@ const BACKUP_STORAGE_KEY = "remote-sources-backup";
 const DEFAULT_SOURCES = [
   {
     id: -2,
-    name: "Element Activity",
-    url: "https://fluffylabs.dev/graypaper-notes/2024-element.json",
+    name: "Element Activity (2024; v0.4.x)",
+    url: "https://fluffylabs.dev/graypaper-notes/2024-element-v0.4.x.json",
     isEnabled: true,
     versions: null,
   },
   {
     id: -3,
+    name: "Element Activity (2024; v0.5.0)",
+    url: "https://fluffylabs.dev/graypaper-notes/2024-element-v0.5.0.json",
+    isEnabled: true,
+    versions: null,
+  },
+  {
+    id: -4,
+    name: "Element Activity (2024; v0.5.2)",
+    url: "https://fluffylabs.dev/graypaper-notes/2024-element-v0.5.2.json",
+    isEnabled: true,
+    versions: null,
+  },
+  {
+    id: -5,
+    name: "Element Activity (2024; v0.5.3)",
+    url: "https://fluffylabs.dev/graypaper-notes/2024-element-v0.5.3.json",
+    isEnabled: true,
+    versions: null,
+  },
+  {
+    id: -100,
     name: "Changes in v0.5.4",
     url: "https://fluffylabs.dev/graypaper-notes/version-0.5.4.json",
     isEnabled: true,
