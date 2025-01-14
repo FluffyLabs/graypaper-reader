@@ -2,7 +2,6 @@ import "./NotesActions.css";
 import { type ChangeEventHandler, useCallback, useContext, useRef, useState } from "react";
 import Modal from "react-modal";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
-import type { IRemoteSource } from "../../NotesProvider/types/RemoteSource";
 import { RemoteSources } from "../../RemoteSources/RemoteSources";
 
 const modalStyles = {
@@ -63,23 +62,6 @@ export function NotesActions() {
     setModalOpen((x) => !x);
   }, []);
 
-  const handleRemoteSourcesChange = useCallback(
-    (newVal: IRemoteSource, remove?: true) => {
-      console.log(newVal);
-      if (newVal.id === -1) {
-        newVal.id = Math.max(0, ...remoteSources.map((x) => x.id)) + 1;
-        handleSetRemoteSources([...remoteSources, newVal]);
-      } else {
-        handleSetRemoteSources(
-          remoteSources
-            .map((x) => (x.id === newVal.id ? newVal : x))
-            .filter((x) => (remove === true ? x.id !== newVal.id : true)),
-        );
-      }
-    },
-    [remoteSources, handleSetRemoteSources],
-  );
-
   return (
     <>
       <div className="notes-actions">
@@ -99,7 +81,7 @@ export function NotesActions() {
           ✖︎
         </button>
         <div className="settings-title">Settings</div>
-        <RemoteSources remoteSources={remoteSources} onChange={handleRemoteSourcesChange} />
+        <RemoteSources remoteSources={remoteSources} onChange={handleSetRemoteSources} />
 
         <br />
         <button className="settings-close" onClick={toggleModal}>

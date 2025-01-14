@@ -24,7 +24,7 @@ export interface INotesContext {
   canUndo: boolean;
   canRedo: boolean;
   remoteSources: IRemoteSource[];
-  handleSetRemoteSources(r: IRemoteSource[]): void;
+  handleSetRemoteSources(r: IRemoteSource, remove?: true): void;
   handleAddNote(note: IStorageNote): void;
   handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
   handleDeleteNote(note: IDecoratedNote): void;
@@ -102,7 +102,21 @@ export function NotesProvider({ children }: INotesProviderProps) {
     labels,
     canUndo,
     canRedo,
-    handleSetRemoteSources: setRemoteSources,
+    handleSetRemoteSources: useCallback((newVal: IRemoteSource, remove?: true) => {
+      setRemoteSources((remoteSources) => {
+        let newRemoteSources = remoteSources;
+        if (newVal.id === 0) {
+          newVal.id = Math.max(0, ...remoteSources.map((x) => x.id)) + 1;
+          newRemoteSources = [...remoteSources, newVal];
+        } else {
+          newRemoteSources = remoteSources
+            .map((x) => (x.id === newVal.id ? newVal : x))
+            .filter((x) => (remove === true ? x.id !== newVal.id : true));
+        }
+        remote.saveToLocalStorage(newRemoteSources);
+        return newRemoteSources;
+      });
+    }, []),
     handleToggleLabel,
     handleAddNote: useCallback(
       (note) =>

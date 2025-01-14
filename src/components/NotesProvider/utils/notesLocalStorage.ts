@@ -4,7 +4,6 @@ import { exportNotesAsJson, importNotesFromJson } from "./notesImportExport";
 
 const LOCAL_STORAGE_KEY = "notes-v2";
 const BACKUP_STORAGE_KEY = "notes-v2-backup";
-const LEGACY_NOTES_LS_KEY = "notes";
 
 export function loadFromLocalStorage(): INotesEnvelope {
   try {
@@ -16,10 +15,6 @@ export function loadFromLocalStorage(): INotesEnvelope {
       notes: [],
     };
   }
-}
-
-export function loadLegacyFromLocalStorage(): string | null {
-  return window.localStorage.getItem(LEGACY_NOTES_LS_KEY);
 }
 
 export function saveToLocalStorage(notes: INotesEnvelope): void {

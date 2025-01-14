@@ -12,16 +12,11 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
   const [isEditing, setEditing] = useState(source === undefined);
   const [name, setName] = useState(source?.name ?? "");
   const [url, setUrl] = useState(source?.url ?? "");
-  const [versions, setVersions2] = useState(source?.versions ?? null);
+  const [versions, setVersions] = useState(source?.versions ?? null);
 
   const isEnabled = source?.isEnabled ?? true;
-  const id = source?.id ?? -1;
+  const id = source?.id ?? 0;
   const isFilled = name !== "" && url.startsWith("https://");
-
-  const setVersions = useCallback((x: string[] | null) => {
-    console.log("setting versions", x);
-    setVersions2(x);
-  }, []);
 
   const handleEdit = useCallback(() => {
     if (!isFilled) {
@@ -74,7 +69,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <input type="checkbox" checked={isEnabled} onChange={toggleEnabled} />
         <strong>{name}</strong>
       </label>
-      <a onClick={() => setEditing(true)}>&nbsp;✏︎</a>
+      {id > 0 ? <a onClick={() => setEditing(true)}>&nbsp;✏︎</a> : null}
       <br />
       URL:{" "}
       <em>
