@@ -1,8 +1,8 @@
 import "./RemoteSource.css";
 import { useCallback, useState } from "react";
+import { NEW_REMOTE_SOURCE_ID } from "../../NotesProvider/consts/remoteSources";
 import type { IRemoteSource } from "../../NotesProvider/types/RemoteSource";
 import { Versions } from "./Versions";
-import {NEW_REMOTE_SOURCE_ID} from "../../NotesProvider/consts/remoteSources";
 
 type RemoteSourceProps = {
   source?: IRemoteSource;

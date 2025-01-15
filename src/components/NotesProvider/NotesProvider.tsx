@@ -1,6 +1,7 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { LABEL_IMPORTED } from "./consts/labels";
+import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
 import { type ILabel, useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
@@ -10,7 +11,6 @@ import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
 import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
 import * as notes from "./utils/notesLocalStorage";
 import * as remote from "./utils/remoteSources";
-import {NEW_REMOTE_SOURCE_ID} from "./consts/remoteSources";
 
 const HISTORY_STEPS_LIMIT = 10;
 
