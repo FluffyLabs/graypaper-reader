@@ -1,5 +1,5 @@
 import "./HighlightNote.css";
-import { Fragment, useCallback, useContext, useMemo, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import { NoteContent } from "../../../NoteContent/NoteContent";
@@ -33,8 +33,21 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  const handleNoteHoverOn = useCallback(() => setHovered(true), []);
-  const handleNoteHoverOff = useCallback(() => setHovered(false), []);
+  // delay hovering a bit
+  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const setHoveredLater = useCallback((val: boolean) => {
+    clearTimeout(setHoveredTimeout.current);
+    if (val) {
+      setHovered(true);
+    } else {
+      // we delay only hover off
+      setHoveredTimeout.current = setTimeout(() => {
+        setHovered(false);
+      }, 350);
+    }
+  }, []);
+  const handleNoteHoverOn = useCallback(() => setHoveredLater(true), [setHoveredLater]);
+  const handleNoteHoverOff = useCallback(() => setHoveredLater(false), [setHoveredLater]);
   const handleNotePinnedToggle = useCallback(() => setPinned((x) => !x), []);
 
   // do not render anything if we don't have selection, pageOffsets are not loaded yet

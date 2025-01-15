@@ -80,6 +80,7 @@ export function PdfViewer() {
 
       eventBus.on("pagesloaded", () => {
         setPagesLoaded(true);
+        pdfViewer.currentScaleValue = "0.85";
       });
     }
 
