@@ -3,9 +3,7 @@ import { useMemo } from "react";
 export function Label({ label, prefix = "" }: { label: string; prefix?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   return (
-    <span style={{ backgroundColor }}>
-      {prefix} {label}
-    </span>
+    <span style={{ backgroundColor }}>{prefix} {label}</span>
   );
 }
 
