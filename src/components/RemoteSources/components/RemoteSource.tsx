@@ -2,6 +2,7 @@ import "./RemoteSource.css";
 import { useCallback, useState } from "react";
 import type { IRemoteSource } from "../../NotesProvider/types/RemoteSource";
 import { Versions } from "./Versions";
+import {NEW_REMOTE_SOURCE_ID} from "../../NotesProvider/consts/remoteSources";
 
 type RemoteSourceProps = {
   source?: IRemoteSource;
@@ -15,7 +16,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
   const [versions, setVersions] = useState(source?.versions ?? null);
 
   const isEnabled = source?.isEnabled ?? true;
-  const id = source?.id ?? 0;
+  const id = source?.id ?? NEW_REMOTE_SOURCE_ID;
   const isFilled = name !== "" && url.startsWith("https://");
 
   const handleEdit = useCallback(() => {
@@ -58,7 +59,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <button disabled={!isFilled} onClick={handleEdit}>
           ok
         </button>
-        {id !== -1 ? <button onClick={handleRemove}>remove</button> : null}
+        {id > NEW_REMOTE_SOURCE_ID ? <button onClick={handleRemove}>remove</button> : null}
       </div>
     );
   }

@@ -15,6 +15,7 @@ interface HighlightNoteProps {
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
+const HOVER_OFF_DELAY_MS = 350;
 
 export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
@@ -43,7 +44,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
       // we delay only hover off
       setHoveredTimeout.current = setTimeout(() => {
         setHovered(false);
-      }, 350);
+      }, HOVER_OFF_DELAY_MS);
     }
   }, []);
   const handleNoteHoverOn = useCallback(() => setHoveredLater(true), [setHoveredLater]);

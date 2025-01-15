@@ -8,16 +8,6 @@
   padding-left: 1rem;
 }
 
-.outline li.active > a {
-    background-color: #111;
-}
-
-@media (prefers-color-scheme: light) {
-  .outline li.active > a {
-    background-color: #eee;
-  }
-}
-
 .outline a {
   cursor: pointer;
 }

@@ -12,6 +12,7 @@ const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
 export const MIN_SCALE = 0.25;
 export const MAX_SCALE = 2.0;
 const WHEEL_SCALE_MULTIPLIER = 0.001;
+const INITIAL_SCALE = "0.85";
 
 export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
@@ -80,7 +81,7 @@ export function PdfViewer() {
 
       eventBus.on("pagesloaded", () => {
         setPagesLoaded(true);
-        pdfViewer.currentScaleValue = "0.85";
+        pdfViewer.currentScaleValue = INITIAL_SCALE;
       });
     }
 

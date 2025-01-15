@@ -10,6 +10,7 @@ import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
 import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
 import * as notes from "./utils/notesLocalStorage";
 import * as remote from "./utils/remoteSources";
+import {NEW_REMOTE_SOURCE_ID} from "./consts/remoteSources";
 
 const HISTORY_STEPS_LIMIT = 10;
 
@@ -105,8 +106,8 @@ export function NotesProvider({ children }: INotesProviderProps) {
     handleSetRemoteSources: useCallback((newVal: IRemoteSource, remove?: true) => {
       setRemoteSources((remoteSources) => {
         let newRemoteSources = remoteSources;
-        if (newVal.id === 0) {
-          newVal.id = Math.max(0, ...remoteSources.map((x) => x.id)) + 1;
+        if (newVal.id === NEW_REMOTE_SOURCE_ID) {
+          newVal.id = 1 + Math.max(NEW_REMOTE_SOURCE_ID, ...remoteSources.map((x) => x.id));
           newRemoteSources = [...remoteSources, newVal];
         } else {
           newRemoteSources = remoteSources

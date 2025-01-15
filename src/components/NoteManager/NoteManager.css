@@ -53,7 +53,6 @@
 .note-manager .icon {
   margin-right: 3px;
   color: #e22;
-  background-color: lightyellow;
   padding: 2px;
 }
 
@@ -71,7 +70,8 @@
 
 .note-manager .note {
   padding: 8px;
-  border: 1px solid #eee;
+  border: 1px solid;
+  border-color: light-dark(#eee, #444);
   margin-top: 5px;
   border-radius: 6px;
 }
