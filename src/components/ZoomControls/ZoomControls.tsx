@@ -1,4 +1,4 @@
-import { type MouseEventHandler, useContext } from "react";
+import { useCallback, useContext } from "react";
 import "./ZoomControls.css";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 import { MAX_SCALE, MIN_SCALE } from "../PdfViewer/PdfViewer";
@@ -7,15 +7,15 @@ const STEP = 0.15;
 export function ZoomControls() {
   const { viewer } = useContext(PdfContext) as IPdfContext;
 
-  const handleZoomInClick: MouseEventHandler = () => {
+  const handleZoomInClick = useCallback(() => {
     if (!viewer) return;
     viewer.currentScaleValue = calcScale(viewer.currentScale, STEP);
-  };
+  }, [viewer]);
 
-  const handleZoomOutClick: MouseEventHandler = () => {
+  const handleZoomOutClick = useCallback(() => {
     if (!viewer) return;
     viewer.currentScaleValue = calcScale(viewer.currentScale, -STEP);
-  };
+  }, [viewer]);
 
   if (!viewer) return null;
 

@@ -1,3 +1,21 @@
+.notes-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-wrapper .note-manager {
+  flex: 1;
+  overflow: auto;
+}
+
+.notes-wrapper .notes-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
 .note-manager .new-note button {
   width: 100%;
 }
@@ -35,7 +53,6 @@
 .note-manager .icon {
   margin-right: 3px;
   color: #e22;
-  background-color: lightyellow;
   padding: 2px;
 }
 
@@ -53,19 +70,14 @@
 
 .note-manager .note {
   padding: 8px;
-  border: 1px solid #eee;
+  border: 1px solid;
+  border-color: light-dark(#eee, #444);
   margin-top: 5px;
   border-radius: 6px;
 }
 
 .note-manager .note-link a {
   font-weight: bold;
-}
-
-.note-manager .notes-actions {
-  margin-top: 2rem;
-  display: flex;
-  gap: 2rem;
 }
 
 .note-manager .note .actions {

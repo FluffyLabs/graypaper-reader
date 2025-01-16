@@ -20,17 +20,19 @@
 }
 
 .menu button:hover {
-  border-color: #81c5f9;
+  border-color: light-dark(#81c5f9, #3875a3);
 }
 
 .menu button[disabled] {
-  background-color: #81c5f9;
+  background-color: light-dark(#81c5f9, #3875a3);
+  color: light-dark(#eee, #222);
 }
 
 .tabs .content {
   flex: 1;
   overflow: scroll;
   border: 1px solid #81c5f9;
+  border-color: light-dark(#81c5f9, #3875a3);
   padding: 1rem;
   border-radius: 1rem 1rem 1rem 0;
 }

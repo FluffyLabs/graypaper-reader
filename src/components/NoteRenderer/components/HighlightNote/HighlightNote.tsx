@@ -1,8 +1,9 @@
 import "./HighlightNote.css";
-import { Fragment, useCallback, useContext, useMemo, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../CodeSyncProvider/CodeSyncProvider";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 import { NoteContent } from "../../../NoteContent/NoteContent";
+import { NoteLabels } from "../../../NoteManager/components/NoteLabels";
 import type { IDecoratedNote } from "../../../NotesProvider/types/DecoratedNote";
 
 interface HighlightNoteProps {
@@ -14,6 +15,7 @@ interface HighlightNoteProps {
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.5;
+const HOVER_OFF_DELAY_MS = 350;
 
 export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
@@ -32,8 +34,21 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
     [selectionStart, selectionEnd, getSynctexBlockRange],
   );
 
-  const handleNoteHoverOn = useCallback(() => setHovered(true), []);
-  const handleNoteHoverOff = useCallback(() => setHovered(false), []);
+  // delay hovering a bit
+  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const setHoveredLater = useCallback((val: boolean) => {
+    clearTimeout(setHoveredTimeout.current);
+    if (val) {
+      setHovered(true);
+    } else {
+      // we delay only hover off
+      setHoveredTimeout.current = setTimeout(() => {
+        setHovered(false);
+      }, HOVER_OFF_DELAY_MS);
+    }
+  }, []);
+  const handleNoteHoverOn = useCallback(() => setHoveredLater(true), [setHoveredLater]);
+  const handleNoteHoverOff = useCallback(() => setHoveredLater(false), [setHoveredLater]);
   const handleNotePinnedToggle = useCallback(() => setPinned((x) => !x), []);
 
   // do not render anything if we don't have selection, pageOffsets are not loaded yet
@@ -94,6 +109,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         </a>
         {notes.map((note) => (
           <Fragment key={note.key}>
+            <NoteLabels note={note} />
             {note.original.author}
             <NoteContent content={note.original.content} />
             <br />

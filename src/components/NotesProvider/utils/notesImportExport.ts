@@ -3,7 +3,7 @@ import { LABEL_IMPORTED, LABEL_LOCAL } from "../consts/labels";
 import type { INoteV3, INotesEnvelope } from "../types/StorageNote";
 
 /** Download given string as a JSON file. */
-export function downloadJsonFile(strNotes: string, fileName: string) {
+function downloadJsonFile(strNotes: string, fileName: string) {
   const link = document.createElement("a");
   link.setAttribute("href", `data:application/json;charset=utf-8,${encodeURIComponent(strNotes)}`);
   link.setAttribute("download", fileName);

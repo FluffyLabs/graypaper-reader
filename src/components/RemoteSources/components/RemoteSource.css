@@ -1,0 +1,12 @@
+.remote-source input[type="text"] {
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.remote-source button {
+  margin-right: 2px;
+}
+
+.remote-source a {
+  cursor: pointer;
+}

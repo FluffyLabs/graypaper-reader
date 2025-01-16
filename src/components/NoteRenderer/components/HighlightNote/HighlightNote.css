@@ -18,3 +18,10 @@
   right: 4px;
   color: #ddd;
 }
+.highlight-note-content .labels span {
+  padding: 2px 3px;
+  margin: 1px;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 0.8rem;
+}
