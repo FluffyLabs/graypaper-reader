@@ -220,6 +220,7 @@ function useScrolling({
     }
   }, [viewer, setVisiblePages, pageOffsets]);
 
+  // update page offsets on scroll or resize
   useEffect(() => {
     if (!viewer?.container) return;
 
