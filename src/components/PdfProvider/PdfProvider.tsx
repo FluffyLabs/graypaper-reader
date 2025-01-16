@@ -127,10 +127,11 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     saveThemeSettingToLocalStorage(theme);
   }, [theme]);
 
-  useScrolling({
+  usePageOffsets({
+    viewer,
+    services,
     pageOffsets,
     setVisiblePages,
-    viewer,
   });
 
   const context = useMemo(
@@ -182,49 +183,56 @@ function useScaleUpdater({
   }, [viewer, setScale]);
 }
 
-function useScrolling({
+function usePageOffsets({
   viewer,
+  services,
   setVisiblePages,
   pageOffsets,
 }: {
   viewer?: pdfJsViewer.PDFViewer;
+  services: IPdfServices;
   setVisiblePages: Dispatch<SetStateAction<number[]>>;
   pageOffsets: MutableRefObject<DOMRect[]>;
 }) {
-  const handleViewChanged = useCallback(() => {
-    // TODO [ToDr] throttle?
-    if (!viewer) return;
+  const handleViewChanged = useCallback(
+    (forceUpdate: boolean) => {
+      // TODO [ToDr] throttle?
+      if (!viewer) return;
 
-    const visiblePagesAfterEvent: number[] = [];
+      const visiblePagesAfterEvent: number[] = [];
 
-    for (let i = 0; i < viewer.pagesCount; i++) {
-      if (isPartlyInViewport(viewer.getPageView(i).div.getBoundingClientRect())) {
-        visiblePagesAfterEvent.push(i + 1); // using page numbers instead of indices
+      for (let i = 0; i < viewer.pagesCount; i++) {
+        if (isPartlyInViewport(viewer.getPageView(i).div.getBoundingClientRect())) {
+          visiblePagesAfterEvent.push(i + 1); // using page numbers instead of indices
+        }
       }
-    }
 
-    setVisiblePages((visiblePages) => {
-      if (visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
-        return visiblePagesAfterEvent;
+      setVisiblePages((visiblePages) => {
+        if (forceUpdate || visiblePages.join(";") !== visiblePagesAfterEvent.join(";")) {
+          return visiblePagesAfterEvent;
+        }
+        return visiblePages;
+      });
+
+      for (let page = 1; page <= viewer.pagesCount; page++) {
+        const pageElement = viewer.getPageView(page - 1)?.div;
+
+        pageOffsets.current[page] = subtractBorder(
+          new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
+          pageElement,
+        );
       }
-      return visiblePages;
-    });
-
-    for (let page = 1; page <= viewer.pagesCount; page++) {
-      const pageElement = viewer.getPageView(page - 1)?.div;
-
-      pageOffsets.current[page] = subtractBorder(
-        new DOMRect(pageElement.offsetLeft, pageElement.offsetTop, pageElement.offsetWidth, pageElement.offsetHeight),
-        pageElement,
-      );
-    }
-  }, [viewer, setVisiblePages, pageOffsets]);
+    },
+    [viewer, setVisiblePages, pageOffsets],
+  );
 
   // update page offsets on scroll or resize
   useEffect(() => {
     if (!viewer?.container) return;
 
-    const handler = handleViewChanged;
+    // in case of scroll we don't want to force the update.
+    // the page offsets do not really changed.
+    const handler = () => handleViewChanged(false);
     const resizeObserver = new ResizeObserver(handler);
 
     viewer.container.addEventListener("scroll", handler);
@@ -236,8 +244,23 @@ function useScrolling({
     };
   }, [viewer, handleViewChanged]);
 
+  // update page offsets when scale is changing
   useEffect(() => {
-    if (!viewer) return;
-    viewer.container.dispatchEvent(new CustomEvent("scroll"));
-  }, [viewer]);
+    if (!services.eventBus || !viewer) return;
+
+    const { eventBus } = services;
+    // in case the scale is changed, we want to force
+    // new page offsets to be calculated and components
+    // depending on that re-rendered.
+    // This happens through `visiblePages` changing, otherwise
+    // since `pageOffsets` are a ref, we won't see any
+    // components noticing the change in page offsets, hence
+    // no rendering would occur.
+    const handler = () => handleViewChanged(true);
+    eventBus.on("scalechanging", handler);
+
+    return () => {
+      eventBus.off("scalechanging", handler);
+    };
+  }, [services, viewer, handleViewChanged]);
 }
