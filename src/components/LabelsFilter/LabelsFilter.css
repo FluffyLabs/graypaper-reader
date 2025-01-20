@@ -1,0 +1,13 @@
+.labels.filter {
+  margin: 15px 0;
+}
+
+.labels .label-link {
+  opacity: 50%;
+  cursor: pointer;
+}
+
+.labels .label-link.active {
+  opacity: 100%;
+}
+

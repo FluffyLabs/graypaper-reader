@@ -107,23 +107,3 @@
   filter: none;
   opacity: 100%;
 }
-
-.note-manager .labels.filter {
-  margin: 15px 0;
-}
-
-.note-manager .labels .label {
-  opacity: 50%;
-}
-
-.note-manager .labels .label.active {
-  opacity: 100%;
-}
-
-.note-manager .labels span {
-  padding: 1px 5px;
-  display: inline-block;
-  margin: 2px;
-  border-radius: 6px;
-  color: #eee;
-}

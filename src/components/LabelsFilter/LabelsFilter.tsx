@@ -1,3 +1,4 @@
+import "./LabelsFilter.css";
 import { type MouseEventHandler, useCallback } from "react";
 import { Label } from "../Label/Label";
 import type { ILabel } from "../NotesProvider/hooks/useLabels";
@@ -31,7 +32,7 @@ function LabelLink({ label, onToggleLabel }: LabelLinkProps) {
     [label, onToggleLabel],
   );
 
-  const clazz = `label ${label.isActive && "active"}`;
+  const clazz = `label-link ${label.isActive ? "active" : ""}`;
   const ico = label.isActive ? "⊙" : "∅";
   return (
     <a href="#" className={clazz} onClick={selectLabel}>

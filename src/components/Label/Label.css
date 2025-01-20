@@ -1,3 +1,8 @@
 .label {
   white-space: nowrap;
+  padding: 1px 5px;
+  display: inline-block;
+  margin: 2px;
+  border-radius: 6px;
+  color: #eee;
 }
