@@ -2,7 +2,7 @@ import type { SynctexStore } from "./SynctexStore";
 import type { TexStore } from "./TexStore";
 import { type Metadata, ORIGIN } from "./metadata";
 import { migrateSelection } from "./migrate";
-import type { ISynctexBlockId } from "./types";
+import type { ISelectionParams, ISynctexBlockId } from "./types";
 
 export type Link = {
   url: string;
@@ -12,7 +12,7 @@ export type Link = {
   version: string;
   versionName: string;
   isOutdated: boolean;
-};
+} & ISelectionParams;
 
 export function findLink(line: string) {
   const linkStart = line.indexOf(ORIGIN);
@@ -73,6 +73,8 @@ export async function parseAndMigrateLink(
       versionName: "legacy",
       isOutdated: true,
       migrated: false,
+      selectionStart: { pageNumber: 0, index: 0 },
+      selectionEnd: { pageNumber: 0, index: 0 },
     };
   }
   const { version, versionName, selectionStart, selectionEnd } = linkData;
@@ -112,6 +114,8 @@ export async function parseAndMigrateLink(
     versionName,
     isOutdated,
     migrated,
+    selectionStart,
+    selectionEnd,
   };
 }
 

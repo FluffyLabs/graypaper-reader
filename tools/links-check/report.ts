@@ -86,7 +86,9 @@ export function printReport(report: Report): Summary {
     }
 
     if (outdated !== broken.length) {
-      console.info(`⚠️  You can use '--fix' flag to automatically update outdated links. Broken links are not going to be changed.`);
+      console.info(
+        `⚠️  You can use '--fix' flag to automatically update outdated links. Broken links are not going to be changed.`,
+      );
     }
   }
 

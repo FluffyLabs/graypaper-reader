@@ -6,3 +6,4 @@ export { type Link, parseAndMigrateLink, parseLink, findLink } from "./src/link"
 export * from "./src/metadata";
 export * from "./src/types";
 export * from "./src/utils";
+export * from "./src/notes";
