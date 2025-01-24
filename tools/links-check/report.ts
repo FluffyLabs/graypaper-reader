@@ -70,6 +70,7 @@ export function printReport(report: Report): Summary {
     console.info(`✅ No broken links found amongst ${total} total.`);
     if (outdated > 0) {
       console.info(`⚠️  Yet there are ${outdated} outdated links. See above.`);
+      console.info(`⚠️  You can use '--fix' flag to automatically update these links with suggestions.`);
     }
   } else {
     console.info(`⁉️  Detected some potentially broken links ${broken.length}/${total}:`);
@@ -82,6 +83,12 @@ export function printReport(report: Report): Summary {
         console.info(`    ☠️  ${link.updated}`);
       }
       console.info();
+    }
+
+    if (outdated !== broken.length) {
+      console.info(
+        `⚠️  You can use '--fix' flag to automatically update outdated links. Broken links are not going to be changed.`,
+      );
     }
   }
 

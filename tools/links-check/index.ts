@@ -5,6 +5,7 @@ import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
 import { performMigrations } from "./migrate";
+import { generateNotes } from "./notes";
 import { type Report, printReport } from "./report";
 import { scan } from "./scan";
 
@@ -21,8 +22,9 @@ async function main() {
       "--ignore-file <path>",
       "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
     )
-    .option("--write", "Perform link migrations in provided source files.")
+    .option("--write", "Modify the files and update reader links to their newest versions.")
     .option("--fix", "Alias for --write.")
+    .option("--generate-notes <file.json>", "Generate notes for the Gray Paper Reader")
     .action(async (paths, options) => {
       let files = await fastGlob(paths);
       const globExpandedFileCount = files.length;
@@ -71,6 +73,13 @@ async function main() {
 
       if (!report) {
         return;
+      }
+
+      if (options.generateNotes !== undefined) {
+        console.info(`📓 Generating notes to ${options.generateNotes}`);
+        const notes = generateNotes(report);
+        const notesStr = JSON.stringify(notes, null, 2);
+        fs.writeFileSync(options.generateNotes, notesStr);
       }
 
       const summary = printReport(report);
