@@ -98,9 +98,9 @@ export async function parseAndMigrateLink(
       updated = `${ORIGIN}#/${toVersionShort}/${encodePageNumberAndIndex(migratedSelection.selectionStart)}${encodePageNumberAndIndex(migratedSelection.selectionEnd)}`;
       migrated = true;
     } else {
-      const latestSynctex = await synctexStore.getSynctex(toVersion);
-      const hasStart = !!latestSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
-      const hasEnd = !!latestSynctex.blocksByPage.get(selectionEnd.pageNumber)?.[selectionEnd.index];
+      const toVersionSynctex = await synctexStore.getSynctex(toVersion);
+      const hasStart = !!toVersionSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
+      const hasEnd = !!toVersionSynctex.blocksByPage.get(selectionEnd.pageNumber)?.[selectionEnd.index];
 
       if (hasStart && hasEnd) {
         updated = `${ORIGIN}#/${toVersionShort}/${linkData.blocks}`;
