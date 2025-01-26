@@ -63,7 +63,7 @@ function getShortVersionMapping(data: JsonMetadata) {
   return res;
 }
 
-function shortVersionId(hash: string) {
+export function shortVersionId(hash: string) {
   const SHORT_COMMIT_HASH_LENGTH = 7; // as many as git uses for `git rev-parse --short`
   return hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
 }

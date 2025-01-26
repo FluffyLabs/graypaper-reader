@@ -1,6 +1,6 @@
 import type { SynctexStore } from "./SynctexStore";
 import type { TexStore } from "./TexStore";
-import { type Metadata, ORIGIN } from "./metadata";
+import { type Metadata, ORIGIN, shortVersionId } from "./metadata";
 import { migrateSelection } from "./migrate";
 import type { ISelectionParams, ISynctexBlockId } from "./types";
 
@@ -61,6 +61,7 @@ export async function parseAndMigrateLink(
   meta: Metadata,
   synctexStore: SynctexStore,
   texStore: TexStore,
+  toVersion: string,
   lineNumber = 0,
 ): Promise<Link> {
   const linkData = parseLink(url, meta);
@@ -78,30 +79,31 @@ export async function parseAndMigrateLink(
     };
   }
   const { version, versionName, selectionStart, selectionEnd } = linkData;
-  const isOutdated = version !== meta.metadata.latest;
+  const isOutdated = version !== toVersion;
   let updated: string | null = null;
   let migrated = false;
 
-  // check if the blocks are still there in the latest metadata
+  // check if the blocks are still there in the requested version of metadata
   if (isOutdated && selectionStart && selectionEnd) {
     const migratedSelection = await migrateSelection(
       { selectionStart, selectionEnd },
       version,
-      meta.metadata.latest,
+      toVersion,
       synctexStore,
       texStore,
     );
 
+    const toVersionShort = shortVersionId(toVersion);
     if (migratedSelection) {
-      updated = `${ORIGIN}#/${meta.latestShort}/${encodePageNumberAndIndex(migratedSelection.selectionStart)}${encodePageNumberAndIndex(migratedSelection.selectionEnd)}`;
+      updated = `${ORIGIN}#/${toVersionShort}/${encodePageNumberAndIndex(migratedSelection.selectionStart)}${encodePageNumberAndIndex(migratedSelection.selectionEnd)}`;
       migrated = true;
     } else {
-      const latestSynctex = await synctexStore.getSynctex(meta.metadata.latest);
+      const latestSynctex = await synctexStore.getSynctex(toVersion);
       const hasStart = !!latestSynctex.blocksByPage.get(selectionStart.pageNumber)?.[selectionStart.index];
       const hasEnd = !!latestSynctex.blocksByPage.get(selectionEnd.pageNumber)?.[selectionEnd.index];
 
       if (hasStart && hasEnd) {
-        updated = `${ORIGIN}#/${meta.latestShort}/${linkData.blocks}`;
+        updated = `${ORIGIN}#/${toVersionShort}/${linkData.blocks}`;
       }
     }
   }
