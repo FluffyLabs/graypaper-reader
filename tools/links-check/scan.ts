@@ -66,7 +66,7 @@ export async function scan(files: Path[], metadata: Metadata, version?: string):
   return Promise.resolve(report);
 }
 
-function findVersion(metadata: Metadata, version: string = metadata.metadata.latest) {
+function findVersion(metadata: Metadata, version = "latest") {
   const v = version === "latest" ? metadata.metadata.latest : version;
   const versionData = metadata.metadata.versions[v];
   if (versionData) {
