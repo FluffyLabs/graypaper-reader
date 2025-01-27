@@ -26,7 +26,8 @@ async function main() {
       "--ignore-file <path>",
       "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
     )
-    .option("--write", "Modify the files and update reader links to their newest versions.")
+    .option("--version <name>", "Commit hash of specific version to update to (instead of latest)")
+    .option("--write", "Modify the files and update reader links to requested/lastest versions.")
     .option("--fix", "Alias for --write.")
     .option("--generate-notes <file.json>", "Generate notes for the Gray Paper Reader")
     .action(async (paths, options) => {
@@ -82,7 +83,7 @@ async function main() {
       console.time(label);
       let report: Report | null = null;
       try {
-        report = await scan(files, metadata);
+        report = await scan(files, metadata, options.version);
       } finally {
         console.timeEnd(label);
       }

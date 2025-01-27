@@ -23,16 +23,19 @@ class Timer {
   }
 }
 
-export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
+export async function scan(files: Path[], metadata: Metadata, version?: string): Promise<Report> {
   const timer = new Timer();
   const synctexStore = new SynctexStore();
   const texStore = new TexStore();
   const cwd = process.cwd();
+  const versionData = findVersion(metadata, version);
+  const toVersion = versionData.hash;
+
   const results = await Promise.allSettled(
     files.map(async (file) => {
       const relativeFilePath = path.relative(cwd, file);
       timer.start(relativeFilePath);
-      const fileReport = await scanFile(file, metadata, synctexStore, texStore);
+      const fileReport = await scanFile(file, metadata, synctexStore, texStore, toVersion);
       timer.end(relativeFilePath, fileReport.allLinks.length > 0);
       printFileReport(fileReport);
       return fileReport;
@@ -40,7 +43,7 @@ export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
   );
 
   const report = {
-    latestVersion: metadata.metadata.versions[metadata.metadata.latest]?.name || metadata.latestShort,
+    latestVersion: versionData.name || version || metadata.latestShort,
     detected: new Map(),
     outdated: new Map(),
     failed: new Map(),
@@ -63,11 +66,29 @@ export async function scan(files: Path[], metadata: Metadata): Promise<Report> {
   return Promise.resolve(report);
 }
 
+function findVersion(metadata: Metadata, version = "latest") {
+  const v = version === "latest" ? metadata.metadata.latest : version;
+  const versionData = metadata.metadata.versions[v];
+  if (versionData) {
+    return versionData;
+  }
+
+  // try lookup by name instead.
+  for (const v of Object.values(metadata.metadata.versions)) {
+    if (v.name === version) {
+      return v;
+    }
+  }
+
+  throw new Error(`Version ${version} not found.`);
+}
+
 async function scanFile(
   path: Path,
   metadata: Metadata,
   synctexStore: SynctexStore,
   texStore: TexStore,
+  toVersion: string,
 ): Promise<FileReport> {
   const links: [number, string][] = [];
   const report: FileReport = {
@@ -83,7 +104,9 @@ async function scanFile(
   });
 
   const linksParsed = await Promise.all(
-    links.map(([lineNumber, link]) => parseAndMigrateLink(link, metadata, synctexStore, texStore, lineNumber)),
+    links.map(([lineNumber, link]) =>
+      parseAndMigrateLink(link, metadata, synctexStore, texStore, toVersion, lineNumber),
+    ),
   );
 
   report.allLinks = linksParsed;
