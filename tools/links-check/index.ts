@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { fetchMetadata } from "@fluffylabs/links-metadata";
+import { type Metadata, fetchMetadata } from "@fluffylabs/links-metadata";
 import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
@@ -8,6 +8,10 @@ import { performMigrations } from "./migrate";
 import { generateNotes } from "./notes";
 import { type Report, printReport } from "./report";
 import { scan } from "./scan";
+
+const TIME_GLOB = "resolving glob patterns";
+const TIME_IGNORE = "resolving ignore patterns";
+const TIME_METADATA = "fetching metadata";
 
 main().catch((err: unknown) => {
   console.error(`🚨 ${err}`);
@@ -27,10 +31,17 @@ async function main() {
     .option("--fix", "Alias for --write.")
     .option("--generate-notes <file.json>", "Generate notes for the Gray Paper Reader")
     .action(async (paths, options) => {
-      let files = await fastGlob(paths);
+      console.time(TIME_GLOB);
+      let files = [];
+      try {
+        files = await fastGlob(paths);
+      } finally {
+        console.timeEnd(TIME_GLOB);
+      }
       const globExpandedFileCount = files.length;
 
       if (options.ignoreFile) {
+        console.time(TIME_IGNORE);
         let ignorePatterns: string[];
 
         try {
@@ -55,11 +66,18 @@ async function main() {
             }
           });
         }
+        console.timeEnd(TIME_IGNORE);
       }
 
       console.info();
 
-      const metadata = await fetchMetadata();
+      console.time(TIME_METADATA);
+      let metadata: Metadata | null = null;
+      try {
+        metadata = await fetchMetadata();
+      } finally {
+        console.timeEnd(TIME_METADATA);
+      }
 
       const label = `scanning ${files.length}${options.ignoreFile ? ` (${globExpandedFileCount - files.length} ignored)` : ""}`;
       console.time(label);
