@@ -31,6 +31,11 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
         <button onClick={() => setAddingNew(true)}>➕ new source</button>
       )}
       <hr />
+      <em>
+        Disclaimer: the only source of the truth is the Gray Paper. The notes here are shared as-is and are not
+        guaranteed to be correct.
+      </em>
+      <hr />
     </>
   );
 }

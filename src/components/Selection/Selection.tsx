@@ -15,7 +15,6 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
     CodeSyncContext,
   ) as ICodeSyncContext;
   const [linkCreated, setLinkCreated] = useState(false);
-  const [selectionCopied, setSelectionCopied] = useState(false);
   const [sectionTitle, setSectionTitle] = useState<string | null>("");
   const [subsectionTitle, setSubsectionTitle] = useState<string | null>("");
 
@@ -39,29 +38,6 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
     setLinkCreated(true);
     window.setTimeout(() => setLinkCreated(false), 2000);
   }, [selectedBlocks]);
-
-  const openGpt = useCallback(() => {
-    const text = selectionString;
-
-    const prompt = `
-      Based only on the GrayPaper and within the context of the following quote located on page ${pageNumber}${
-        sectionTitle !== null ? `, within section ${sectionTitle}` : ""
-      }${subsectionTitle ? ` (subsection: ${subsectionTitle})` : ""}:
-
-      ${text}
-
-      provide a deep explanation of the above quote with description of all used symbols based on the "Index of Notation" appendix.
-    `;
-    window.navigator.clipboard.writeText(prompt);
-
-    setSelectionCopied(true);
-    window.setTimeout(() => setSelectionCopied(false), 2000);
-
-    const a = document.createElement("a");
-    a.target = "_blank";
-    a.href = "https://chatgpt.com/g/g-ZuDULS0ij-dzemmer";
-    a.click();
-  }, [pageNumber, selectionString, sectionTitle, subsectionTitle]);
 
   const openNotes = useCallback(() => {
     switchTab("notes");
@@ -97,12 +73,6 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
       <div className="actions">
         <Button onClick={createLink} tooltip="Create a shareable link to the selected content.">
           {linkCreated ? <span>Copied</span> : "Link"}
-        </Button>
-        <Button
-          onClick={openGpt}
-          tooltip="Open a GrayPaper-specific ChatGPT and copy the prompt with selection to clipboard."
-        >
-          {selectionCopied ? <span>Copied</span> : "Explain"}
         </Button>
         {activeTab !== "notes" && (
           <Button onClick={openNotes} tooltip="Create a local note to the selected content.">
