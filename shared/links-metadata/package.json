@@ -10,9 +10,7 @@
     "format": "biome format --write",
     "lint": "biome lint --write; biome check --write"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
   "description": "Migrate graypaper reader notes between versions.",

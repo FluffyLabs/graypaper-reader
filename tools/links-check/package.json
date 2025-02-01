@@ -15,10 +15,7 @@
     "start": "ts-node index.ts",
     "prepublish": "npm run build"
   },
-  "files": [
-    "bin/",
-    "dist/"
-  ],
+  "files": ["bin/", "dist/"],
   "author": "Fluffy Labs",
   "license": "MPL-2.0",
   "devDependencies": {
