@@ -27,10 +27,11 @@ async function main() {
       "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
     )
     .option("--fail-on-broken", "Exit with an error code when broken links are detected.")
-    .option("--version <name>", "Commit hash of specific version to update to (instead of latest)")
+    .option("--version <name>", "Commit hash of specific version to update to (instead of latest).")
     .option("--write", "Modify the files and update reader links to requested/lastest versions.")
     .option("--fix", "Alias for --write.")
-    .option("--generate-notes <file.json>", "Generate notes for the Gray Paper Reader")
+    .option("--generate-notes <file.json>", "Generate notes for the Gray Paper Reader.")
+    .option("--generate-notes-label <label>", "Label assigned to all generated notes.")
     .action(async (paths, options) => {
       console.time(TIME_GLOB);
       let files = [];
@@ -97,7 +98,7 @@ async function main() {
 
       if (options.generateNotes !== undefined) {
         console.info(`📓 Generating notes to ${options.generateNotes}`);
-        const notes = generateNotes(report);
+        const notes = generateNotes(report, options.generateNotesLabel);
         const notesStr = JSON.stringify(notes, null, 2);
         fs.writeFileSync(options.generateNotes, notesStr);
       }

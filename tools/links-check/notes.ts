@@ -1,7 +1,7 @@
 import type { INoteV3, INotesEnvelopeV3, Link } from "@fluffylabs/links-metadata";
 import type { Report } from "./report";
 
-export function generateNotes(report: Report): INotesEnvelopeV3 {
+export function generateNotes(report: Report, label?: string): INotesEnvelopeV3 {
   const perLink = new Map<string, { file: string; link: Link }[]>();
   const commonPath: Map<string, number>[] = [];
 
@@ -39,7 +39,11 @@ export function generateNotes(report: Report): INotesEnvelopeV3 {
 
   const notes = [];
   for (const [_, linkData] of perLink) {
-    notes.push(linkToNote(linkData, path));
+    const note = linkToNote(linkData, path);
+    if (label) {
+      note.labels.push(label);
+    }
+    notes.push(note);
   }
 
   return {
