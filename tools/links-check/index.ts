@@ -26,6 +26,7 @@ async function main() {
       "--ignore-file <path>",
       "Path to a file containing patterns to ignore. Gitignore format applies. Patterns are resolved according to current working directory.",
     )
+    .option("--fail-on-broken", "Exit with an error code when broken links are detected.")
     .option("--version <name>", "Commit hash of specific version to update to (instead of latest)")
     .option("--write", "Modify the files and update reader links to requested/lastest versions.")
     .option("--fix", "Alias for --write.")
@@ -105,7 +106,7 @@ async function main() {
 
       if (options.write || options.fix) {
         await performMigrations(report);
-      } else if (summary.broken > 0) {
+      } else if (summary.broken > 0 && options.failOnBroken) {
         process.exit(1);
       }
     });
