@@ -1,14 +1,16 @@
 {
   "name": "@fluffylabs/links-metadata",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run build",
+    "update-main": "sed -i s#index\\.ts#dist/index.js# ./package.json",
+    "prepublish": "npm run build && npm run update-main",
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
     "format": "biome format --write",
     "lint": "biome lint --write; biome check --write"
   },
+  "main": "index.ts",
   "files": ["dist"],
   "author": "Fluffy Labs",
   "license": "MPL-2.0",

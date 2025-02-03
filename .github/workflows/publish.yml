@@ -25,17 +25,19 @@ jobs:
         with:
           node-version: 22
           cache: "npm"
+          # required for proper publish authorization
+          registry-url: 'https://registry.npmjs.org/'
       - name: Install dependencies
         run: npm ci
       - name: Build links-metadata
-        working-directory: ./tools/links-metadata
-        run: npm run build
+        working-directory: ./shared/links-metadata
+        run: npm run build && npm run update-main
       - name: Build links-check
         working-directory: ./tools/links-check
         run: npm run build
       - name: Publish links-metadata
         run: npm publish --access public
-        working-directory: ./tools/links-metadata
+        working-directory: ./shared/links-metadata
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish links-check

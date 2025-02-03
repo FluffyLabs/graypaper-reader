@@ -1,6 +1,6 @@
 {
   "name": "@fluffylabs/links-check",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Check list of files for Gray Paper Reader links and make sure they are up to date.",
   "main": "./dist/index.js",
   "bin": {
@@ -27,7 +27,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@fluffylabs/links-metadata": "^1.1.0",
+    "@fluffylabs/links-metadata": "^1.1.2",
     "commander": "^12.1.0",
     "fast-glob": "^3.3.3",
     "ignore": "^6.0.2"
