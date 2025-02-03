@@ -25,6 +25,8 @@ jobs:
         with:
           node-version: 22
           cache: "npm"
+          # required for proper publish authorization
+          registry-url: 'https://registry.npmjs.org/'
       - name: Install dependencies
         run: npm ci
       - name: Build links-metadata
