@@ -31,7 +31,7 @@ jobs:
         run: npm ci
       - name: Build links-metadata
         working-directory: ./shared/links-metadata
-        run: npm run build
+        run: npm run build && npm run update-main
       - name: Build links-check
         working-directory: ./tools/links-check
         run: npm run build
