@@ -1,7 +1,7 @@
 import shell from "shelljs";
 
-// Tworzenie katalogu public, jeśli nie istnieje
+// Creating the public directory if it doesn't exist
 shell.mkdir("-p", "public");
 
-// Kopiowanie plików z graypaper-archive/dist do public
+// Copying files from graypaper-archive/dist to public
 shell.cp("-r", "graypaper-archive/dist/*", "public");
