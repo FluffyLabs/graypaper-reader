@@ -16,7 +16,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "cp-gp": "shx mkdir -p ./public && shx cp -r ./graypaper-archive/dist/* ./public/",
+    "cp-gp": "node ./scripts/cp-gp.js",
     "prebuild": "git submodule update --init && npm run cp-gp",
     "predev": "npm run cp-gp",
     "serve": "vite preview"
@@ -40,6 +40,7 @@
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.16.3",
     "@vitejs/plugin-react": "^4.3.1",
+    "shelljs": "^0.8.5",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vite-plugin-prefetch-chunk": "^0.1.2",
