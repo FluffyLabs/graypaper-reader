@@ -3,10 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": [
-    "tools/*",
-    "shared/*"
-  ],
+  "workspaces": ["tools/*", "shared/*"],
   "scripts": {
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
