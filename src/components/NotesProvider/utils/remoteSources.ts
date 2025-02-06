@@ -45,7 +45,11 @@ const DEFAULT_SOURCES = [
     name: "Changes in v0.6.x",
     url: "https://fluffylabs.dev/graypaper-notes/version-0.6.0.json",
     isEnabled: true,
-    versions: ["78ca0a81d8058531c2e2e46235db2b832eae0213", "4bb8fd258ee2d49767f6725993fb5a4045ee19a3"],
+    versions: [
+      "78ca0a81d8058531c2e2e46235db2b832eae0213",
+      "4bb8fd258ee2d49767f6725993fb5a4045ee19a3",
+      "5f542d710f52bcfd22cd400d1b0b99e15003cc67",
+    ],
   },
 ];
 
