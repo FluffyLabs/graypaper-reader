@@ -26,6 +26,7 @@ export function NotesActions() {
     handleRedo,
     handleImport,
     handleExport,
+    handleDeleteNotes,
     handleSetRemoteSources,
   } = useContext(NotesContext) as INotesContext;
 
@@ -73,6 +74,7 @@ export function NotesActions() {
         </button>
         <button onClick={onImport}>📂 import</button>
         <button onClick={handleExport}>💾 export</button>
+        <button onClick={handleDeleteNotes}>🗑 delete</button>
         <button onClick={toggleModal}>⚙︎</button>
       </div>
       <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />

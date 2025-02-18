@@ -1,6 +1,6 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { LABEL_IMPORTED } from "./consts/labels";
+import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "./consts/labels";
 import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
 import { type ILabel, useLabels } from "./hooks/useLabels";
@@ -33,6 +33,7 @@ export interface INotesContext {
   handleRedo(): void;
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
+  handleDeleteNotes(): void;
   handleToggleLabel(label: string): void;
 }
 
@@ -206,6 +207,30 @@ export function NotesProvider({ children }: INotesProviderProps) {
       const fileName = `graypaper-notes-${new Date().toISOString()}.json`;
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
+    handleDeleteNotes: useCallback(() => {
+      const r = confirm("Are you sure you want to delete all filtered notes?");
+      if (r === true) {
+        const activeLabels = labels
+          .filter((label) => label.isActive)
+          .map((label) => {
+            const parts = label.label.split("/");
+            if (parts.length > 1) {
+              if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
+                return parts.slice(1).join("/");
+              }
+            }
+            return label.label;
+          });
+        console.log("Deleting notes with labels:", activeLabels);
+        const updatedNotes = localNotes.notes.filter((note) => {
+          if (note.labels.some((label) => activeLabels.includes(label))) {
+            return false;
+          }
+          return true;
+        });
+        updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
+      }
+    }, [localNotes, labels, updateLocalNotes]),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
