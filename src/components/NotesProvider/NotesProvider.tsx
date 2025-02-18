@@ -7,7 +7,7 @@ import { type ILabel, useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
 import type { IRemoteSource } from "./types/RemoteSource";
-import type { INoteV3, INotesEnvelope, IStorageNote } from "./types/StorageNote";
+import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
 import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
 import * as notes from "./utils/notesLocalStorage";
 import * as remote from "./utils/remoteSources";
@@ -79,10 +79,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
   // Filter notes by labels.
   const filterNotesByLabels = useCallback(
     (
-      notes: INoteV3[],
+      notes: IStorageNote[],
       labels: string[],
       { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
-    ): INoteV3[] => {
+    ): IStorageNote[] => {
       return notes.filter((note) => {
         if (note.labels.some((label) => labels.includes(label))) {
           return includesLabel;
@@ -239,7 +239,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
       const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
       const deletedNotes = filterNotesByLabels(localNotes.notes, activeLabels);
-      downloadNotesAsJson({ version: localNotes.version, notes: deletedNotes }, fileName);
+      downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
 
       const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, { includesLabel: false });
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
