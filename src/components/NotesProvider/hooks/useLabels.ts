@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
-import type { IDecoratedNote } from "../types/DecoratedNote";
+import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
 export type ILabel = {
@@ -8,6 +8,12 @@ export type ILabel = {
   isActive: boolean;
 };
 
+/**
+ * Filter out labels
+ * @param labels - list of labels to filter
+ * @param onlyNonEditable - if true, only non-editable labels are returned (like remote/local/imported:)
+ * @returns
+ */
 export function getEditableLabels(
   labels: string[],
   { onlyNonEditable }: { onlyNonEditable: boolean } = { onlyNonEditable: false },
@@ -40,11 +46,19 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
   // toggle label visibility
   const toggleLabel = useCallback((label: string) => {
-    const toggle = (x: ILabel) => {
+    let parent: ILabel | null = null;
+    const toggle = (x: ILabel): ILabel => {
       if (x.label === label) {
+        parent = x;
         return {
           ...x,
           isActive: !x.isActive,
+        };
+      }
+      if (x.label.startsWith(`${label}/`) || (parent?.label === LABEL_LOCAL && x.label.startsWith(LABEL_IMPORTED))) {
+        return {
+          ...x,
+          isActive: !parent?.isActive,
         };
       }
       return x;
@@ -80,23 +94,29 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
   // Re-create labels on change in notes
   useEffect(() => {
-    const uniqueLabels = new Set<string>();
+    const uniqueLabels = new Map<string, ILabel>();
     allNotes.map((note) => {
       note.original.labels.map((label) => {
-        uniqueLabels.add(label);
+        const hierarchicalLabel = getHierarchicalLabel(label, note.source);
+        if (!uniqueLabels.has(hierarchicalLabel)) {
+          uniqueLabels.set(hierarchicalLabel, {
+            label: hierarchicalLabel,
+            isActive: true,
+          });
+        }
       });
     });
 
     setLabels((oldLabels) => {
       const justNames = oldLabels.map((x) => x.label);
       return Array.from(uniqueLabels.values()).map((label) => {
-        const oldLabelIdx = justNames.indexOf(label);
-        const activeByDefault = label !== LABEL_REMOTE;
-        const activeInStorage = storageActivity.get(label);
+        const oldLabelIdx = justNames.indexOf(label.label);
+        const activeByDefault = label.label !== LABEL_REMOTE;
+        const activeInStorage = storageActivity.get(label.label);
         const isActive = activeInStorage ?? activeByDefault;
 
         if (oldLabelIdx === -1) {
-          return { label, isActive };
+          return { label: label.label, isActive };
         }
         return oldLabels[oldLabelIdx];
       });
@@ -111,10 +131,23 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
     // filter out notes
     return allNotes.filter((note) => {
-      const activeLabels = note.original.labels.filter((label) => active.get(label));
+      const activeLabels = note.original.labels.filter((label) => {
+        const hierarchicalLabel = getHierarchicalLabel(label, note.source);
+        return active.get(hierarchicalLabel);
+      });
       return activeLabels.length > 0;
     });
   }, [allNotes, labels]);
 
   return [filteredNotes, labels, toggleLabel];
+}
+
+function getHierarchicalLabel(label: string, source: NoteSource): string {
+  if (label === LABEL_REMOTE || label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED)) {
+    return label;
+  }
+  if (source === NoteSource.Remote) {
+    return `${LABEL_REMOTE}/${label}`;
+  }
+  return `${LABEL_LOCAL}/${label}`;
 }
