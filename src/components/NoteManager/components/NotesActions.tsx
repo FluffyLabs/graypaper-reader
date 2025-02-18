@@ -1,6 +1,7 @@
 import "./NotesActions.css";
 import { type ChangeEventHandler, useCallback, useContext, useRef, useState } from "react";
 import Modal from "react-modal";
+import { Tooltip } from "react-tooltip";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { RemoteSources } from "../../RemoteSources/RemoteSources";
 
@@ -31,6 +32,8 @@ export function NotesActions() {
   } = useContext(NotesContext) as INotesContext;
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDeleteDisabled, setConfirmDeleteDisabled] = useState(false);
 
   const fileImport = useRef<HTMLInputElement>(null);
   const onImport = useCallback(() => {
@@ -63,6 +66,19 @@ export function NotesActions() {
     setModalOpen((x) => !x);
   }, []);
 
+  const deleteNotes = useCallback(() => {
+    if (confirmDeleteDisabled) return;
+    if (confirmDelete) {
+      handleDeleteNotes();
+      setConfirmDelete(false);
+    } else {
+      setConfirmDelete(true);
+      setConfirmDeleteDisabled(true);
+      window.setTimeout(() => setConfirmDelete(false), 10000);
+      window.setTimeout(() => setConfirmDeleteDisabled(false), 3000);
+    }
+  }, [confirmDelete, confirmDeleteDisabled, handleDeleteNotes]);
+
   return (
     <>
       <div className="notes-actions">
@@ -74,9 +90,18 @@ export function NotesActions() {
         </button>
         <button onClick={onImport}>📂 import</button>
         <button onClick={handleExport}>💾 export</button>
-        <button onClick={handleDeleteNotes}>🗑 delete</button>
+        <button
+          data-tooltip-id="delete-tooltip"
+          data-tooltip-content={confirmDelete ? "Yes, delete" : "Delete all notes"}
+          data-tooltip-place="bottom"
+          disabled={confirmDeleteDisabled}
+          onClick={deleteNotes}
+        >
+          {confirmDelete ? "Are you sure?" : "🗑 delete"}
+        </button>
         <button onClick={toggleModal}>⚙︎</button>
       </div>
+      <Tooltip id="delete-tooltip" />
       <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />
       <Modal style={modalStyles} isOpen={isModalOpen} onRequestClose={toggleModal} contentLabel="Settings">
         <button className="settings-close" onClick={toggleModal}>

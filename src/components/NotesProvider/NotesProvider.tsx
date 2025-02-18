@@ -208,28 +208,25 @@ export function NotesProvider({ children }: INotesProviderProps) {
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
     handleDeleteNotes: useCallback(() => {
-      const r = confirm("Are you sure you want to delete all filtered notes?");
-      if (r === true) {
-        const activeLabels = labels
-          .filter((label) => label.isActive)
-          .map((label) => {
-            const parts = label.label.split("/");
-            if (parts.length > 1) {
-              if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
-                return parts.slice(1).join("/");
-              }
+      const activeLabels = labels
+        .filter((label) => label.isActive)
+        .map((label) => {
+          const parts = label.label.split("/");
+          if (parts.length > 1) {
+            if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
+              return parts.slice(1).join("/");
             }
-            return label.label;
-          });
-        console.log("Deleting notes with labels:", activeLabels);
-        const updatedNotes = localNotes.notes.filter((note) => {
-          if (note.labels.some((label) => activeLabels.includes(label))) {
-            return false;
           }
-          return true;
+          return label.label;
         });
-        updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
-      }
+      console.log("Deleting notes with labels:", activeLabels);
+      const updatedNotes = localNotes.notes.filter((note) => {
+        if (note.labels.some((label) => activeLabels.includes(label))) {
+          return false;
+        }
+        return true;
+      });
+      updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
     }, [localNotes, labels, updateLocalNotes]),
   };
 
