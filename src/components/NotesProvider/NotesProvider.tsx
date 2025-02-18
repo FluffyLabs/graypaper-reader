@@ -7,7 +7,7 @@ import { type ILabel, useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
 import type { IRemoteSource } from "./types/RemoteSource";
-import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
+import type { INoteV3, INotesEnvelope, IStorageNote } from "./types/StorageNote";
 import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
 import * as notes from "./utils/notesLocalStorage";
 import * as remote from "./utils/remoteSources";
@@ -75,6 +75,23 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setLocalNotes(newNotes);
     notes.saveToLocalStorage(newNotes);
   }, []);
+
+  // Filter notes by labels.
+  const filterNotesByLabels = useCallback(
+    (
+      notes: INoteV3[],
+      labels: string[],
+      { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+    ): INoteV3[] => {
+      return notes.filter((note) => {
+        if (note.labels.some((label) => labels.includes(label))) {
+          return includesLabel;
+        }
+        return !includesLabel;
+      });
+    },
+    [],
+  );
 
   // Decorate all local notes.
   useEffect(() => {
@@ -219,15 +236,14 @@ export function NotesProvider({ children }: INotesProviderProps) {
           }
           return label.label;
         });
-      console.log("Deleting notes with labels:", activeLabels);
-      const updatedNotes = localNotes.notes.filter((note) => {
-        if (note.labels.some((label) => activeLabels.includes(label))) {
-          return false;
-        }
-        return true;
-      });
+
+      const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
+      const deletedNotes = filterNotesByLabels(localNotes.notes, activeLabels);
+      downloadNotesAsJson({ version: localNotes.version, notes: deletedNotes }, fileName);
+
+      const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, { includesLabel: false });
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
-    }, [localNotes, labels, updateLocalNotes]),
+    }, [localNotes, labels, updateLocalNotes, filterNotesByLabels]),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
