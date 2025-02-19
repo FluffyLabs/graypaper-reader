@@ -66,11 +66,13 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
     };
 
     let newLabel: ILabel | null = null;
+
+    // find new label
     setLabels((labels) => {
-      const newLabels = labels.map(toggle);
-      newLabel = newLabels.find((x) => x.label === label) || null;
-      return newLabels;
+      newLabel = labels.find((x) => x.label === label) || null;
+      return labels;
     });
+
     // NOTE: we update storage labels separately, since they may have more entries
     // than actually displayed labels.
     setStorageLabels((storageLabels) => {
@@ -81,6 +83,11 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
         return [...storageLabels, newLabel];
       }
       return storageLabels;
+    });
+
+    // update displayed labels
+    setLabels((labels) => {
+      return labels.map(toggle);
     });
   }, []);
 
