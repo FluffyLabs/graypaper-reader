@@ -4,6 +4,7 @@ import "./Label.css";
 import { useMemo } from "react";
 
 export function Label({ label, prefix = "" }: { label: string; prefix?: string }) {
+  label = getLabelFromHierarchical(label);
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   return (
     <span style={{ backgroundColor }} className="label">
@@ -13,7 +14,7 @@ export function Label({ label, prefix = "" }: { label: string; prefix?: string }
 }
 
 function labelToColor(label: string) {
-  return getColor(hashStringToIndex(getLabelFromHierarchical(label)));
+  return getColor(hashStringToIndex(label));
 }
 
 function getColor(index: number) {
