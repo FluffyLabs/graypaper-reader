@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getHierarchicalLabel } from "../../Label/Label";
 import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
-import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
+import type { IDecoratedNote } from "../types/DecoratedNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
 export type ILabel = {
@@ -140,14 +141,4 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, [allNotes, labels]);
 
   return [filteredNotes, labels, toggleLabel];
-}
-
-function getHierarchicalLabel(label: string, source: NoteSource): string {
-  if (label === LABEL_REMOTE || label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED)) {
-    return label;
-  }
-  if (source === NoteSource.Remote) {
-    return `${LABEL_REMOTE}/${label}`;
-  }
-  return `${LABEL_LOCAL}/${label}`;
 }
