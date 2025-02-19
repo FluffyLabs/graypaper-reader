@@ -1,3 +1,5 @@
+import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../NotesProvider/consts/labels";
+import { NoteSource } from "../NotesProvider/types/DecoratedNote";
 import "./Label.css";
 import { useMemo } from "react";
 
@@ -11,7 +13,7 @@ export function Label({ label, prefix = "" }: { label: string; prefix?: string }
 }
 
 function labelToColor(label: string) {
-  return getColor(hashStringToIndex(label));
+  return getColor(hashStringToIndex(getLabelFromHierarchical(label)));
 }
 
 function getColor(index: number) {
@@ -40,4 +42,22 @@ function hslToHex(h: number, s: number, lightness: number) {
       .padStart(2, "0"); // Convert to hex and pad if necessary
   };
   return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+export function getHierarchicalLabel(label: string, source: NoteSource): string {
+  if (label === LABEL_REMOTE || label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED)) {
+    return label;
+  }
+  if (source === NoteSource.Remote) {
+    return `${LABEL_REMOTE}/${label}`;
+  }
+  return `${LABEL_LOCAL}/${label}`;
+}
+
+export function getLabelFromHierarchical(hierarchicalLabel: string): string {
+  if (hierarchicalLabel.startsWith(`${LABEL_LOCAL}/`) || hierarchicalLabel.startsWith(`${LABEL_REMOTE}/`)) {
+    const parts = hierarchicalLabel.split("/");
+    return parts.slice(1).join("/");
+  }
+  return hierarchicalLabel;
 }
