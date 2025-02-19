@@ -46,6 +46,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       const version =
         newParams?.version.substring(0, SHORT_COMMIT_HASH_LENGTH) ||
         metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
+      const versionName = metadata.versions[newParams?.version ?? metadata.latest]?.name;
 
       const stringifiedParams = [];
 
@@ -58,7 +59,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         ].join("");
       }
 
-      window.location.hash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`;
+      window.location.hash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}?v=${versionName}`;
     },
     [metadata],
   );
