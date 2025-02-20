@@ -9,7 +9,7 @@ Each of these links is then evaluated:
 2. If not, we propose an updated link.
 3. We indicate if the updated link is most likely broken due to changes in the GP.
 
-On top the tool is able to:
+On top of that, the tool is able to:
 - automatically update the links to recent version (`--write`)
 - generate a JSON file that can be imported to Gray Paper Reader
   (or used as remote notes source) containing notes with filenames with the links
