@@ -46,50 +46,47 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, [storageLabels]);
 
   // toggle label visibility
-  const toggleLabel = useCallback((label: string) => {
-    let parent: ILabel | null = null;
-    const toggle = (x: ILabel): ILabel => {
-      if (x.label === label) {
-        parent = x;
-        return {
-          ...x,
-          isActive: !x.isActive,
-        };
-      }
-      if (x.label.startsWith(`${label}/`) || (parent?.label === LABEL_LOCAL && x.label.startsWith(LABEL_IMPORTED))) {
-        return {
-          ...x,
-          isActive: !parent?.isActive,
-        };
-      }
-      return x;
-    };
+  const toggleLabel = useCallback(
+    (label: string) => {
+      let parent: ILabel | null = null;
+      const toggle = (x: ILabel): ILabel => {
+        if (x.label === label) {
+          parent = x;
+          return {
+            ...x,
+            isActive: !x.isActive,
+          };
+        }
+        if (x.label.startsWith(`${label}/`) || (parent?.label === LABEL_LOCAL && x.label.startsWith(LABEL_IMPORTED))) {
+          return {
+            ...x,
+            isActive: !parent?.isActive,
+          };
+        }
+        return x;
+      };
 
-    let newLabel: ILabel | null = null;
+      const newLabel = labels.find((x) => x.label === label) || null;
 
-    // find new label
-    setLabels((labels) => {
-      newLabel = labels.find((x) => x.label === label) || null;
-      return labels;
-    });
+      // NOTE: we update storage labels separately, since they may have more entries
+      // than actually displayed labels.
+      setStorageLabels((storageLabels) => {
+        if (storageLabels.find((x) => x.label === label) !== undefined) {
+          return storageLabels.map(toggle);
+        }
+        if (newLabel !== null) {
+          return [...storageLabels, newLabel];
+        }
+        return storageLabels;
+      });
 
-    // NOTE: we update storage labels separately, since they may have more entries
-    // than actually displayed labels.
-    setStorageLabels((storageLabels) => {
-      if (storageLabels.find((x) => x.label === label) !== undefined) {
-        return storageLabels.map(toggle);
-      }
-      if (newLabel !== null) {
-        return [...storageLabels, newLabel];
-      }
-      return storageLabels;
-    });
-
-    // update displayed labels
-    setLabels((labels) => {
-      return labels.map(toggle);
-    });
-  }, []);
+      // update displayed labels
+      setLabels((labels) => {
+        return labels.map(toggle);
+      });
+    },
+    [labels],
+  );
 
   // maintain a set of labels inactive in local storage.
   const storageActivity = useMemo(() => {
