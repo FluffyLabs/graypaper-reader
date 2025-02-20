@@ -3,13 +3,13 @@ import type { Report } from "./report";
 
 export function generateNotes(report: Report, label?: string): INotesEnvelopeV3 {
   const perLink = new Map<string, { file: string; link: Link }[]>();
-  const commonPath: Map<string, number>[] = [];
+  const commonPathComponents: Map<string, number>[] = [];
 
   for (const [file, links] of report.detected) {
     const parts = file.split("/");
     for (let i = 0; i < parts.length; i++) {
-      commonPath[i] = commonPath[i] || new Map();
-      commonPath[i].set(parts[i], (commonPath[i].get(parts[i]) || 0) + 1);
+      commonPathComponents[i] = commonPathComponents[i] || new Map();
+      commonPathComponents[i].set(parts[i], (commonPathComponents[i].get(parts[i]) || 0) + 1);
     }
 
     for (const link of links) {
@@ -25,21 +25,25 @@ export function generateNotes(report: Report, label?: string): INotesEnvelopeV3 
   }
 
   const noOfFiles = report.detected.size;
-  const path = commonPath
-    .map((x) => {
-      for (const [k, count] of x.entries()) {
-        if (count === noOfFiles) {
-          return k;
-        }
-        return null;
-      }
-    })
-    .filter((x) => x)
-    .join("/");
+  // avoid stripping commonPath if we only have one file.
+  const commonPath =
+    noOfFiles < 2
+      ? ""
+      : commonPathComponents
+          .map((x) => {
+            for (const [k, count] of x.entries()) {
+              if (count === noOfFiles) {
+                return k;
+              }
+              return null;
+            }
+          })
+          .filter((x) => x)
+          .join("/");
 
   const notes = [];
   for (const [_, linkData] of perLink) {
-    const note = linkToNote(linkData, path);
+    const note = linkToNote(linkData, commonPath);
     if (label) {
       note.labels.push(label);
     }
