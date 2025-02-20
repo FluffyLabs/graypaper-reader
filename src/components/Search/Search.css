@@ -1,0 +1,35 @@
+/* override pdfjs default alpha for search higlights */
+
+.textLayer .highlight {
+  --highlight-bg-color: rgb(180 0 170 / 0.7);
+  --highlight-selected-bg-color: rgb(0 100 0 / 0.7);
+}
+
+.search-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.search-wrapper input {
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.search-loading {
+  opacity: 0.5;
+}
+
+.search-buttons {
+  margin: 1rem 0;
+  display: flex;
+}
+.search-buttons > button {
+  flex: 1;
+}
+
+.search-results {
+  flex: 1;
+  overflow: auto;
+  margin-top: 1rem;
+}

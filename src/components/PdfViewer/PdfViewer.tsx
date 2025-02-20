@@ -2,11 +2,11 @@ import "pdfjs-dist/web/pdf_viewer.css";
 import "./PdfViewer.css";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { type WheelEventHandler, useCallback, useContext, useEffect, useState } from "react";
-import { NoteRenderer } from "../NoteRenderer/NoteRenderer";
 import { PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import { SelectionRenderer } from "../SelectionRenderer/SelectionRenderer";
+import { NoteRenderer } from "./NoteRenderer/NoteRenderer";
+import { SelectionRenderer } from "./SelectionRenderer/SelectionRenderer";
 
 const IMAGE_RESOURCES_PATH = "pdf-viewer-images/";
 export const MIN_SCALE = 0.25;
@@ -17,7 +17,7 @@ const INITIAL_SCALE = "0.85";
 export function PdfViewer() {
   const [rootElement, setRootElement] = useState<HTMLDivElement>();
   const [pagesLoaded, setPagesLoaded] = useState<boolean>(false);
-  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, scale, theme } = useContext(
+  const { eventBus, linkService, findController, pdfDocument, setViewer, viewer, theme } = useContext(
     PdfContext,
   ) as IPdfContext;
   const { handleViewerMouseUp } = useContext(SelectionContext) as ISelectionContext;
@@ -119,8 +119,8 @@ export function PdfViewer() {
       >
         {pagesLoaded ? (
           <>
-            <NoteRenderer key={`${scale}-NoteRenderer`} />
-            <SelectionRenderer key={`${scale}-SelectionRenderer`} />
+            <NoteRenderer />
+            <SelectionRenderer />
           </>
         ) : null}
       </div>

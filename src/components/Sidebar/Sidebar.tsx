@@ -3,12 +3,15 @@ import "./Sidebar.css";
 import { useEffect, useState } from "react";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
+import { Search } from "../Search/Search";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
 
 export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
+  // search query is persistent between tab switches
+  const [query, setQuery] = useState("");
 
   // store seletected tab in LS
   useEffect(() => {
@@ -23,6 +26,10 @@ export function Sidebar() {
     {
       name: "notes",
       render: () => <NoteManager />,
+    },
+    {
+      name: "search",
+      render: () => <Search {...{ query, setQuery }} />,
     },
   ];
 
