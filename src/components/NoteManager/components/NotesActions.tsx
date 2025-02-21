@@ -31,6 +31,8 @@ export function NotesActions() {
     handleSetRemoteSources,
   } = useContext(NotesContext) as INotesContext;
 
+  const [confirmButtonTimeoutId, setConfirmButtonTimeoutId] = useState<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(3);
   const [isModalOpen, setModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmDeleteDisabled, setConfirmDeleteDisabled] = useState(false);
@@ -66,18 +68,49 @@ export function NotesActions() {
     setModalOpen((x) => !x);
   }, []);
 
+  const resetDeleteState = useCallback(() => {
+    setSecondsLeft(3);
+    setConfirmDelete(false);
+    setConfirmDeleteDisabled(false);
+    if (confirmButtonTimeoutId) {
+      window.clearTimeout(confirmButtonTimeoutId);
+      setConfirmButtonTimeoutId(null);
+    }
+  }, [confirmButtonTimeoutId]);
+
+  const initiateDeleteCountdown = useCallback(() => {
+    setSecondsLeft(3);
+    setConfirmDelete(true);
+    setConfirmDeleteDisabled(true);
+    setConfirmButtonTimeoutId(
+      window.setTimeout(() => {
+        setSecondsLeft(3);
+        setConfirmDelete(false);
+      },
+      10000,
+    ));
+    let disabledButtonIntervalId = window.setInterval(() => {
+      setSecondsLeft((x) => {
+        if (x <= 1) {
+          setConfirmDeleteDisabled(false);
+          window.clearInterval(disabledButtonIntervalId);
+          return 0;
+        }
+        return x - 1;
+      });
+    }, 1000);
+  }, []);
+
   const deleteNotes = useCallback(() => {
     if (confirmDeleteDisabled) return;
+
     if (confirmDelete) {
       handleDeleteNotes();
-      setConfirmDelete(false);
+      resetDeleteState();
     } else {
-      setConfirmDelete(true);
-      setConfirmDeleteDisabled(true);
-      window.setTimeout(() => setConfirmDelete(false), 10000);
-      window.setTimeout(() => setConfirmDeleteDisabled(false), 3000);
+      initiateDeleteCountdown();
     }
-  }, [confirmDelete, confirmDeleteDisabled, handleDeleteNotes]);
+  }, [confirmDelete, confirmDeleteDisabled, secondsLeft, handleDeleteNotes]);
 
   return (
     <>
@@ -97,7 +130,7 @@ export function NotesActions() {
           disabled={confirmDeleteDisabled}
           onClick={deleteNotes}
         >
-          {confirmDelete ? "Are you sure?" : "🗑 delete"}
+          {confirmDelete ? (secondsLeft > 0 ? `Wait (${secondsLeft})` : "❌") : "🗑️"}
         </button>
         <button onClick={toggleModal}>⚙︎</button>
       </div>
