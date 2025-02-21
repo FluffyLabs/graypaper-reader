@@ -1,6 +1,7 @@
 import "./NotesActions.css";
 import { type ChangeEventHandler, useCallback, useContext, useRef, useState } from "react";
 import Modal from "react-modal";
+import { Tooltip } from "react-tooltip";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { RemoteSources } from "../../RemoteSources/RemoteSources";
 
@@ -26,10 +27,15 @@ export function NotesActions() {
     handleRedo,
     handleImport,
     handleExport,
+    handleDeleteNotes,
     handleSetRemoteSources,
   } = useContext(NotesContext) as INotesContext;
 
+  const [confirmButtonTimeoutId, setConfirmButtonTimeoutId] = useState<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(3);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const confirmDeleteDisabled = confirmDelete && secondsLeft > 0;
 
   const fileImport = useRef<HTMLInputElement>(null);
   const onImport = useCallback(() => {
@@ -62,6 +68,46 @@ export function NotesActions() {
     setModalOpen((x) => !x);
   }, []);
 
+  const resetDeleteState = useCallback(() => {
+    setSecondsLeft(3);
+    setConfirmDelete(false);
+    if (confirmButtonTimeoutId) {
+      window.clearTimeout(confirmButtonTimeoutId);
+      setConfirmButtonTimeoutId(null);
+    }
+  }, [confirmButtonTimeoutId]);
+
+  const initiateDeleteCountdown = useCallback(() => {
+    setSecondsLeft(3);
+    setConfirmDelete(true);
+    setConfirmButtonTimeoutId(
+      window.setTimeout(() => {
+        setSecondsLeft(3);
+        setConfirmDelete(false);
+      }, 10000),
+    );
+    const disabledButtonIntervalId = window.setInterval(() => {
+      setSecondsLeft((x) => {
+        if (x <= 1) {
+          window.clearInterval(disabledButtonIntervalId);
+          return 0;
+        }
+        return x - 1;
+      });
+    }, 1000);
+  }, []);
+
+  const deleteNotes = useCallback(() => {
+    if (confirmDeleteDisabled) return;
+
+    if (confirmDelete) {
+      handleDeleteNotes();
+      resetDeleteState();
+    } else {
+      initiateDeleteCountdown();
+    }
+  }, [confirmDelete, confirmDeleteDisabled, handleDeleteNotes, resetDeleteState, initiateDeleteCountdown]);
+
   return (
     <>
       <div className="notes-actions">
@@ -73,8 +119,18 @@ export function NotesActions() {
         </button>
         <button onClick={onImport}>📂 import</button>
         <button onClick={handleExport}>💾 export</button>
+        <button
+          data-tooltip-id="delete-tooltip"
+          data-tooltip-content={confirmDelete ? "Yes, delete" : "Delete all notes"}
+          data-tooltip-place="bottom"
+          disabled={confirmDeleteDisabled}
+          onClick={deleteNotes}
+        >
+          {confirmDelete ? (secondsLeft > 0 ? `Wait (${secondsLeft})` : "❌") : "🗑️"}
+        </button>
         <button onClick={toggleModal}>⚙︎</button>
       </div>
+      <Tooltip id="delete-tooltip" />
       <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />
       <Modal style={modalStyles} isOpen={isModalOpen} onRequestClose={toggleModal} contentLabel="Settings">
         <button className="settings-close" onClick={toggleModal}>

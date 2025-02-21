@@ -1,6 +1,6 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { LABEL_IMPORTED } from "./consts/labels";
+import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "./consts/labels";
 import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
 import { type ILabel, useLabels } from "./hooks/useLabels";
@@ -33,6 +33,7 @@ export interface INotesContext {
   handleRedo(): void;
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
+  handleDeleteNotes(): void;
   handleToggleLabel(label: string): void;
 }
 
@@ -74,6 +75,23 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setLocalNotes(newNotes);
     notes.saveToLocalStorage(newNotes);
   }, []);
+
+  // Filter notes by labels.
+  const filterNotesByLabels = useCallback(
+    (
+      notes: IStorageNote[],
+      labels: string[],
+      { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+    ): IStorageNote[] => {
+      return notes.filter((note) => {
+        if (note.labels.some((label) => labels.includes(label))) {
+          return includesLabel;
+        }
+        return !includesLabel;
+      });
+    },
+    [],
+  );
 
   // Decorate all local notes.
   useEffect(() => {
@@ -206,6 +224,26 @@ export function NotesProvider({ children }: INotesProviderProps) {
       const fileName = `graypaper-notes-${new Date().toISOString()}.json`;
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
+    handleDeleteNotes: useCallback(() => {
+      const activeLabels = labels
+        .filter((label) => label.isActive)
+        .map((label) => {
+          const parts = label.label.split("/");
+          if (parts.length > 1) {
+            if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
+              return parts.slice(1).join("/");
+            }
+          }
+          return label.label;
+        });
+
+      const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
+      const deletedNotes = filterNotesByLabels(localNotes.notes, activeLabels);
+      downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
+
+      const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, { includesLabel: false });
+      updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
+    }, [localNotes, labels, updateLocalNotes, filterNotesByLabels]),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
