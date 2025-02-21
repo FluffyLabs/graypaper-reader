@@ -9,6 +9,7 @@ export type LabelsFilterProps = {
 };
 
 export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
+  labels = labels.slice().sort((a, b) => a.label.localeCompare(b.label));
   return (
     <div className="labels filter">
       {labels.map((label) => (
