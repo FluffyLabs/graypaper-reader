@@ -35,7 +35,7 @@ export function NotesActions() {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const [isModalOpen, setModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [confirmDeleteDisabled, setConfirmDeleteDisabled] = useState(false);
+  const confirmDeleteDisabled = confirmDelete && secondsLeft > 0;
 
   const fileImport = useRef<HTMLInputElement>(null);
   const onImport = useCallback(() => {
@@ -71,7 +71,6 @@ export function NotesActions() {
   const resetDeleteState = useCallback(() => {
     setSecondsLeft(3);
     setConfirmDelete(false);
-    setConfirmDeleteDisabled(false);
     if (confirmButtonTimeoutId) {
       window.clearTimeout(confirmButtonTimeoutId);
       setConfirmButtonTimeoutId(null);
@@ -81,7 +80,6 @@ export function NotesActions() {
   const initiateDeleteCountdown = useCallback(() => {
     setSecondsLeft(3);
     setConfirmDelete(true);
-    setConfirmDeleteDisabled(true);
     setConfirmButtonTimeoutId(
       window.setTimeout(() => {
         setSecondsLeft(3);
@@ -91,7 +89,6 @@ export function NotesActions() {
     const disabledButtonIntervalId = window.setInterval(() => {
       setSecondsLeft((x) => {
         if (x <= 1) {
-          setConfirmDeleteDisabled(false);
           window.clearInterval(disabledButtonIntervalId);
           return 0;
         }
