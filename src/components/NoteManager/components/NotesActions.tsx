@@ -86,10 +86,9 @@ export function NotesActions() {
       window.setTimeout(() => {
         setSecondsLeft(3);
         setConfirmDelete(false);
-      },
-      10000,
-    ));
-    let disabledButtonIntervalId = window.setInterval(() => {
+      }, 10000),
+    );
+    const disabledButtonIntervalId = window.setInterval(() => {
       setSecondsLeft((x) => {
         if (x <= 1) {
           setConfirmDeleteDisabled(false);
@@ -110,7 +109,7 @@ export function NotesActions() {
     } else {
       initiateDeleteCountdown();
     }
-  }, [confirmDelete, confirmDeleteDisabled, secondsLeft, handleDeleteNotes]);
+  }, [confirmDelete, confirmDeleteDisabled, handleDeleteNotes, resetDeleteState, initiateDeleteCountdown]);
 
   return (
     <>
