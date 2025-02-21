@@ -3,7 +3,7 @@ import "./App.css";
 
 import { Banner } from "./components/Banner/Banner";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
-import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
+import { DownloadPdfWithTheme, LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
@@ -36,6 +36,7 @@ export function App() {
                   <div className="controls">
                     <PinNotesToggle />
                     <LightThemeToggle />
+                    <DownloadPdfWithTheme />
                     <ZoomControls />
                   </div>
                 </>

@@ -1,3 +1,4 @@
+import { jsPDF } from "jspdf";
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -29,6 +30,7 @@ export interface IPdfContext extends IPdfServices {
   setTheme: Dispatch<SetStateAction<ITheme>>;
   visiblePages: number[];
   pageOffsets: MutableRefObject<DOMRect[]>;
+  downloadPdfWithTheme: () => void;
 }
 
 interface IPdfProviderProps {
@@ -69,6 +71,70 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
     (top < viewportHeight && bottom >= viewportHeight) ||
     (top > 0 && bottom < viewportHeight)
   );
+}
+
+async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scale: number = 2): Promise<HTMLCanvasElement> {
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  if (context) {
+    context.fillStyle = theme === "dark" ? "#000000" : theme === "gray" ? "#808080" : "#FFFFFF";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    const renderContext = {
+      canvasContext: context,
+      viewport: viewport,
+    };
+
+    await page.render(renderContext).promise;
+
+    if (theme === "gray") {
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = 255 - data[i]; // Red
+        data[i + 1] = 255 - data[i + 1]; // Green
+        data[i + 2] = 255 - data[i + 2]; // Blue
+      }
+
+      context.putImageData(imageData, 0, 0);
+    } else if (theme === "light") {
+      // to be fixed
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.max(255 - data[i] * 1.5, 0); // Red
+        data[i + 1] = Math.max(255 - data[i + 1] * 1.5, 0); // Green
+        data[i + 2] = Math.max(255 - data[i + 2] * 1.5, 0); // Blue
+      }
+
+      context.putImageData(imageData, 0, 0);
+    }
+  }
+  return canvas;
+}
+
+async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: ITheme, scale: number = 2): Promise<jsPDF> {
+  const doc = new jsPDF();
+
+  for (let i = 1; i <= pdfDocument.numPages; i++) {
+    const page = await pdfDocument.getPage(i);
+    const canvas = await renderPageWithTheme(page, theme, scale);
+
+    if (i > 1) {
+      doc.addPage();
+    }
+
+    doc.addImage(canvas.toDataURL("image/jpeg"), "JPEG", 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+  }
+
+  return doc;
 }
 
 export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
@@ -134,6 +200,13 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     setVisiblePages,
   });
 
+  const downloadPdfWithTheme = useCallback(async () => {
+    if (services.pdfDocument) {
+      const doc = await createPdfWithTheme(services.pdfDocument, theme, 5);
+      doc.save(`graypaper-${theme}-theme.pdf`);
+    }
+  }, [services.pdfDocument, theme]);
+
   const context = useMemo(
     () => ({
       ...services,
@@ -144,8 +217,9 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
       setTheme,
       visiblePages,
       pageOffsets,
+      downloadPdfWithTheme,
     }),
-    [theme, viewer, visiblePages, services, scale],
+    [theme, viewer, visiblePages, services, scale, downloadPdfWithTheme],
   );
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
