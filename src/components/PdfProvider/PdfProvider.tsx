@@ -73,7 +73,7 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
   );
 }
 
-async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scale: number = 2): Promise<HTMLCanvasElement> {
+async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scale = 2): Promise<HTMLCanvasElement> {
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -120,7 +120,7 @@ async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scal
   return canvas;
 }
 
-async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: ITheme, scale: number = 2): Promise<jsPDF> {
+async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: ITheme, scale = 2): Promise<jsPDF> {
   const doc = new jsPDF();
 
   for (let i = 1; i <= pdfDocument.numPages; i++) {
@@ -131,7 +131,14 @@ async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: IT
       doc.addPage();
     }
 
-    doc.addImage(canvas.toDataURL("image/jpeg"), "JPEG", 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+    doc.addImage(
+      canvas.toDataURL("image/jpeg"),
+      "JPEG",
+      0,
+      0,
+      doc.internal.pageSize.getWidth(),
+      doc.internal.pageSize.getHeight(),
+    );
   }
 
   return doc;

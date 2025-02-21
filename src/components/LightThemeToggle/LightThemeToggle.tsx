@@ -36,7 +36,7 @@ export function DownloadPdfWithTheme() {
         data-tooltip-content="Download PDF with the current theme"
         data-tooltip-place="right"
         onClick={downloadPdfWithTheme}
-        className={`download-pdf-with-theme`}
+        className={"download-pdf-with-theme"}
       >
         ⬇️
       </button>
