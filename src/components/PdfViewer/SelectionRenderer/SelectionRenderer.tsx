@@ -1,9 +1,10 @@
 import { type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
 import { useContext, useEffect, useState } from "react";
-import { subtractBorder } from "../../utils/subtractBorder";
+import { subtractBorder } from "../../../utils/subtractBorder";
+import { type IPdfContext, PdfContext } from "../../PdfProvider/PdfProvider";
+import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
-import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
-import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import { useTextLayer } from "../utils";
 
 const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
 const SELECTION_OPACITY = 0.5;
@@ -16,7 +17,7 @@ export function SelectionRenderer() {
     SelectionContext,
   ) as ISelectionContext;
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
-  const [textLayerRendered, setTextLayerRendered] = useState<number[]>([]);
+  const textLayerRendered = useTextLayer(eventBus);
   const [retryScrolling, setRetryScrolling] = useState(0);
 
   useEffect(() => {
@@ -53,18 +54,6 @@ export function SelectionRenderer() {
     // update last scrolled to location.
     lastScrolledTo.current = selectedBlocks[0];
   }, [selectedBlocks, viewer, lastScrolledTo, retryScrolling, pageOffsets]);
-
-  useEffect(() => {
-    const handleTextLayerRendered = (e: { pageNumber: number }) => {
-      setTextLayerRendered((textLayerRendered) => [...textLayerRendered, e.pageNumber]);
-    };
-
-    eventBus?.on("textlayerrendered", handleTextLayerRendered);
-
-    return () => {
-      eventBus?.off("textlayerrendered", handleTextLayerRendered);
-    };
-  }, [eventBus]);
 
   useEffect(() => {
     if (!selectedBlocks.length) {

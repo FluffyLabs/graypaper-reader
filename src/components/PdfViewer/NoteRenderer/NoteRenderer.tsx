@@ -1,7 +1,7 @@
 import { useContext, useMemo } from "react";
-import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
-import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
-import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
+import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
+import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
+import { type IPdfContext, PdfContext } from "../../PdfProvider/PdfProvider";
 import { HighlightNote } from "./components/HighlightNote/HighlightNote";
 
 export function NoteRenderer() {
