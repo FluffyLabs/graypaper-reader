@@ -109,14 +109,19 @@ function hslToHex(h: number, s: number, lightness: number) {
 
 export function filterNotesByLabels(
   labels: ILabel[],
-  { hasAllLabels }: { hasAllLabels: boolean } = { hasAllLabels: true },
+  { onlyInactive }: { onlyInactive: boolean } = { onlyInactive: true },
 ): IStorageNote[] {
-  return filterDecoratedNotesByLabels(labels, { hasAllLabels }).map((note) => note.original);
+  return filterDecoratedNotesByLabels(labels, { hasAllLabels: true, onlyInactive: onlyInactive }).map(
+    (note) => note.original,
+  );
 }
 
 export function filterDecoratedNotesByLabels(
   labels: ILabel[],
-  { hasAllLabels }: { hasAllLabels: boolean } = { hasAllLabels: true },
+  { hasAllLabels, onlyInactive }: { hasAllLabels: boolean; onlyInactive: boolean } = {
+    hasAllLabels: true,
+    onlyInactive: false,
+  },
 ): IDecoratedNote[] {
   const notesSet = new Set<IDecoratedNote>();
   const inactiveNotesSet = new Set<IDecoratedNote>();
@@ -132,6 +137,13 @@ export function filterDecoratedNotesByLabels(
         traverseAndCollectNotes(child, notes, isActive);
       }
     }
+  }
+
+  if (onlyInactive) {
+    for (const label of labels) {
+      traverseAndCollectNotes(label, inactiveNotesSet, false);
+    }
+    return Array.from(inactiveNotesSet);
   }
 
   for (const label of labels) {

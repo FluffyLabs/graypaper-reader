@@ -1,7 +1,7 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { type ILabel, filterNotesByLabels } from "../Label/Label";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { LABEL_IMPORTED } from "./consts/labels";
+import { LABEL_IMPORTED, LABEL_LOCAL } from "./consts/labels";
 import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
 import { useLabels } from "./hooks/useLabels";
@@ -216,13 +216,16 @@ export function NotesProvider({ children }: INotesProviderProps) {
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
     handleDeleteNotes: useCallback(() => {
-      const activeLabels = labels.filter((label) => label.isActive);
+      const activeLabels = labels.filter((label) => label.label === LABEL_LOCAL && label.isActive);
 
+      console.log(activeLabels);
       const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
-      const deletedNotes = filterNotesByLabels(activeLabels);
+      const deletedNotes = filterNotesByLabels(activeLabels, { onlyInactive: false });
+      console.log(deletedNotes);
       downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
 
-      const updatedNotes = filterNotesByLabels(activeLabels, { hasAllLabels: false });
+      const updatedNotes = filterNotesByLabels(activeLabels, { onlyInactive: true });
+      console.log(updatedNotes);
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
     }, [localNotes, labels, updateLocalNotes]),
   };
