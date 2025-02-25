@@ -123,10 +123,11 @@ export function filterDecoratedNotesByLabels(
 
   function traverseAndCollectNotes(label: ILabel, notes: Set<IDecoratedNote>, isActive = true) {
     if (label.isActive === isActive) {
-      if (!isActive) console.log("inactive, notes", label.label, label.notes);
       for (const note of label.notes) {
         notes.add(note);
       }
+    }
+    if (label.children) {
       for (const child of label.children) {
         traverseAndCollectNotes(child, notes, isActive);
       }

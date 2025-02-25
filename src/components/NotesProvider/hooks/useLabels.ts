@@ -4,7 +4,6 @@ import { LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
 import type { IDecoratedNote } from "../types/DecoratedNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
-const DEBUG = false;
 /**
  * Filter out labels
  * @param labels - list of labels to filter
@@ -52,18 +51,15 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       };
 
       const labelFull = labelFullPath(label);
-      if (DEBUG) console.log("labelFull", labelFull);
       let depth = 0;
 
       const updateLabels = (labels: ILabel[]): ILabel[] => {
         return labels.map((rootLabel) => {
           const updateChildren = (children?: ILabel[], isActive?: boolean): ILabel[] => {
-            if (DEBUG) console.log("children", children);
             if (!children) {
               return [];
             }
             if (isActive !== undefined) {
-              if (DEBUG) console.log("c: isActive !== undefined");
               return children.map((child) => {
                 child.isActive = isActive;
                 child.children = updateChildren(child.children, isActive);
@@ -72,15 +68,11 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
             }
             return children.map((child) => {
               if (child.label === labelFull[depth].label) {
-                if (DEBUG) console.log("c: child === label [depth]", child, labelFull[depth], depth);
-                if (DEBUG) console.log("c: labelFull.length, depth", labelFull.length, depth);
                 if (labelFull.length - 1 === depth) {
-                  if (DEBUG) console.log("c: labelFull.length - 1 === depth");
                   child.isActive = !child.isActive;
                   child.children = updateChildren(child.children, child.isActive);
                 } else {
                   depth++;
-                  if (DEBUG) console.log("c: labelFull.length - 1 !== depth");
                   child.children = updateChildren(child.children);
                 }
               }
@@ -89,17 +81,11 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
           };
 
           if (rootLabel.label === labelFull[depth].label) {
-            if (DEBUG) console.log("r: rootLabel === label [depth]", rootLabel, labelFull[depth], depth);
-            if (DEBUG) console.log("r: labelFull.length, depth", labelFull.length, depth);
             if (labelFull.length - 1 === depth) {
-              if (DEBUG) console.log("r: labelFull.length - 1 === depth");
-              if (DEBUG) console.log("r: rootLabel.isActive", rootLabel.isActive);
               rootLabel.isActive = !rootLabel.isActive;
-              if (DEBUG) console.log("r: rootLabel.isActive", rootLabel.isActive);
               rootLabel.children = updateChildren(rootLabel.children, rootLabel.isActive);
             } else {
               depth++;
-              if (DEBUG) console.log("r: labelFull.length - 1 !== depth");
               rootLabel.children = updateChildren(rootLabel.children);
             }
           }
@@ -107,7 +93,6 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
         });
       };
 
-      if (DEBUG) console.log("allLabels", labels);
       setLabels((labels) => updateLabels(labels));
       setStorageLabels((oldLabels) => {
         const labelFullName = getFullLabelName(label);
@@ -159,15 +144,24 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
         return label;
       });
     };
-    updateTree(newLabels);
-    setLabels(newLabels);
+    setLabels(updateTree(newLabels));
   }, [allNotes, storageActivity]);
+
+  // Helper function to generate a unique identifier for the label tree
+  const generateTreeId = (labels: ILabel[]): string => {
+    if (!labels) {
+      return "";
+    }
+    const traverse = (label: ILabel): string => {
+      return `${label.label}-${label.isActive}-${label.children.map(traverse).join(",")}`;
+    };
+    return labels.map(traverse).join(",");
+  };
 
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {
-    console.log("filtering labels");
     return filterDecoratedNotesByLabels(labels);
-  }, [labels]);
+  }, [generateTreeId(labels)]);
 
   return [filteredNotes, labels, toggleLabel];
 }
