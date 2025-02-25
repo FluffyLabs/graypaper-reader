@@ -41,83 +41,80 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, [storageLabels]);
 
   // toggle label visibility
-  const toggleLabel = useCallback(
-    (label: ILabel) => {
-      const labelFullPath = (label: ILabel): ILabel[] => {
-        if (!label.parent) {
-          return [label];
-        }
-        return [...labelFullPath(label.parent), label];
-      };
+  const toggleLabel = useCallback((label: ILabel) => {
+    const labelFullPath = (label: ILabel): ILabel[] => {
+      if (!label.parent) {
+        return [label];
+      }
+      return [...labelFullPath(label.parent), label];
+    };
 
-      const labelFull = labelFullPath(label);
-      let depth = 0;
+    const labelFull = labelFullPath(label);
+    let depth = 0;
 
-      const updateLabels = (labels: ILabel[]): ILabel[] => {
-        return labels.map((rootLabel) => {
-          const updateChildren = (children?: ILabel[], isActive?: boolean): ILabel[] => {
-            if (!children) {
-              return [];
-            }
-            if (isActive !== undefined) {
-              return children.map((child) => {
-                child.isActive = isActive;
-                child.children = updateChildren(child.children, isActive);
-                return child;
-              });
-            }
+    const updateLabels = (labels: ILabel[]): ILabel[] => {
+      return labels.map((rootLabel) => {
+        const updateChildren = (children?: ILabel[], isActive?: boolean): ILabel[] => {
+          if (!children) {
+            return [];
+          }
+          if (isActive !== undefined) {
             return children.map((child) => {
-              if (child.label === labelFull[depth].label) {
-                if (labelFull.length - 1 === depth) {
-                  child.isActive = !child.isActive;
-                  child.children = updateChildren(child.children, child.isActive);
-                } else {
-                  depth++;
-                  child.children = updateChildren(child.children);
-                }
-              }
+              child.isActive = isActive;
+              child.children = updateChildren(child.children, isActive);
               return child;
             });
-          };
-
-          if (rootLabel.label === labelFull[depth].label) {
-            if (labelFull.length - 1 === depth) {
-              rootLabel.isActive = !rootLabel.isActive;
-              rootLabel.children = updateChildren(rootLabel.children, rootLabel.isActive);
-            } else {
-              depth++;
-              rootLabel.children = updateChildren(rootLabel.children);
-            }
           }
-          return rootLabel;
-        });
-      };
-
-      setLabels((labels) => updateLabels(labels));
-      setStorageLabels((oldLabels) => {
-        const labelFullName = getFullLabelName(label);
-        const findLabelInTree = (labels: ILabel[], labelFullName: string): ILabel | undefined => {
-          for (const label of labels) {
-            if (getFullLabelName(label) === labelFullName) {
-              return label;
+          return children.map((child) => {
+            if (child.label === labelFull[depth].label) {
+              if (labelFull.length - 1 === depth) {
+                child.isActive = !child.isActive;
+                child.children = updateChildren(child.children, child.isActive);
+              } else {
+                depth++;
+                child.children = updateChildren(child.children);
+              }
             }
-            const foundInChildren = findLabelInTree(label.children || [], labelFullName);
-            if (foundInChildren) {
-              return foundInChildren;
-            }
-          }
-          return undefined;
+            return child;
+          });
         };
 
-        const existingLabel = findLabelInTree(oldLabels, labelFullName);
-        if (existingLabel) {
-          updateLabels(oldLabels);
+        if (rootLabel.label === labelFull[depth].label) {
+          if (labelFull.length - 1 === depth) {
+            rootLabel.isActive = !rootLabel.isActive;
+            rootLabel.children = updateChildren(rootLabel.children, rootLabel.isActive);
+          } else {
+            depth++;
+            rootLabel.children = updateChildren(rootLabel.children);
+          }
         }
-        return oldLabels;
+        return rootLabel;
       });
-    },
-    [labels],
-  );
+    };
+
+    setLabels((labels) => updateLabels(labels));
+    setStorageLabels((oldLabels) => {
+      const labelFullName = getFullLabelName(label);
+      const findLabelInTree = (labels: ILabel[], labelFullName: string): ILabel | undefined => {
+        for (const label of labels) {
+          if (getFullLabelName(label) === labelFullName) {
+            return label;
+          }
+          const foundInChildren = findLabelInTree(label.children || [], labelFullName);
+          if (foundInChildren) {
+            return foundInChildren;
+          }
+        }
+        return undefined;
+      };
+
+      const existingLabel = findLabelInTree(oldLabels, labelFullName);
+      if (existingLabel) {
+        updateLabels(oldLabels);
+      }
+      return oldLabels;
+    });
+  }, []);
 
   // maintain a set of labels inactive in local storage.
   const storageActivity = useMemo(() => {
@@ -147,21 +144,10 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
     setLabels(updateTree(newLabels));
   }, [allNotes, storageActivity]);
 
-  // Helper function to generate a unique identifier for the label tree
-  const generateTreeId = (labels: ILabel[]): string => {
-    if (!labels) {
-      return "";
-    }
-    const traverse = (label: ILabel): string => {
-      return `${label.label}-${label.isActive}-${label.children.map(traverse).join(",")}`;
-    };
-    return labels.map(traverse).join(",");
-  };
-
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {
     return filterDecoratedNotesByLabels(labels);
-  }, [generateTreeId(labels)]);
+  }, [labels]);
 
   return [filteredNotes, labels, toggleLabel];
 }
