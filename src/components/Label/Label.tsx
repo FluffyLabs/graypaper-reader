@@ -1,11 +1,73 @@
-import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../NotesProvider/consts/labels";
-import { NoteSource } from "../NotesProvider/types/DecoratedNote";
+import { LABEL_LOCAL, LABEL_REMOTE } from "../NotesProvider/consts/labels";
+import { type IDecoratedNote, NoteSource } from "../NotesProvider/types/DecoratedNote";
+import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import "./Label.css";
 import { useMemo } from "react";
 
+export type ILabel = {
+  label: string;
+  isActive: boolean;
+  parent: ILabel | null;
+  children: ILabel[]; // Zmieniono na tablicę
+  notes: IDecoratedNote[];
+};
+
+export function generateLabelTree(notes: IDecoratedNote[]): ILabel[] {
+  const local: ILabel = {
+    label: LABEL_LOCAL,
+    isActive: true,
+    parent: null,
+    children: [],
+    notes: [],
+  };
+  const remote: ILabel = {
+    label: LABEL_REMOTE,
+    isActive: true,
+    parent: null,
+    children: [],
+    notes: [],
+  };
+
+  function addToTree(labelPath: string[], note: IDecoratedNote, currentNode: ILabel) {
+    if (labelPath.length === 0) {
+      currentNode.notes.push(note);
+      return;
+    }
+
+    const [head, ...rest] = labelPath;
+    let childNode = currentNode.children.find(child => child.label === head);
+    if (!childNode) {
+      childNode = {
+        label: head,
+        isActive: true,
+        parent: currentNode,
+        children: [],
+        notes: [],
+      };
+      currentNode.children.push(childNode);
+    }
+    addToTree(rest, note, childNode);
+  }
+
+  for (const note of notes) {
+    for (const label of note.original.labels) {
+      const parts = label.trim().split("/");
+      const root = note.source === NoteSource.Local ? local : remote;
+      if (parts.length === 1) {
+        if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
+          root.notes.push(note);
+          continue;
+        }
+      }
+      addToTree(parts, note, root);
+    }
+  }
+
+  return [local, remote];
+}
+
 export function Label({ label, prefix = "" }: { label: string; prefix?: string }) {
-  label = getLabelFromHierarchical(label);
-  const backgroundColor = useMemo(() => labelToColor(label), [label]);
+  const backgroundColor = useMemo(() => labelToColor(label.split("/").pop() || ""), [label]);
   return (
     <span style={{ backgroundColor }} className="label">
       {prefix} {label}
@@ -45,20 +107,43 @@ function hslToHex(h: number, s: number, lightness: number) {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-export function getHierarchicalLabel(label: string, source: NoteSource): string {
-  if (label === LABEL_REMOTE || label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED)) {
-    return label;
-  }
-  if (source === NoteSource.Remote) {
-    return `${LABEL_REMOTE}/${label}`;
-  }
-  return `${LABEL_LOCAL}/${label}`;
+export function filterNotesByLabels(
+  labels: ILabel[],
+  { hasAllLabels }: { hasAllLabels: boolean } = { hasAllLabels: true },
+): IStorageNote[] {
+  return filterDecoratedNotesByLabels(labels, { hasAllLabels }).map(note => note.original);
 }
 
-export function getLabelFromHierarchical(hierarchicalLabel: string): string {
-  if (hierarchicalLabel.startsWith(`${LABEL_LOCAL}/`) || hierarchicalLabel.startsWith(`${LABEL_REMOTE}/`)) {
-    const parts = hierarchicalLabel.split("/");
-    return parts.slice(1).join("/");
+export function filterDecoratedNotesByLabels(
+  labels: ILabel[],
+  { hasAllLabels }: { hasAllLabels: boolean } = { hasAllLabels: true },
+): IDecoratedNote[] {
+  const notesSet = new Set<IDecoratedNote>();
+  const inactiveNotesSet = new Set<IDecoratedNote>();
+
+  function traverseAndCollectNotes(label: ILabel, notes: Set<IDecoratedNote>, isActive: boolean = true) {
+    if (label.isActive === isActive) {
+      if (!isActive) console.log("inactive, notes", label.label, label.notes);
+      label.notes.forEach(note => notes.add(note));
+      label.children.forEach(child => traverseAndCollectNotes(child, notes, isActive));
+    }
   }
-  return hierarchicalLabel;
+
+  labels.forEach(label => traverseAndCollectNotes(label, notesSet));
+  if (hasAllLabels) {
+    labels.forEach(label => traverseAndCollectNotes(label, inactiveNotesSet, false));
+    inactiveNotesSet.forEach(note => notesSet.delete(note));
+  }
+
+  return Array.from(notesSet);
+}
+
+export function getFullLabelName(label: ILabel): string {
+  let parentLabel = label.parent;
+  let fullName = label.label;
+  while (parentLabel) {
+    fullName = `${parentLabel.label}/${fullName}`;
+    parentLabel = parentLabel.parent;
+  }
+  return fullName;
 }

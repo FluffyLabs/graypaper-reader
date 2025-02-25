@@ -1,19 +1,57 @@
 import "./LabelsFilter.css";
-import { type MouseEventHandler, useCallback } from "react";
-import { Label } from "../Label/Label";
-import type { ILabel } from "../NotesProvider/hooks/useLabels";
+import { useState } from "react";
+import { type ILabel, Label, getFullLabelName } from "../Label/Label";
 
 export type LabelsFilterProps = {
   labels: ILabel[];
-  onToggleLabel: (label: string) => void;
+  onToggleLabel: (label: ILabel) => void;
 };
 
+export function LabelsFilterTree({ labels, onToggleLabel }: LabelsFilterProps) {
+  return (
+    <div className="label-tree-content">
+      {labels.map((label) => (
+        <LabelNode key={label.label} label={label} onToggleLabel={onToggleLabel} />
+      ))}
+    </div>
+  );
+}
+
+function LabelNode({ label, onToggleLabel }: LabelLinkProps) {
+  const [expanded, setExpanded] = useState(true);
+  const hasChildren = Object.keys(label.children).length > 0;
+  const prefix = hasChildren ? (expanded ? "▼" : "▶") : label.isActive ? "⊙" : "∅";
+  const clazz = `label-link ${label.isActive ? "active" : ""}`;
+
+  return (
+    <div className="label-node">
+      <div
+        className="label-node-header"
+        onClick={() => onToggleLabel(label)}
+        onKeyUp={(e) => e.key === "Enter" && setExpanded(!expanded)}
+        tabIndex={0}
+        role="button"
+      >
+        <div className={clazz} >
+          <Label key={getFullLabelName(label)} label={label.label} prefix={prefix} />
+        </div>
+      </div>
+      {expanded && hasChildren && (
+        <div className="label-node-content">
+          {Object.values(label.children).map((child) => (
+            <LabelNode key={child.label} label={child} onToggleLabel={onToggleLabel} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
-  labels = labels.slice().sort((a, b) => a.label.localeCompare(b.label));
   return (
     <div className="labels filter">
       {labels.map((label) => (
-        <LabelLink key={label.label} label={label} onToggleLabel={onToggleLabel} />
+        <LabelLink key={getFullLabelName(label)} label={label} onToggleLabel={onToggleLabel} />
       ))}
     </div>
   );
@@ -21,23 +59,13 @@ export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
 
 type LabelLinkProps = {
   label: ILabel;
+  prefix?: string;
   onToggleLabel: LabelsFilterProps["onToggleLabel"];
 };
 
-function LabelLink({ label, onToggleLabel }: LabelLinkProps) {
-  const selectLabel = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-      onToggleLabel(label.label);
-    },
-    [label, onToggleLabel],
-  );
+function LabelLink({ label, prefix }: LabelLinkProps) {
 
-  const clazz = `label-link ${label.isActive ? "active" : ""}`;
-  const ico = label.isActive ? "⊙" : "∅";
   return (
-    <a href="#" className={clazz} onClick={selectLabel}>
-      <Label label={label.label} prefix={ico} />
-    </a>
+      <Label label={label.label} prefix={prefix} />
   );
 }

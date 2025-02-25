@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
 import { validateMath } from "../../utils/validateMath";
-import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
+import { LabelsFilterTree } from "../LabelsFilter/LabelsFilter";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
@@ -89,7 +89,7 @@ function Notes() {
         </button>
       </div>
 
-      <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
+      <LabelsFilterTree labels={labels} onToggleLabel={handleToggleLabel} />
       {notes.map((note) => (
         <Note key={note.key} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
       ))}

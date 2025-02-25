@@ -2,12 +2,12 @@
   margin: 15px 0;
 }
 
-.labels .label-link {
+.label-link {
   opacity: 50%;
   cursor: pointer;
 }
 
-.labels .label-link.active {
+.label-link.active {
   opacity: 100%;
 }
 

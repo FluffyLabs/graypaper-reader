@@ -1,9 +1,10 @@
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { type ILabel, filterNotesByLabels } from "../Label/Label";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "./consts/labels";
+import { LABEL_IMPORTED } from "./consts/labels";
 import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
-import { type ILabel, useLabels } from "./hooks/useLabels";
+import { useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
 import type { IRemoteSource } from "./types/RemoteSource";
@@ -34,7 +35,7 @@ export interface INotesContext {
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
   handleDeleteNotes(): void;
-  handleToggleLabel(label: string): void;
+  handleToggleLabel(label: ILabel): void;
 }
 
 interface INotesProviderProps {
@@ -76,23 +77,6 @@ export function NotesProvider({ children }: INotesProviderProps) {
     notes.saveToLocalStorage(newNotes);
   }, []);
 
-  // Filter notes by labels.
-  const filterNotesByLabels = useCallback(
-    (
-      notes: IStorageNote[],
-      labels: string[],
-      { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
-    ): IStorageNote[] => {
-      return notes.filter((note) => {
-        if (note.labels.some((label) => labels.includes(label))) {
-          return includesLabel;
-        }
-        return !includesLabel;
-      });
-    },
-    [],
-  );
-
   // Decorate all local notes.
   useEffect(() => {
     setLocalNotesReady(false);
@@ -110,7 +94,14 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const allNotesReady = useMemo(() => localNotesReady && remoteNotesReady, [localNotesReady, remoteNotesReady]);
 
-  const [filteredNotes, labels, handleToggleLabel] = useLabels(allNotes);
+  const [filteredNotes, labels, toggleLabel] = useLabels(allNotes);
+
+  const handleToggleLabel = useCallback(
+    (label: ILabel) => {
+      toggleLabel(label);
+    },
+    [toggleLabel],
+  );
 
   const context: INotesContext = {
     notesPinned,
@@ -225,25 +216,15 @@ export function NotesProvider({ children }: INotesProviderProps) {
       downloadNotesAsJson(localNotes, fileName);
     }, [localNotes]),
     handleDeleteNotes: useCallback(() => {
-      const activeLabels = labels
-        .filter((label) => label.isActive)
-        .map((label) => {
-          const parts = label.label.split("/");
-          if (parts.length > 1) {
-            if (parts[0] === LABEL_LOCAL || parts[0] === LABEL_REMOTE) {
-              return parts.slice(1).join("/");
-            }
-          }
-          return label.label;
-        });
+      const activeLabels = labels.filter((label) => label.isActive);
 
       const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
-      const deletedNotes = filterNotesByLabels(localNotes.notes, activeLabels);
+      const deletedNotes = filterNotesByLabels(activeLabels);
       downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
 
-      const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, { includesLabel: false });
+      const updatedNotes = filterNotesByLabels(activeLabels, { hasAllLabels: false });
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
-    }, [localNotes, labels, updateLocalNotes, filterNotesByLabels]),
+    }, [localNotes, labels, updateLocalNotes]),
   };
 
   return <NotesContext.Provider value={context}>{children}</NotesContext.Provider>;
