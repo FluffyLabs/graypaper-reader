@@ -32,7 +32,7 @@ function LabelNode({ label, onToggleLabel }: LabelLinkProps) {
         tabIndex={0}
         role="button"
       >
-        <div className={clazz} >
+        <div className={clazz}>
           <Label key={getFullLabelName(label)} label={label.label} prefix={prefix} />
         </div>
       </div>
@@ -64,8 +64,5 @@ type LabelLinkProps = {
 };
 
 function LabelLink({ label, prefix }: LabelLinkProps) {
-
-  return (
-      <Label label={label.label} prefix={prefix} />
-  );
+  return <Label label={label.label} prefix={prefix} />;
 }

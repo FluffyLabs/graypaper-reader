@@ -35,7 +35,7 @@ export function generateLabelTree(notes: IDecoratedNote[]): ILabel[] {
     }
 
     const [head, ...rest] = labelPath;
-    let childNode = currentNode.children.find(child => child.label === head);
+    let childNode = currentNode.children.find((child) => child.label === head);
     if (!childNode) {
       childNode = {
         label: head,
@@ -111,7 +111,7 @@ export function filterNotesByLabels(
   labels: ILabel[],
   { hasAllLabels }: { hasAllLabels: boolean } = { hasAllLabels: true },
 ): IStorageNote[] {
-  return filterDecoratedNotesByLabels(labels, { hasAllLabels }).map(note => note.original);
+  return filterDecoratedNotesByLabels(labels, { hasAllLabels }).map((note) => note.original);
 }
 
 export function filterDecoratedNotesByLabels(
@@ -121,18 +121,28 @@ export function filterDecoratedNotesByLabels(
   const notesSet = new Set<IDecoratedNote>();
   const inactiveNotesSet = new Set<IDecoratedNote>();
 
-  function traverseAndCollectNotes(label: ILabel, notes: Set<IDecoratedNote>, isActive: boolean = true) {
+  function traverseAndCollectNotes(label: ILabel, notes: Set<IDecoratedNote>, isActive = true) {
     if (label.isActive === isActive) {
       if (!isActive) console.log("inactive, notes", label.label, label.notes);
-      label.notes.forEach(note => notes.add(note));
-      label.children.forEach(child => traverseAndCollectNotes(child, notes, isActive));
+      for (const note of label.notes) {
+        notes.add(note);
+      }
+      for (const child of label.children) {
+        traverseAndCollectNotes(child, notes, isActive);
+      }
     }
   }
 
-  labels.forEach(label => traverseAndCollectNotes(label, notesSet));
+  for (const label of labels) {
+    traverseAndCollectNotes(label, notesSet);
+  }
   if (hasAllLabels) {
-    labels.forEach(label => traverseAndCollectNotes(label, inactiveNotesSet, false));
-    inactiveNotesSet.forEach(note => notesSet.delete(note));
+    for (const label of labels) {
+      traverseAndCollectNotes(label, inactiveNotesSet, false);
+    }
+    for (const note of inactiveNotesSet) {
+      notesSet.delete(note);
+    }
   }
 
   return Array.from(notesSet);
