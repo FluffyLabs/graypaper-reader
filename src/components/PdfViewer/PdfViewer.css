@@ -18,7 +18,7 @@
 }
 
 .pdfViewer.light {
-  filter: invert(1) contrast(1.6);
+  filter: invert(1) contrast(1.5);
 }
 
 .pdfViewer.gray {
