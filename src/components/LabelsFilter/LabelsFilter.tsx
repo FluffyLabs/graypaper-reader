@@ -17,6 +17,12 @@ export function LabelsFilterTree({ labels, onToggleLabel }: LabelsFilterProps) {
   );
 }
 
+type LabelLinkProps = {
+  label: ILabel;
+  prefix?: string;
+  onToggleLabel: LabelsFilterProps["onToggleLabel"];
+};
+
 function LabelNode({ label, onToggleLabel }: LabelLinkProps) {
   const [expanded, setExpanded] = useState(true);
   const hasChildren = Object.keys(label.children).length > 0;
@@ -45,24 +51,4 @@ function LabelNode({ label, onToggleLabel }: LabelLinkProps) {
       )}
     </div>
   );
-}
-
-export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
-  return (
-    <div className="labels filter">
-      {labels.map((label) => (
-        <LabelLink key={getFullLabelName(label)} label={label} onToggleLabel={onToggleLabel} />
-      ))}
-    </div>
-  );
-}
-
-type LabelLinkProps = {
-  label: ILabel;
-  prefix?: string;
-  onToggleLabel: LabelsFilterProps["onToggleLabel"];
-};
-
-function LabelLink({ label, prefix }: LabelLinkProps) {
-  return <Label label={label.label} prefix={prefix} />;
 }
