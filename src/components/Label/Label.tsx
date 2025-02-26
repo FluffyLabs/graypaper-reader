@@ -8,7 +8,7 @@ export type ILabel = {
   label: string;
   isActive: boolean;
   parent: ILabel | null;
-  children: ILabel[]; // Zmieniono na tablicę
+  children: ILabel[];
   notes: IDecoratedNote[];
 };
 
