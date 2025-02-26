@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": ["tools/*", "shared/*"],
+  "workspaces": [
+    "tools/*",
+    "shared/*"
+  ],
   "scripts": {
     "qa": "biome ci",
     "qa-fix": "npm run format; npm run lint",
@@ -41,8 +44,8 @@
     "@vitejs/plugin-react": "^4.3.1",
     "shelljs": "^0.8.5",
     "typescript": "^5.2.2",
-    "vite": "^5.3.4",
+    "vite": "^6.2.0",
     "vite-plugin-prefetch-chunk": "^0.1.2",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.7"
   }
 }
