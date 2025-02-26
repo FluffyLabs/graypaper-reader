@@ -7,6 +7,7 @@ import { subtractBorder } from "../../utils/subtractBorder";
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
+const PDF_RESOLUTION = 5; // higher number = more details
 
 export const PdfContext = createContext<IPdfContext | null>(null);
 
@@ -73,7 +74,36 @@ function isPartlyInViewport({ top, bottom }: DOMRect) {
   );
 }
 
-async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scale = 2): Promise<HTMLCanvasElement> {
+function grayScaleImageData(imageData: ImageData): ImageData {
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = 255 - data[i]; // Red
+    data[i + 1] = 255 - data[i + 1]; // Green
+    data[i + 2] = 255 - data[i + 2]; // Blue
+  }
+
+  return imageData;
+}
+
+function lightScaleImageData(imageData: ImageData): ImageData {
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    // Inverting colors and using luminance formula to convert RGB to grayscale
+    const grey = 0.299 * (255 - data[i]) + 0.587 * (255 - data[i + 1]) + 0.114 * (255 - data[i + 2]);
+    const threshold = 128;
+    const value = grey > threshold ? 255 : 0;
+
+    data[i] = value; // Red
+    data[i + 1] = value; // Green
+    data[i + 2] = value; // Blue
+  }
+
+  return imageData;
+}
+
+async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scale: number): Promise<HTMLCanvasElement> {
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -93,34 +123,15 @@ async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scal
     await page.render(renderContext).promise;
 
     if (theme === "gray") {
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = 255 - data[i]; // Red
-        data[i + 1] = 255 - data[i + 1]; // Green
-        data[i + 2] = 255 - data[i + 2]; // Blue
-      }
-
-      context.putImageData(imageData, 0, 0);
+      context.putImageData(grayScaleImageData(context.getImageData(0, 0, canvas.width, canvas.height)), 0, 0);
     } else if (theme === "light") {
-      // to be fixed
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.max(255 - data[i] * 1.5, 0); // Red
-        data[i + 1] = Math.max(255 - data[i + 1] * 1.5, 0); // Green
-        data[i + 2] = Math.max(255 - data[i + 2] * 1.5, 0); // Blue
-      }
-
-      context.putImageData(imageData, 0, 0);
+      context.putImageData(lightScaleImageData(context.getImageData(0, 0, canvas.width, canvas.height)), 0, 0);
     }
   }
   return canvas;
 }
 
-async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: ITheme, scale = 2): Promise<jsPDF> {
+async function createPdfWithTheme(pdfDocument: pdfJs.PDFDocumentProxy, theme: ITheme, scale: number): Promise<jsPDF> {
   const doc = new jsPDF();
 
   for (let i = 1; i <= pdfDocument.numPages; i++) {
@@ -209,7 +220,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
 
   const downloadPdfWithTheme = useCallback(async () => {
     if (services.pdfDocument) {
-      const doc = await createPdfWithTheme(services.pdfDocument, theme, 5);
+      const doc = await createPdfWithTheme(services.pdfDocument, theme, PDF_RESOLUTION);
       doc.save(`graypaper-${theme}-theme.pdf`);
     }
   }, [services.pdfDocument, theme]);
