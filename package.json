@@ -21,7 +21,9 @@
   "dependencies": {
     "@fluffylabs/migrate-selection": "^1.0.0",
     "@fluffylabs/synctex-store": "^1.0.0",
+    "@types/jspdf": "^1.3.3",
     "dompurify": "^3.2.0",
+    "jspdf": "^3.0.0",
     "katex": "^0.16.11",
     "pdfjs-dist": "^4.5.136",
     "react": "^18.3.1",
@@ -39,8 +41,8 @@
     "@vitejs/plugin-react": "^4.3.1",
     "shelljs": "^0.8.5",
     "typescript": "^5.2.2",
-    "vite": "^5.3.4",
+    "vite": "^6.2.0",
     "vite-plugin-prefetch-chunk": "^0.1.2",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.7"
   }
 }
