@@ -25,10 +25,18 @@ export function downloadNotesAsJson(notes: INotesEnvelope, fileName: string) {
 export function exportNotesAsJson(wrapper: INotesEnvelope, clearLabels: boolean): string {
   const notes = wrapper.notes.slice();
   const newNotes = clearLabels
-    ? notes.map((note) => ({
-        ...note,
-        labels: note.labels.filter((label) => !(label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED))),
-      }))
+    ? notes.map((note) => {
+        const filteredLabels = note.labels
+          .filter((label) => label !== LABEL_LOCAL)
+          .map((label) => {
+            if (label.startsWith(LABEL_IMPORTED)) {
+              return label.includes("/") ? label.substring(label.indexOf("/") + 1) : "";
+            }
+            return label;
+          })
+          .filter((label) => label !== "");
+        return { ...note, labels: filteredLabels };
+      })
     : notes;
   return JSON.stringify({
     ...wrapper,
@@ -51,6 +59,17 @@ export function importNotesFromJson(jsonStr: string, defaultLabel: string): INot
         note.labels.unshift(defaultLabel);
       }
     });
+
+    if (defaultLabel.startsWith(LABEL_IMPORTED)) {
+      parsed.notes.map((note) => {
+        note.labels = note.labels.map((label) => {
+          if (!label.startsWith(defaultLabel)) {
+            return `${defaultLabel}/${label}`;
+          }
+          return label;
+        });
+      });
+    }
     return parsed;
   }
 
