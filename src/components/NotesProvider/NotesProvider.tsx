@@ -211,14 +211,11 @@ export function NotesProvider({ children }: INotesProviderProps) {
     handleDeleteNotes: useCallback(() => {
       const activeLabels = labels.filter((label) => label.label === LABEL_LOCAL && label.isActive);
 
-      console.log(activeLabels);
       const fileName = `removed-graypaper-notes-${new Date().toISOString()}.json`;
       const deletedNotes = filterNotesByLabels(activeLabels, { onlyInactive: false });
-      console.log(deletedNotes);
       downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
 
       const updatedNotes = filterNotesByLabels(activeLabels, { onlyInactive: true });
-      console.log(updatedNotes);
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
     }, [localNotes, labels, updateLocalNotes]),
   };
