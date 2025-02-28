@@ -1,4 +1,12 @@
 .highlighter-highlight {
   position: absolute;
+  pointer-events: none;
+}
+.highlighter-trigger {
+  position: absolute;
   cursor: pointer;
+}
+.highlighter-trigger:hover {
+  transition: opacity 200ms ease-in-out;
+  opacity: 1.0 !important;
 }

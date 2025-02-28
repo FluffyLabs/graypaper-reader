@@ -1,19 +1,13 @@
-import type { EventHandler, KeyboardEvent, MouseEvent } from "react";
+import { type EventHandler, Fragment, type KeyboardEvent, type MouseEvent, useMemo } from "react";
 import "./Highlighter.css";
 import type { ISynctexBlock } from "@fluffylabs/links-metadata";
 
-const DEFAULT_HIGHLIGHT_OPACITY = 0.2;
+const DEFAULT_HIGHLIGHT_OPACITY = 0.15;
 
 // arbitrarily set offset to match the manual selection of text in presentation overlay.
 const WIDTH_OFFSET = 5;
 // aribtrarily set offset to make sure that the entirety of the letters is selected.
 const HEIGHT_OFFSET = 5;
-
-// We control the z-index manually, for two reasons:
-// 1. selection highlight to be below the annotation/note highlight.
-// 2. notes/tooltips to be on top of the annotations (see `HighlightNote.css`)
-// 3. multiple notes annotations should be reversly ordered
-const DEFAULT_ZINDEX = 3;
 
 export interface IHighlighterColor {
   r: number;
@@ -25,11 +19,10 @@ interface IHighlighterProps {
   blocks: ISynctexBlock[];
   pageOffset: DOMRect;
   color: IHighlighterColor;
-  opacity?: number;
+  onClick?: EventHandler<MouseEvent<unknown> | KeyboardEvent<unknown>>;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
-  onClick?: EventHandler<MouseEvent<unknown> | KeyboardEvent<unknown>>;
-  zIndex?: number;
+  opacity?: number;
 }
 
 export function Highlighter({
@@ -40,25 +33,100 @@ export function Highlighter({
   onMouseEnter,
   onMouseLeave,
   opacity = DEFAULT_HIGHLIGHT_OPACITY,
-  zIndex = DEFAULT_ZINDEX,
 }: IHighlighterProps) {
-  return blocks.map((block) => (
-    <div
-      className="highlighter-highlight"
-      onClick={onClick}
-      onKeyPress={onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{
-        // move active highlights on top, so they can be closed
-        zIndex,
-        left: `${pageOffset.left + pageOffset.width * block.left}px`,
-        top: `${pageOffset.top + pageOffset.height * block.top - pageOffset.height * block.height}px`,
-        width: `${pageOffset.width * block.width + WIDTH_OFFSET}px`,
-        height: `${pageOffset.height * block.height + HEIGHT_OFFSET}px`,
-        backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`,
-      }}
-      key={`${block.pageNumber},${block.index}`}
-    />
-  ));
+  const nonOverlappingBlocks = useMemo(() => {
+    const newBlocks = [];
+    const blocksAndPositions = blocks.map((block) => ({ block, position: getBlockRect(pageOffset, block) }));
+    for (const { block, position } of blocksAndPositions) {
+      let isContainedWithinSomeOther = false;
+      for (const other of blocksAndPositions) {
+        // don't compare with self
+        if (position === other.position) {
+          continue;
+        }
+        // skip if the current block is not contained in other
+        if (!isContainedWithin(position, other.position)) {
+          continue;
+        }
+        // break early if we found we are inside another block
+        isContainedWithinSomeOther = true;
+        break;
+      }
+      if (!isContainedWithinSomeOther) {
+        newBlocks.push(block);
+      }
+    }
+    return newBlocks;
+  }, [pageOffset, blocks]);
+
+  const lowestBlock = nonOverlappingBlocks.reduce((a, b) => {
+    return a.top > b.top ? a : b;
+  });
+
+  return nonOverlappingBlocks.map((block) => {
+    const position = getBlockRect(pageOffset, block);
+    const isLeftColumn = position.left + position.width < pageOffset.left + pageOffset.width / 2;
+
+    const hasTrigger = onClick && block === lowestBlock;
+    const blockStyles = {
+      left: `${position.left}px`,
+      top: `${position.top}px`,
+      width: `${position.width}px`,
+      height: `${position.height}px`,
+      backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`,
+    };
+
+    return (
+      <Fragment key={`${block.pageNumber},${block.index}`}>
+        <div className="highlighter-highlight" style={blockStyles} />
+        {hasTrigger && (
+          <div
+            className="highlighter-trigger"
+            onClick={onClick}
+            onKeyPress={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            style={{
+              ...blockStyles,
+              // move the trigger on top of the textLayer and highlight.
+              zIndex: 3,
+              left: `${isLeftColumn ? position.left - WIDTH_OFFSET : position.left + position.width - WIDTH_OFFSET}px`,
+              top: `${position.top + position.height - HEIGHT_OFFSET}px`,
+              width: "15px",
+              backgroundColor: "initial",
+              opacity: 0.4,
+            }}
+          >
+            📍
+          </div>
+        )}
+      </Fragment>
+    );
+  });
+}
+
+function getBlockRect(pageOffset: DOMRect, block: ISynctexBlock) {
+  const top = pageOffset.top + pageOffset.height * block.top - pageOffset.height * block.height;
+  const left = pageOffset.left + pageOffset.width * block.left;
+  const width = pageOffset.width * block.width + WIDTH_OFFSET;
+  const height = pageOffset.height * block.height + HEIGHT_OFFSET;
+
+  return {
+    top,
+    left,
+    width,
+    height,
+  };
+}
+
+type Position = ReturnType<typeof getBlockRect>;
+
+function isContainedWithin(a: Position, b: Position) {
+  const OVERLAP_OFFSET = 5;
+  return (
+    a.top >= b.top - OVERLAP_OFFSET &&
+    a.left >= b.left - OVERLAP_OFFSET &&
+    a.top + a.height <= b.top + b.height + OVERLAP_OFFSET &&
+    a.left + a.width <= b.left + b.width + OVERLAP_OFFSET
+  );
 }
