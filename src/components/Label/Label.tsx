@@ -130,7 +130,7 @@ export function filterDecoratedNotesByLabels(
           notes.add(note);
         }
       }
-    
+
       if (label.children) {
         traverseAndCollectNotes(label.children, notes, isActive);
       }
@@ -140,12 +140,10 @@ export function filterDecoratedNotesByLabels(
 
   // return notes from inactive labels
   if (onlyInactive) {
-    return Array.from(
-      traverseAndCollectNotes(labels, new Set(), false)
-    );
+    return Array.from(traverseAndCollectNotes(labels, new Set(), false));
   }
 
-  const activeNotes = traverseAndCollectNotes(labels, notesSet);
+  const activeNotes = traverseAndCollectNotes(labels, new Set());
   if (hasAllLabels) {
     const inactiveNotes = traverseAndCollectNotes(labels, new Set(), false);
     for (const note of inactiveNotes) {
