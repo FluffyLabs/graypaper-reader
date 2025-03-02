@@ -123,42 +123,36 @@ export function filterDecoratedNotesByLabels(
     onlyInactive: false,
   },
 ): IDecoratedNote[] {
-  const notesSet = new Set<IDecoratedNote>();
-  const inactiveNotesSet = new Set<IDecoratedNote>();
-
-  function traverseAndCollectNotes(label: ILabel, notes: Set<IDecoratedNote>, isActive = true) {
-    if (label.isActive === isActive) {
-      for (const note of label.notes) {
-        notes.add(note);
+  function traverseAndCollectNotes(labels: ILabel[], notes: Set<IDecoratedNote>, isActive = true) {
+    for (const label of labels) {
+      if (label.isActive === isActive) {
+        for (const note of label.notes) {
+          notes.add(note);
+        }
+      }
+    
+      if (label.children) {
+        traverseAndCollectNotes(label.children, notes, isActive);
       }
     }
-    if (label.children) {
-      for (const child of label.children) {
-        traverseAndCollectNotes(child, notes, isActive);
-      }
-    }
+    return notes;
   }
 
+  // return notes from inactive labels
   if (onlyInactive) {
-    for (const label of labels) {
-      traverseAndCollectNotes(label, inactiveNotesSet, false);
-    }
-    return Array.from(inactiveNotesSet);
+    return Array.from(
+      traverseAndCollectNotes(labels, new Set(), false)
+    );
   }
 
-  for (const label of labels) {
-    traverseAndCollectNotes(label, notesSet);
-  }
+  const activeNotes = traverseAndCollectNotes(labels, notesSet);
   if (hasAllLabels) {
-    for (const label of labels) {
-      traverseAndCollectNotes(label, inactiveNotesSet, false);
-    }
-    for (const note of inactiveNotesSet) {
-      notesSet.delete(note);
+    const inactiveNotes = traverseAndCollectNotes(labels, new Set(), false);
+    for (const note of inactiveNotes) {
+      activeNotes.delete(note);
     }
   }
-
-  return Array.from(notesSet);
+  return Array.from(activeNotes);
 }
 
 export function getFullLabelName(label: ILabel): string {
