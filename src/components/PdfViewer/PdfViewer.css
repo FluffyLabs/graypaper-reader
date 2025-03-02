@@ -25,6 +25,13 @@
   filter: invert(1);
 }
 
+.pdfViewer .textLayer {
+  /* Bump the z-index of text layer, so that we can display highlights
+   * between the page background and the text layer (selection is on top)
+   */
+  z-index: 1;
+}
+
 .pdfViewer.gray .textLayer ::selection,
 .pdfViewer.light .textLayer ::selection {
   background: rgba(255, 155, 50, 0.25);

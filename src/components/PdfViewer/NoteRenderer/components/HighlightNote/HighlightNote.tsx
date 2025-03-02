@@ -14,7 +14,7 @@ interface HighlightNoteProps {
 }
 
 const NOTE_COLOR = { r: 200, g: 200, b: 0 };
-const NOTE_OPACITY = 0.5;
+const NOTE_OPACITY = 0.3;
 const HOVER_OFF_DELAY_MS = 350;
 
 export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
@@ -86,7 +86,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
   // We should rather display one highlight and have it open both notes,
   // or be able to select which note to open.
   return (
-    <div>
+    <>
       <Highlighter
         blocks={blocks}
         pageOffset={pageOffset}
@@ -116,6 +116,6 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
           </Fragment>
         ))}
       </div>
-    </div>
+    </>
   );
 }
