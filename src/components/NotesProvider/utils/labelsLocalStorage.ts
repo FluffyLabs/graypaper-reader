@@ -1,4 +1,4 @@
-import type { ILabel } from "../hooks/useLabels";
+import type { ILabel } from "../../Label/Label";
 
 const LOCAL_STORAGE_KEY = "labels-v1";
 
@@ -10,6 +10,15 @@ function isLabel(x: unknown): x is ILabel {
     return false;
   }
   if (!("isActive" in x && typeof x.isActive === "boolean")) {
+    return false;
+  }
+  if (!("parent" in x && (x.parent === null || isLabel(x.parent)))) {
+    return false;
+  }
+  if (!("children" in x && Array.isArray(x.children))) {
+    return false;
+  }
+  if (!("notes" in x && Array.isArray(x.notes))) {
     return false;
   }
   return true;

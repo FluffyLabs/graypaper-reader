@@ -6,3 +6,25 @@
   border-radius: 6px;
   color: #eee;
 }
+
+.label-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  color: #eee;
+}
+
+.label-tree-header {
+  text-align: left;
+  white-space: nowrap;
+  border-radius: 6px;
+  padding: 1px 5px;
+  margin: 2px;
+  color: #eee;
+}
+
+.label-tree-children {
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+}
