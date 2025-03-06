@@ -1,18 +1,13 @@
-import { type WriteStream, createWriteStream } from "node:fs";
+import { writeFileSync } from "node:fs";
+import { findLinks, type Metadata, parseLink } from "@fluffylabs/links-metadata";
+import { convertToNotes } from "./convert-to-notes";
+import path from "node:path";
 
 export class MessagesLogger {
-  private readonly file: WriteStream;
-
   constructor(
     private readonly roomId: string,
-    fileName: string,
-  ) {
-    this.file = createWriteStream(fileName, {
-      encoding: "utf8",
-      flags: "a+",
-      flush: true,
-    });
-  }
+    private readonly meta: Metadata,
+  ) {}
 
   private generatePermalink(eventId: string): string {
     return `https://matrix.to/#/${this.roomId}/${eventId}`;
@@ -22,24 +17,49 @@ export class MessagesLogger {
     if (!eventId) {
       return;
     }
-    if (!msg.includes("graypaper.fluffylabs.dev")) {
+    const gpLinks = findLinks(msg);
+    if (!gpLinks.length) {
       return;
     }
 
+    // if there are several links in the message, find the link with the latest version
+    let versionName: string | undefined;
+
+    if (gpLinks.length === 1) {
+      versionName = parseLink(gpLinks[0], this.meta)?.versionName;
+    } else {
+      versionName = gpLinks
+        .map((link) => parseLink(link, this.meta))
+        .filter(Boolean)
+        .map((link) => link?.versionName)
+        .sort()
+        .pop();
+    }
+
+    if (!versionName) {
+      return;
+    }
+
+    const majorVersion = versionName.replace(/^(\d+\.\d+\.)\d+$/, "$1x");
+    const outputFilename = `output/messages-${majorVersion}.json`;
+
     const link = this.generatePermalink(eventId);
+    const json = JSON.stringify({
+      date,
+      sender,
+      link,
+      msg,
+    });
 
-    this.file.write(
-      JSON.stringify({
-        date,
-        sender,
-        link,
-        msg,
-      }),
-    );
-    this.file.write(",\n");
-  }
+    try {
+      const messages = require(path.resolve(outputFilename));
+      messages.push(JSON.parse(json));
+      writeFileSync(outputFilename, JSON.stringify(messages, null, 2));
+    } catch (e) {
+      writeFileSync(outputFilename, JSON.stringify([JSON.parse(json)], null, 2));
+    }
 
-  flush() {
-    this.file.end();
+    const notesFilename = `output/notes-${majorVersion}.json`;
+    convertToNotes(this.meta, outputFilename, notesFilename);
   }
 }

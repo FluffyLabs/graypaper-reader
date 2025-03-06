@@ -3,6 +3,7 @@ import type { MessagesLogger } from "./logger.js";
 export async function listenToMessages(
   homeserverUrl: string,
   accessToken: string,
+  userId: string,
   roomId: string,
   msgLog: MessagesLogger,
 ) {
@@ -11,7 +12,7 @@ export async function listenToMessages(
   const client = createClient({
     baseUrl: homeserverUrl,
     accessToken: accessToken,
-    userId: "@fluffylabs:matrix.org",
+    userId,
   });
 
   // Start the client
