@@ -59,9 +59,15 @@ export function Highlighter({
     return newBlocks;
   }, [pageOffset, blocks]);
 
-  const lowestBlock = nonOverlappingBlocks.reduce((a, b) => {
-    return a.top > b.top ? a : b;
-  });
+  const lowestBlock = nonOverlappingBlocks.reduce(
+    (a, b) => {
+      if (a === null) {
+        return b;
+      }
+      return a.top > b.top ? a : b;
+    },
+    null as ISynctexBlock | null,
+  );
 
   return nonOverlappingBlocks.map((block) => {
     const position = getBlockRect(pageOffset, block);
