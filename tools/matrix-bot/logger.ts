@@ -54,9 +54,9 @@ export class MessagesLogger {
     try {
       const messages = require(path.resolve(outputFilename));
       messages.push(JSON.parse(json));
-      writeFileSync(outputFilename, JSON.stringify(messages, null, 2));
+      writeFileSync(outputFilename, JSON.stringify(messages));
     } catch (e) {
-      writeFileSync(outputFilename, JSON.stringify([JSON.parse(json)], null, 2));
+      writeFileSync(outputFilename, JSON.stringify([JSON.parse(json)]));
     }
 
     const notesFilename = `output/notes-${majorVersion}.json`;

@@ -57,10 +57,10 @@ export async function convertToNotes(meta: Metadata, file: string, outputFile?: 
     notes: notesArray,
   };
   if (outputFile) {
-    fs.writeFileSync(path.resolve(outputFile), JSON.stringify(envelope, null, 2));
+    fs.writeFileSync(path.resolve(outputFile), JSON.stringify(envelope));
     console.info(`💾 Saved ${notesArray.length} notes to ${outputFile}.`);
   } else {
-    console.info(JSON.stringify(envelope, null, 2));
+    console.info(JSON.stringify(envelope)); // todo: remove json formatting (everywhere)
   }
 }
 
