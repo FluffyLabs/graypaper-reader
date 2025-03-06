@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
-import { findLinks, type Metadata, parseLink } from "@fluffylabs/links-metadata";
-import { convertToNotes } from "./convert-to-notes";
 import path from "node:path";
+import { type Metadata, findLinks, parseLink } from "@fluffylabs/links-metadata";
+import { convertToNotes } from "./convert-to-notes";
 
 export class MessagesLogger {
   constructor(
