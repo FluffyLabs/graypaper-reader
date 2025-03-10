@@ -52,8 +52,9 @@ export function NotesActions() {
       const f = new FileReader();
       f.onload = (e) => {
         const fileContent = e.target?.result?.toString() || "";
+        const fileName = fileToImport.name.split("-")[0].substring(0, 12);
         try {
-          handleImport(fileContent, fileToImport.name.substring(0, 12));
+          handleImport(fileContent, fileName);
         } catch (e) {
           console.error(e);
           alert("Unable to load the notes file. Check console for details.");
