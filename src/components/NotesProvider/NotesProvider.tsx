@@ -3,7 +3,7 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "./consts/labels";
 import { NEW_REMOTE_SOURCE_ID } from "./consts/remoteSources";
 import { useDecoratedNotes } from "./hooks/useDecoratedNotes";
-import { type ILabel, useLabels } from "./hooks/useLabels";
+import { type ILabel, getFilteredNotes, useLabels } from "./hooks/useLabels";
 import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
 import type { IRemoteSource } from "./types/RemoteSource";
@@ -83,12 +83,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       labels: string[],
       { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
     ): IStorageNote[] => {
-      return notes.filter((note) => {
-        if (note.labels.some((label) => labels.includes(label))) {
-          return includesLabel;
-        }
-        return !includesLabel;
-      });
+      return getFilteredNotes(notes, labels, { includesLabel });
     },
     [],
   );

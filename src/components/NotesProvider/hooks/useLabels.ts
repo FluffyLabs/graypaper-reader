@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
 import type { IDecoratedNote } from "../types/DecoratedNote";
+import type { IStorageNote } from "../types/StorageNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
 export type ILabel = {
@@ -17,6 +18,47 @@ export function getEditableLabels(
       return onlyNonEditable;
     }
     return !onlyNonEditable;
+  });
+}
+/**
+ * Filter notes based on labels.
+ * @param notes List of notes to filter.
+ * @param labels List of labels to filter by.
+ * @param includesLabel If true, notes must include all labels. If false, notes must not include any of the labels.
+ * @returns Filtered list of notes.
+ * @see getFilteredDecoratedNotes
+ */
+export function getFilteredNotes(
+  notes: IStorageNote[],
+  labels: string[],
+  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+): IStorageNote[] {
+  return notes.filter((note) => {
+    if (note.labels.every((label) => labels.includes(label))) {
+      return includesLabel;
+    }
+    return !includesLabel;
+  });
+}
+
+/**
+ * Filter decorated notes based on labels.
+ * @param notes List of decorated notes to filter.
+ * @param labels List of labels to filter by.
+ * @param includesLabel If true, notes must include all labels. If false, notes must not include any of the labels.
+ * @returns Filtered list of decorated notes.
+ * @see getFilteredNotes
+ */
+export function getFilteredDecoratedNotes(
+  notes: IDecoratedNote[],
+  labels: string[],
+  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+): IDecoratedNote[] {
+  return notes.filter((note) => {
+    if (note.original.labels.every((label) => labels.includes(label))) {
+      return includesLabel;
+    }
+    return !includesLabel;
   });
 }
 
@@ -105,15 +147,9 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {
-    // build a map
-    const active = new Map<string, boolean>();
-    labels.map((x) => active.set(x.label, x.isActive));
-
+    const activeLabels = labels.filter((label) => label.isActive).map((label) => label.label);
     // filter out notes
-    return allNotes.filter((note) => {
-      const activeLabels = note.original.labels.filter((label) => active.get(label));
-      return activeLabels.length > 0;
-    });
+    return getFilteredDecoratedNotes(allNotes, activeLabels);
   }, [allNotes, labels]);
 
   return [filteredNotes, labels, toggleLabel];
