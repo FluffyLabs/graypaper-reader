@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { type Metadata, findLinks, parseLink } from "@fluffylabs/links-metadata";
 import { convertToNotes } from "./convert-to-notes";
@@ -31,9 +31,16 @@ export class MessagesLogger {
       versionName = gpLinks
         .map((link) => parseLink(link, this.meta))
         .filter(Boolean)
-        .map((link) => link?.versionName)
-        .sort()
-        .pop();
+        .map((link) => {
+          const version = link?.versionName || "";
+          const sortKey = version
+            .split(".")
+            .map((num) => num.padStart(3, "0"))
+            .join("");
+          return { version, sortKey };
+        })
+        .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+        .pop()?.version;
     }
 
     if (!versionName) {
@@ -44,22 +51,25 @@ export class MessagesLogger {
     const outputFilename = `output/messages-${majorVersion}.json`;
 
     const link = this.generatePermalink(eventId);
-    const json = JSON.stringify({
+    const newMessage = {
       date,
       sender,
       link,
       msg,
-    });
+    };
 
+    let messages = [];
     try {
-      const messages = require(path.resolve(outputFilename));
-      messages.push(JSON.parse(json));
-      writeFileSync(outputFilename, JSON.stringify(messages));
-    } catch (e) {
-      writeFileSync(outputFilename, JSON.stringify([JSON.parse(json)]));
-    }
+      messages = JSON.parse(readFileSync(path.resolve(outputFilename), "utf-8"));
+    } catch (e) {}
+    messages.push(newMessage);
+    writeFileSync(outputFilename, JSON.stringify(messages));
 
     const notesFilename = `output/notes-${majorVersion}.json`;
-    convertToNotes(this.meta, outputFilename, notesFilename);
+    try {
+      convertToNotes(this.meta, outputFilename, notesFilename);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

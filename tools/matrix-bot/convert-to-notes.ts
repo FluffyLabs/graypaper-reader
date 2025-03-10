@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import fs, { readFileSync } from "node:fs";
 import path from "node:path";
 import type { INoteV3, INotesEnvelopeV3, Metadata } from "@fluffylabs/links-metadata";
 import { fetchMetadata, findLinks, parseLink } from "@fluffylabs/links-metadata";
@@ -19,7 +19,7 @@ type Message = {
 };
 
 export async function convertToNotes(meta: Metadata, file: string, outputFile?: string) {
-  const data = require(path.resolve(file)) as Message[];
+  const data = JSON.parse(readFileSync(path.resolve(file), "utf-8")) as Message[];
 
   const notes = new Map<string, INoteV3>();
   for (const msg of data) {
@@ -60,7 +60,7 @@ export async function convertToNotes(meta: Metadata, file: string, outputFile?: 
     fs.writeFileSync(path.resolve(outputFile), JSON.stringify(envelope));
     console.info(`💾 Saved ${notesArray.length} notes to ${outputFile}.`);
   } else {
-    console.info(JSON.stringify(envelope)); // todo: remove json formatting (everywhere)
+    console.info(JSON.stringify(envelope, null, 2));
   }
 }
 

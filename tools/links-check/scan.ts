@@ -97,6 +97,9 @@ async function scanFile(
   };
 
   await readLineByLine(path, (lineNumber, line) => {
+    // we only care about the first matching link in a line
+    // since that was the original behaviour and also
+    // it's unlikely there is going to be more.
     const link = findLinks(line)[0];
     if (link) {
       links.push([lineNumber, link]);
