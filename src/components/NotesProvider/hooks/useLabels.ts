@@ -131,7 +131,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       if (x.label === label.label || x.label.startsWith(`${label.label}/`)) {
         return {
           ...x,
-          isActive: !x.isActive,
+          isActive: !label.isActive,
           children: x.children?.map(toggle),
         };
       }
