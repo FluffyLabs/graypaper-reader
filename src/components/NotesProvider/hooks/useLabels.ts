@@ -7,7 +7,63 @@ import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalSt
 export type ILabel = {
   label: string;
   isActive: boolean;
+  parent?: ILabel;
+  children?: ILabel[];
 };
+
+/**
+ * Fills a list of ILabels with parents (groups) of labels.
+ * @param labels List of ILabels to build a tree from.
+ * @returns A flat-semi-tree structure of labels (sorted alphabetically).
+ */
+export function buildLabelTree(labels: ILabel[]): ILabel[] {
+  if (labels.length === 0) {
+    return [];
+  }
+
+  const tree: ILabel[] = [];
+  const labelMap = new Map<string, ILabel>();
+
+  function addToTree(label: ILabel): void {
+    if (label.label.includes("/")) {
+      const parent = getParent(label);
+      label.parent = parent;
+    }
+
+    if (!labelMap.has(label.label)) {
+      labelMap.set(label.label, label);
+      tree.push(label);
+    }
+  }
+
+  function getParent(label: ILabel): ILabel {
+    const parentLabel = label.label.split("/").slice(0, -1).join("/");
+    if (labelMap.has(parentLabel)) {
+      const parent = labelMap.get(parentLabel) as ILabel;
+      if (!parent.children) {
+        parent.children = [];
+      }
+      parent.children.push(label);
+      parent.isActive = parent.children.some((x) => x.isActive);
+      return parent;
+    }
+
+    const parent = {
+      label: parentLabel,
+      isActive: label.isActive,
+      children: [label],
+    };
+    addToTree(parent);
+    return parent;
+  }
+
+  for (const label of labels) {
+    addToTree(label);
+  }
+
+  // sort labels alphabetically
+  return tree.sort((a, b) => a.label.localeCompare(b.label));
+}
 
 export function getEditableLabels(
   labels: string[],
@@ -28,11 +84,7 @@ export function getEditableLabels(
  * @returns Filtered list of notes.
  * @see getFilteredDecoratedNotes
  */
-export function getFilteredNotes(
-  notes: IStorageNote[],
-  labels: string[],
-  includesLabel = true,
-): IStorageNote[] {
+export function getFilteredNotes(notes: IStorageNote[], labels: string[], includesLabel = true): IStorageNote[] {
   return notes.filter((note) => {
     const hasAllLabels = note.labels.every((label) => labels.includes(label));
     return includesLabel ? hasAllLabels : !hasAllLabels;
