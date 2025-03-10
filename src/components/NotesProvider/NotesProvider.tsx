@@ -78,12 +78,8 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   // Filter notes by labels.
   const filterNotesByLabels = useCallback(
-    (
-      notes: IStorageNote[],
-      labels: string[],
-      { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
-    ): IStorageNote[] => {
-      return getFilteredNotes(notes, labels, { includesLabel });
+    (notes: IStorageNote[], labels: string[], includesLabel = true): IStorageNote[] => {
+      return getFilteredNotes(notes, labels, includesLabel);
     },
     [],
   );
@@ -236,7 +232,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
       const deletedNotes = filterNotesByLabels(localNotes.notes, activeLabels);
       downloadNotesAsJson({ version: 3, notes: deletedNotes }, fileName);
 
-      const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, { includesLabel: false });
+      const updatedNotes = filterNotesByLabels(localNotes.notes, activeLabels, false);
       updateLocalNotes(localNotes, { ...localNotes, notes: updatedNotes });
     }, [localNotes, labels, updateLocalNotes, filterNotesByLabels]),
   };

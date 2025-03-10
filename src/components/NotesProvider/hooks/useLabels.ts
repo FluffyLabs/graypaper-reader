@@ -31,13 +31,11 @@ export function getEditableLabels(
 export function getFilteredNotes(
   notes: IStorageNote[],
   labels: string[],
-  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+  includesLabel = true,
 ): IStorageNote[] {
   return notes.filter((note) => {
-    if (note.labels.every((label) => labels.includes(label))) {
-      return includesLabel;
-    }
-    return !includesLabel;
+    const hasAllLabels = note.labels.every((label) => labels.includes(label));
+    return includesLabel ? hasAllLabels : !hasAllLabels;
   });
 }
 
@@ -52,13 +50,11 @@ export function getFilteredNotes(
 export function getFilteredDecoratedNotes(
   notes: IDecoratedNote[],
   labels: string[],
-  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+  includesLabel = true,
 ): IDecoratedNote[] {
   return notes.filter((note) => {
-    if (note.original.labels.every((label) => labels.includes(label))) {
-      return includesLabel;
-    }
-    return !includesLabel;
+    const hasAllLabels = note.original.labels.every((label) => labels.includes(label));
+    return includesLabel ? hasAllLabels : !hasAllLabels;
   });
 }
 
