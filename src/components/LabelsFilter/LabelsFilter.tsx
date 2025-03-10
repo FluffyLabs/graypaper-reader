@@ -1,17 +1,18 @@
 import "./LabelsFilter.css";
-import { type MouseEventHandler, useCallback } from "react";
+import { type MouseEventHandler, useCallback, useMemo } from "react";
 import { Label } from "../Label/Label";
-import type { ILabel } from "../NotesProvider/hooks/useLabels";
+import { buildLabelTree, type ILabel } from "../NotesProvider/hooks/useLabels";
 
 export type LabelsFilterProps = {
   labels: ILabel[];
-  onToggleLabel: (label: string) => void;
+  onToggleLabel: (label: ILabel) => void;
 };
 
 export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
+  const labelsTree = useMemo(() => buildLabelTree(labels), [labels]);
   return (
     <div className="labels filter">
-      {labels.map((label) => (
+      {labelsTree.map((label) => (
         <LabelLink key={label.label} label={label} onToggleLabel={onToggleLabel} />
       ))}
     </div>
@@ -27,7 +28,7 @@ function LabelLink({ label, onToggleLabel }: LabelLinkProps) {
   const selectLabel = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();
-      onToggleLabel(label.label);
+      onToggleLabel(label);
     },
     [label, onToggleLabel],
   );

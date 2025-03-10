@@ -7,7 +7,6 @@ import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalSt
 export type ILabel = {
   label: string;
   isActive: boolean;
-  parent?: ILabel;
   children?: ILabel[];
 };
 
@@ -24,10 +23,9 @@ export function buildLabelTree(labels: ILabel[]): ILabel[] {
   const tree: ILabel[] = [];
   const labelMap = new Map<string, ILabel>();
 
-  function addToTree(label: ILabel): void {
+  function addToTree(label: ILabel) {
     if (label.label.includes("/")) {
-      const parent = getParent(label);
-      label.parent = parent;
+      handleParent(label);
     }
 
     if (!labelMap.has(label.label)) {
@@ -36,7 +34,7 @@ export function buildLabelTree(labels: ILabel[]): ILabel[] {
     }
   }
 
-  function getParent(label: ILabel): ILabel {
+  function handleParent(label: ILabel) {
     const parentLabel = label.label.split("/").slice(0, -1).join("/");
     if (labelMap.has(parentLabel)) {
       const parent = labelMap.get(parentLabel) as ILabel;
@@ -45,7 +43,7 @@ export function buildLabelTree(labels: ILabel[]): ILabel[] {
       }
       parent.children.push(label);
       parent.isActive = parent.children.some((x) => x.isActive);
-      return parent;
+      return;
     }
 
     const parent = {
@@ -54,7 +52,6 @@ export function buildLabelTree(labels: ILabel[]): ILabel[] {
       children: [label],
     };
     addToTree(parent);
-    return parent;
   }
 
   for (const label of labels) {
@@ -114,13 +111,13 @@ export function getFilteredDecoratedNotes(
  * Maintains a list list of all labels (across all nodes) and allow to activate/deactivate them
  * to filter given list of all decorated notes.
  */
-export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel[], (label: string) => void] {
+export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel[], (label: ILabel) => void] {
   const [storageLabels, setStorageLabels] = useState<ILabel[]>([]);
   const [labels, setLabels] = useState<ILabel[]>([]);
 
   // load and save storage labels to Local Storage
   useEffect(() => {
-    setStorageLabels(loadFromLocalStorage());
+    setStorageLabels(buildLabelTree(loadFromLocalStorage()));
   }, []);
   useEffect(() => {
     if (storageLabels.length) {
@@ -129,27 +126,28 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, [storageLabels]);
 
   // toggle label visibility
-  const toggleLabel = useCallback((label: string) => {
-    const toggle = (x: ILabel) => {
-      if (x.label === label) {
+  const toggleLabel = useCallback((label: ILabel) => {
+    const toggle = (x: ILabel): ILabel => {
+      if (x.label === label.label || x.label.startsWith(label.label + "/")) {
         return {
           ...x,
           isActive: !x.isActive,
+          children: x.children?.map(toggle),
         };
       }
       return x;
     };
 
-    let newLabel: ILabel | null = null;
+    let newLabel: ILabel | null;
     setLabels((labels) => {
       const newLabels = labels.map(toggle);
-      newLabel = newLabels.find((x) => x.label === label) || null;
+      newLabel = newLabels.find((x) => x.label === label.label) || null;
       return newLabels;
     });
     // NOTE: we update storage labels separately, since they may have more entries
     // than actually displayed labels.
     setStorageLabels((storageLabels) => {
-      if (storageLabels.find((x) => x.label === label) !== undefined) {
+      if (storageLabels.find((x) => x.label === label.label) !== undefined) {
         return storageLabels.map(toggle);
       }
       if (newLabel !== null) {
@@ -157,7 +155,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       }
       return storageLabels;
     });
-  }, []);
+  }, [labels]);
 
   // maintain a set of labels inactive in local storage.
   const storageActivity = useMemo(() => {
@@ -179,7 +177,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
     setLabels((oldLabels) => {
       const justNames = oldLabels.map((x) => x.label);
-      return Array.from(uniqueLabels.values()).map((label) => {
+      return buildLabelTree(Array.from(uniqueLabels.values()).map((label) => {
         const oldLabelIdx = justNames.indexOf(label);
         const activeByDefault = label !== LABEL_REMOTE;
         const activeInStorage = storageActivity.get(label);
@@ -189,7 +187,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
           return { label, isActive };
         }
         return oldLabels[oldLabelIdx];
-      });
+      }));
     });
   }, [allNotes, storageActivity]);
 

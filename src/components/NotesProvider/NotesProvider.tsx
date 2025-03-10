@@ -34,7 +34,7 @@ export interface INotesContext {
   handleImport(jsonStr: string, label: string): void;
   handleExport(): void;
   handleDeleteNotes(): void;
-  handleToggleLabel(label: string): void;
+  handleToggleLabel(label: ILabel): void;
 }
 
 interface INotesProviderProps {
