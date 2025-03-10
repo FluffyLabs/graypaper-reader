@@ -1,7 +1,7 @@
 import "./LabelsFilter.css";
 import { type MouseEventHandler, useCallback, useMemo } from "react";
 import { Label } from "../Label/Label";
-import { buildLabelTree, type ILabel } from "../NotesProvider/hooks/useLabels";
+import { type ILabel, buildLabelTree } from "../NotesProvider/hooks/useLabels";
 
 export type LabelsFilterProps = {
   labels: ILabel[];

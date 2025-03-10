@@ -128,7 +128,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   // toggle label visibility
   const toggleLabel = useCallback((label: ILabel) => {
     const toggle = (x: ILabel): ILabel => {
-      if (x.label === label.label || x.label.startsWith(label.label + "/")) {
+      if (x.label === label.label || x.label.startsWith(`${label.label}/`)) {
         return {
           ...x,
           isActive: !x.isActive,
@@ -155,7 +155,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
       }
       return storageLabels;
     });
-  }, [labels]);
+  }, []);
 
   // maintain a set of labels inactive in local storage.
   const storageActivity = useMemo(() => {
@@ -177,17 +177,19 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
     setLabels((oldLabels) => {
       const justNames = oldLabels.map((x) => x.label);
-      return buildLabelTree(Array.from(uniqueLabels.values()).map((label) => {
-        const oldLabelIdx = justNames.indexOf(label);
-        const activeByDefault = label !== LABEL_REMOTE;
-        const activeInStorage = storageActivity.get(label);
-        const isActive = activeInStorage ?? activeByDefault;
+      return buildLabelTree(
+        Array.from(uniqueLabels.values()).map((label) => {
+          const oldLabelIdx = justNames.indexOf(label);
+          const activeByDefault = label !== LABEL_REMOTE;
+          const activeInStorage = storageActivity.get(label);
+          const isActive = activeInStorage ?? activeByDefault;
 
-        if (oldLabelIdx === -1) {
-          return { label, isActive };
-        }
-        return oldLabels[oldLabelIdx];
-      }));
+          if (oldLabelIdx === -1) {
+            return { label, isActive };
+          }
+          return oldLabels[oldLabelIdx];
+        }),
+      );
     });
   }, [allNotes, storageActivity]);
 
