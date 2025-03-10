@@ -47,7 +47,7 @@ export class MessagesLogger {
       return;
     }
 
-    const majorVersion = versionName.replace(/^(\d+\.\d+\.)\d+$/, "$1x");
+    const majorVersion = `${versionName.split(".").slice(0, 2).join(".")}.x`;
     const outputFilename = `output/messages-${majorVersion}.json`;
 
     const link = this.generatePermalink(eventId);
