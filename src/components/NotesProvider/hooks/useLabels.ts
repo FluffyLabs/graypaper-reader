@@ -81,7 +81,11 @@ export function getEditableLabels(
  * @returns Filtered list of notes.
  * @see getFilteredDecoratedNotes
  */
-export function getFilteredNotes(notes: IStorageNote[], labels: string[], includesLabel = true): IStorageNote[] {
+export function getFilteredNotes(
+  notes: IStorageNote[],
+  labels: string[],
+  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
+): IStorageNote[] {
   return notes.filter((note) => {
     const hasAllLabels = note.labels.every((label) => labels.includes(label));
     return includesLabel ? hasAllLabels : !hasAllLabels;
@@ -99,7 +103,7 @@ export function getFilteredNotes(notes: IStorageNote[], labels: string[], includ
 export function getFilteredDecoratedNotes(
   notes: IDecoratedNote[],
   labels: string[],
-  includesLabel = true,
+  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
 ): IDecoratedNote[] {
   return notes.filter((note) => {
     const hasAllLabels = note.original.labels.every((label) => labels.includes(label));
