@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
-import type { IDecoratedNote } from "../types/DecoratedNote";
+import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
 import type { IStorageNote } from "../types/StorageNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
@@ -86,9 +86,14 @@ export function getFilteredNotes(
   labels: string[],
   { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
 ): IStorageNote[] {
+  // delete local label without prefix
+  let clearedLabels = labels.filter((label) => label !== LABEL_LOCAL && label !== LABEL_REMOTE);
+  // trim label prefixes
+  clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_LOCAL}/`, "").replace(`${LABEL_REMOTE}/`, ""));
+  const labelsSet = new Set(clearedLabels);
   return notes.filter((note) => {
-    const hasAllLabels = note.labels.every((label) => labels.includes(label));
-    return includesLabel ? hasAllLabels : !hasAllLabels;
+    const hasSomeLabels = note.labels.some((label) => labelsSet.has(label));
+    return includesLabel ? hasSomeLabels : !hasSomeLabels;
   });
 }
 
@@ -105,9 +110,20 @@ export function getFilteredDecoratedNotes(
   labels: string[],
   { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
 ): IDecoratedNote[] {
+  // delete local label without prefix
+  let clearedLabels = labels.filter((label) => label !== LABEL_LOCAL && label !== LABEL_REMOTE);
+
   return notes.filter((note) => {
-    const hasAllLabels = note.original.labels.every((label) => labels.includes(label));
-    return includesLabel ? hasAllLabels : !hasAllLabels;
+    // trim label prefixes
+    if (note.source === NoteSource.Local) {
+      clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_LOCAL}/`, ""));
+    }
+    if (note.source === NoteSource.Remote) {
+      clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_REMOTE}/`, ""));
+    }
+    const labelsSet = new Set(clearedLabels);
+    const hasSomeLabels = note.original.labels.some((label) => labelsSet.has(label));
+    return includesLabel ? hasSomeLabels : !hasSomeLabels;
   });
 }
 
@@ -175,7 +191,7 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
     const uniqueLabels = new Set<string>();
     allNotes.map((note) => {
       note.original.labels.map((label) => {
-        uniqueLabels.add(label);
+        uniqueLabels.add(`${note.source === NoteSource.Local ? LABEL_LOCAL : LABEL_REMOTE}/${label}`);
       });
     });
 
@@ -189,7 +205,10 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
           const isActive = activeInStorage ?? activeByDefault;
 
           if (oldLabelIdx === -1) {
-            return { label, isActive };
+            return {
+              label,
+              isActive,
+            };
           }
           return oldLabels[oldLabelIdx];
         }),

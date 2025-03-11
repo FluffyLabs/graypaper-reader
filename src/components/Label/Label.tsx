@@ -1,8 +1,24 @@
+import type { ILabel } from "../NotesProvider/hooks/useLabels";
+import { NoteSource } from "../NotesProvider/types/DecoratedNote";
 import "./Label.css";
 import { useMemo } from "react";
 
-export function Label({ label, prefix = "" }: { label: string; prefix?: string }) {
-  const backgroundColor = useMemo(() => labelToColor(label), [label]);
+export function Label({ label, prefix = "" }: { label: ILabel; prefix?: string }) {
+  const backgroundColor = useMemo(() => labelToColor(label.label), [label]);
+  return (
+    <span style={{ backgroundColor }} className="label">
+      {prefix} {label.label}
+    </span>
+  );
+}
+
+export function LabelString({
+  label,
+  prefix = "",
+  source = NoteSource.Local,
+}: { label: string; prefix?: string; source?: NoteSource }) {
+  const sourcePrefix = source === NoteSource.Local ? "local" : "remote";
+  const backgroundColor = useMemo(() => labelToColor(`${sourcePrefix}/${label}`), [label, sourcePrefix]);
   return (
     <span style={{ backgroundColor }} className="label">
       {prefix} {label}
