@@ -1,7 +1,7 @@
 export { SynctexStore } from "./src/SynctexStore";
 export { TexStore } from "./src/TexStore";
 export { migrateBlock, migrateSelection } from "./src/migrate";
-export { type Link, parseAndMigrateLink, parseLink, findLinks } from "./src/link";
+export { type Link, parseAndMigrateLink, parseLink, findLinks, findLinkToLatestVersion } from "./src/link";
 
 export * from "./src/metadata";
 export * from "./src/types";

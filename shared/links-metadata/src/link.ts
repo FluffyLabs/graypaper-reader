@@ -19,6 +19,24 @@ export function findLinks(line: string) {
   return line.match(regex) || [];
 }
 
+export function findLinkToLatestVersion(input: string, meta: Metadata) {
+  const links = findLinks(input);
+
+  return links
+    .map((link) => parseLink(link, meta))
+    .filter(Boolean)
+    .map((link) => {
+      const version = link?.versionName || "";
+      const sortKey = version
+        .split(".")
+        .map((num) => num.padStart(3, "0"))
+        .join("");
+      return { link, sortKey };
+    })
+    .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+    .pop()?.link;
+}
+
 export function parseLink(url: string, meta: Metadata) {
   // remove the URL
   const href = url.replace(ORIGIN, "");
@@ -39,6 +57,7 @@ export function parseLink(url: string, meta: Metadata) {
   const selectionEnd = decodePageNumberAndIndex(blocks.substring(6));
 
   return {
+    url,
     shortVersion,
     version,
     versionName,
