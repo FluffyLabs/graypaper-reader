@@ -1,28 +1,26 @@
 import * as dotenv from "dotenv";
-import { MessagesLogger } from "./logger.js";
-import { listenToMessages } from "./server.js";
-
+import { MessagesLogger } from "./logger";
+import { listenToMessages } from "./server";
 dotenv.config();
 
 const homeserverUrl = "https://matrix.org";
 const accessToken = process.env.ACCESS_TOKEN;
+const userId = process.env.USER_ID;
 const roomId = "!ddsEwXlCWnreEGuqXZ:polkadot.io";
 
-if (!accessToken) {
-  throw new Error("Provide .env file or ENV variable `ACCESS_TOKEN`");
+if (!accessToken || !userId) {
+  throw new Error("Provide .env file or ENV variables `ACCESS_TOKEN` and `USER_ID`");
 }
 
-async function main(accessToken: string) {
-  // Call the function to start listening
-  const logger = new MessagesLogger(roomId, "output/messages.json");
-  const client = await listenToMessages(homeserverUrl, accessToken, roomId, logger);
+async function main(accessToken: string, userId: string) {
+  const logger = new MessagesLogger(roomId);
+  const client = await listenToMessages(homeserverUrl, accessToken, userId, roomId, logger);
 
   const cleanup = () => {
-    logger.flush();
     client.stopClient();
   };
   process.once("SIGTERM", cleanup);
   process.once("SIGINT", cleanup);
 }
 
-main(accessToken);
+main(accessToken, userId);

@@ -1,2 +1,2 @@
 .env
-messages.json
+output/*.json
