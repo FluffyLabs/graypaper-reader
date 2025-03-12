@@ -18,10 +18,11 @@ export function LabelString({
   source = NoteSource.Local,
 }: { label: string; prefix?: string; source?: NoteSource }) {
   const sourcePrefix = source === NoteSource.Local ? "local" : "remote";
-  const backgroundColor = useMemo(() => labelToColor(`${sourcePrefix}/${label}`), [label, sourcePrefix]);
+  const labelWithSource = `${sourcePrefix}/${label}`;
+  const backgroundColor = useMemo(() => labelToColor(labelWithSource), [labelWithSource]);
   return (
     <span style={{ backgroundColor }} className="label">
-      {prefix} {label}
+      {prefix} {labelWithSource}
     </span>
   );
 }
