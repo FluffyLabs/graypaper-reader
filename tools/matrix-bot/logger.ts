@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { findLinkToLatestVersion, fetchMetadata } from "@fluffylabs/links-metadata";
+import { fetchMetadata, findLinkToLatestVersion } from "@fluffylabs/links-metadata";
 import { convertToNotes } from "./convert-to-notes";
 
 export class MessagesLogger {
