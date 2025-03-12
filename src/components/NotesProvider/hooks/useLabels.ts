@@ -147,16 +147,17 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
   // toggle label visibility
   const toggleLabel = useCallback((label: ILabel) => {
-    const toggle = (x: ILabel): ILabel => {
+    const setActivity = (x: ILabel, isActive: boolean): ILabel => {
       if (x.label === label.label || x.label.startsWith(`${label.label}/`)) {
         return {
           ...x,
-          isActive: !label.isActive,
-          children: x.children?.map(toggle),
+          isActive: isActive,
+          children: x.children?.map((l) => setActivity(l, isActive)),
         };
       }
       return x;
     };
+    const toggle = (x: ILabel): ILabel => setActivity(x, !label.isActive);
 
     let newLabel: ILabel | null;
     setLabels((labels) => {
