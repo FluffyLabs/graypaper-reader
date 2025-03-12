@@ -14,24 +14,34 @@ export type Link = {
   isOutdated: boolean;
 } & ISelectionParams;
 
-export function findLink(line: string) {
-  const linkStart = line.indexOf(ORIGIN);
-  if (linkStart === -1) {
-    return null;
-  }
-  // extract raw link
-  const linkLine = line.substring(linkStart);
-  // TODO [ToDr] we should probably look for some other delimiters as well (like closing brackets, new line, etc).
-  const whitespaceIdx = linkLine.indexOf(" ");
-  const link = whitespaceIdx !== -1 ? linkLine.substring(0, whitespaceIdx) : linkLine;
-  return link;
+export function findLinks(line: string) {
+  const regex = new RegExp(`${ORIGIN}[^\\s)\\]]+`, "g");
+  return line.match(regex) || [];
+}
+
+export function findLinkToLatestVersion(input: string, meta: Metadata) {
+  const links = findLinks(input);
+
+  return links
+    .map((link) => parseLink(link, meta))
+    .filter(Boolean)
+    .map((link) => {
+      const version = link?.versionName || "";
+      const sortKey = version
+        .split(".")
+        .map((num) => num.padStart(3, "0"))
+        .join("");
+      return { link, sortKey };
+    })
+    .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+    .pop()?.link;
 }
 
 export function parseLink(url: string, meta: Metadata) {
   // remove the URL
   const href = url.replace(ORIGIN, "");
   // parse
-  const parts = href.split("/");
+  const parts = href.split("?")[0].split("/");
   // seems like it's an old format of the links.
   if (parts[0] !== "#") {
     return null;
@@ -47,6 +57,7 @@ export function parseLink(url: string, meta: Metadata) {
   const selectionEnd = decodePageNumberAndIndex(blocks.substring(6));
 
   return {
+    url,
     shortVersion,
     version,
     versionName,

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { SynctexStore, TexStore, findLink, parseAndMigrateLink } from "@fluffylabs/links-metadata";
+import { SynctexStore, TexStore, findLinks, parseAndMigrateLink } from "@fluffylabs/links-metadata";
 import type { Metadata } from "@fluffylabs/links-metadata";
 import { type FileReport, type Path, type Report, printFileReport } from "./report";
 
@@ -97,8 +97,11 @@ async function scanFile(
   };
 
   await readLineByLine(path, (lineNumber, line) => {
-    const link = findLink(line);
-    if (link !== null) {
+    // we only care about the first matching link in a line
+    // since that was the original behaviour and also
+    // it's unlikely there is going to be more.
+    const link = findLinks(line)[0];
+    if (link) {
       links.push([lineNumber, link]);
     }
   });
