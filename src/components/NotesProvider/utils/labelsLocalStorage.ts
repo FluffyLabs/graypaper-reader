@@ -38,8 +38,12 @@ export function loadFromLocalStorage(): ILabel[] {
 }
 
 export function saveToLocalStorage(labels: ILabel[]) {
+  const labelsFlat = labels.map((label) => ({
+    label: label.label,
+    isActive: label.isActive,
+  }));
   try {
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(labels));
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(labelsFlat));
   } catch (e) {
     console.error("Unable to save labels state", e);
   }
