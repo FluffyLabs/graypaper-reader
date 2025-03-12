@@ -6,7 +6,7 @@ dotenv.config();
 const homeserverUrl = "https://matrix.org";
 const accessToken = process.env.ACCESS_TOKEN;
 const userId = process.env.USER_ID;
-const roomId = "!vcLopdOTYgWkSAELKl:matrix.org";
+const roomId = "!ddsEwXlCWnreEGuqXZ:polkadot.io";
 
 if (!accessToken || !userId) {
   throw new Error("Provide .env file or ENV variables `ACCESS_TOKEN` and `USER_ID`");
