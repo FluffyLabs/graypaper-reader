@@ -33,7 +33,7 @@ export function useRemoteNotes(
         try {
           const data = await fetch(source);
           const content = await data.text();
-          const notes = importNotesFromJson(content, LABEL_REMOTE);
+          const notes = importNotesFromJson(content, { defaultLabel: LABEL_REMOTE });
           newRemoteNotes.push(...notes.notes);
         } catch (e) {
           console.warn(`Error loading remote notes from ${source}`, e);

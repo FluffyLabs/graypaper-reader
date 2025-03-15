@@ -17,7 +17,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
 
   const isEnabled = source?.isEnabled ?? true;
   const id = source?.id ?? NEW_REMOTE_SOURCE_ID;
-  const isFilled = name !== "" && url.startsWith("https://");
+  const isFilled = name !== "" && url.startsWith("http://");
 
   const handleEdit = useCallback(() => {
     if (!isFilled) {

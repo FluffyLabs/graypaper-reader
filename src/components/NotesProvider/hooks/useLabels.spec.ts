@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
-import { type ILabel, buildLabelTree } from "./useLabels";
+import { type IStorageLabel, buildLabelTree } from "./useLabels";
 
-const exampleLabels1: ILabel[] = [
+const exampleLabels1: IStorageLabel[] = [
   {
     label: "local",
     isActive: true,
@@ -14,7 +14,7 @@ const exampleLabels1: ILabel[] = [
 
 test("should build a label tree #1", () => {
   const tree = buildLabelTree(exampleLabels1).map((label) => ({
-    label: label.label,
+    label: label.prefixedLabel,
     isActive: label.isActive,
   }));
   expect(tree).toStrictEqual([
@@ -37,7 +37,7 @@ test("should build a label tree #1", () => {
   ]);
 });
 
-const exampleLabels2: ILabel[] = [
+const exampleLabels2: IStorageLabel[] = [
   {
     label: "local",
     isActive: true,
@@ -59,7 +59,7 @@ const exampleLabels2: ILabel[] = [
 
 test("should build a label tree #2", () => {
   const tree = buildLabelTree(exampleLabels2).map((label) => ({
-    label: label.label,
+    label: label.prefixedLabel,
     isActive: label.isActive,
   }));
   expect(tree).toStrictEqual([
@@ -90,7 +90,7 @@ test("should build a label tree #2", () => {
   ]);
 });
 
-const exampleLabels3: ILabel[] = [
+const exampleLabels3: IStorageLabel[] = [
   {
     label: "local",
     isActive: true,
@@ -112,7 +112,7 @@ const exampleLabels3: ILabel[] = [
 
 test("should build a label tree and preserve logic activity", () => {
   const tree = buildLabelTree(exampleLabels3).map((label) => ({
-    label: label.label,
+    label: label.prefixedLabel,
     isActive: label.isActive,
   }));
   expect(tree).toStrictEqual([

@@ -24,31 +24,25 @@ const exampleNotes: IStorageNote[] = [
 
 test("should export v3 envelope", () => {
   expect(
-    exportNotesAsJson(
-      {
-        version: 3,
-        notes: exampleNotes,
-      },
-      true,
-    ),
+    exportNotesAsJson({
+      version: 3,
+      notes: exampleNotes,
+    }),
   ).toBe(
-    '{"version":3,"notes":[{"noteVersion":3,"content":"Hello world!","date":123456789,"author":"test","version":"deadbeef","labels":[],"selectionStart":{"index":0,"pageNumber":0},"selectionEnd":{"index":0,"pageNumber":0}}]}',
+    '{"version":3,"notes":[{"noteVersion":3,"content":"Hello world!","date":123456789,"author":"test","version":"deadbeef","labels":["local"],"selectionStart":{"index":0,"pageNumber":0},"selectionEnd":{"index":0,"pageNumber":0}}]}',
   );
 });
 
 test("should import v3 envelope", () => {
-  const notesStr = exportNotesAsJson(
-    {
-      version: 3,
-      notes: exampleNotes,
-    },
-    true,
-  );
-  expect(importNotesFromJson(notesStr, "must-have-label")).toStrictEqual({
+  const notesStr = exportNotesAsJson({
+    version: 3,
+    notes: exampleNotes,
+  });
+  expect(importNotesFromJson(notesStr, { mustHaveLabel: "must-have-label" })).toStrictEqual({
     notes: [
       {
         ...exampleNotes[0],
-        labels: ["must-have-label"],
+        labels: ["must-have-label", "local"],
       },
     ],
     version: 3,
@@ -71,7 +65,7 @@ test("should import v2 notes", () => {
   ];
   const notesStr = JSON.stringify(notesV2);
 
-  expect(importNotesFromJson(notesStr, "must-have-label")).toStrictEqual({
+  expect(importNotesFromJson(notesStr, { mustHaveLabel: "must-have-label" })).toStrictEqual({
     version: 3,
     notes: [
       {

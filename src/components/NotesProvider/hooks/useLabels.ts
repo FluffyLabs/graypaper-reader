@@ -1,57 +1,79 @@
+import type { UnPrefixedLabel } from "@fluffylabs/links-metadata";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LABEL_IMPORTED, LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
+import { LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
 import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
 import type { IStorageNote } from "../types/StorageNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
-export type ILabel = {
-  label: string;
+export type PrefixedLabel = string;
+
+/** Label activity tracking (in local storage). */
+export type IStorageLabel = {
+  /** Label with source prefix added. */
+  label: PrefixedLabel;
   isActive: boolean;
-  children?: ILabel[];
 };
+
+export type ILabelTreeNode = {
+  prefixedLabel: PrefixedLabel;
+  isActive: boolean;
+  // source: NoteSource;
+  children: ILabelTreeNode[];
+};
+
+export const HIERARCHY_SEPARATOR = "/";
+
+export function prefixLabel(source: NoteSource, label: UnPrefixedLabel) {
+  return [source === NoteSource.Local ? LABEL_LOCAL : LABEL_REMOTE, label].join(HIERARCHY_SEPARATOR);
+}
 
 /**
  * Fills a list of ILabels with parents (groups) of labels.
  * @param labels List of ILabels to build a tree from.
  * @returns A flat-semi-tree structure of labels (sorted alphabetically).
  */
-export function buildLabelTree(labels: ILabel[]): ILabel[] {
+export function buildLabelTree(labels: IStorageLabel[]): ILabelTreeNode[] {
   if (labels.length === 0) {
     return [];
   }
 
-  const tree: ILabel[] = [];
-  const labelMap = new Map<string, ILabel>();
+  const tree: ILabelTreeNode[] = [];
+  const labelMap = new Map<PrefixedLabel, ILabelTreeNode>();
 
-  function addToTree(label: ILabel) {
-    if (label.label.includes("/")) {
-      handleParent(label);
+  function addToTree(label: IStorageLabel) {
+    const treeLabel: ILabelTreeNode = {
+      prefixedLabel: label.label,
+      isActive: label.isActive,
+      children: [],
+    };
+
+    if (!labelMap.has(treeLabel.prefixedLabel)) {
+      labelMap.set(treeLabel.prefixedLabel, treeLabel);
+      tree.push(treeLabel);
     }
 
-    if (!labelMap.has(label.label)) {
-      labelMap.set(label.label, label);
-      tree.push(label);
+    // add a child to it's parent or add the parent label.
+    const parts = treeLabel.prefixedLabel.split(HIERARCHY_SEPARATOR).slice(0, -1);
+    if (parts.length) {
+      handleParent(parts.join(HIERARCHY_SEPARATOR), treeLabel);
     }
+
+    return treeLabel;
   }
 
-  function handleParent(label: ILabel) {
-    const parentLabel = label.label.split("/").slice(0, -1).join("/");
-    if (labelMap.has(parentLabel)) {
-      const parent = labelMap.get(parentLabel) as ILabel;
-      if (!parent.children) {
-        parent.children = [];
-      }
-      parent.children.push(label);
-      parent.isActive = parent.children.some((x) => x.isActive);
-      return;
+  function handleParent(parentLabel: PrefixedLabel, label: ILabelTreeNode) {
+    let parent = labelMap.get(parentLabel);
+
+    if (parent === undefined) {
+      const newParent = {
+        label: parentLabel,
+        isActive: label.isActive,
+      };
+      parent = addToTree(newParent);
     }
 
-    const parent = {
-      label: parentLabel,
-      isActive: label.isActive,
-      children: [label],
-    };
-    addToTree(parent);
+    parent.children.push(label);
+    parent.isActive = parent.children.some((x) => x.isActive);
   }
 
   for (const label of labels) {
@@ -59,70 +81,28 @@ export function buildLabelTree(labels: ILabel[]): ILabel[] {
   }
 
   // sort labels alphabetically
-  return tree.sort((a, b) => a.label.localeCompare(b.label));
+  return tree.sort((a, b) => a.prefixedLabel.localeCompare(b.prefixedLabel));
 }
 
-export function getEditableLabels(
-  labels: string[],
-  { onlyNonEditable }: { onlyNonEditable: boolean } = { onlyNonEditable: false },
-) {
-  return labels.filter((label) => {
-    if (label === LABEL_LOCAL || label === LABEL_REMOTE || label.startsWith(LABEL_IMPORTED)) {
-      return onlyNonEditable;
-    }
-    return !onlyNonEditable;
-  });
-}
 /**
  * Filter notes based on labels.
+ *
  * @param notes List of notes to filter.
- * @param labels List of labels to filter by.
- * @param includesLabel If true, notes must include all labels. If false, notes must not include any of the labels.
+ * @param labels List of source-prefixed labels to filter by.
+ * @param includesLabel If true, returns notes that have any of the labels.
+ *                      If false, returns notes that DO NOT have all the labels.
  * @returns Filtered list of notes.
- * @see getFilteredDecoratedNotes
  */
-export function getFilteredNotes(
-  notes: IStorageNote[],
-  labels: string[],
+export function getFilteredNotes<T extends IStorageNote | IDecoratedNote>(
+  notes: T[],
+  labels: PrefixedLabel[],
   { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
-): IStorageNote[] {
-  // delete local label without prefix
-  let clearedLabels = labels.filter((label) => label !== LABEL_LOCAL && label !== LABEL_REMOTE);
-  // trim label prefixes
-  clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_LOCAL}/`, "").replace(`${LABEL_REMOTE}/`, ""));
-  const labelsSet = new Set(clearedLabels);
+): T[] {
+  const labelsSet = new Set(labels);
   return notes.filter((note) => {
-    const hasSomeLabels = note.labels.some((label) => labelsSet.has(label));
-    return includesLabel ? hasSomeLabels : !hasSomeLabels;
-  });
-}
-
-/**
- * Filter decorated notes based on labels.
- * @param notes List of decorated notes to filter.
- * @param labels List of labels to filter by.
- * @param includesLabel If true, notes must include all labels. If false, notes must not include any of the labels.
- * @returns Filtered list of decorated notes.
- * @see getFilteredNotes
- */
-export function getFilteredDecoratedNotes(
-  notes: IDecoratedNote[],
-  labels: string[],
-  { includesLabel }: { includesLabel: boolean } = { includesLabel: true },
-): IDecoratedNote[] {
-  // delete local label without prefix
-  let clearedLabels = labels.filter((label) => label !== LABEL_LOCAL && label !== LABEL_REMOTE);
-
-  return notes.filter((note) => {
-    // trim label prefixes
-    if (note.source === NoteSource.Local) {
-      clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_LOCAL}/`, ""));
-    }
-    if (note.source === NoteSource.Remote) {
-      clearedLabels = clearedLabels.map((label) => label.replace(`${LABEL_REMOTE}/`, ""));
-    }
-    const labelsSet = new Set(clearedLabels);
-    const hasSomeLabels = note.original.labels.some((label) => labelsSet.has(label));
+    const labels = "original" in note ? note.original.labels : note.labels;
+    const source = "source" in note ? note.source : NoteSource.Local;
+    const hasSomeLabels = labels.some((label) => labelsSet.has(prefixLabel(source, label)));
     return includesLabel ? hasSomeLabels : !hasSomeLabels;
   });
 }
@@ -131,13 +111,15 @@ export function getFilteredDecoratedNotes(
  * Maintains a list list of all labels (across all nodes) and allow to activate/deactivate them
  * to filter given list of all decorated notes.
  */
-export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel[], (label: ILabel) => void] {
-  const [storageLabels, setStorageLabels] = useState<ILabel[]>([]);
-  const [labels, setLabels] = useState<ILabel[]>([]);
+export function useLabels(
+  allNotes: IDecoratedNote[],
+): [IDecoratedNote[], ILabelTreeNode[], (label: ILabelTreeNode) => void] {
+  const [storageLabels, setStorageLabels] = useState<IStorageLabel[]>([]);
+  const [labels, setLabels] = useState<ILabelTreeNode[]>([]);
 
   // load and save storage labels to Local Storage
   useEffect(() => {
-    setStorageLabels(buildLabelTree(loadFromLocalStorage()));
+    setStorageLabels(loadFromLocalStorage());
   }, []);
   useEffect(() => {
     if (storageLabels.length) {
@@ -146,72 +128,88 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
   }, [storageLabels]);
 
   // toggle label visibility
-  const toggleLabel = useCallback((label: ILabel) => {
-    const setActivity = (x: ILabel, isActive: boolean): ILabel => {
-      if (x.label === label.label || x.label.startsWith(`${label.label}/`)) {
-        return {
-          ...x,
-          isActive: isActive,
-          children: x.children?.map((l) => setActivity(l, isActive)),
-        };
+  const toggleLabel = useCallback((label: ILabelTreeNode) => {
+    const setActivity = (x: ILabelTreeNode, isActive: boolean) => {
+      x.isActive = isActive;
+      // set children recursively
+      x.children = x.children.map((x) => setActivity(x, isActive));
+      return x;
+    };
+
+    const setActivityForMatchingLabel = (x: ILabelTreeNode) => {
+      if (x.prefixedLabel === label.prefixedLabel) {
+        setActivity(x, !label.isActive);
       }
       return x;
     };
-    const toggle = (x: ILabel): ILabel => setActivity(x, !label.isActive);
 
-    let newLabel: ILabel | null;
+    let changedLabel: ILabelTreeNode | null;
+    // NOTE: this code does not update parent entries. We rely
+    // on the tree being rebuilt in another hook which obviously
+    // is a suboptimal.
     setLabels((labels) => {
-      const newLabels = labels.map(toggle);
-      newLabel = newLabels.find((x) => x.label === label.label) || null;
+      const newLabels = labels.map(setActivityForMatchingLabel);
+      changedLabel = newLabels.find((x) => x.prefixedLabel === label.prefixedLabel) ?? null;
       return newLabels;
     });
     // NOTE: we update storage labels separately, since they may have more entries
     // than actually displayed labels.
     setStorageLabels((storageLabels) => {
-      if (storageLabels.find((x) => x.label === label.label) !== undefined) {
-        return storageLabels.map(toggle);
+      const toUpdate: ILabelTreeNode[] = changedLabel !== null ? [changedLabel] : [];
+      let newStorageLabels = storageLabels;
+      // update changed label and also all of it's children.
+      for (;;) {
+        const updatedLabel = toUpdate.pop();
+        if (updatedLabel === undefined) {
+          break;
+        }
+        const { prefixedLabel, isActive } = updatedLabel;
+        // first update if the already existing item (we keep the same object to avoid re-rendering)
+        const hasItem = newStorageLabels.some((x) => x.label === prefixedLabel);
+        if (hasItem) {
+          newStorageLabels = newStorageLabels.map((x) => (x.label === prefixedLabel ? { ...x, isActive } : x));
+        } else {
+          newStorageLabels = [...newStorageLabels, { label: prefixedLabel, isActive }];
+        }
+        // next process all of the children as well
+        toUpdate.push(...updatedLabel.children);
       }
-      if (newLabel !== null) {
-        return [...storageLabels, newLabel];
-      }
-      return storageLabels;
+      return newStorageLabels;
     });
   }, []);
 
   // maintain a set of labels inactive in local storage.
   const storageActivity = useMemo(() => {
-    const activity = new Map<string, boolean>();
+    const activity = new Map<PrefixedLabel, boolean>();
     for (const label of storageLabels) {
       activity.set(label.label, label.isActive);
     }
     return activity;
   }, [storageLabels]);
 
-  // Re-create labels on change in notes
+  // Re-build the labels tree on changes in notes or storage labels.
   useEffect(() => {
-    const uniqueLabels = new Set<string>();
+    const uniqueLabels = new Set<PrefixedLabel>();
     allNotes.map((note) => {
       note.original.labels.map((label) => {
-        uniqueLabels.add(`${note.source === NoteSource.Local ? LABEL_LOCAL : LABEL_REMOTE}/${label}`);
+        uniqueLabels.add(prefixLabel(note.source, label));
       });
     });
 
     setLabels((oldLabels) => {
-      const justNames = oldLabels.map((x) => x.label);
+      const justNames = oldLabels.map((x) => x.prefixedLabel);
       return buildLabelTree(
-        Array.from(uniqueLabels.values()).map((label) => {
-          const oldLabelIdx = justNames.indexOf(label);
-          const activeByDefault = label !== LABEL_REMOTE;
-          const activeInStorage = storageActivity.get(label);
+        Array.from(uniqueLabels.values()).map((prefixedLabel) => {
+          const oldLabelIdx = justNames.indexOf(prefixedLabel);
+          const activeByDefault = !prefixedLabel.startsWith(LABEL_REMOTE);
+          const activeInStorage = storageActivity.get(prefixedLabel);
           const isActive = activeInStorage ?? activeByDefault;
+          const oldActivity = oldLabels[oldLabelIdx]?.isActive;
 
-          if (oldLabelIdx === -1) {
-            return {
-              label,
-              isActive,
-            };
-          }
-          return oldLabels[oldLabelIdx];
+          return {
+            label: prefixedLabel,
+            isActive: oldActivity ?? isActive,
+          };
         }),
       );
     });
@@ -219,9 +217,9 @@ export function useLabels(allNotes: IDecoratedNote[]): [IDecoratedNote[], ILabel
 
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {
-    const activeLabels = labels.filter((label) => label.isActive).map((label) => label.label);
+    const activeLabels = labels.filter((label) => label.isActive).map((label) => label.prefixedLabel);
     // filter out notes
-    return getFilteredDecoratedNotes(allNotes, activeLabels);
+    return getFilteredNotes(allNotes, activeLabels);
   }, [allNotes, labels]);
 
   return [filteredNotes, labels, toggleLabel];

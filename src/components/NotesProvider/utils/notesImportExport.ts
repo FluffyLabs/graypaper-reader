@@ -1,5 +1,4 @@
-import type { ISelectionParams } from "@fluffylabs/links-metadata";
-import { LABEL_IMPORTED, LABEL_LOCAL } from "../consts/labels";
+import type { ISelectionParams, UnPrefixedLabel } from "@fluffylabs/links-metadata";
 import type { INoteV3, INotesEnvelope } from "../types/StorageNote";
 
 /** Download given string as a JSON file. */
@@ -12,7 +11,7 @@ function downloadJsonFile(strNotes: string, fileName: string) {
 
 /** Export and download a JSON file with notes. */
 export function downloadNotesAsJson(notes: INotesEnvelope, fileName: string) {
-  return downloadJsonFile(exportNotesAsJson(notes, true), fileName);
+  return downloadJsonFile(exportNotesAsJson(notes), fileName);
 }
 
 /**
@@ -22,33 +21,44 @@ export function downloadNotesAsJson(notes: INotesEnvelope, fileName: string) {
  *
  * Removes non-user defined labels if `clearLabels` flag is set.
  */
-export function exportNotesAsJson(wrapper: INotesEnvelope, clearLabels: boolean): string {
+export function exportNotesAsJson(wrapper: INotesEnvelope): string {
   const notes = wrapper.notes.slice();
-  const newNotes = clearLabels
-    ? notes.map((note) => ({
-        ...note,
-        labels: note.labels.filter((label) => !(label === LABEL_LOCAL || label.startsWith(LABEL_IMPORTED))),
-      }))
-    : notes;
   return JSON.stringify({
     ...wrapper,
-    notes: newNotes,
+    notes,
   });
 }
 
+export type ImportNotesOptions =
+  | {
+      /** A label which every note needs to have. */
+      mustHaveLabel: UnPrefixedLabel;
+      defaultLabel?: undefined;
+    }
+  | {
+      mustHaveLabel?: UnPrefixedLabel;
+      /** A label added to a note if it has no labels at all. */
+      defaultLabel: UnPrefixedLabel;
+    };
 /**
  * Parse given string as a collection of notes.
  *
  * This function supports parsing legacy version of the notes as well and converts
  * them to recent wrapper type.
  */
-export function importNotesFromJson(jsonStr: string, defaultLabel: string): INotesEnvelope {
+export function importNotesFromJson(
+  jsonStr: string,
+  { defaultLabel, mustHaveLabel }: ImportNotesOptions,
+): INotesEnvelope {
   const parsed: unknown = JSON.parse(jsonStr);
   // V3
   if (isINotesEnvelopeV3(parsed)) {
     parsed.notes.map((note) => {
-      if (note.labels.indexOf(defaultLabel) === -1) {
-        note.labels.unshift(defaultLabel);
+      if (mustHaveLabel && note.labels.indexOf(mustHaveLabel) === -1) {
+        note.labels.unshift(mustHaveLabel);
+      }
+      if (defaultLabel && note.labels.length === 0) {
+        note.labels.push(defaultLabel);
       }
     });
     return parsed;
@@ -59,7 +69,7 @@ export function importNotesFromJson(jsonStr: string, defaultLabel: string): INot
     if (parsed.every(isINoteV2)) {
       return {
         version: 3,
-        notes: parsed.map((note) => convertNoteV2toV3(note, defaultLabel)),
+        notes: parsed.map((note) => convertNoteV2toV3(note, mustHaveLabel ?? defaultLabel ?? "new")),
       };
     }
 
@@ -111,7 +121,7 @@ function isINoteV2(arg: unknown): arg is INoteV2 {
   return true;
 }
 
-function convertNoteV2toV3(note: INoteV2, label: string): INoteV3 {
+function convertNoteV2toV3(note: INoteV2, label: UnPrefixedLabel): INoteV3 {
   return {
     noteVersion: 3,
     content: note.content,

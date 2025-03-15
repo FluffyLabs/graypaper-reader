@@ -1,28 +1,25 @@
 import "./LabelsFilter.css";
-import { type MouseEventHandler, useCallback, useMemo } from "react";
+import { type MouseEventHandler, useCallback } from "react";
 import { Label } from "../Label/Label";
-import { type ILabel, buildLabelTree } from "../NotesProvider/hooks/useLabels";
+import type { ILabelTreeNode } from "../NotesProvider/hooks/useLabels";
 
 export type LabelsFilterProps = {
-  labels: ILabel[];
-  onToggleLabel: (label: ILabel) => void;
+  labels: ILabelTreeNode[];
+  onToggleLabel: (label: ILabelTreeNode) => void;
 };
 
 export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
-  const labelsTree = useMemo(() => buildLabelTree(labels), [labels]);
   return (
     <div className="labels filter">
-      {labelsTree
-        //.filter((label) => label.label.indexOf("/") === -1) // root labels only
-        .map((label) => (
-          <LabelNode key={label.label} label={label} onToggleLabel={onToggleLabel} />
-        ))}
+      {labels.map((label) => (
+        <LabelNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
+      ))}
     </div>
   );
 }
 
 type LabelNodeProps = {
-  label: ILabel;
+  label: ILabelTreeNode;
   onToggleLabel: LabelsFilterProps["onToggleLabel"];
 };
 
@@ -36,10 +33,10 @@ function LabelNode({ label, onToggleLabel }: LabelNodeProps) {
   );
 
   const clazz = `label-link ${label.isActive ? "active" : ""}`;
-  const ico = label.isActive ? "⊙" : "∅";
+  const icon = label.isActive ? "⊙" : "∅";
   return (
     <a href="#" className={clazz} onClick={selectLabel}>
-      <Label label={label} prefix={ico} />
+      <Label label={label.prefixedLabel} icon={icon} />
     </a>
   );
 }

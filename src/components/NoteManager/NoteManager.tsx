@@ -56,7 +56,6 @@ function Notes() {
       selectionStart: locationParams.selectionStart,
       selectionEnd: locationParams.selectionEnd,
       version: locationParams.version,
-      // TODO [ToDr] user defined labels?
       labels: [LABEL_LOCAL],
     };
 

@@ -2,9 +2,8 @@ import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from 
 import { validateMath } from "../../../utils/validateMath";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
-import { getEditableLabels } from "../../NotesProvider/hooks/useLabels";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
-import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import type { IStorageNote, UnPrefixedLabel } from "../../NotesProvider/types/StorageNote";
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
@@ -27,9 +26,8 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const isEditable = note.source !== NoteSource.Remote;
 
   const handleEditLabels = useCallback(
-    (labels: string[]) => {
-      const nonEditable = getEditableLabels(noteDirty.labels, { onlyNonEditable: true });
-      noteDirty.labels = [...new Set([...nonEditable, ...labels])];
+    (labels: UnPrefixedLabel[]) => {
+      noteDirty.labels = [...new Set(labels)];
       setNoteDirty({ ...noteDirty });
     },
     [noteDirty],
