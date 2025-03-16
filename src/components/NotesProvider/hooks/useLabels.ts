@@ -196,23 +196,20 @@ export function useLabels(
       });
     });
 
-    setLabels((oldLabels) => {
-      const justNames = oldLabels.map((x) => x.prefixedLabel);
-      return buildLabelTree(
+    setLabels(
+      buildLabelTree(
         Array.from(uniqueLabels.values()).map((prefixedLabel) => {
-          const oldLabelIdx = justNames.indexOf(prefixedLabel);
           const activeByDefault = !prefixedLabel.startsWith(LABEL_REMOTE);
           const activeInStorage = storageActivity.get(prefixedLabel);
           const isActive = activeInStorage ?? activeByDefault;
-          const oldActivity = oldLabels[oldLabelIdx]?.isActive;
 
           return {
             label: prefixedLabel,
-            isActive: oldActivity ?? isActive,
+            isActive,
           };
         }),
-      );
-    });
+      ),
+    );
   }, [allNotes, storageActivity]);
 
   // filter notes when labels are changing

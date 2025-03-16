@@ -11,3 +11,17 @@
   opacity: 100%;
 }
 
+.labels .tree-fold {
+  display: inline-block;
+  width: 0.7rem;
+  cursor: pointer;
+}
+
+.labels .tree-children {
+  padding-left: 1rem;
+}
+
+.labels .tree-children.hide {
+  display: none;
+}
+
