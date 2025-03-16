@@ -9,7 +9,7 @@ export type LabelsFilterProps = {
 };
 
 export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
-  const tree = useMemo(() => {
+  const treeRoots = useMemo(() => {
     // start off with all of the labels and remove all the children
     const roots = new Map(labels.map((x) => [x.prefixedLabel, x]));
     for (const label of labels) {
@@ -22,7 +22,7 @@ export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
 
   return (
     <div className="labels filter">
-      {tree.map((label) => (
+      {treeRoots.map((label) => (
         <LabelsFilterNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
       ))}
     </div>
