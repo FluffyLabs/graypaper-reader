@@ -52,7 +52,7 @@ export function NotesActions() {
       const f = new FileReader();
       f.onload = (e) => {
         const fileContent = e.target?.result?.toString() || "";
-        const fileName = fileToImport.name.split("-")[0].substring(0, 12);
+        const fileName = fileToImport.name.substring(0, 12);
         try {
           handleImport(fileContent, fileName);
         } catch (e) {

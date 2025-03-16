@@ -18,6 +18,11 @@ export type IDecoratedNote = {
   };
 };
 
+/** distinguish between `IStorageNote` and `IDecoratedNote` */
+export function isDecoratedNote(note: IStorageNote | IDecoratedNote): note is IDecoratedNote {
+  return "original" in note;
+}
+
 export enum NoteSource {
   Local = 0,
   Remote = 1,

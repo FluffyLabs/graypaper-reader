@@ -1,7 +1,7 @@
 import type { UnPrefixedLabel } from "@fluffylabs/links-metadata";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
-import { type IDecoratedNote, NoteSource } from "../types/DecoratedNote";
+import { type IDecoratedNote, NoteSource, isDecoratedNote } from "../types/DecoratedNote";
 import type { IStorageNote } from "../types/StorageNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 
@@ -9,15 +9,17 @@ export type PrefixedLabel = string;
 
 /** Label activity tracking (in local storage). */
 export type IStorageLabel = {
-  /** Label with source prefix added. */
+  /** Label with source prefix added. (not renamed for backward compat)*/
   label: PrefixedLabel;
   isActive: boolean;
 };
 
+/** Enriched label type used to display label in the UI. */
 export type ILabelTreeNode = {
+  /** Label with source prefix added. */
   prefixedLabel: PrefixedLabel;
   isActive: boolean;
-  // source: NoteSource;
+  /** Child labels. */
   children: ILabelTreeNode[];
 };
 
@@ -100,8 +102,8 @@ export function getFilteredNotes<T extends IStorageNote | IDecoratedNote>(
 ): T[] {
   const labelsSet = new Set(labels);
   return notes.filter((note) => {
-    const labels = "original" in note ? note.original.labels : note.labels;
-    const source = "source" in note ? note.source : NoteSource.Local;
+    const labels = isDecoratedNote(note) ? note.original.labels : note.labels;
+    const source = isDecoratedNote(note) ? note.source : NoteSource.Local;
     const hasSomeLabels = labels.some((label) => labelsSet.has(prefixLabel(source, label)));
     return includesLabel ? hasSomeLabels : !hasSomeLabels;
   });

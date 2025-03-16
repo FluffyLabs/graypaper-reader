@@ -1,23 +1,20 @@
-import type { PrefixedLabel } from "../NotesProvider/hooks/useLabels";
+import { type PrefixedLabel, prefixLabel } from "../NotesProvider/hooks/useLabels";
 import { NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
 import "./Label.css";
 import { useMemo } from "react";
 
-export function Label({ label, icon }: { label: PrefixedLabel; icon?: string }) {
+export function Label({ label, icon = "" }: { label: PrefixedLabel; icon?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   return (
     <span style={{ backgroundColor }} className="label">
-      {icon ? `${icon} ` : ""}
-      {label}
+      {icon} {label}
     </span>
   );
 }
 
 export function LabelString({ label, source = NoteSource.Local }: { label: UnPrefixedLabel; source?: NoteSource }) {
-  const sourcePrefix = source === NoteSource.Local ? "local" : "remote";
-  const labelWithSource = `${sourcePrefix}/${label}`;
-  return <Label label={labelWithSource} />;
+  return <Label label={prefixLabel(source, label)} />;
 }
 
 function labelToColor(label: string) {
