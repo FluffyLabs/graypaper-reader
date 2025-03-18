@@ -1,8 +1,8 @@
-import type { ILabel } from "../hooks/useLabels";
+import type { IStorageLabel } from "../hooks/useLabels";
 
 const LOCAL_STORAGE_KEY = "labels-v1";
 
-function isLabel(x: unknown): x is ILabel {
+function isLabel(x: unknown): x is IStorageLabel {
   if (x === null || typeof x !== "object") {
     return false;
   }
@@ -15,7 +15,7 @@ function isLabel(x: unknown): x is ILabel {
   return true;
 }
 
-export function loadFromLocalStorage(): ILabel[] {
+export function loadFromLocalStorage(): IStorageLabel[] {
   try {
     const labelsStr = window.localStorage.getItem(LOCAL_STORAGE_KEY);
     const labels = JSON.parse(labelsStr || "[]");
@@ -24,20 +24,20 @@ export function loadFromLocalStorage(): ILabel[] {
     }
 
     return labels
-      .map((x: unknown) => {
+      .map((x: unknown): IStorageLabel | null => {
         if (isLabel(x)) {
           return x;
         }
         return null;
       })
-      .filter((x) => x) as ILabel[];
+      .filter((x) => x !== null);
   } catch (e) {
     console.warn("Error reading labels", e);
     return [];
   }
 }
 
-export function saveToLocalStorage(labels: ILabel[]) {
+export function saveToLocalStorage(labels: IStorageLabel[]) {
   try {
     window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(labels));
   } catch (e) {

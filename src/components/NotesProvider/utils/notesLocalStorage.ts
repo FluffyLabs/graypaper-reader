@@ -7,7 +7,9 @@ const BACKUP_STORAGE_KEY = "notes-v2-backup";
 
 export function loadFromLocalStorage(): INotesEnvelope {
   try {
-    return importNotesFromJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]", LABEL_LOCAL);
+    return importNotesFromJson(window.localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]", {
+      defaultLabel: LABEL_LOCAL,
+    });
   } catch (e) {
     console.error("Error loading notes from local storage!", e);
     return {
@@ -24,7 +26,7 @@ export function saveToLocalStorage(notes: INotesEnvelope): void {
     if (prev) {
       window.localStorage.setItem(BACKUP_STORAGE_KEY, prev);
     }
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, exportNotesAsJson(notes, false));
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, exportNotesAsJson(notes));
   } catch (e) {
     alert(`Unable to save notes: ${e}`);
   }

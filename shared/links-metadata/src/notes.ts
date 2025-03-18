@@ -6,6 +6,9 @@ export interface INotesEnvelopeV3 {
   notes: INoteV3[];
 }
 
+/** Label without source prefix. */
+export type UnPrefixedLabel = string;
+
 /** Version 3 of the note format. */
 export interface INoteV3 extends ISelectionParams {
   /** Constant value for this version of the note. */
@@ -18,5 +21,5 @@ export interface INoteV3 extends ISelectionParams {
   /** Full version number. */
   version: string;
   /** Labels. */
-  labels: string[];
+  labels: UnPrefixedLabel[];
 }

@@ -1,5 +1,5 @@
 import type { INoteV3, INotesEnvelopeV3 } from "@fluffylabs/links-metadata";
-export type { INoteV3 } from "@fluffylabs/links-metadata";
+export type { INoteV3, UnPrefixedLabel } from "@fluffylabs/links-metadata";
 
 /** Latest version of the stored note. */
 export type IStorageNote = INoteV3;

@@ -1,13 +1,20 @@
+import { type PrefixedLabel, prefixLabel } from "../NotesProvider/hooks/useLabels";
+import { NoteSource } from "../NotesProvider/types/DecoratedNote";
+import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
 import "./Label.css";
 import { useMemo } from "react";
 
-export function Label({ label, prefix = "" }: { label: string; prefix?: string }) {
+export function Label({ label, icon = "" }: { label: PrefixedLabel; icon?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   return (
     <span style={{ backgroundColor }} className="label">
-      {prefix} {label}
+      {icon} {label}
     </span>
   );
+}
+
+export function LabelString({ label, source = NoteSource.Local }: { label: UnPrefixedLabel; source?: NoteSource }) {
+  return <Label label={prefixLabel(source, label)} />;
 }
 
 function labelToColor(label: string) {
@@ -15,7 +22,7 @@ function labelToColor(label: string) {
 }
 
 function getColor(index: number) {
-  const size = 64;
+  const size = 120;
   const hue = (index * (360 / size)) % 360;
   return hslToHex(hue, 90, 40);
 }
@@ -24,7 +31,7 @@ function getColor(index: number) {
 function hashStringToIndex(label: string) {
   let hash = 0;
   for (let i = 0; i < label.length; i++) {
-    hash = hash * 31 + label.charCodeAt(i);
+    hash = (hash * 7 + 11 * label.charCodeAt(i)) % 2 ** 32;
   }
   return hash;
 }
