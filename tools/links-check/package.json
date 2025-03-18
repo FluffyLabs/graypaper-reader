@@ -30,6 +30,6 @@
     "@fluffylabs/links-metadata": "^1.2.0",
     "commander": "^12.1.0",
     "fast-glob": "^3.3.3",
-    "ignore": "^6.0.2"
+    "ignore": "^7.0.3"
   }
 }
