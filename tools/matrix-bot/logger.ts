@@ -30,6 +30,7 @@ export class MessagesLogger {
     const majorVersion = `${versionName.split(".").slice(0, 2).join(".")}.x`;
     const outputFilename = `output/messages-${majorVersion}.json`;
     const notesOutputFilename = `output/notes-${majorVersion}.json`;
+    const labels = this.notesLabels.map((x) => x.replace("$MAJOR_VERSION", majorVersion));
 
     const link = this.generatePermalink(eventId);
     const newMessage = {
@@ -50,7 +51,7 @@ export class MessagesLogger {
     writeFileSync(outputFilename, JSON.stringify(messages));
 
     try {
-      const notes = await convertToNotes(meta, outputFilename, this.notesLabels);
+      const notes = await convertToNotes(meta, outputFilename, labels);
       saveNotes(notes, notesOutputFilename);
     } catch (e) {
       console.error(e);
