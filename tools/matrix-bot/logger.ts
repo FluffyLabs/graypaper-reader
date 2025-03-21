@@ -1,10 +1,13 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fetchMetadata, findLinkToLatestVersion } from "@fluffylabs/links-metadata";
-import { convertToNotes } from "./convert-to-notes";
+import { convertToNotes, saveNotes } from "./convert-to-notes";
 
 export class MessagesLogger {
-  constructor(private readonly roomId: string) {}
+  constructor(
+    private readonly roomId: string,
+    private readonly notesLabels: string[],
+  ) {}
 
   private generatePermalink(eventId: string): string {
     return `https://matrix.to/#/${this.roomId}/${eventId}`;
@@ -26,6 +29,7 @@ export class MessagesLogger {
 
     const majorVersion = `${versionName.split(".").slice(0, 2).join(".")}.x`;
     const outputFilename = `output/messages-${majorVersion}.json`;
+    const notesOutputFilename = `output/notes-${majorVersion}.json`;
 
     const link = this.generatePermalink(eventId);
     const newMessage = {
@@ -36,15 +40,18 @@ export class MessagesLogger {
     };
 
     let messages = [];
+    // read previous log file
     try {
       messages = JSON.parse(readFileSync(path.resolve(outputFilename), "utf-8"));
     } catch (e) {}
+
+    // append the new message and save.
     messages.push(newMessage);
     writeFileSync(outputFilename, JSON.stringify(messages));
 
-    const notesFilename = `output/notes-${majorVersion}.json`;
     try {
-      convertToNotes(meta, outputFilename, notesFilename);
+      const notes = await convertToNotes(meta, outputFilename, this.notesLabels);
+      saveNotes(notes, notesOutputFilename);
     } catch (e) {
       console.error(e);
     }
