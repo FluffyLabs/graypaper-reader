@@ -18,7 +18,12 @@ type Message = {
   msg: string;
 };
 
-export async function convertToNotes(meta: Metadata, file: string, outputFile?: string) {
+export function saveNotes(notes: INotesEnvelopeV3, outputFilename: string) {
+  fs.writeFileSync(path.resolve(outputFilename), JSON.stringify(notes));
+  console.info(`💾 Saved ${notes.notes.length} notes to ${outputFilename}.`);
+}
+
+export async function convertToNotes(meta: Metadata, file: string, labels?: string[]) {
   const data = JSON.parse(readFileSync(path.resolve(file), "utf-8")) as Message[];
 
   const notes = new Map<string, INoteV3>();
@@ -46,7 +51,7 @@ export async function convertToNotes(meta: Metadata, file: string, outputFile?: 
         date,
         author: msg.sender,
         ...linkData,
-        labels: [],
+        labels: labels ?? [],
       });
     }
   }
@@ -56,12 +61,8 @@ export async function convertToNotes(meta: Metadata, file: string, outputFile?: 
     version: 3,
     notes: notesArray,
   };
-  if (outputFile) {
-    fs.writeFileSync(path.resolve(outputFile), JSON.stringify(envelope));
-    console.info(`💾 Saved ${notesArray.length} notes to ${outputFile}.`);
-  } else {
-    console.info(JSON.stringify(envelope, null, 2));
-  }
+
+  return envelope;
 }
 
 function findAndParseLink(content: string, meta: Metadata) {
@@ -81,7 +82,8 @@ function findAndParseLink(content: string, meta: Metadata) {
 
 async function main(inputFilename: string, outputFilename: string) {
   const meta = await fetchMetadata();
-  await convertToNotes(meta, inputFilename, outputFilename);
+  const notes = await convertToNotes(meta, inputFilename);
+  saveNotes(notes, outputFilename);
 }
 
 if (require.main === module) {
