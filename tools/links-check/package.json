@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@fluffylabs/links-metadata": "^1.2.0",
-    "commander": "^12.1.0",
+    "commander": "^13.1.0",
     "fast-glob": "^3.3.3",
     "ignore": "^7.0.3"
   }
