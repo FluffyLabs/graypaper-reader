@@ -12,7 +12,7 @@ const VERSIONS_0_6_X = [
 ];
 
 // negative indices to avoid conflicts with user-added sources.
-const DEFAULT_SOURCES = [
+export const DEFAULT_SOURCES = [
   {
     id: -6,
     name: "Element Activity (v0.6.x)",
@@ -29,7 +29,7 @@ const DEFAULT_SOURCES = [
   },
 ];
 
-function updateDefaultSources(sources: IRemoteSource[]) {
+export function updateDefaultSources(sources: IRemoteSource[]) {
   const ids = sources.map((x) => x.id);
   for (const def of DEFAULT_SOURCES) {
     const idx = ids.indexOf(def.id);
@@ -40,7 +40,20 @@ function updateDefaultSources(sources: IRemoteSource[]) {
       sources[idx] = { ...def, isEnabled: sources[idx].isEnabled };
     }
   }
-  return sources;
+  // remove default, but old sources that got removed.
+  const newSources: IRemoteSource[] = [];
+  for (const source of sources) {
+    let shouldStay = true;
+    // only keep the default source if it's still present.
+    if (source.id < 0) {
+      shouldStay = DEFAULT_SOURCES.findIndex((x) => x.id === source.id) !== -1;
+    }
+
+    if (shouldStay) {
+      newSources.push(source);
+    }
+  }
+  return newSources;
 }
 
 export function loadFromLocalStorage(): IRemoteSource[] {
