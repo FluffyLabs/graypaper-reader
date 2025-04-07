@@ -32,7 +32,7 @@
     "react-tooltip": "^5.27.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
+    "@biomejs/biome": "1.9.4",
     "@fluffylabs/types": "^1.0.0",
     "@types/katex": "^0.16.7",
     "@types/react": "^18.3.3",
