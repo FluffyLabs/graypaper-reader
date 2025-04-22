@@ -20,17 +20,9 @@ export function Sidebar() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping =
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA";
+      const isTyping = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
 
-      if (
-        event.key === "s" &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey &&
-        !isTyping
-      ) {
+      if (event.key === "s" && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping) {
         event.preventDefault();
         setTab("search");
       }
