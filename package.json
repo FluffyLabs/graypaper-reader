@@ -6,9 +6,7 @@
   "workspaces": ["tools/*", "shared/*"],
   "scripts": {
     "qa": "biome ci",
-    "format": "biome format --write",
-    "lint": "biome lint --write; biome check --write",
-    "qa-fix": "npm run format; npm run lint",
+    "qa-fix": "biome check --write",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
