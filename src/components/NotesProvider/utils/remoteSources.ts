@@ -9,6 +9,7 @@ const VERSIONS_0_6_X = [
   "5f542d710f52bcfd22cd400d1b0b99e15003cc67", // 2
   "85129dacf739e76ead2065bb5b84a999e8ac71e7", // 3
   "68eaa1fc6f2d32dd4ef6cececbe1f4ecf705d40a", // 4
+  "cc517d7731613cf04c67ff411b154d6a4486aa8a", // 5
 ];
 
 // negative indices to avoid conflicts with user-added sources.
