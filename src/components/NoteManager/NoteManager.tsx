@@ -55,7 +55,7 @@ function Notes() {
       author: DEFAULT_AUTHOR,
       selectionStart: locationParams.selectionStart,
       selectionEnd: locationParams.selectionEnd,
-      version: locationParams.version,
+      version: locationParams.fullVersion,
       labels: [LABEL_LOCAL],
     };
 

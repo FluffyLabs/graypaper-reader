@@ -1,6 +1,6 @@
 import "./Sidebar.css";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
 import { Search } from "../Search/Search";
@@ -10,8 +10,6 @@ import { Version } from "../Version/Version";
 
 export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
-  // search query is persistent between tab switches
-  const [query, setQuery] = useState("");
 
   // store seletected tab in LS
   useEffect(() => {
@@ -32,10 +30,17 @@ export function Sidebar() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // if we have both search & section, we need to wait
+  // for the search to be done, before scrolling to section.
+  const [searchIsDone, setSearchIsDone] = useState(false);
+  const onSearchFinished = useCallback(() => {
+    setSearchIsDone(true);
+  }, []);
+
   const tabs = [
     {
       name: "outline",
-      render: () => <Outline />,
+      render: () => <Outline searchIsDone={searchIsDone} />,
     },
     {
       name: "notes",
@@ -43,7 +48,7 @@ export function Sidebar() {
     },
     {
       name: "search",
-      render: () => <Search {...{ query, setQuery }} />,
+      render: () => <Search onSearchFinished={onSearchFinished} />,
     },
   ];
 
@@ -51,7 +56,7 @@ export function Sidebar() {
     <div className="sidebar">
       <div className="content">
         <Selection activeTab={tab} switchTab={setTab} />
-        <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} />
+        <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} alwaysRender />
         <Version />
       </div>
     </div>
