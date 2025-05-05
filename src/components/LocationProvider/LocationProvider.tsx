@@ -43,10 +43,12 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const handleSetLocationParams = useCallback(
     (newParams?: ILocationParams) => {
+      console.log(newParams);
       const version =
         newParams?.version.substring(0, SHORT_COMMIT_HASH_LENGTH) ||
         metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
       const versionName = newParams ? metadata.versions[newParams.version]?.name : undefined;
+      console.log(versionName);
 
       const stringifiedParams = [];
 
@@ -60,13 +62,14 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       }
 
       const newHash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`;
+      console.log(newHash);
       window.location.hash = versionName ? `${newHash}?v=${versionName}` : newHash;
     },
     [metadata],
   );
 
   const handleHashChange = useCallback(() => {
-    const newHash = window.location.hash.substring(1);
+    const [newHash, searchParams] = window.location.hash.substring(1).split("?");
 
     if (!newHash || !newHash.startsWith(SEGMENT_SEPARATOR)) {
       handleSetLocationParams();

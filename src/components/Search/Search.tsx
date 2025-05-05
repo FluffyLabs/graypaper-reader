@@ -41,6 +41,7 @@ function SearchResults({ query }: SearchResultsProps) {
     count: 0,
     pagesAndCount: [],
   });
+
   const resetMatchesLater = useCallback(() => {
     setIsLoading(true);
     clearTimeout(resetTimeout.current);
