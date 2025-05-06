@@ -10,7 +10,7 @@ export interface ILocationContext {
 }
 
 interface ILocationParams extends Partial<ISelectionParams> {
-  version?: string;
+  version: string;
   search?: string;
   section?: string;
 }
@@ -77,12 +77,14 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     const { rest: newHash, search, section } = extractSearchParams(window.location.hash);
 
     if (!newHash.startsWith(SEGMENT_SEPARATOR)) {
+      const version = metadata.latest;
       setLocationParams((params) => ({
         ...params,
+        version,
         search,
         section,
       }));
-      handleSetLocationParams({ search, section });
+      handleSetLocationParams({ version, search, section });
       return;
     }
 
@@ -95,12 +97,14 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         : null;
 
     if (!fullVersion) {
+      const version = metadata.latest;
       setLocationParams((params) => ({
         ...params,
+        version,
         search,
         section,
       }));
-      handleSetLocationParams({ search, section });
+      handleSetLocationParams({ version, search, section });
       return;
     }
 
