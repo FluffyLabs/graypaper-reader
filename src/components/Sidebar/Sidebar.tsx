@@ -33,9 +33,11 @@ export function Sidebar() {
   // if we have both search & section, we need to wait
   // for the search to be done, before scrolling to section.
   const [searchIsDone, setSearchIsDone] = useState(false);
-  const onSearchFinished = useCallback(() => {
+  const onSearchFinished = useCallback((hasQuery: boolean) => {
     setSearchIsDone(true);
-    setTab("search");
+    if (hasQuery) {
+      setTab("search");
+    }
   }, []);
 
   const tabs = [

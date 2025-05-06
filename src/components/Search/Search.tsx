@@ -4,7 +4,7 @@ import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
 
-export function Search({ onSearchFinished }: { onSearchFinished: () => void }) {
+export function Search({ onSearchFinished }: { onSearchFinished: (hasQuery: boolean) => void }) {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const [query, setQuery] = useState("");
   // search query is persistent between tab switches
@@ -14,7 +14,7 @@ export function Search({ onSearchFinished }: { onSearchFinished: () => void }) {
     if (search) {
       setQuery(search);
     } else {
-      onSearchFinished();
+      onSearchFinished(false);
     }
   }, [search, onSearchFinished]);
 
@@ -45,7 +45,7 @@ type PageResults = {
 
 type SearchResultsProps = {
   query: string;
-  onSearchFinished: () => void;
+  onSearchFinished: (hasQuery: boolean) => void;
 };
 
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
@@ -112,7 +112,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
       clearTimeout(resetTimeout.current);
       setIsLoading(false);
       setMatches({ count, pagesAndCount });
-      onSearchFinished();
+      onSearchFinished(true);
     };
 
     eventBus.on("updatefindmatchescount", updateMatches);
