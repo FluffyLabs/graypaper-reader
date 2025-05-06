@@ -20,7 +20,7 @@ export function Sidebar() {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isTyping = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
 
-      if (event.key === "s" && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping) {
+      if (event.key.toLowerCase() === "s" && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping) {
         event.preventDefault();
         setTab("search");
       }
@@ -35,6 +35,7 @@ export function Sidebar() {
   const [searchIsDone, setSearchIsDone] = useState(false);
   const onSearchFinished = useCallback(() => {
     setSearchIsDone(true);
+    setTab("search");
   }, []);
 
   const tabs = [
