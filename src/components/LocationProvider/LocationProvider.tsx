@@ -11,6 +11,8 @@ export interface ILocationContext {
 
 interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
+  search?: string;
+  section?: string;
 }
 
 interface ILocationProviderProps {
@@ -43,10 +45,11 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const handleSetLocationParams = useCallback(
     (newParams?: ILocationParams) => {
-      const version =
-        newParams?.version.substring(0, SHORT_COMMIT_HASH_LENGTH) ||
-        metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
-      const versionName = newParams ? metadata.versions[newParams.version]?.name : undefined;
+      const fullVersion = newParams?.version;
+      const version = fullVersion
+        ? fullVersion.substring(0, SHORT_COMMIT_HASH_LENGTH)
+        : metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
+      const versionName = fullVersion ? metadata.versions[fullVersion]?.name : metadata.versions[metadata.latest]?.name;
 
       const stringifiedParams = [];
 
@@ -59,54 +62,83 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         ].join("");
       }
 
-      const newHash = `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`;
-      window.location.hash = versionName ? `${newHash}?v=${versionName}` : newHash;
+      // we never put search/section to the URL,
+      // yet we keep them in `locationParams`.
+      const params: SearchParams = {
+        v: versionName,
+        rest: `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`,
+      };
+      window.location.hash = serializeSearchParams(params);
     },
     [metadata],
   );
 
   const handleHashChange = useCallback(() => {
-    const newHash = window.location.hash.substring(1);
+    const { rest: newHash, search, section } = extractSearchParams(window.location.hash);
 
-    if (!newHash || !newHash.startsWith(SEGMENT_SEPARATOR)) {
-      handleSetLocationParams();
+    if (!newHash.startsWith(SEGMENT_SEPARATOR)) {
+      const version = metadata.latest;
+      setLocationParams((params) => ({
+        ...params,
+        version,
+        search,
+        section,
+      }));
+      handleSetLocationParams({ version, search, section });
       return;
     }
 
     const rawParams = newHash.split(SEGMENT_SEPARATOR).slice(1);
+    const selectedVersion = rawParams[VERSION_SEGMENT_INDEX];
 
-    const fullVersion = Object.keys(metadata.versions).find((version) =>
-      version.startsWith(rawParams[VERSION_SEGMENT_INDEX]),
-    );
+    const fullVersion =
+      selectedVersion.length > 0
+        ? Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX]))
+        : null;
 
     if (!fullVersion) {
-      handleSetLocationParams();
+      const version = metadata.latest;
+      setLocationParams((params) => ({
+        ...params,
+        version,
+        search,
+        section,
+      }));
+      handleSetLocationParams({ version, search, section });
       return;
     }
 
-    const processedParams: ILocationParams = {
+    const newLocationParams: ILocationParams = {
       version: fullVersion,
+      search,
+      section,
     };
 
     if (rawParams[SELECTION_SEGMENT_INDEX]) {
       const matchedHexSegments = [...rawParams[SELECTION_SEGMENT_INDEX].matchAll(SELECTION_DECOMPOSE_PATTERN)];
 
       if (matchedHexSegments.length === 2) {
-        processedParams.selectionStart = decodePageNumberAndIndex(matchedHexSegments[0][0]);
-        processedParams.selectionEnd = decodePageNumberAndIndex(matchedHexSegments[1][0]);
+        newLocationParams.selectionStart = decodePageNumberAndIndex(matchedHexSegments[0][0]);
+        newLocationParams.selectionEnd = decodePageNumberAndIndex(matchedHexSegments[1][0]);
       }
     }
 
     // Update location but only if it has REALLY changed.
     setLocationParams((params) => {
-      if (!isSameBlock(params?.selectionStart, processedParams.selectionStart)) {
-        return processedParams;
+      if (!isSameBlock(params?.selectionStart, newLocationParams.selectionStart)) {
+        return newLocationParams;
       }
-      if (!isSameBlock(params?.selectionEnd, processedParams.selectionEnd)) {
-        return processedParams;
+      if (!isSameBlock(params?.selectionEnd, newLocationParams.selectionEnd)) {
+        return newLocationParams;
       }
-      if (params?.version !== processedParams.version) {
-        return processedParams;
+      if (params?.version !== newLocationParams.version) {
+        return newLocationParams;
+      }
+      if (params?.search !== newLocationParams.search) {
+        return newLocationParams;
+      }
+      if (params?.section !== newLocationParams.section) {
+        return newLocationParams;
       }
       return params;
     });
@@ -173,4 +205,46 @@ function decodePageNumberAndIndex(s: string) {
   let index = fromHex(s.substring(2, 4));
   index += fromHex(s.substring(4, 6)) << 8;
   return { pageNumber, index };
+}
+
+type SearchParams = {
+  rest: string;
+  v?: string;
+  search?: string;
+  section?: string;
+};
+
+function extractSearchParams(hash: string): SearchParams {
+  // skip the leading '/'
+  const [rest, searchParams] = hash.substring(1).split("?");
+
+  const result = {
+    rest,
+    v: undefined,
+    search: undefined,
+    section: undefined,
+  };
+
+  if (!searchParams) {
+    return result;
+  }
+
+  for (const v of searchParams.split("&")) {
+    const [key, val] = v.split("=");
+    if (key in result) {
+      (result as { [key: string]: string | undefined })[key] = decodeURIComponent(val);
+    }
+  }
+
+  return result;
+}
+function serializeSearchParams({ rest, ...searchParams }: SearchParams) {
+  const search = [];
+  for (const key of Object.keys(searchParams)) {
+    const val = searchParams[key as keyof typeof searchParams];
+    if (val) {
+      search.push(`${key}=${encodeURIComponent(val)}`);
+    }
+  }
+  return `${rest}${search.length > 0 ? `?${search.join("&")}` : ""}`;
 }

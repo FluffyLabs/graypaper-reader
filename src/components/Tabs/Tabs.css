@@ -36,3 +36,6 @@
   padding: 1rem;
   border-radius: 1rem 1rem 1rem 0;
 }
+.tabs .hidden {
+  display: none;
+}

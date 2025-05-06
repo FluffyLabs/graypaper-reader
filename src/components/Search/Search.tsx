@@ -1,9 +1,23 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
 
-export function Search({ query, setQuery }: { query: string; setQuery: (x: string) => void }) {
+export function Search({ onSearchFinished }: { onSearchFinished: () => void }) {
+  const { locationParams } = useContext(LocationContext) as ILocationContext;
+  const [query, setQuery] = useState("");
+  // search query is persistent between tab switches
+  // and we also handle search input from URL.
+  const search = locationParams.search;
+  useEffect(() => {
+    if (search) {
+      setQuery(search);
+    } else {
+      onSearchFinished();
+    }
+  }, [search, onSearchFinished]);
+
   return (
     <div className="search-wrapper">
       <input
@@ -11,9 +25,9 @@ export function Search({ query, setQuery }: { query: string; setQuery: (x: strin
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="🔍 search the Gray Paper"
+        placeholder="🔍 press 's' to search the Gray Paper"
       />
-      <SearchResults query={query} />
+      <SearchResults query={query} onSearchFinished={onSearchFinished} />
     </div>
   );
 }
@@ -31,9 +45,10 @@ type PageResults = {
 
 type SearchResultsProps = {
   query: string;
+  onSearchFinished: () => void;
 };
 
-function SearchResults({ query }: SearchResultsProps) {
+function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   const { eventBus, findController, viewer, linkService } = useContext(PdfContext) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
   const resetTimeout = useRef(0);
@@ -41,6 +56,7 @@ function SearchResults({ query }: SearchResultsProps) {
     count: 0,
     pagesAndCount: [],
   });
+
   const resetMatchesLater = useCallback(() => {
     setIsLoading(true);
     clearTimeout(resetTimeout.current);
@@ -84,7 +100,7 @@ function SearchResults({ query }: SearchResultsProps) {
     const updateMatches = () => {
       const count = pageMatches.reduce((sum, x) => sum + x.length, 0);
       const pagesAndCount = Array.from(pageMatches.entries())
-        .filter((x) => x[1].length > 0)
+        .filter((x) => x.length > 0 && x[1].length > 0)
         .map(
           (x) =>
             ({
@@ -96,13 +112,14 @@ function SearchResults({ query }: SearchResultsProps) {
       clearTimeout(resetTimeout.current);
       setIsLoading(false);
       setMatches({ count, pagesAndCount });
+      onSearchFinished();
     };
 
     eventBus.on("updatefindmatchescount", updateMatches);
     return () => {
       eventBus.off("updatefindmatchescount", updateMatches);
     };
-  }, [eventBus, findController, viewer]);
+  }, [eventBus, findController, viewer, onSearchFinished]);
 
   const jumpToPage = useCallback(
     (res: PageResults) => {
