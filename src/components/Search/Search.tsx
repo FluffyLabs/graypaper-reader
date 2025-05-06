@@ -25,7 +25,7 @@ export function Search({ onSearchFinished }: { onSearchFinished: () => void }) {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="🔍 search the Gray Paper"
+        placeholder="🔍 press 's' to search the Gray Paper"
       />
       <SearchResults query={query} onSearchFinished={onSearchFinished} />
     </div>
