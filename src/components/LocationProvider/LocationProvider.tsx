@@ -108,7 +108,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       return;
     }
 
-    const processedParams: ILocationParams = {
+    const newLocationParams: ILocationParams = {
       version: fullVersion,
       search,
       section,
@@ -118,27 +118,27 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       const matchedHexSegments = [...rawParams[SELECTION_SEGMENT_INDEX].matchAll(SELECTION_DECOMPOSE_PATTERN)];
 
       if (matchedHexSegments.length === 2) {
-        processedParams.selectionStart = decodePageNumberAndIndex(matchedHexSegments[0][0]);
-        processedParams.selectionEnd = decodePageNumberAndIndex(matchedHexSegments[1][0]);
+        newLocationParams.selectionStart = decodePageNumberAndIndex(matchedHexSegments[0][0]);
+        newLocationParams.selectionEnd = decodePageNumberAndIndex(matchedHexSegments[1][0]);
       }
     }
 
     // Update location but only if it has REALLY changed.
     setLocationParams((params) => {
-      if (!isSameBlock(params?.selectionStart, processedParams.selectionStart)) {
-        return processedParams;
+      if (!isSameBlock(params?.selectionStart, newLocationParams.selectionStart)) {
+        return newLocationParams;
       }
-      if (!isSameBlock(params?.selectionEnd, processedParams.selectionEnd)) {
-        return processedParams;
+      if (!isSameBlock(params?.selectionEnd, newLocationParams.selectionEnd)) {
+        return newLocationParams;
       }
-      if (params?.version !== processedParams.version) {
-        return processedParams;
+      if (params?.version !== newLocationParams.version) {
+        return newLocationParams;
       }
-      if (params?.search !== processedParams?.search) {
-        return processedParams;
+      if (params?.search !== newLocationParams.search) {
+        return newLocationParams;
       }
-      if (params?.section !== undefined) {
-        return processedParams;
+      if (params?.section !== newLocationParams.section) {
+        return newLocationParams;
       }
       return params;
     });
