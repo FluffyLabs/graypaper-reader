@@ -24,7 +24,7 @@
     "jspdf": "^3.0.1",
     "katex": "^0.16.22",
     "pdfjs-dist": "^4.5.136",
-    "react": "^18.3.1",
+    "react": "^19.1.0",
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.3",
     "react-tooltip": "^5.28.1"
@@ -33,7 +33,7 @@
     "@biomejs/biome": "1.8.3",
     "@fluffylabs/types": "^1.0.0",
     "@types/katex": "^0.16.7",
-    "@types/react": "^18.3.3",
+    "@types/react": "^19.1.2",
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.16.3",
     "@vitejs/plugin-react": "^4.3.1",
