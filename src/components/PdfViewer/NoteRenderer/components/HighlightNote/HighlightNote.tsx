@@ -1,6 +1,16 @@
 import "./HighlightNote.css";
-import { Fragment, useCallback, useContext, useMemo, useRef, useState } from "react";
-import { CodeSyncContext, type ICodeSyncContext } from "../../../../CodeSyncProvider/CodeSyncProvider";
+import {
+  Fragment,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  CodeSyncContext,
+  type ICodeSyncContext,
+} from "../../../../CodeSyncProvider/CodeSyncProvider";
 import { NoteContent } from "../../../../NoteContent/NoteContent";
 import { NoteLabels } from "../../../../NoteManager/components/NoteLabels";
 import type { IDecoratedNote } from "../../../../NotesProvider/types/DecoratedNote";
@@ -17,9 +27,16 @@ const NOTE_COLOR = { r: 200, g: 200, b: 0 };
 const NOTE_OPACITY = 0.3;
 const HOVER_OFF_DELAY_MS = 350;
 
-export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefault }: HighlightNoteProps) {
+export function HighlightNote({
+  notes,
+  pageOffset,
+  isInViewport,
+  isPinnedByDefault,
+}: HighlightNoteProps) {
   const [noteContentHeight, setNoteContentHeight] = useState<number>(0);
-  const { getSynctexBlockRange } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const { getSynctexBlockRange } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
   // by default the note state is controlled by `isPinnedByDefault`, but the user might change that.
   const [isPinned, setPinned] = useState<boolean | null>(null);
   // when note is not displayed, it may be temporarily by hovering the annotation
@@ -35,7 +52,9 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
   );
 
   // delay hovering a bit
-  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const setHoveredLater = useCallback((val: boolean) => {
     clearTimeout(setHoveredTimeout.current);
     if (val) {
@@ -47,8 +66,14 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
       }, HOVER_OFF_DELAY_MS);
     }
   }, []);
-  const handleNoteHoverOn = useCallback(() => setHoveredLater(true), [setHoveredLater]);
-  const handleNoteHoverOff = useCallback(() => setHoveredLater(false), [setHoveredLater]);
+  const handleNoteHoverOn = useCallback(
+    () => setHoveredLater(true),
+    [setHoveredLater],
+  );
+  const handleNoteHoverOff = useCallback(
+    () => setHoveredLater(false),
+    [setHoveredLater],
+  );
   const handleNotePinnedToggle = useCallback(() => setPinned((x) => !x), []);
 
   // do not render anything if we don't have selection, pageOffsets are not loaded yet
@@ -57,7 +82,9 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
     return null;
   }
 
-  const rightmostEdge = Math.max(...blocks.map(({ left, width }) => left + width));
+  const rightmostEdge = Math.max(
+    ...blocks.map(({ left, width }) => left + width),
+  );
   const leftmostEdge = Math.min(...blocks.map(({ left }) => left));
 
   const position =
