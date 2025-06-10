@@ -1,10 +1,17 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
 
-export function Search({ onSearchFinished }: { onSearchFinished: (hasQuery: boolean) => void }) {
+export function Search({
+  onSearchFinished,
+}: {
+  onSearchFinished: (hasQuery: boolean) => void;
+}) {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const [query, setQuery] = useState("");
   // search query is persistent between tab switches
@@ -49,7 +56,9 @@ type SearchResultsProps = {
 };
 
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
-  const { eventBus, findController, viewer, linkService } = useContext(PdfContext) as IPdfContext;
+  const { eventBus, findController, viewer, linkService } = useContext(
+    PdfContext,
+  ) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
   const resetTimeout = useRef(0);
   const [matches, setMatches] = useState<Match>({
@@ -141,10 +150,18 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   return (
     <>
       <div className={`search-buttons ${isLoading ? "search-loading" : ""}`}>
-        <button disabled={!hasResults} onClick={handlePrev}>
+        <button
+          className="default-button"
+          disabled={!hasResults}
+          onClick={handlePrev}
+        >
           ⬅️
         </button>
-        <button disabled={!hasResults} onClick={handleNext}>
+        <button
+          className="default-button"
+          disabled={!hasResults}
+          onClick={handleNext}
+        >
           ➡️
         </button>
       </div>

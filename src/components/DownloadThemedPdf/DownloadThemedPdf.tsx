@@ -19,10 +19,12 @@ export function DownloadPdfWithTheme() {
     <div>
       <button
         data-tooltip-id="download"
-        data-tooltip-content={isProcessing ? "Processing..." : "Download PDF with current theme"}
+        data-tooltip-content={
+          isProcessing ? "Processing..." : "Download PDF with current theme"
+        }
         data-tooltip-place="right"
         onClick={handleDownloadClick}
-        className={"download-pdf-with-theme"}
+        className={"default-button download-pdf-with-theme"}
         disabled={isProcessing}
       >
         {isProcessing ? "⏳" : "⬇️"}

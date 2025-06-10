@@ -1,11 +1,12 @@
 .resizable {
   position: relative;
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   width: 100vw;
   display: flex;
 }
 
-.resizable .left, .resizable .right {
+.resizable .left,
+.resizable .right {
   position: relative;
   height: 100%;
   transition: width 150ms;
@@ -53,4 +54,3 @@
   display: block;
   cursor: col-resize;
 }
-

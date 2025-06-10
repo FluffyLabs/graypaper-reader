@@ -1,12 +1,18 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { Banner } from "./components/Banner/Banner";
+import { AppsSidebar, Header } from "@krystian5011/shared-ui";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
-import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
-import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "./components/LocationProvider/LocationProvider";
+import {
+  type IMetadataContext,
+  MetadataContext,
+} from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
@@ -15,6 +21,7 @@ import { Resizable } from "./components/Resizable/Resizable";
 import { SelectionProvider } from "./components/SelectionProvider/SelectionProvider";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ZoomControls } from "./components/ZoomControls/ZoomControls";
+import toolLogoUrl from "./assets/tool-logo.svg";
 
 export function App() {
   const {
@@ -27,23 +34,26 @@ export function App() {
       <NotesProvider>
         <PdfProvider pdfUrl={urlGetters.pdf(version)}>
           <SelectionProvider>
-            <Resizable
-              left={
-                <>
-                  <Banner />
-                  <div className="pdf-viewer-container">
-                    <PdfViewer />
+            <div>
+              <Header toolNameSrc={toolLogoUrl} />
+              <Resizable
+                left={
+                  <div className="left-side-container">
+                    <AppsSidebar activeLink="reader" />
+                    <div className="pdf-viewer-container">
+                      <PdfViewer />
+                    </div>
+                    <div className="controls">
+                      <PinNotesToggle />
+                      <LightThemeToggle />
+                      <DownloadPdfWithTheme />
+                      <ZoomControls />
+                    </div>
                   </div>
-                  <div className="controls">
-                    <PinNotesToggle />
-                    <LightThemeToggle />
-                    <DownloadPdfWithTheme />
-                    <ZoomControls />
-                  </div>
-                </>
-              }
-              right={<Sidebar />}
-            />
+                }
+                right={<Sidebar />}
+              />
+            </div>
           </SelectionProvider>
         </PdfProvider>
       </NotesProvider>

@@ -2,11 +2,20 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
 import { validateMath } from "../../utils/validateMath";
 import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "../LocationProvider/LocationProvider";
+import {
+  type INotesContext,
+  NotesContext,
+} from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
-import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
+import {
+  type ISelectionContext,
+  SelectionContext,
+} from "../SelectionProvider/SelectionProvider";
 import { Note } from "./components/Note";
 import { NotesActions } from "./components/NotesActions";
 
@@ -25,9 +34,18 @@ function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, notes, labels, handleAddNote, handleDeleteNote, handleUpdateNote, handleToggleLabel } =
-    useContext(NotesContext) as INotesContext;
-  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
+  const {
+    notesReady,
+    notes,
+    labels,
+    handleAddNote,
+    handleDeleteNote,
+    handleUpdateNote,
+    handleToggleLabel,
+  } = useContext(NotesContext) as INotesContext;
+  const { selectedBlocks, pageNumber, handleClearSelection } = useContext(
+    SelectionContext,
+  ) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
     if (
@@ -61,7 +79,14 @@ function Notes() {
 
     handleAddNote(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
+  }, [
+    noteContent,
+    pageNumber,
+    selectedBlocks,
+    handleAddNote,
+    handleClearSelection,
+    locationParams,
+  ]);
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -82,15 +107,26 @@ function Notes() {
           placeholder="Add a note to the selected fragment. Math typesetting is supported! Use standard delimiters such as $...$, \[...\] or \begin{equation}...\end{equation}."
         />
 
-        {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-        <button disabled={noteContent.length < 1} onClick={handleAddNoteClick}>
+        {noteContentError ? (
+          <div className="validation-message">{noteContentError}</div>
+        ) : null}
+        <button
+          disabled={noteContent.length < 1}
+          onClick={handleAddNoteClick}
+          className="default-button"
+        >
           Add
         </button>
       </div>
 
       <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
       {notes.map((note) => (
-        <Note key={note.key} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+        <Note
+          key={note.key}
+          note={note}
+          onEditNote={handleUpdateNote}
+          onDeleteNote={handleDeleteNote}
+        />
       ))}
     </div>
   );

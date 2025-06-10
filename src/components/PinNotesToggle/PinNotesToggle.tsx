@@ -1,9 +1,14 @@
 import { useCallback, useContext } from "react";
 import { Tooltip } from "react-tooltip";
-import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
+import {
+  type INotesContext,
+  NotesContext,
+} from "../NotesProvider/NotesProvider";
 
 export function PinNotesToggle() {
-  const { notesPinned, setNotesPinned } = useContext(NotesContext) as INotesContext;
+  const { notesPinned, setNotesPinned } = useContext(
+    NotesContext,
+  ) as INotesContext;
 
   const handleButtonClick = useCallback(() => {
     setNotesPinned(!notesPinned);
@@ -16,7 +21,7 @@ export function PinNotesToggle() {
         data-tooltip-content="Pin or unpin all notes"
         data-tooltip-place="right"
         onClick={handleButtonClick}
-        className="pin-notes-toggle"
+        className="default-button pin-notes-toggle"
       >
         {notesPinned ? "📍" : "📌"}
       </button>

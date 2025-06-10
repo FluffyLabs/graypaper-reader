@@ -22,6 +22,7 @@
   "dependencies": {
     "@fluffylabs/migrate-selection": "^1.0.0",
     "@fluffylabs/synctex-store": "^1.0.0",
+    "@krystian5011/shared-ui": "^0.0.14",
     "@types/jspdf": "^1.3.3",
     "dompurify": "^3.2.0",
     "jspdf": "^3.0.1",

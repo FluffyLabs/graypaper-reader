@@ -1,9 +1,20 @@
-import { type ChangeEvent, type MouseEventHandler, useCallback, useState } from "react";
+import {
+  type ChangeEvent,
+  type MouseEventHandler,
+  useCallback,
+  useState,
+} from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
-import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
-import type { IStorageNote, UnPrefixedLabel } from "../../NotesProvider/types/StorageNote";
+import {
+  type IDecoratedNote,
+  NoteSource,
+} from "../../NotesProvider/types/DecoratedNote";
+import type {
+  IStorageNote,
+  UnPrefixedLabel,
+} from "../../NotesProvider/types/StorageNote";
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 
@@ -20,7 +31,9 @@ type NoteProps = {
 
 export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [noteDirty, setNoteDirty] = useState<IStorageNote>({ ...note.original });
+  const [noteDirty, setNoteDirty] = useState<IStorageNote>({
+    ...note.original,
+  });
   const [noteContentError, setNoteContentError] = useState("");
 
   const isEditable = note.source !== NoteSource.Remote;
@@ -79,7 +92,9 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
             value={noteDirty.content}
             autoFocus
           />
-          {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+          {noteContentError ? (
+            <div className="validation-message">{noteContentError}</div>
+          ) : null}
         </>
       ) : (
         <blockquote>
@@ -87,12 +102,14 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
           <NoteContent content={note.original.content} />
         </blockquote>
       )}
-      {isEditing ? <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} /> : null}
+      {isEditing ? (
+        <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} />
+      ) : null}
       <div className="actions">
         {!isEditing ? <NoteLabels note={note} /> : null}
 
         {isEditing ? (
-          <button className="remove" onClick={handleDeleteClick}>
+          <button className="remove default-button" onClick={handleDeleteClick}>
             delete
           </button>
         ) : null}
@@ -100,7 +117,10 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         <div className="fill" />
 
         {isEditable ? (
-          <button className={isEditing ? "save" : "edit"} onClick={isEditing ? handleSaveClick : handleEditClick}>
+          <button
+            className={`default-button ${isEditing ? "save" : "edit"}`}
+            onClick={isEditing ? handleSaveClick : handleEditClick}
+          >
             {isEditing ? "save" : "✏️"}
           </button>
         ) : null}

@@ -21,10 +21,12 @@ export function ZoomControls() {
 
   return (
     <div className="zoom-controls">
-      <button className="in" onClick={handleZoomInClick}>
+      <button className="in default-button" onClick={handleZoomInClick}>
         +
       </button>
-      <button onClick={handleZoomOutClick}>−</button>
+      <button className="default-button" onClick={handleZoomOutClick}>
+        −
+      </button>
     </div>
   );
 }
