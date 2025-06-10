@@ -59,10 +59,7 @@ function shortenLink(link: string) {
   const restStr = rest.join("/");
   const SPLIT = 6;
   const start = restStr.substring(0, Math.min(SPLIT, restStr.length));
-  const end =
-    restStr.length > SPLIT
-      ? `...${restStr.substring(restStr.length - SPLIT)}`
-      : "";
+  const end = restStr.length > SPLIT ? `...${restStr.substring(restStr.length - SPLIT)}` : "";
   return `${domain}/${start}${end}`;
 }
 

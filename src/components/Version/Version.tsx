@@ -1,29 +1,15 @@
 import { Tooltip } from "react-tooltip";
 import "./Version.css";
 import { type ChangeEventHandler, useCallback, useContext } from "react";
-import {
-  CodeSyncContext,
-  type ICodeSyncContext,
-} from "../CodeSyncProvider/CodeSyncProvider";
-import {
-  type ILocationContext,
-  LocationContext,
-} from "../LocationProvider/LocationProvider";
-import {
-  type IMetadataContext,
-  type IVersionInfo,
-  MetadataContext,
-} from "../MetadataProvider/MetadataProvider";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
-  const { locationParams, setLocationParams } = useContext(
-    LocationContext,
-  ) as ILocationContext;
+  const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const versions = Object.values(metadata.versions).filter(
-    ({ legacy }) => !legacy,
-  );
+  const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
   const currentVersionHash = metadata.versions[locationParams.version].hash;
 
   const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
@@ -33,11 +19,7 @@ export function Version() {
       if (!selectionStart || !selectionEnd) {
         setLocationParams({ version: newVersion });
       } else {
-        migrateSelection(
-          { selectionStart, selectionEnd },
-          version,
-          newVersion,
-        ).then((newSelection) => {
+        migrateSelection({ selectionStart, selectionEnd }, version, newVersion).then((newSelection) => {
           setLocationParams({
             ...locationParams,
             selectionStart: newSelection?.selectionStart ?? selectionStart,
@@ -64,12 +46,7 @@ export function Version() {
       )}
       <select onChange={handleChange} value={locationParams.version}>
         {versions.map((v) => (
-          <Option
-            key={v.hash}
-            id={v.hash}
-            version={v}
-            latest={metadata.latest}
-          />
+          <Option key={v.hash} id={v.hash} version={v} latest={metadata.latest} />
         ))}
       </select>
       <a
@@ -99,8 +76,7 @@ function Option({ id, version, latest }: OptionProps) {
   }
   return (
     <option value={id}>
-      {version.hash === latest ? latestText : versionText}{" "}
-      {shortHash(version.hash)} ({date.toLocaleDateString()})
+      {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
     </option>
   );
 }

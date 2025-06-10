@@ -1,8 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import {
-  type ILocationContext,
-  LocationContext,
-} from "../LocationProvider/LocationProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
@@ -56,9 +53,7 @@ type SearchResultsProps = {
 };
 
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
-  const { eventBus, findController, viewer, linkService } = useContext(
-    PdfContext,
-  ) as IPdfContext;
+  const { eventBus, findController, viewer, linkService } = useContext(PdfContext) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
   const resetTimeout = useRef(0);
   const [matches, setMatches] = useState<Match>({
@@ -150,18 +145,10 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   return (
     <>
       <div className={`search-buttons ${isLoading ? "search-loading" : ""}`}>
-        <button
-          className="default-button"
-          disabled={!hasResults}
-          onClick={handlePrev}
-        >
+        <button className="default-button" disabled={!hasResults} onClick={handlePrev}>
           ⬅️
         </button>
-        <button
-          className="default-button"
-          disabled={!hasResults}
-          onClick={handleNext}
-        >
+        <button className="default-button" disabled={!hasResults} onClick={handleNext}>
           ➡️
         </button>
       </div>
@@ -170,11 +157,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
         <ul>
           {matches.pagesAndCount.map((res) => (
             <li key={res.pageIndex}>
-              <a
-                className="default-link"
-                style={{ cursor: "pointer" }}
-                onClick={() => jumpToPage(res)}
-              >
+              <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
                 Page {res.pageIndex + 1} ({res.count} matches)
               </a>
             </li>

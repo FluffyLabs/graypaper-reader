@@ -1,29 +1,11 @@
 import { isSameBlock } from "@fluffylabs/links-metadata";
-import {
-  type MouseEventHandler,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
-import {
-  CodeSyncContext,
-  type ICodeSyncContext,
-} from "../../CodeSyncProvider/CodeSyncProvider";
-import {
-  type ILocationContext,
-  LocationContext,
-} from "../../LocationProvider/LocationProvider";
+import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
-import {
-  type IDecoratedNote,
-  NoteSource,
-} from "../../NotesProvider/types/DecoratedNote";
-import {
-  type ISelectionContext,
-  SelectionContext,
-} from "../../SelectionProvider/SelectionProvider";
+import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
+import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
   note: IDecoratedNote;
@@ -36,11 +18,10 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
     subSection: "" as string | null,
   });
   const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
-  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } =
-    useContext(CodeSyncContext) as ICodeSyncContext;
-  const { setLocationParams, locationParams } = useContext(
-    LocationContext,
-  ) as ILocationContext;
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
+  const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
 
   const migrationFlag = !note.current.isUpToDate;
   const isEditable = note.source !== NoteSource.Remote;
@@ -58,11 +39,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         subSection: await subSection,
       });
     })();
-  }, [
-    selectionStart,
-    getSectionTitleAtSynctexBlock,
-    getSubsectionTitleAtSynctexBlock,
-  ]);
+  }, [selectionStart, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
 
   const handleNoteTitleClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -92,15 +69,12 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
     (e) => {
       e.preventDefault();
 
-      if (!locationParams.selectionStart || !locationParams.selectionEnd)
-        return;
+      if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
 
       if (
         (!isSameBlock(locationParams.selectionStart, selectionStart) ||
           !isSameBlock(locationParams.selectionEnd, selectionEnd)) &&
-        !confirm(
-          "The selection has been altered. Are you sure you want to update the note?",
-        )
+        !confirm("The selection has been altered. Are you sure you want to update the note?")
       ) {
         return;
       }

@@ -50,31 +50,13 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
   if (isEditing) {
     return (
       <div className="remote-source">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Source Name"
-        />
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Source Name" />
         <br />
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Source URL"
-        />
+        <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Source URL" />
         <br />
-        <Versions
-          isEditing={isEditing}
-          versions={versions}
-          onChange={setVersions}
-        />
+        <Versions isEditing={isEditing} versions={versions} onChange={setVersions} />
         <br />
-        <button
-          className="default-button"
-          disabled={!isFilled}
-          onClick={handleEdit}
-        >
+        <button className="default-button" disabled={!isFilled} onClick={handleEdit}>
           ok
         </button>
         {id > NEW_REMOTE_SOURCE_ID ? (

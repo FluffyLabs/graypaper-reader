@@ -34,8 +34,8 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
       )}
       <hr />
       <em>
-        Disclaimer: the only source of the truth is the Gray Paper. The notes
-        here are shared as-is and are not guaranteed to be correct.
+        Disclaimer: the only source of the truth is the Gray Paper. The notes here are shared as-is and are not
+        guaranteed to be correct.
       </em>
       <hr />
     </>

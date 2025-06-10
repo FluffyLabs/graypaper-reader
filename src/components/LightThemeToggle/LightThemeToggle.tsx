@@ -1,10 +1,6 @@
 import { useCallback, useContext } from "react";
 import { Tooltip } from "react-tooltip";
-import {
-  type IPdfContext,
-  PdfContext,
-  themesOrder,
-} from "../PdfProvider/PdfProvider";
+import { type IPdfContext, PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
 
 export function LightThemeToggle() {
   const { theme, setTheme } = useContext(PdfContext) as IPdfContext;

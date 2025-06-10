@@ -23,11 +23,7 @@ export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
   return (
     <div className="labels filter">
       {treeRoots.map((label) => (
-        <LabelsFilterNode
-          key={label.prefixedLabel}
-          label={label}
-          onToggleLabel={onToggleLabel}
-        />
+        <LabelsFilterNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
       ))}
     </div>
   );
@@ -48,11 +44,7 @@ function LabelsFilterNode({ label, onToggleLabel }: LabelNodeProps) {
       <br />
       <div className={`tree-children ${isFolded ? "hide" : "show"}`}>
         {label.children.map((label) => (
-          <LabelsFilterNode
-            key={label.prefixedLabel}
-            label={label}
-            onToggleLabel={onToggleLabel}
-          />
+          <LabelsFilterNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
         ))}
       </div>
     </>

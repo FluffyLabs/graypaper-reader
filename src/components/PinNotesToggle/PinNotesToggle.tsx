@@ -1,14 +1,9 @@
 import { useCallback, useContext } from "react";
 import { Tooltip } from "react-tooltip";
-import {
-  type INotesContext,
-  NotesContext,
-} from "../NotesProvider/NotesProvider";
+import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 
 export function PinNotesToggle() {
-  const { notesPinned, setNotesPinned } = useContext(
-    NotesContext,
-  ) as INotesContext;
+  const { notesPinned, setNotesPinned } = useContext(NotesContext) as INotesContext;
 
   const handleButtonClick = useCallback(() => {
     setNotesPinned(!notesPinned);

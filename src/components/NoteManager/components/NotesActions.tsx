@@ -1,17 +1,8 @@
 import "./NotesActions.css";
-import {
-  type ChangeEventHandler,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { type ChangeEventHandler, useCallback, useContext, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Tooltip } from "react-tooltip";
-import {
-  type INotesContext,
-  NotesContext,
-} from "../../NotesProvider/NotesProvider";
+import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { RemoteSources } from "../../RemoteSources/RemoteSources";
 
 const modalStyles = {
@@ -40,9 +31,7 @@ export function NotesActions() {
     handleSetRemoteSources,
   } = useContext(NotesContext) as INotesContext;
 
-  const [confirmButtonTimeoutId, setConfirmButtonTimeoutId] = useState<
-    number | null
-  >(null);
+  const [confirmButtonTimeoutId, setConfirmButtonTimeoutId] = useState<number | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(3);
   const [isModalOpen, setModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -118,29 +107,15 @@ export function NotesActions() {
     } else {
       initiateDeleteCountdown();
     }
-  }, [
-    confirmDelete,
-    confirmDeleteDisabled,
-    handleDeleteNotes,
-    resetDeleteState,
-    initiateDeleteCountdown,
-  ]);
+  }, [confirmDelete, confirmDeleteDisabled, handleDeleteNotes, resetDeleteState, initiateDeleteCountdown]);
 
   return (
     <>
       <div className="notes-actions">
-        <button
-          className="default-button"
-          onClick={handleUndo}
-          disabled={!canUndo}
-        >
+        <button className="default-button" onClick={handleUndo} disabled={!canUndo}>
           ↺ undo
         </button>
-        <button
-          className="default-button"
-          onClick={handleRedo}
-          disabled={!canRedo}
-        >
+        <button className="default-button" onClick={handleRedo} disabled={!canRedo}>
           ↻ redo
         </button>
         <button className="default-button" onClick={onImport}>
@@ -151,45 +126,26 @@ export function NotesActions() {
         </button>
         <button
           data-tooltip-id="delete-tooltip"
-          data-tooltip-content={
-            confirmDelete ? "Yes, delete" : "Delete all notes"
-          }
+          data-tooltip-content={confirmDelete ? "Yes, delete" : "Delete all notes"}
           data-tooltip-place="bottom"
           disabled={confirmDeleteDisabled}
           onClick={deleteNotes}
           className="default-button"
         >
-          {confirmDelete
-            ? secondsLeft > 0
-              ? `Wait (${secondsLeft})`
-              : "❌"
-            : "🗑️"}
+          {confirmDelete ? (secondsLeft > 0 ? `Wait (${secondsLeft})` : "❌") : "🗑️"}
         </button>
         <button className="default-button" onClick={toggleModal}>
           ⚙︎
         </button>
       </div>
       <Tooltip id="delete-tooltip" />
-      <input
-        ref={fileImport}
-        onChange={handleFileSelected}
-        type="file"
-        style={{ display: "none" }}
-      />
-      <Modal
-        style={modalStyles}
-        isOpen={isModalOpen}
-        onRequestClose={toggleModal}
-        contentLabel="Settings"
-      >
+      <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />
+      <Modal style={modalStyles} isOpen={isModalOpen} onRequestClose={toggleModal} contentLabel="Settings">
         <button className="default-button settings-close" onClick={toggleModal}>
           ✖︎
         </button>
         <div className="settings-title">Settings</div>
-        <RemoteSources
-          remoteSources={remoteSources}
-          onChange={handleSetRemoteSources}
-        />
+        <RemoteSources remoteSources={remoteSources} onChange={handleSetRemoteSources} />
 
         <br />
         <button className="default-button settings-close" onClick={toggleModal}>
