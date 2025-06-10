@@ -170,7 +170,11 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
         <ul>
           {matches.pagesAndCount.map((res) => (
             <li key={res.pageIndex}>
-              <a style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
+              <a
+                className="default-link"
+                style={{ cursor: "pointer" }}
+                onClick={() => jumpToPage(res)}
+              >
                 Page {res.pageIndex + 1} ({res.count} matches)
               </a>
             </li>

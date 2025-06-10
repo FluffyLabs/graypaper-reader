@@ -1,7 +1,16 @@
 import "./Outline.css";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import {
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "../LocationProvider/LocationProvider";
 import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
 
@@ -73,5 +82,9 @@ function Link({ dest, children }: ILinkProps) {
     linkService?.goToDestination(dest);
   }, [linkService, dest]);
 
-  return <a onClick={handleClick}>{children}</a>;
+  return (
+    <a onClick={handleClick} className="default-link">
+      {children}
+    </a>
+  );
 }

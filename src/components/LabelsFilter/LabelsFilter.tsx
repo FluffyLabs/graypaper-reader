@@ -23,7 +23,11 @@ export function LabelsFilter({ labels, onToggleLabel }: LabelsFilterProps) {
   return (
     <div className="labels filter">
       {treeRoots.map((label) => (
-        <LabelsFilterNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
+        <LabelsFilterNode
+          key={label.prefixedLabel}
+          label={label}
+          onToggleLabel={onToggleLabel}
+        />
       ))}
     </div>
   );
@@ -36,7 +40,7 @@ function LabelsFilterNode({ label, onToggleLabel }: LabelNodeProps) {
   return (
     <>
       {label.children.length > 0 ? (
-        <a className="tree-fold" onClick={toggle}>
+        <a className="tree-fold default-link" onClick={toggle}>
           {isFolded ? "▷" : "▽"}
         </a>
       ) : null}
@@ -44,7 +48,11 @@ function LabelsFilterNode({ label, onToggleLabel }: LabelNodeProps) {
       <br />
       <div className={`tree-children ${isFolded ? "hide" : "show"}`}>
         {label.children.map((label) => (
-          <LabelsFilterNode key={label.prefixedLabel} label={label} onToggleLabel={onToggleLabel} />
+          <LabelsFilterNode
+            key={label.prefixedLabel}
+            label={label}
+            onToggleLabel={onToggleLabel}
+          />
         ))}
       </div>
     </>
@@ -68,7 +76,7 @@ function LabelNode({ label, onToggleLabel }: LabelNodeProps) {
   const clazz = `label-link ${label.isActive ? "active" : ""}`;
   const icon = label.isActive ? "⊙" : "∅";
   return (
-    <a className={clazz} onClick={selectLabel}>
+    <a className={`${clazz} default-button`} onClick={selectLabel}>
       <Label label={label.prefixedLabel} icon={icon} />
     </a>
   );

@@ -7,10 +7,12 @@ import github from "./github-mark-white.png?prefetch";
 export function Banner() {
   return (
     <div className="banner">
-      <a href="https://fluffylabs.dev">
+      <a className="default-link" href="https://fluffylabs.dev">
         <img src={logo} width="144" height="64" alt="Fluffy Labs" />
       </a>
-      <a href="">Gray Paper Reader</a>
+      <a className="default-link" href="">
+        Gray Paper Reader
+      </a>
 
       <div style={{ flex: 1 }} />
       <a
@@ -20,6 +22,7 @@ export function Banner() {
         target="_blank"
         href="https://github.com/fluffylabs/graypaper-reader"
         rel="noreferrer"
+        className="default-link"
       >
         <img src={github} alt="Github logo" width="45" height="45" />
       </a>

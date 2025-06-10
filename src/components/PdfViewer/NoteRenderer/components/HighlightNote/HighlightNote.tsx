@@ -131,7 +131,7 @@ export function HighlightNote({
         onMouseEnter={handleNoteHoverOn}
         onMouseLeave={handleNoteHoverOff}
       >
-        <a className="close" onClick={handleNotePinnedToggle}>
+        <a className="close default-link" onClick={handleNotePinnedToggle}>
           {isDisplayed ? "📍" : "📌"}
         </a>
         {notes.map((note) => (

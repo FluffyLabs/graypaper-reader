@@ -92,12 +92,16 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <input type="checkbox" checked={isEnabled} onChange={toggleEnabled} />
         <strong>{name}</strong>
       </label>
-      {id > 0 ? <a onClick={() => setEditing(true)}>&nbsp;✏︎</a> : null}
+      {id > 0 ? (
+        <a className="default-link" onClick={() => setEditing(true)}>
+          &nbsp;✏︎
+        </a>
+      ) : null}
       <br />
       URL:{" "}
       <em>
         {url}{" "}
-        <a href={url} target="_blank" rel="noreferrer">
+        <a className="default-link" href={url} target="_blank" rel="noreferrer">
           &nbsp;🔗
         </a>
       </em>

@@ -1,11 +1,29 @@
 import { isSameBlock } from "@fluffylabs/links-metadata";
-import { type MouseEventHandler, useCallback, useContext, useEffect, useState } from "react";
+import {
+  type MouseEventHandler,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Tooltip } from "react-tooltip";
-import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
-import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
+import {
+  CodeSyncContext,
+  type ICodeSyncContext,
+} from "../../CodeSyncProvider/CodeSyncProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
-import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
-import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
+import {
+  type IDecoratedNote,
+  NoteSource,
+} from "../../NotesProvider/types/DecoratedNote";
+import {
+  type ISelectionContext,
+  SelectionContext,
+} from "../../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
   note: IDecoratedNote;
@@ -13,12 +31,16 @@ type NoteLinkProps = {
 };
 
 export function NoteLink({ note, onEditNote }: NoteLinkProps) {
-  const [sectionTitle, setTitle] = useState({ section: "", subSection: "" as string | null });
+  const [sectionTitle, setTitle] = useState({
+    section: "",
+    subSection: "" as string | null,
+  });
   const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
-  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
-    CodeSyncContext,
-  ) as ICodeSyncContext;
-  const { setLocationParams, locationParams } = useContext(LocationContext) as ILocationContext;
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } =
+    useContext(CodeSyncContext) as ICodeSyncContext;
+  const { setLocationParams, locationParams } = useContext(
+    LocationContext,
+  ) as ILocationContext;
 
   const migrationFlag = !note.current.isUpToDate;
   const isEditable = note.source !== NoteSource.Remote;
@@ -36,7 +58,11 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         subSection: await subSection,
       });
     })();
-  }, [selectionStart, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+  }, [
+    selectionStart,
+    getSectionTitleAtSynctexBlock,
+    getSubsectionTitleAtSynctexBlock,
+  ]);
 
   const handleNoteTitleClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -66,12 +92,15 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
     (e) => {
       e.preventDefault();
 
-      if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
+      if (!locationParams.selectionStart || !locationParams.selectionEnd)
+        return;
 
       if (
         (!isSameBlock(locationParams.selectionStart, selectionStart) ||
           !isSameBlock(locationParams.selectionEnd, selectionEnd)) &&
-        !confirm("The selection has been altered. Are you sure you want to update the note?")
+        !confirm(
+          "The selection has been altered. Are you sure you want to update the note?",
+        )
       ) {
         return;
       }
@@ -95,14 +124,14 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
           data-tooltip-id="note-link"
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
-          className="icon"
+          className="icon default-link"
           onClick={handleOriginalClick}
         >
           ⚠
         </a>
       )}
 
-      <a href="#" onClick={handleNoteTitleClick}>
+      <a href="#" onClick={handleNoteTitleClick} className="default-link">
         p. {pageNumber} &gt; {section} {subSection ? `> ${subSection}` : null}
       </a>
 
@@ -112,7 +141,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
           data-tooltip-id="note-link"
           data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
           data-tooltip-place="top"
-          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
+          className={`default-link ${selectedBlocks.length === 0 ? "disabled update" : "update"}`}
         >
           (update version)
         </a>

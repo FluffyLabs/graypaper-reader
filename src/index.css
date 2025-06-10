@@ -17,12 +17,12 @@
   height: 100%;
 }
 
-a {
+.default-linkj {
   font-weight: 500;
   color: light-dark(#59b7fe, #7eb6e0);
   text-decoration: inherit;
 }
-a:hover {
+.default-link:hover {
   color: light-dark(#81c5f9, #3875a3);
 }
 

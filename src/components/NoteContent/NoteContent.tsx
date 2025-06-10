@@ -38,7 +38,7 @@ function renderLinks(content: string): string {
     const indexOf = haystack.indexOf(link);
     // convert reader links to local links
     const localLink = link.replace("https://graypaper.fluffylabs.dev", "");
-    const linkData = `<a target="_blank" href="${localLink}">${shortenLink(localLink)}</a>`;
+    const linkData = `<a className="default-link" target="_blank" href="${localLink}">${shortenLink(localLink)}</a>`;
     haystack = haystack.replace(link, linkData);
     // add that stuff already to the newcontent
     newContent += haystack.substring(0, indexOf + linkData.length);
@@ -59,7 +59,10 @@ function shortenLink(link: string) {
   const restStr = rest.join("/");
   const SPLIT = 6;
   const start = restStr.substring(0, Math.min(SPLIT, restStr.length));
-  const end = restStr.length > SPLIT ? `...${restStr.substring(restStr.length - SPLIT)}` : "";
+  const end =
+    restStr.length > SPLIT
+      ? `...${restStr.substring(restStr.length - SPLIT)}`
+      : "";
   return `${domain}/${start}${end}`;
 }
 
