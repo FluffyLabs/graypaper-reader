@@ -22,41 +22,49 @@ import { SelectionProvider } from "./components/SelectionProvider/SelectionProvi
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ZoomControls } from "./components/ZoomControls/ZoomControls";
 import toolLogoUrl from "./assets/tool-logo.svg";
+import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 
 export function App() {
   const {
     locationParams: { version },
   } = useContext(LocationContext) as ILocationContext;
+
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
   return (
-    <CodeSyncProvider>
-      <NotesProvider>
-        <PdfProvider pdfUrl={urlGetters.pdf(version)}>
-          <SelectionProvider>
-            <div>
-              <Header toolNameSrc={toolLogoUrl} />
-              <Resizable
-                left={
-                  <div className="left-side-container">
-                    <AppsSidebar activeLink="reader" />
-                    <div className="pdf-viewer-container">
-                      <PdfViewer />
+    <>
+      <LightDarkThemeSyncer />
+      <CodeSyncProvider>
+        <NotesProvider>
+          <PdfProvider pdfUrl={urlGetters.pdf(version)}>
+            <SelectionProvider>
+              <div>
+                <Header toolNameSrc={toolLogoUrl} />
+                <Resizable
+                  left={
+                    <div className="left-side-container">
+                      <AppsSidebar
+                        activeLink="reader"
+                        enableDarkModeToggle={true}
+                      />
+                      <div className="pdf-viewer-container">
+                        <PdfViewer />
+                      </div>
+                      <div className="controls">
+                        <PinNotesToggle />
+                        <LightThemeToggle />
+                        <DownloadPdfWithTheme />
+                        <ZoomControls />
+                      </div>
                     </div>
-                    <div className="controls">
-                      <PinNotesToggle />
-                      <LightThemeToggle />
-                      <DownloadPdfWithTheme />
-                      <ZoomControls />
-                    </div>
-                  </div>
-                }
-                right={<Sidebar />}
-              />
-            </div>
-          </SelectionProvider>
-        </PdfProvider>
-      </NotesProvider>
-    </CodeSyncProvider>
+                  }
+                  right={<Sidebar />}
+                />
+              </div>
+            </SelectionProvider>
+          </PdfProvider>
+        </NotesProvider>
+      </CodeSyncProvider>
+    </>
   );
 }

@@ -10,6 +10,7 @@
 .selection small {
   text-align: center;
   display: block;
+  background-color: light-dark(#eee, #111);
 }
 
 .selection blockquote {
@@ -22,11 +23,10 @@
   padding-bottom: 2rem;
   padding: 1rem;
   text-align: center;
-  background: #111;
+  background-color: light-dark(#eee, #111);
 }
 
 .selection small {
-  background: #111;
   box-sizing: border-box;
   display: block;
   font-family: monospace;
@@ -37,13 +37,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
-}
-
-@media (prefers-color-scheme: light) {
-  .selection blockquote,
-  .selection small {
-    background: #eee;
-  }
 }
 
 .selection .actions {
@@ -60,6 +53,10 @@
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

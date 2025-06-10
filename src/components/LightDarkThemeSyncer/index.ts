@@ -1,0 +1,1 @@
+export { LightDarkThemeSyncer } from "./LightDarkThemeSyncer";

@@ -62,9 +62,3 @@
   align-items: stretch;
   justify-content: center;
 }
-
-@media (prefers-color-scheme: light) {
-  .controls button {
-    background: #ccc;
-  }
-}
