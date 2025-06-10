@@ -1,3 +1,4 @@
+import { useStateSyncedWithLocalStorage } from "../../hooks/useStateSyncecWthLocalStorage";
 import "./Resizable.css";
 import { type ReactNode, useCallback, useState } from "react";
 
@@ -12,8 +13,13 @@ const INITIAL_SPLIT = window.innerWidth <= 768 ? SPLIT_THRESHOLD : 70.0;
 export function Resizable({ left, right }: ResizableProps) {
   const [isDragging, setDragging] = useState(false);
   const [wasDragged, setWasDragged] = useState(false);
-  const [split, setSplit] = useState(INITIAL_SPLIT);
-  const [lastSplit, setLastSplit] = useState(split === SPLIT_THRESHOLD ? 15.0 : split);
+  const [split, setSplit] = useStateSyncedWithLocalStorage(
+    "resizable-split",
+    INITIAL_SPLIT,
+  );
+  const [lastSplit, setLastSplit] = useState(
+    split === SPLIT_THRESHOLD ? 15.0 : split,
+  );
 
   const onStartDrag = useCallback(() => {
     const onDrag = (ev: MouseEvent) => {
@@ -56,7 +62,10 @@ export function Resizable({ left, right }: ResizableProps) {
 
   return (
     <div className={`resizable${isDragging ? " dragging" : ""}`}>
-      <div className={`overlay${isDragging ? " active" : ""}`} onMouseUp={toggleRight} />
+      <div
+        className={`overlay${isDragging ? " active" : ""}`}
+        onMouseUp={toggleRight}
+      />
       <div className="left" style={{ width: `calc(${split}% - 6px)` }}>
         {left}
       </div>

@@ -29,7 +29,7 @@
   width: 6px;
   cursor: col-resize;
   height: 100%;
-  background-color: #ddd;
+  background-color: light-dark(#ddd, #555);
 }
 @media (max-width: 768px) {
   .resizable .handle {
@@ -37,7 +37,7 @@
   }
 }
 .resizable .handle:hover {
-  background-color: #ccc;
+  background-color: light-dark(#bbb, #777);
 }
 
 .resizable .overlay {
