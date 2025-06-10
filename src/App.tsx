@@ -39,7 +39,10 @@ export function App() {
           <PdfProvider pdfUrl={urlGetters.pdf(version)}>
             <SelectionProvider>
               <div>
-                <Header toolNameSrc={toolLogoUrl} />
+                <Header
+                  toolNameSrc={toolLogoUrl}
+                  endSlot={<TakeAllPossibleSpace />}
+                />
                 <Resizable
                   left={
                     <div className="left-side-container">
@@ -68,3 +71,5 @@ export function App() {
     </>
   );
 }
+
+const TakeAllPossibleSpace = () => <div style={{ flexGrow: 1 }}></div>;
