@@ -11,10 +11,3 @@
   flex-direction: column;
   justify-content: start;
 }
-
-@media (max-width: 768px) {
-  .sidebar {
-    box-sizing: border-box;
-    padding-bottom: 60px;
-  }
-}

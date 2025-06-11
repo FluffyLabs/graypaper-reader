@@ -31,7 +31,7 @@
   height: 100%;
   background-color: light-dark(#ddd, #555);
 }
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .resizable .handle {
     width: 15px;
   }

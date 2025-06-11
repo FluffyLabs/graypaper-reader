@@ -1,12 +1,12 @@
 import { useIsDarkMode } from "@krystian5011/shared-ui";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export const LightDarkThemeSyncer = () => {
   const isDarkMode = useIsDarkMode();
 
-  const htmlRef = useRef(() => document.querySelector("html"));
   useEffect(() => {
-    const htmlElement = htmlRef.current();
+    const htmlElement = document.querySelector("html");
+
     if (htmlElement) {
       htmlElement.classList.toggle("dark", isDarkMode);
       htmlElement.classList.toggle("light", !isDarkMode);

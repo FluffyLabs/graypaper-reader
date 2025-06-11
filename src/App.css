@@ -35,11 +35,9 @@
   transition: opacity ease-in 250ms;
   z-index: 10;
 }
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .controls {
-    bottom: auto;
-    top: 60px;
-    flex-direction: column;
+    left: 14px;
   }
 }
 
