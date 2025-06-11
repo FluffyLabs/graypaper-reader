@@ -83,7 +83,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
       URL:{" "}
       <em>
         {url}{" "}
-        <a className="default-link" href={url} target="_blank" rel="noreferrer">
+        <a className="default-link" href={url} target="_blank" rel="noreferrer noopener">
           &nbsp;🔗
         </a>
       </em>
