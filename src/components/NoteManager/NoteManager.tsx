@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
 import { validateMath } from "../../utils/validateMath";
 import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
@@ -7,8 +7,8 @@ import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import { Note } from "./components/Note";
 import { NotesActions } from "./components/NotesActions";
+import { NotesList } from "./components/NotesList";
 
 const DEFAULT_AUTHOR = "";
 
@@ -20,6 +20,8 @@ export function NoteManager() {
     </div>
   );
 }
+
+const MemoizedNotesList = memo(NotesList);
 
 function Notes() {
   const [noteContent, setNoteContent] = useState("");
@@ -89,9 +91,7 @@ function Notes() {
       </div>
 
       <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
-      {notes.map((note) => (
-        <Note key={note.key} note={note} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
-      ))}
+      <MemoizedNotesList notes={notes} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
     </div>
   );
 }
