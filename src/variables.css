@@ -1,5 +1,6 @@
 :root {
   --header-height: 87px;
+  --smaller-font-size: 12px;
 }
 
 @media (max-width: 640px) {

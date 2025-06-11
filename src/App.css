@@ -60,3 +60,7 @@
   align-items: stretch;
   justify-content: center;
 }
+
+.ReactModalPortal {
+  font-size: var(--smaller-font-size);
+}

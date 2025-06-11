@@ -32,6 +32,8 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
           ➕ new source
         </button>
       )}
+      <br />
+      <br />
       <hr />
       <em>
         Disclaimer: the only source of the truth is the Gray Paper. The notes here are shared as-is and are not

@@ -70,7 +70,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
 
   return (
     <div className="remote-source">
-      <label>
+      <label style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
         <input type="checkbox" checked={isEnabled} onChange={toggleEnabled} />
         <strong>{name}</strong>
       </label>
