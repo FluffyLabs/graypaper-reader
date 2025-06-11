@@ -83,7 +83,7 @@ function Notes() {
         />
 
         {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-        <button disabled={noteContent.length < 1} onClick={handleAddNoteClick}>
+        <button disabled={noteContent.length < 1} onClick={handleAddNoteClick} className="default-button">
           Add
         </button>
       </div>

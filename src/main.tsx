@@ -2,10 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Modal from "react-modal";
 import { App } from "./App.tsx";
-import "./index.css";
-import "./font.css";
 import { LocationProvider } from "./components/LocationProvider/LocationProvider.tsx";
 import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider.tsx";
+
+import "@krystian5011/shared-ui/style.css";
+import "./variables.css";
+import "./index.css";
+import "./font.css";
 
 Modal.setAppElement("#root");
 

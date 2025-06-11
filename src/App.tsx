@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { Banner } from "./components/Banner/Banner";
+import { AppsSidebar, Header } from "@krystian5011/shared-ui";
+import toolLogoUrl from "./assets/tool-logo.svg";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
+import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
@@ -20,33 +22,42 @@ export function App() {
   const {
     locationParams: { version },
   } = useContext(LocationContext) as ILocationContext;
+
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
   return (
-    <CodeSyncProvider>
-      <NotesProvider>
-        <PdfProvider pdfUrl={urlGetters.pdf(version)}>
-          <SelectionProvider>
-            <Resizable
-              left={
-                <>
-                  <Banner />
-                  <div className="pdf-viewer-container">
-                    <PdfViewer />
-                  </div>
-                  <div className="controls">
-                    <PinNotesToggle />
-                    <LightThemeToggle />
-                    <DownloadPdfWithTheme />
-                    <ZoomControls />
-                  </div>
-                </>
-              }
-              right={<Sidebar />}
-            />
-          </SelectionProvider>
-        </PdfProvider>
-      </NotesProvider>
-    </CodeSyncProvider>
+    <>
+      <LightDarkThemeSyncer />
+      <CodeSyncProvider>
+        <NotesProvider>
+          <PdfProvider pdfUrl={urlGetters.pdf(version)}>
+            <SelectionProvider>
+              <div>
+                <Header toolNameSrc={toolLogoUrl} endSlot={<TakeAllPossibleSpace />} />
+                <Resizable
+                  left={
+                    <div className="left-side-container">
+                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
+                      <div className="pdf-viewer-container">
+                        <PdfViewer />
+                      </div>
+                      <div className="controls">
+                        <PinNotesToggle />
+                        <LightThemeToggle />
+                        <DownloadPdfWithTheme />
+                        <ZoomControls />
+                      </div>
+                    </div>
+                  }
+                  right={<Sidebar />}
+                />
+              </div>
+            </SelectionProvider>
+          </PdfProvider>
+        </NotesProvider>
+      </CodeSyncProvider>
+    </>
   );
 }
+
+const TakeAllPossibleSpace = () => <div style={{ flexGrow: 1 }} />;

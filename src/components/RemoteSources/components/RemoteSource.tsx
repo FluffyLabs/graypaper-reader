@@ -56,26 +56,34 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <br />
         <Versions isEditing={isEditing} versions={versions} onChange={setVersions} />
         <br />
-        <button disabled={!isFilled} onClick={handleEdit}>
+        <button className="default-button" disabled={!isFilled} onClick={handleEdit}>
           ok
         </button>
-        {id > NEW_REMOTE_SOURCE_ID ? <button onClick={handleRemove}>remove</button> : null}
+        {id > NEW_REMOTE_SOURCE_ID ? (
+          <button className="default-button" onClick={handleRemove}>
+            remove
+          </button>
+        ) : null}
       </div>
     );
   }
 
   return (
     <div className="remote-source">
-      <label>
+      <label style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
         <input type="checkbox" checked={isEnabled} onChange={toggleEnabled} />
         <strong>{name}</strong>
       </label>
-      {id > 0 ? <a onClick={() => setEditing(true)}>&nbsp;✏︎</a> : null}
+      {id > 0 ? (
+        <a className="default-link" onClick={() => setEditing(true)}>
+          &nbsp;✏︎
+        </a>
+      ) : null}
       <br />
       URL:{" "}
       <em>
         {url}{" "}
-        <a href={url} target="_blank" rel="noreferrer">
+        <a className="default-link" href={url} target="_blank" rel="noreferrer noopener">
           &nbsp;🔗
         </a>
       </em>

@@ -20,7 +20,9 @@ type NoteProps = {
 
 export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [noteDirty, setNoteDirty] = useState<IStorageNote>({ ...note.original });
+  const [noteDirty, setNoteDirty] = useState<IStorageNote>({
+    ...note.original,
+  });
   const [noteContentError, setNoteContentError] = useState("");
 
   const isEditable = note.source !== NoteSource.Remote;
@@ -92,7 +94,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         {!isEditing ? <NoteLabels note={note} /> : null}
 
         {isEditing ? (
-          <button className="remove" onClick={handleDeleteClick}>
+          <button className="remove default-button" onClick={handleDeleteClick}>
             delete
           </button>
         ) : null}
@@ -100,7 +102,10 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         <div className="fill" />
 
         {isEditable ? (
-          <button className={isEditing ? "save" : "edit"} onClick={isEditing ? handleSaveClick : handleEditClick}>
+          <button
+            className={`default-button ${isEditing ? "save" : "edit"}`}
+            onClick={isEditing ? handleSaveClick : handleEditClick}
+          >
             {isEditing ? "save" : "✏️"}
           </button>
         ) : null}

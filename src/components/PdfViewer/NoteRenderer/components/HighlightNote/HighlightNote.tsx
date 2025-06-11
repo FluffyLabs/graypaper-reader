@@ -35,7 +35,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
   );
 
   // delay hovering a bit
-  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const setHoveredTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setHoveredLater = useCallback((val: boolean) => {
     clearTimeout(setHoveredTimeout.current);
     if (val) {
@@ -104,7 +104,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         onMouseEnter={handleNoteHoverOn}
         onMouseLeave={handleNoteHoverOff}
       >
-        <a className="close" onClick={handleNotePinnedToggle}>
+        <a className="close default-link" onClick={handleNotePinnedToggle}>
           {isDisplayed ? "📍" : "📌"}
         </a>
         {notes.map((note) => (

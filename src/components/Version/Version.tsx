@@ -56,6 +56,7 @@ export function Version() {
         target="_blank"
         href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}
         rel="noreferrer"
+        className="default-link"
       >
         Github
       </a>

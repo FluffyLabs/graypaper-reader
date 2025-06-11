@@ -28,8 +28,12 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
       {isAddingNew ? (
         <RemoteSource onChange={handleOnChange} />
       ) : (
-        <button onClick={() => setAddingNew(true)}>➕ new source</button>
+        <button className="default-button" onClick={() => setAddingNew(true)}>
+          ➕ new source
+        </button>
       )}
+      <br />
+      <br />
       <hr />
       <em>
         Disclaimer: the only source of the truth is the Gray Paper. The notes here are shared as-is and are not

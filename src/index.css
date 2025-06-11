@@ -2,7 +2,7 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
 
   color-scheme: light dark;
   color: light-dark(#213547, rgba(200, 200, 200, 0.87));
@@ -17,12 +17,12 @@
   height: 100%;
 }
 
-a {
+.default-link {
   font-weight: 500;
   color: light-dark(#59b7fe, #7eb6e0);
   text-decoration: inherit;
 }
-a:hover {
+.default-link:hover {
   color: light-dark(#81c5f9, #3875a3);
 }
 
@@ -33,12 +33,20 @@ body {
   overflow: hidden;
 }
 
+html.light {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 
-button {
+.default-button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -49,14 +57,30 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+.default-button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+.default-button:focus,
+.default-button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-button.toggled {
+.default-button.toggled {
   border-color: #fff874;
+}
+
+textarea {
+  border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  border-width: 1px;
+  background-color: field;
+}
+
+input {
+  border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  border-width: 1px;
+  background-color: field;
+  padding: 1px 0px;
+  padding-block: 1px;
+  padding-inline: 2px;
+  border-radius: 4px;
 }

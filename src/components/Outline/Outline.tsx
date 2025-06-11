@@ -73,5 +73,9 @@ function Link({ dest, children }: ILinkProps) {
     linkService?.goToDestination(dest);
   }, [linkService, dest]);
 
-  return <a onClick={handleClick}>{children}</a>;
+  return (
+    <a onClick={handleClick} className="default-link">
+      {children}
+    </a>
+  );
 }

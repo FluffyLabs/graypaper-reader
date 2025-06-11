@@ -21,7 +21,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
   }
 
   const actions = tabs.map((t) => (
-    <button key={t.name} disabled={t.name === activeTab} onClick={() => switchTab(t.name)}>
+    <button className="default-button" key={t.name} disabled={t.name === activeTab} onClick={() => switchTab(t.name)}>
       {t.name}
     </button>
   ));

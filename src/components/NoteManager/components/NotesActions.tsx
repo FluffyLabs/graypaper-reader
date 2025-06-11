@@ -112,36 +112,43 @@ export function NotesActions() {
   return (
     <>
       <div className="notes-actions">
-        <button onClick={handleUndo} disabled={!canUndo}>
+        <button className="default-button" onClick={handleUndo} disabled={!canUndo}>
           ↺ undo
         </button>
-        <button onClick={handleRedo} disabled={!canRedo}>
+        <button className="default-button" onClick={handleRedo} disabled={!canRedo}>
           ↻ redo
         </button>
-        <button onClick={onImport}>📂 import</button>
-        <button onClick={handleExport}>💾 export</button>
+        <button className="default-button" onClick={onImport}>
+          📂 import
+        </button>
+        <button className="default-button" onClick={handleExport}>
+          💾 export
+        </button>
         <button
           data-tooltip-id="delete-tooltip"
           data-tooltip-content={confirmDelete ? "Yes, delete" : "Delete all notes"}
           data-tooltip-place="bottom"
           disabled={confirmDeleteDisabled}
           onClick={deleteNotes}
+          className="default-button"
         >
           {confirmDelete ? (secondsLeft > 0 ? `Wait (${secondsLeft})` : "❌") : "🗑️"}
         </button>
-        <button onClick={toggleModal}>⚙︎</button>
+        <button className="default-button" onClick={toggleModal}>
+          ⚙︎
+        </button>
       </div>
       <Tooltip id="delete-tooltip" />
       <input ref={fileImport} onChange={handleFileSelected} type="file" style={{ display: "none" }} />
       <Modal style={modalStyles} isOpen={isModalOpen} onRequestClose={toggleModal} contentLabel="Settings">
-        <button className="settings-close" onClick={toggleModal}>
+        <button className="default-button settings-close" onClick={toggleModal}>
           ✖︎
         </button>
         <div className="settings-title">Settings</div>
         <RemoteSources remoteSources={remoteSources} onChange={handleSetRemoteSources} />
 
         <br />
-        <button className="settings-close" onClick={toggleModal}>
+        <button className="default-button settings-close" onClick={toggleModal}>
           close
         </button>
       </Modal>

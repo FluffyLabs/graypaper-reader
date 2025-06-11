@@ -4,7 +4,11 @@ import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
 
-export function Search({ onSearchFinished }: { onSearchFinished: (hasQuery: boolean) => void }) {
+export function Search({
+  onSearchFinished,
+}: {
+  onSearchFinished: (hasQuery: boolean) => void;
+}) {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const [query, setQuery] = useState("");
   // search query is persistent between tab switches
@@ -141,10 +145,10 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   return (
     <>
       <div className={`search-buttons ${isLoading ? "search-loading" : ""}`}>
-        <button disabled={!hasResults} onClick={handlePrev}>
+        <button className="default-button" disabled={!hasResults} onClick={handlePrev}>
           ⬅️
         </button>
-        <button disabled={!hasResults} onClick={handleNext}>
+        <button className="default-button" disabled={!hasResults} onClick={handleNext}>
           ➡️
         </button>
       </div>
@@ -153,7 +157,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
         <ul>
           {matches.pagesAndCount.map((res) => (
             <li key={res.pageIndex}>
-              <a style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
+              <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
                 Page {res.pageIndex + 1} ({res.count} matches)
               </a>
             </li>

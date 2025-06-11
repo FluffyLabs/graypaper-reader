@@ -16,7 +16,7 @@ export function PinNotesToggle() {
         data-tooltip-content="Pin or unpin all notes"
         data-tooltip-place="right"
         onClick={handleButtonClick}
-        className="pin-notes-toggle"
+        className="default-button pin-notes-toggle"
       >
         {notesPinned ? "📍" : "📌"}
       </button>

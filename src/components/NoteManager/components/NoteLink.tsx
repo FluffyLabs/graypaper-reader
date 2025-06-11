@@ -13,7 +13,10 @@ type NoteLinkProps = {
 };
 
 export function NoteLink({ note, onEditNote }: NoteLinkProps) {
-  const [sectionTitle, setTitle] = useState({ section: "", subSection: "" as string | null });
+  const [sectionTitle, setTitle] = useState({
+    section: "",
+    subSection: "" as string | null,
+  });
   const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
@@ -95,14 +98,14 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
           data-tooltip-id="note-link"
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
-          className="icon"
+          className="icon default-link"
           onClick={handleOriginalClick}
         >
           ⚠
         </a>
       )}
 
-      <a href="#" onClick={handleNoteTitleClick}>
+      <a href="#" onClick={handleNoteTitleClick} className="default-link">
         p. {pageNumber} &gt; {section} {subSection ? `> ${subSection}` : null}
       </a>
 
@@ -112,7 +115,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
           data-tooltip-id="note-link"
           data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
           data-tooltip-place="top"
-          className={selectedBlocks.length === 0 ? "disabled update" : "update"}
+          className={`default-link ${selectedBlocks.length === 0 ? "disabled update" : "update"}`}
         >
           (update version)
         </a>

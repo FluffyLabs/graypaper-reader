@@ -36,7 +36,7 @@ function LabelsFilterNode({ label, onToggleLabel }: LabelNodeProps) {
   return (
     <>
       {label.children.length > 0 ? (
-        <a className="tree-fold" onClick={toggle}>
+        <a className="tree-fold default-link" onClick={toggle}>
           {isFolded ? "▷" : "▽"}
         </a>
       ) : null}
@@ -68,7 +68,7 @@ function LabelNode({ label, onToggleLabel }: LabelNodeProps) {
   const clazz = `label-link ${label.isActive ? "active" : ""}`;
   const icon = label.isActive ? "⊙" : "∅";
   return (
-    <a className={clazz} onClick={selectLabel}>
+    <a className={`${clazz} default-button`} onClick={selectLabel}>
       <Label label={label.prefixedLabel} icon={icon} />
     </a>
   );

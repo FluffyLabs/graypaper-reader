@@ -43,7 +43,15 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
     switchTab("notes");
   }, [switchTab]);
 
-  const Button = ({ onClick, tooltip, children }: { onClick: () => void; tooltip: string; children: ReactNode }) => {
+  const Button = ({
+    onClick,
+    tooltip,
+    children,
+  }: {
+    onClick: () => void;
+    tooltip: string;
+    children: ReactNode;
+  }) => {
     return (
       <button
         data-tooltip-id="selection-tooltip"
@@ -51,6 +59,7 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
         data-tooltip-place="bottom"
         disabled={!selectedBlocks.length}
         onClick={onClick}
+        className="default-button"
       >
         {children}
       </button>
