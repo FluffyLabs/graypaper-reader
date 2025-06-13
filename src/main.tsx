@@ -6,6 +6,7 @@ import { LocationProvider } from "./components/LocationProvider/LocationProvider
 import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider.tsx";
 
 import "@krystian5011/shared-ui/style.css";
+import "./tailwind.css";
 import "./variables.css";
 import "./index.css";
 import "./font.css";
