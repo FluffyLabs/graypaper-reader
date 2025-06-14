@@ -7,8 +7,14 @@ import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
 import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
-import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
-import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "./components/LocationProvider/LocationProvider";
+import {
+  type IMetadataContext,
+  MetadataContext,
+} from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
@@ -33,12 +39,18 @@ export function App() {
           <PdfProvider pdfUrl={urlGetters.pdf(version)}>
             <SelectionProvider>
               <div>
-                <Header toolNameSrc={toolLogoUrl} endSlot={<TakeAllPossibleSpace />} />
+                <Header
+                  toolNameSrc={toolLogoUrl}
+                  endSlot={<TakeAllPossibleSpace />}
+                />
                 <Resizable
                   left={
-                    <div className="left-side-container">
-                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
-                      <div className="pdf-viewer-container">
+                    <div className="h-full w-full flex flex-row items-stretch justify-center">
+                      <AppsSidebar
+                        activeLink="reader"
+                        enableDarkModeToggle={true}
+                      />
+                      <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
                         <PdfViewer />
                       </div>
                       <div className="controls">
