@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+.text-brand-dark {
+  color: var(--color-brand-dark);
+}

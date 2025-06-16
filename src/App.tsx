@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { AppsSidebar, Header } from "@krystian5011/shared-ui";
+import { AppsSidebar } from "@krystian5011/shared-ui";
 import toolLogoUrl from "./assets/tool-logo.svg";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
+import { Header } from "./components/Header/Header";
 import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import {
@@ -41,7 +42,7 @@ export function App() {
               <div>
                 <Header
                   toolNameSrc={toolLogoUrl}
-                  endSlot={<TakeAllPossibleSpace />}
+                  fluffyRepoName="graypaper-reader"
                 />
                 <Resizable
                   left={
@@ -71,5 +72,3 @@ export function App() {
     </>
   );
 }
-
-const TakeAllPossibleSpace = () => <div style={{ flexGrow: 1 }} />;
