@@ -36,9 +36,9 @@ export function App() {
                 <Header toolNameSrc={toolLogoUrl} endSlot={<TakeAllPossibleSpace />} />
                 <Resizable
                   left={
-                    <div className="left-side-container">
+                    <div className="h-full w-full flex flex-row items-stretch justify-center">
                       <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
-                      <div className="pdf-viewer-container">
+                      <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
                         <PdfViewer />
                       </div>
                       <div className="controls">
