@@ -38,7 +38,7 @@ export function App() {
                 <Resizable
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
-                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
+                      <AppsSidebar activeLink="reader" enableDarkModeToggle={false} />
                       <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
                         <PdfViewer />
                       </div>
