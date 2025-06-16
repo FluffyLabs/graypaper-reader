@@ -8,14 +8,8 @@ import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThe
 import { Header } from "./components/Header/Header";
 import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
-import {
-  type ILocationContext,
-  LocationContext,
-} from "./components/LocationProvider/LocationProvider";
-import {
-  type IMetadataContext,
-  MetadataContext,
-} from "./components/MetadataProvider/MetadataProvider";
+import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
+import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
 import { PdfViewer } from "./components/PdfViewer/PdfViewer";
@@ -40,17 +34,11 @@ export function App() {
           <PdfProvider pdfUrl={urlGetters.pdf(version)}>
             <SelectionProvider>
               <div>
-                <Header
-                  toolNameSrc={toolLogoUrl}
-                  fluffyRepoName="graypaper-reader"
-                />
+                <Header toolNameSrc={toolLogoUrl} fluffyRepoName="graypaper-reader" />
                 <Resizable
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
-                      <AppsSidebar
-                        activeLink="reader"
-                        enableDarkModeToggle={true}
-                      />
+                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
                       <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
                         <PdfViewer />
                       </div>
