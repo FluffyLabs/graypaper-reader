@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { AppsSidebar, Header } from "@krystian5011/shared-ui";
+import { AppsSidebar } from "@krystian5011/shared-ui";
 import toolLogoUrl from "./assets/tool-logo.svg";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
+import { Header } from "./components/Header/Header";
 import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
@@ -33,7 +34,7 @@ export function App() {
           <PdfProvider pdfUrl={urlGetters.pdf(version)}>
             <SelectionProvider>
               <div>
-                <Header toolNameSrc={toolLogoUrl} endSlot={<TakeAllPossibleSpace />} />
+                <Header toolNameSrc={toolLogoUrl} fluffyRepoName="graypaper-reader" />
                 <Resizable
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
@@ -59,5 +60,3 @@ export function App() {
     </>
   );
 }
-
-const TakeAllPossibleSpace = () => <div style={{ flexGrow: 1 }} />;
