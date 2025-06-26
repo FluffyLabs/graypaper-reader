@@ -1,5 +1,6 @@
 .outline {
   overflow-y: auto;
+  outline-color: var(--border);
 }
 
 .outline ul {
