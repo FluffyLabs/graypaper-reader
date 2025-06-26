@@ -1,14 +1,20 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
+import { useTabsContext } from "../Tabs/Tabs";
 
 export function Search({
   onSearchFinished,
+  tabName,
 }: {
+  tabName: string;
   onSearchFinished: (hasQuery: boolean) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { activeTab } = useTabsContext();
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const [query, setQuery] = useState("");
   // search query is persistent between tab switches
@@ -22,9 +28,22 @@ export function Search({
     }
   }, [search, onSearchFinished]);
 
+  useEffect(() => {
+    if (activeTab === tabName) {
+      inputRef.current?.focus();
+    }
+  }, [activeTab, tabName]);
+
+  useKeyboardShortcut({
+    key: "s",
+    onKeyPress: () => inputRef.current?.focus(),
+    enabled: activeTab === tabName,
+  });
+
   return (
     <div className="search-wrapper">
       <input
+        ref={inputRef}
         autoFocus
         type="text"
         value={query}
