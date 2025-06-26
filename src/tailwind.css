@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+@source "../node_modules/@fluffylabs/shared-ui/dist/";
 
 .text-brand-dark {
   color: var(--color-brand-dark);

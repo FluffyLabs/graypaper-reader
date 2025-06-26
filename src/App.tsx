@@ -1,12 +1,10 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { AppsSidebar } from "@krystian5011/shared-ui";
-import toolLogoUrl from "./assets/tool-logo.svg";
+import { AppsSidebar } from "@fluffylabs/shared-ui";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
 import { Header } from "./components/Header/Header";
-import { LightDarkThemeSyncer } from "./components/LightDarkThemeSyncer";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
 import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
@@ -28,17 +26,16 @@ export function App() {
 
   return (
     <>
-      <LightDarkThemeSyncer />
       <CodeSyncProvider>
         <NotesProvider>
           <PdfProvider pdfUrl={urlGetters.pdf(version)}>
             <SelectionProvider>
               <div>
-                <Header toolNameSrc={toolLogoUrl} fluffyRepoName="graypaper-reader" />
+                <Header />
                 <Resizable
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
-                      <AppsSidebar activeLink="reader" enableDarkModeToggle={false} />
+                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
                       <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
                         <PdfViewer />
                       </div>
