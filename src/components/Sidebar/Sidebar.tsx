@@ -18,9 +18,17 @@ export function Sidebar() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
+      const isTyping =
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA";
 
-      if (event.key.toLowerCase() === "s" && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping) {
+      if (
+        event.key.toLowerCase() === "s" &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        !isTyping
+      ) {
         event.preventDefault();
         setTab("search");
       }
@@ -51,7 +59,9 @@ export function Sidebar() {
     },
     {
       name: "search",
-      render: () => <Search onSearchFinished={onSearchFinished} />,
+      render: () => (
+        <Search tabName="search" onSearchFinished={onSearchFinished} />
+      ),
     },
   ];
 

@@ -1,14 +1,22 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import {
+  type ILocationContext,
+  LocationContext,
+} from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
+import { useTabsContext } from "../Tabs/Tabs";
 
 export function Search({
   onSearchFinished,
+  tabName,
 }: {
+  tabName: string;
   onSearchFinished: (hasQuery: boolean) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { activeTab } = useTabsContext();
   const { locationParams } = useContext(LocationContext) as ILocationContext;
   const [query, setQuery] = useState("");
   // search query is persistent between tab switches
@@ -22,9 +30,41 @@ export function Search({
     }
   }, [search, onSearchFinished]);
 
+  useEffect(() => {
+    if (activeTab === tabName) {
+      inputRef.current?.focus();
+    }
+  }, [activeTab, tabName]);
+
+  useEffect(() => {
+    if (activeTab !== tabName) {
+      return;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isTyping =
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA";
+
+      if (
+        event.key.toLowerCase() === "s" &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        !isTyping
+      ) {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [activeTab]);
+
   return (
     <div className="search-wrapper">
       <input
+        ref={inputRef}
         autoFocus
         type="text"
         value={query}
@@ -53,7 +93,9 @@ type SearchResultsProps = {
 };
 
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
-  const { eventBus, findController, viewer, linkService } = useContext(PdfContext) as IPdfContext;
+  const { eventBus, findController, viewer, linkService } = useContext(
+    PdfContext,
+  ) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
   const resetTimeout = useRef(0);
   const [matches, setMatches] = useState<Match>({
@@ -145,10 +187,18 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   return (
     <>
       <div className={`search-buttons ${isLoading ? "search-loading" : ""}`}>
-        <button className="default-button" disabled={!hasResults} onClick={handlePrev}>
+        <button
+          className="default-button"
+          disabled={!hasResults}
+          onClick={handlePrev}
+        >
           ⬅️
         </button>
-        <button className="default-button" disabled={!hasResults} onClick={handleNext}>
+        <button
+          className="default-button"
+          disabled={!hasResults}
+          onClick={handleNext}
+        >
           ➡️
         </button>
       </div>
@@ -157,7 +207,11 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
         <ul>
           {matches.pagesAndCount.map((res) => (
             <li key={res.pageIndex}>
-              <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
+              <a
+                className="default-link"
+                style={{ cursor: "pointer" }}
+                onClick={() => jumpToPage(res)}
+              >
                 Page {res.pageIndex + 1} ({res.count} matches)
               </a>
             </li>
