@@ -4,6 +4,7 @@ import {
   LocationContext,
 } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 
 import "./Search.css";
 import { useTabsContext } from "../Tabs/Tabs";
@@ -36,30 +37,11 @@ export function Search({
     }
   }, [activeTab, tabName]);
 
-  useEffect(() => {
-    if (activeTab !== tabName) {
-      return;
-    }
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping =
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA";
-
-      if (
-        event.key.toLowerCase() === "s" &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey &&
-        !isTyping
-      ) {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [activeTab]);
+  useKeyboardShortcut({
+    key: "s",
+    onKeyPress: () => inputRef.current?.focus(),
+    enabled: activeTab === tabName,
+  });
 
   return (
     <div className="search-wrapper">

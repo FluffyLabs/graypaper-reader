@@ -7,6 +7,7 @@ import { Search } from "../Search/Search";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 
 export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
@@ -16,27 +17,10 @@ export function Sidebar() {
     storeActiveTab(tab);
   }, [tab]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping =
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA";
-
-      if (
-        event.key.toLowerCase() === "s" &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey &&
-        !isTyping
-      ) {
-        event.preventDefault();
-        setTab("search");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useKeyboardShortcut({
+    key: "s",
+    onKeyPress: () => setTab("search"),
+  });
 
   // if we have both search & section, we need to wait
   // for the search to be done, before scrolling to section.
