@@ -25,7 +25,11 @@ export function useKeyboardShortcut({
     const handleKeyDown = (event: KeyboardEvent) => {
       // Check if user is typing in an input or textarea
       if (ignoreWhenTyping) {
-        const isTyping = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
+        const activeElement = document.activeElement;
+        const isTyping =
+          activeElement?.tagName === "INPUT" ||
+          activeElement?.tagName === "TEXTAREA" ||
+          activeElement?.getAttribute("contenteditable") === "true";
 
         if (isTyping) {
           return;
