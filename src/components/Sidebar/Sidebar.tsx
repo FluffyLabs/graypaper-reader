@@ -1,6 +1,7 @@
 import "./Sidebar.css";
 
 import { useCallback, useEffect, useState } from "react";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
 import { Search } from "../Search/Search";
@@ -16,19 +17,10 @@ export function Sidebar() {
     storeActiveTab(tab);
   }, [tab]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
-
-      if (event.key.toLowerCase() === "s" && !event.ctrlKey && !event.metaKey && !event.altKey && !isTyping) {
-        event.preventDefault();
-        setTab("search");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  useKeyboardShortcut({
+    key: "s",
+    onKeyPress: () => setTab("search"),
+  });
 
   // if we have both search & section, we need to wait
   // for the search to be done, before scrolling to section.
@@ -51,7 +43,7 @@ export function Sidebar() {
     },
     {
       name: "search",
-      render: () => <Search onSearchFinished={onSearchFinished} />,
+      render: () => <Search tabName="search" onSearchFinished={onSearchFinished} />,
     },
   ];
 
