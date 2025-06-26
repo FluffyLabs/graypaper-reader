@@ -33,12 +33,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
   }
 
   const actions = tabs.map((t) => (
-    <button
-      className="default-button"
-      key={t.name}
-      disabled={t.name === activeTab}
-      onClick={() => switchTab(t.name)}
-    >
+    <button className="default-button" key={t.name} disabled={t.name === activeTab} onClick={() => switchTab(t.name)}>
       {t.name}
     </button>
   ));
@@ -53,9 +48,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
           {tabs.map((tab, idx) => {
             return (
               <React.Fragment key={tab.name}>
-                <div className={idx === activeTabIdx ? "content" : "hidden"}>
-                  {tab.render()}
-                </div>
+                <div className={idx === activeTabIdx ? "content" : "hidden"}>{tab.render()}</div>
               </React.Fragment>
             );
           })}

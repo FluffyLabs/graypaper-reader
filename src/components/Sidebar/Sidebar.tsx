@@ -1,13 +1,13 @@
 import "./Sidebar.css";
 
 import { useCallback, useEffect, useState } from "react";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
 import { Search } from "../Search/Search";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 import { Version } from "../Version/Version";
-import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 
 export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
@@ -43,9 +43,7 @@ export function Sidebar() {
     },
     {
       name: "search",
-      render: () => (
-        <Search tabName="search" onSearchFinished={onSearchFinished} />
-      ),
+      render: () => <Search tabName="search" onSearchFinished={onSearchFinished} />,
     },
   ];
 
