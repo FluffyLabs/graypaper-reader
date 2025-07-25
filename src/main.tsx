@@ -28,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root") ?? document.body).render(
 export function redirectToBeta(betaHost: string) {
   try {
     const shouldRedirectLocal = localStorage.getItem("BETA_REDIRECT");
-    if (shouldRedirectLocal === undefined) {
+    if (shouldRedirectLocal === null) {
       return;
     }
     const url = new URL(window.location.href);
