@@ -8,8 +8,13 @@ export const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        outlineForcedDark: `
+          dark border border-input bg-background hover:bg-accent hover:text-accent-foreground border-[var(--border)]
+          bg-[var(--card)] text-[var(--title-foreground)] hover:bg-[var(--title)] hover:text-[var(--title-forground)]
+          focus-visible:ring-[var(--brand)] focus-visible:ring-offset-[var(--card)]
+        `,
         outlineBrand:
-          "border border-input border-brand-dark  dark:border-brand dark:text-brand hover:bg-accent hover:text-accent-foreground",
+          "border border-input border-brand-dark dark:border-brand dark:text-brand hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-black hover:text-background dark:hover:bg-brand dark:hover:text-background",
         ghost: "hover:bg-accent hover:text-accent-foreground",
