@@ -8,11 +8,6 @@ export const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        outlineForcedDark: `
-          dark border border-input bg-background hover:bg-accent hover:text-accent-foreground border-[var(--border)]
-          bg-[var(--card)] text-[var(--title-foreground)] hover:bg-[var(--title)] hover:text-[var(--title-forground)]
-          focus-visible:ring-[var(--brand)] focus-visible:ring-offset-[var(--card)]
-        `,
         outlineBrand:
           "border border-input border-brand-dark dark:border-brand dark:text-brand hover:bg-accent hover:text-accent-foreground",
         secondary:
@@ -26,7 +21,19 @@ export const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         icon: "h-4 w-4 -mt-2",
       },
+      forcedColorScheme: {
+        light: "",
+        dark: "dark",
+      },
     },
+    compoundVariants: [
+      {
+        forcedColorScheme: "dark",
+        variant: "outline",
+        class:
+          "bg-[var(--card)] border-[var(--border)] text-[var(--title-foreground)] hover:bg-[var(--title)] hover:text-[var(--title-foreground)] focus-visible:ring-[var(--brand)] focus-visible:ring-offset-[var(--card)]",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",
