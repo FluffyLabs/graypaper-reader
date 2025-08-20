@@ -1,10 +1,4 @@
 import { Button } from "@fluffylabs/shared-ui";
-import { ChevronDown } from "lucide-react";
-import { useCallback, useContext, useRef } from "react";
-import { Tooltip } from "react-tooltip";
-import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
-import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +6,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@fluffylabs/shared-ui";
+import { ChevronDown } from "lucide-react";
+import { useCallback, useContext, useRef } from "react";
+import { Tooltip } from "react-tooltip";
+import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
+import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
@@ -81,11 +81,7 @@ export function Version() {
             <ChevronDown className="ml-2 h-5 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          ref={dropdownContentRef}
-          className="max-h-[60vh] overflow-y-auto"
-          forcedColorScheme="dark"
-        >
+        <DropdownMenuContent ref={dropdownContentRef} className="max-h-[60vh] overflow-y-auto" forcedColorScheme="dark">
           <DropdownMenuRadioGroup value={currentVersionHash} onValueChange={handleVersionSelect}>
             {versions.map((version) => (
               <DropdownMenuRadioItem

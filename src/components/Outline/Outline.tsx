@@ -57,7 +57,7 @@ export function Outline({ searchIsDone }: { searchIsDone: boolean }) {
 
   if (!pdfDocument) return <div>Loading...</div>;
 
-  return <div className="outline rounded-lg">{renderOutline(outline)}</div>;
+  return <div className="outline rounded-lg min-h-0 w-full py-4">{renderOutline(outline)}</div>;
 }
 
 type ILinkProps = {

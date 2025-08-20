@@ -1,14 +1,16 @@
 .sidebar {
   height: 100%;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
   font-size: var(--smaller-font-size);
 }
 
 .sidebar .content {
-  height: 100%;
-  padding: 0 1rem;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  padding: 0 1rem;
   justify-content: start;
 }

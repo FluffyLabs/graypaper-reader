@@ -67,7 +67,7 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
   };
 
   return (
-    <div className="selection">
+    <div className="selection shrink-0">
       <blockquote>{selectionString}</blockquote>
       <small>
         {selectedBlocks.length ? (

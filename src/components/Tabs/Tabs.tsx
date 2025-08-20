@@ -1,5 +1,4 @@
 import React from "react";
-import "./Tabs.css";
 import type { ReactNode } from "react";
 
 export type Tab = {
@@ -41,27 +40,21 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
   const contextValue = React.useMemo(() => ({ activeTab }), [activeTab]);
 
   const activeTabIdx = tabs.map((t) => t.name).indexOf(activeTab);
-  if (alwaysRender) {
-    return (
-      <tabsContext.Provider value={contextValue}>
-        <div className="tabs">
-          {tabs.map((tab, idx) => {
-            return (
-              <React.Fragment key={tab.name}>
-                <div className={idx === activeTabIdx ? "content" : "hidden"}>{tab.render()}</div>
-              </React.Fragment>
-            );
-          })}
-          <div className="menu">{actions}</div>
-        </div>
-      </tabsContext.Provider>
-    );
-  }
+
   return (
     <tabsContext.Provider value={contextValue}>
-      <div className="tabs">
-        <div className="content">{tabs[activeTabIdx].render()}</div>
+      <div className="flex flex-col min-h-0 gap-2">
         <div className="menu">{actions}</div>
+        {tabs.map((tab, idx) => {
+          if (!alwaysRender && idx !== activeTabIdx) {
+            return null;
+          }
+          return (
+            <React.Fragment key={tab.name}>
+              <div className={idx === activeTabIdx ? "min-h-0 flex items-stretch py-2" : "hidden"}>{tab.render()}</div>
+            </React.Fragment>
+          );
+        })}
       </div>
     </tabsContext.Provider>
   );
