@@ -56,17 +56,21 @@ export function Outline({ searchIsDone }: { searchIsDone: boolean }) {
 type IOutline = Pick<TOutline[0], "title" | "dest" | "items">;
 
 const outlineForSkeleton = [
-  ...Array(12).fill(0).map((_,index) => ({
-    title: `Skeleton Title ${index + 1}`,
-    dest: "skeleton-destination",
-    items: [
-      ...Array(5).fill(0).map((_, index) => ({
-        title: `Skeleton Subitem ${index + 1}`,
-        dest: "skeleton-subitem-destination",
-        items: []
-      })),
-    ],
-  }))
+  ...Array(12)
+    .fill(0)
+    .map((_, index) => ({
+      title: `Skeleton Title ${index + 1}`,
+      dest: "skeleton-destination",
+      items: [
+        ...Array(5)
+          .fill(0)
+          .map((_, index) => ({
+            title: `Skeleton Subitem ${index + 1}`,
+            dest: "skeleton-subitem-destination",
+            items: [],
+          })),
+      ],
+    })),
 ] satisfies IOutline[];
 
 const OutlineDumb: FC<{ outline?: IOutline[]; onClick: (item: TOutline[0]["dest"]) => void }> = memo(
@@ -78,19 +82,33 @@ const OutlineDumb: FC<{ outline?: IOutline[]; onClick: (item: TOutline[0]["dest"
         <ul className={twMerge(firstLevel ? "mt-0" : "my-3")}>
           {outline.map((item, index) => (
             <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
-              {isSkeleton && <OutlineLinkSkeleton className={twMerge("h-4.5", index % 4 == 0 && "w-52", index % 4 == 1 && "w-64", index % 4 == 2 && "w-48", index % 4 == 3 && "w-24", !firstLevel && "mt-0.5", "max-w-10/12")} />}
-              {!isSkeleton && <Link
-                dest={item.dest}
-                onClick={onClick}
-                className={twMerge(
-                  "underline underline-offset-2",
-                  !firstLevel && "dark:text-[var(--brand-light)] text-[var(--brand-darkest)] mt-0.5",
-                  firstLevel && "dark:text-[var(--brand)] text-[var(--brand-darkest-2)]",
-                )}
-              >
-                {firstLevel && item.title.replace(".", " > ")}
-                {!firstLevel && item.title}
-              </Link>}
+              {isSkeleton && (
+                <OutlineLinkSkeleton
+                  className={twMerge(
+                    "h-4.5",
+                    index % 4 === 0 && "w-52",
+                    index % 4 === 1 && "w-64",
+                    index % 4 === 2 && "w-48",
+                    index % 4 === 3 && "w-24",
+                    !firstLevel && "mt-0.5",
+                    "max-w-10/12",
+                  )}
+                />
+              )}
+              {!isSkeleton && (
+                <Link
+                  dest={item.dest}
+                  onClick={onClick}
+                  className={twMerge(
+                    "underline underline-offset-2",
+                    !firstLevel && "dark:text-[var(--brand-light)] text-[var(--brand-darkest)] mt-0.5",
+                    firstLevel && "dark:text-[var(--brand)] text-[var(--brand-darkest-2)]",
+                  )}
+                >
+                  {firstLevel && item.title.replace(".", " > ")}
+                  {!firstLevel && item.title}
+                </Link>
+              )}
               {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
             </li>
           ))}
@@ -125,8 +143,13 @@ function Link({ dest, children, className, onClick }: ILinkProps) {
   );
 }
 
-const OutlineLinkSkeleton: FC<{className: string}>= ({className}) => {
+const OutlineLinkSkeleton: FC<{ className: string }> = ({ className }) => {
   return (
-    <div className={twMerge("h-4 w-24 bg-gray-300/85 dark:bg-[var(--brand-light)] dark:opacity-15 rounded-md animate-pulse", className)}></div>
+    <div
+      className={twMerge(
+        "h-4 w-24 bg-gray-300/85 dark:bg-[var(--brand-light)] dark:opacity-15 rounded-md animate-pulse",
+        className,
+      )}
+    />
   );
 };
