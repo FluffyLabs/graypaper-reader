@@ -2,7 +2,6 @@ import { Button } from "@fluffylabs/shared-ui";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useContext, useRef } from "react";
 import { Tooltip } from "react-tooltip";
-import { twMerge } from "tailwind-merge";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
@@ -12,7 +11,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@fluffylabs/shared-ui";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
@@ -84,7 +83,8 @@ export function Version() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           ref={dropdownContentRef}
-          className="dark w-[var(--radix-dropdown-menu-trigger-width)] border-[var(--border)] bg-[var(--card)] max-h-[60vh] overflow-y-auto"
+          className="max-h-[60vh] overflow-y-auto"
+          forcedColorScheme="dark"
         >
           <DropdownMenuRadioGroup value={currentVersionHash} onValueChange={handleVersionSelect}>
             {versions.map((version) => (
@@ -92,15 +92,6 @@ export function Version() {
                 value={version.hash}
                 key={version.hash}
                 ref={version.hash === currentVersionHash ? currentItemRef : null}
-                className={twMerge(
-                  `
-                transition-none
-                text-[var(--title-foreground)] hover:bg-[var(--brand)] hover:opacity-65 hover:text-[var(--card)] rounded-sm
-                focus:bg-[var(--brand)] focus:opacity-65 focus:text-[var(--card)] my-0.5
-                `,
-                  version.hash === currentVersionHash &&
-                    "bg-[var(--brand)] text-[var(--card)] hover:opacity-100 focus:opacity-100",
-                )}
               >
                 <VersionOption version={version} latest={metadata.latest} />
               </DropdownMenuRadioItem>
