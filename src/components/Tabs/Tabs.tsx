@@ -38,11 +38,8 @@ const useContainerWidth = () => {
 
   useEffect(() => {
     if (!ref.current) {
-      console.log("no container");
       return;
     }
-
-    console.log("container initialized");
 
     let lastRunTime = 0;
     const throttleDelay = 100;
@@ -116,7 +113,7 @@ export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void
       disabled={t.name === activeTab}
       onClick={() => switchTab(t.name)}
       className={twMerge(
-        "grow h-7 capitalize",
+        "grow h-8 capitalize",
         "hover:bg-[var(--brand-light)] text-[var(--secondary-foreground)] dark:text-[var(--brand)]  dark:hover:text-[var(--brand)] hover:text-[var(--secondary-foreground)] dark:hover:bg-[var(--brand-dark)]",
         "rounded-none first-of-type:rounded-l-md last-of-type:rounded-r-md  border-1 border-l-0 first-of-type:border-l-1",
         t.name === activeTab

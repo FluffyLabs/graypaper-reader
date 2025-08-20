@@ -1,6 +1,7 @@
 import "./Outline.css";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { type ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
@@ -42,12 +43,23 @@ export function Outline({ searchIsDone }: { searchIsDone: boolean }) {
     }
   }, [searchIsDone, section, outline, linkService]);
 
-  const renderOutline = (outline: TOutline) => {
+  const renderOutline = (outline: TOutline, options: { firstLevel?: boolean } = {}) => {
+    const { firstLevel = false } = options;
+
     return (
-      <ul>
+      <ul className={twMerge(firstLevel ? "mt-0" : "my-3")}>
         {outline.map((item) => (
-          <li key={item.title}>
-            <Link dest={item.dest}>{item.title}</Link>
+          <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
+            <Link
+              dest={item.dest}
+              className={twMerge(
+                "underline underline-offset-2",
+                !firstLevel && "dark:text-[var(--brand-light)] hover:text-[] mt-0.5",
+              )}
+            >
+              {firstLevel && item.title.replace(".", " > ")}
+              {!firstLevel && item.title}
+            </Link>
             {item.items.length > 0 ? renderOutline(item.items) : null}
           </li>
         ))}
@@ -57,15 +69,20 @@ export function Outline({ searchIsDone }: { searchIsDone: boolean }) {
 
   if (!pdfDocument) return <div>Loading...</div>;
 
-  return <div className="outline rounded-lg min-h-0 w-full py-4">{renderOutline(outline)}</div>;
+  return (
+    <div className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto">
+      {renderOutline(outline, { firstLevel: true })}
+    </div>
+  );
 }
 
 type ILinkProps = {
   dest: TOutline[0]["dest"];
   children: ReactNode;
+  className?: string;
 };
 
-function Link({ dest, children }: ILinkProps) {
+function Link({ dest, children, className }: ILinkProps) {
   const { linkService } = useContext(PdfContext) as IPdfContext;
 
   const handleClick = useCallback(() => {
@@ -74,7 +91,13 @@ function Link({ dest, children }: ILinkProps) {
   }, [linkService, dest]);
 
   return (
-    <a onClick={handleClick} className="default-link">
+    <a
+      onClick={handleClick}
+      className={twMerge(
+        "cursor-pointer dark:text-[var(--brand)] text-[var(--brand-dark)] hover:opacity-75",
+        className,
+      )}
+    >
       {children}
     </a>
   );

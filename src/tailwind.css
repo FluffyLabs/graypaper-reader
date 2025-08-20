@@ -5,3 +5,15 @@
 .text-brand-dark {
   color: var(--color-brand-dark);
 }
+
+@layer utilities {
+  :root{
+    --brand: rgb(97 237 226);
+    --brand-light: rgb(200 243 240);
+  }
+
+  .dark{
+    --brand: rgb(97 237 226);
+    --brand-light: rgb(200 243 240);
+  }
+}
