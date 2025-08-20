@@ -54,7 +54,8 @@ export function Outline({ searchIsDone }: { searchIsDone: boolean }) {
               dest={item.dest}
               className={twMerge(
                 "underline underline-offset-2",
-                !firstLevel && "dark:text-[var(--brand-light)] hover:text-[] mt-0.5",
+                !firstLevel && "dark:text-[var(--brand-light)] text-[var(--brand-darkest)] mt-0.5",
+                firstLevel && "dark:text-[var(--brand)] text-[var(--brand-darkest-2)]",
               )}
             >
               {firstLevel && item.title.replace(".", " > ")}
@@ -91,13 +92,7 @@ function Link({ dest, children, className }: ILinkProps) {
   }, [linkService, dest]);
 
   return (
-    <a
-      onClick={handleClick}
-      className={twMerge(
-        "cursor-pointer dark:text-[var(--brand)] text-[var(--brand-dark)] hover:opacity-75",
-        className,
-      )}
-    >
+    <a onClick={handleClick} className={twMerge("cursor-pointer hover:opacity-75", className)}>
       {children}
     </a>
   );

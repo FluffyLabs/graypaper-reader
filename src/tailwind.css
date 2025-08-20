@@ -1,19 +1,20 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-@source "../node_modules/@fluffylabs/shared-ui/dist/";
 
 .text-brand-dark {
   color: var(--color-brand-dark);
 }
 
-@layer utilities {
-  :root{
-    --brand: rgb(97 237 226);
-    --brand-light: rgb(200 243 240);
-  }
-
-  .dark{
-    --brand: rgb(97 237 226);
-    --brand-light: rgb(200 243 240);
-  }
+:root{
+  --brand: rgb(97 237 226);
+  --brand-darkest: rgb(18 152 141);
+  --brand-darkest-2: rgb(14 116 107);
+  --brand-light: rgb(200 243 240);
 }
+
+.dark{
+  --brand: rgb(97 237 226);
+  --brand-light: rgb(200 243 240);
+}
+
+@source "../node_modules/@fluffylabs/shared-ui/dist/";
