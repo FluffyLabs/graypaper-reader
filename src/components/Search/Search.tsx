@@ -41,7 +41,7 @@ export function Search({
   });
 
   return (
-    <div className="search-wrapper">
+    <div className="search-wrapper w-full">
       <input
         ref={inputRef}
         autoFocus

@@ -42,6 +42,7 @@ export function Sidebar() {
     },
     {
       name: "search",
+      shortNameFallback: "🔍",
       render: () => <Search tabName="search" onSearchFinished={onSearchFinished} />,
     },
   ];

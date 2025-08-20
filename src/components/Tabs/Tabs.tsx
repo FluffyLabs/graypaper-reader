@@ -1,8 +1,11 @@
-import React from "react";
-import type { ReactNode } from "react";
+import { Button } from "@fluffylabs/shared-ui";
+import React, { useEffect } from "react";
+import type { FC, ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
 
 export type Tab = {
   name: string;
+  shortNameFallback?: string;
   render: () => ReactNode;
 };
 
@@ -12,10 +15,13 @@ type TabsProps = {
   switchTab: (v: string) => void;
   /** Always render the components and just change visibility. */
   alwaysRender: boolean;
+  /** When the container width is less than this value, the short name fallback will be used. */
+  shortNameFallbackTreshold?: number;
 };
 
-const tabsContext = React.createContext<{ activeTab: string | null }>({
+const tabsContext = React.createContext<{ activeTab: string | null; shortNameFallbackTreshold: number }>({
   activeTab: null,
+  shortNameFallbackTreshold: 0,
 });
 
 export const useTabsContext = () => {
@@ -26,32 +32,66 @@ export const useTabsContext = () => {
   return context;
 };
 
-export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
+const useContainerWidth = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [width, setWidth] = React.useState(0);
+
+  useEffect(() => {
+    if (!ref.current) {
+      console.log("no container");
+      return;
+    }
+
+    console.log("container initialized");
+
+    let lastRunTime = 0;
+    const throttleDelay = 100;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        const now = Date.now();
+
+        if (now - lastRunTime >= throttleDelay) {
+          setWidth(width);
+          lastRunTime = now;
+        }
+      }
+    });
+
+    observer.observe(ref.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return { ref, width };
+};
+
+export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallbackTreshold = 220 }: TabsProps) {
   if (tabs.length === 0) {
     return null;
   }
 
-  const actions = tabs.map((t) => (
-    <button className="default-button" key={t.name} disabled={t.name === activeTab} onClick={() => switchTab(t.name)}>
-      {t.name}
-    </button>
-  ));
-
-  const contextValue = React.useMemo(() => ({ activeTab }), [activeTab]);
+  const contextValue = React.useMemo(
+    () => ({ activeTab, shortNameFallbackTreshold }),
+    [activeTab, shortNameFallbackTreshold],
+  );
 
   const activeTabIdx = tabs.map((t) => t.name).indexOf(activeTab);
 
   return (
     <tabsContext.Provider value={contextValue}>
-      <div className="flex flex-col min-h-0 gap-2">
-        <div className="menu">{actions}</div>
+      <div className="flex flex-col min-h-0 py-2 gap-4">
+        <TabsMenu activeTab={activeTab} switchTab={switchTab} tabs={tabs} />
         {tabs.map((tab, idx) => {
           if (!alwaysRender && idx !== activeTabIdx) {
             return null;
           }
           return (
             <React.Fragment key={tab.name}>
-              <div className={idx === activeTabIdx ? "min-h-0 flex items-stretch py-2" : "hidden"}>{tab.render()}</div>
+              <div className={idx === activeTabIdx ? "min-h-0 flex items-stretch" : "hidden"}>{tab.render()}</div>
             </React.Fragment>
           );
         })}
@@ -59,3 +99,38 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender }: TabsProps) {
     </tabsContext.Provider>
   );
 }
+
+export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void; tabs: Tab[] }> = ({
+  activeTab,
+  switchTab,
+  tabs,
+}) => {
+  const { ref, width } = useContainerWidth();
+  const { shortNameFallbackTreshold } = useTabsContext();
+  const shouldRenderShortName = width > 0 && width < shortNameFallbackTreshold;
+
+  const actions = tabs.map((t) => (
+    <Button
+      variant="outlineBrand"
+      key={t.name}
+      disabled={t.name === activeTab}
+      onClick={() => switchTab(t.name)}
+      className={twMerge(
+        "grow h-7 capitalize",
+        "hover:bg-[var(--brand-light)] text-[var(--secondary-foreground)] dark:text-[var(--brand)]  dark:hover:text-[var(--brand)] hover:text-[var(--secondary-foreground)] dark:hover:bg-[var(--brand-dark)]",
+        "rounded-none first-of-type:rounded-l-md last-of-type:rounded-r-md  border-1 border-l-0 first-of-type:border-l-1",
+        t.name === activeTab
+          ? "bg-[var(--brand-dark)] dark:bg-[var(--brand)] text-[var(--sidebar) dark:text-[var(--sidebar)] disabled:opacity-100"
+          : "bg-transparent",
+      )}
+    >
+      {t.shortNameFallback && shouldRenderShortName ? t.shortNameFallback : t.name}
+    </Button>
+  ));
+
+  return (
+    <div className="flex" ref={ref}>
+      {actions}
+    </div>
+  );
+};
