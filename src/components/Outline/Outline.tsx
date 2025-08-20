@@ -78,7 +78,7 @@ const OutlineDumb: FC<{ outline?: IOutline[]; onClick: (item: TOutline[0]["dest"
         <ul className={twMerge(firstLevel ? "mt-0" : "my-3")}>
           {outline.map((item, index) => (
             <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
-              {isSkeleton && <OutlineLinkSkeleton className={twMerge("h-4.5", index % 3 == 0 && "w-52", index % 3 == 1 && "w-48", index % 3 == 2 && "w-32", index % 3 == 3 && "w-12", !firstLevel && "mt-0.5")} />}
+              {isSkeleton && <OutlineLinkSkeleton className={twMerge("h-4.5", index % 4 == 0 && "w-52", index % 4 == 1 && "w-64", index % 4 == 2 && "w-48", index % 4 == 3 && "w-24", !firstLevel && "mt-0.5", "max-w-10/12")} />}
               {!isSkeleton && <Link
                 dest={item.dest}
                 onClick={onClick}
@@ -127,6 +127,6 @@ function Link({ dest, children, className, onClick }: ILinkProps) {
 
 const OutlineLinkSkeleton: FC<{className: string}>= ({className}) => {
   return (
-    <div className={twMerge("h-4 w-24 bg-gray-300/85 dark:bg-[var(--brand)] dark:opacity-25 rounded-md animate-pulse", className)}></div>
+    <div className={twMerge("h-4 w-24 bg-gray-300/85 dark:bg-[var(--brand-light)] dark:opacity-15 rounded-md animate-pulse", className)}></div>
   );
 };
