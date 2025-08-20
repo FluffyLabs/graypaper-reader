@@ -1,6 +1,14 @@
+import { Button } from "@fluffylabs/shared-ui";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@fluffylabs/shared-ui";
+import { ChevronDown } from "lucide-react";
+import { useCallback, useContext, useRef } from "react";
 import { Tooltip } from "react-tooltip";
-import "./Version.css";
-import { type ChangeEventHandler, useCallback, useContext } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
@@ -11,10 +19,12 @@ export function Version() {
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
   const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
   const currentVersionHash = metadata.versions[locationParams.version].hash;
+  const currentVersion = metadata.versions[locationParams.version];
+  const dropdownContentRef = useRef<HTMLDivElement>(null);
+  const currentItemRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
-    (e) => {
-      const newVersion = e.target.value;
+  const handleVersionSelect = useCallback(
+    (newVersion: string) => {
       const { selectionStart, selectionEnd, version } = locationParams;
       if (!selectionStart || !selectionEnd) {
         setLocationParams({ version: newVersion });
@@ -32,41 +42,69 @@ export function Version() {
     [setLocationParams, locationParams, migrateSelection],
   );
 
+  const getCurrentVersionLabel = () => {
+    const date = new Date(currentVersion.date);
+    const isLatest = currentVersion.hash === metadata.latest;
+    let label = isLatest ? "Latest" : "v";
+    if (currentVersion.name) {
+      label += `: ${currentVersion.name}`;
+    }
+    return `${label} ${shortHash(currentVersion.hash)} (${date.toLocaleDateString()})`;
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      requestAnimationFrame(() => {
+        if (currentItemRef.current && dropdownContentRef.current) {
+          currentItemRef.current.scrollIntoView({ block: "center", behavior: "instant" });
+        }
+      });
+    }
+  };
+
   return (
-    <div className="version">
+    <div className="flex items-center justify-end gap-2 mx-4">
       {currentVersionHash !== metadata.latest && (
         <span
           data-tooltip-id="version"
-          data-tooltip-content="The current version is not the latest."
+          data-tooltip-content="The current version is not the latest"
           data-tooltip-place="top"
-          className="icon"
+          className="text-amber-500 text-2xl mt-[-2px]"
         >
           ⚠
         </span>
       )}
-      <select onChange={handleChange} value={locationParams.version}>
-        {versions.map((v) => (
-          <Option key={v.hash} id={v.hash} version={v} latest={metadata.latest} />
-        ))}
-      </select>
-      <a
-        data-tooltip-id="version"
-        data-tooltip-content="Open Gray Paper github commit."
-        data-tooltip-place="top"
-        target="_blank"
-        href={`https://github.com/gavofyork/graypaper/commit/${currentVersionHash}`}
-        rel="noreferrer"
-        className="default-link"
-      >
-        Github
-      </a>
-      <Tooltip id="version" />
+      <DropdownMenu onOpenChange={handleOpenChange}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" forcedColorScheme="dark" className="flex-1 justify-between h-[32px]">
+            <span className="px-2">{getCurrentVersionLabel()}</span>
+            <ChevronDown className="ml-2 h-5 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent ref={dropdownContentRef} className="max-h-[60vh] overflow-y-auto" forcedColorScheme="dark">
+          <DropdownMenuRadioGroup value={currentVersionHash} onValueChange={handleVersionSelect}>
+            {versions.map((version) => (
+              <DropdownMenuRadioItem
+                value={version.hash}
+                key={version.hash}
+                ref={version.hash === currentVersionHash ? currentItemRef : null}
+              >
+                <VersionOption version={version} latest={metadata.latest} />
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Tooltip
+        id="version"
+        style={{ backgroundColor: "oklch(76.9% 0.188 70.08)", zIndex: 1, color: "black", fontSize: "10px" }}
+      />
     </div>
   );
 }
 
-type OptionProps = { id: string; version: IVersionInfo; latest: string };
-function Option({ id, version, latest }: OptionProps) {
+type VersionOptionProps = { version: IVersionInfo; latest: string };
+function VersionOption({ version, latest }: VersionOptionProps) {
   const date = new Date(version.date);
   let latestText = "Latest";
   let versionText = "v";
@@ -75,9 +113,9 @@ function Option({ id, version, latest }: OptionProps) {
     versionText += `: ${version.name}`;
   }
   return (
-    <option value={id}>
+    <span className="w-full">
       {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
-    </option>
+    </span>
   );
 }
 

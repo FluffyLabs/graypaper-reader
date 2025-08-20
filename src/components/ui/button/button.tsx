@@ -9,12 +9,15 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  forcedColorScheme?: "light" | "dark";
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, forcedColorScheme, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    return <Comp className={twMerge(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    return (
+      <Comp className={twMerge(buttonVariants({ variant, size, className, forcedColorScheme }))} ref={ref} {...props} />
+    );
   },
 );
 Button.displayName = "Button";

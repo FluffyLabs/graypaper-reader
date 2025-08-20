@@ -7,7 +7,6 @@ import { Outline } from "../Outline/Outline";
 import { Search } from "../Search/Search";
 import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
-import { Version } from "../Version/Version";
 
 export function Sidebar() {
   const [tab, setTab] = useState(loadActiveTab());
@@ -52,7 +51,6 @@ export function Sidebar() {
       <div className="content">
         <Selection activeTab={tab} switchTab={setTab} />
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} alwaysRender />
-        <Version />
       </div>
     </div>
   );
