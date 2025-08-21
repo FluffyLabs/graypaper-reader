@@ -1,4 +1,5 @@
 import { Button } from "@fluffylabs/shared-ui";
+import { Slot } from "@radix-ui/react-slot";
 import React, { useEffect } from "react";
 import type { FC, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
@@ -88,7 +89,11 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
           }
           return (
             <React.Fragment key={tab.name}>
-              <div className={idx === activeTabIdx ? "min-h-0 flex items-stretch" : "hidden"}>{tab.render()}</div>
+              <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"}>
+                <Slot className="w-full">
+                  <div>{tab.render()}</div>
+                </Slot>
+              </div>
             </React.Fragment>
           );
         })}
