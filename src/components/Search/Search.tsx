@@ -4,14 +4,17 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
+import { twMerge } from "tailwind-merge";
 import { useTabsContext } from "../Tabs/Tabs";
 
 export function Search({
   onSearchFinished,
   tabName,
+  className,
 }: {
   tabName: string;
   onSearchFinished: (hasQuery: boolean) => void;
+  className?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { activeTab } = useTabsContext();
@@ -41,7 +44,7 @@ export function Search({
   });
 
   return (
-    <div className="search-wrapper w-full">
+    <div className={twMerge("search-wrapper w-full", className)}>
       <input
         ref={inputRef}
         autoFocus

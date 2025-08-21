@@ -48,7 +48,7 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="sidebar">
+    <div className="sidebar bg-sidebar">
       <div className="content">
         <Selection activeTab={tab} switchTab={setTab} />
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} alwaysRender />

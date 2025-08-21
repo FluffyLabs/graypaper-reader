@@ -1,5 +1,6 @@
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
+import { twMerge } from "tailwind-merge";
 import { validateMath } from "../../utils/validateMath";
 import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -12,9 +13,9 @@ import { NotesList } from "./components/NotesList";
 
 const DEFAULT_AUTHOR = "";
 
-export function NoteManager() {
+export function NoteManager({ className }: { className?: string }) {
   return (
-    <div className="notes-wrapper">
+    <div className={twMerge("notes-wrapper", className)}>
       <Notes />
       <NotesActions />
     </div>

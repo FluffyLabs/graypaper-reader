@@ -36,7 +36,7 @@ export function App() {
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
                       <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
-                      <div className="box-border h-full w-full relative overflow-hidden bg-[#BBB] dark:bg-[#666]">
+                      <div className="box-border h-full w-full relative overflow-hidden bg-background">
                         <PdfViewer />
                       </div>
                       <div className="controls">
