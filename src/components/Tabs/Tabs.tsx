@@ -81,7 +81,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
 
   return (
     <tabsContext.Provider value={contextValue}>
-      <div className="flex flex-col min-h-0 py-2 gap-4">
+      <div className="flex flex-col min-h-0 py-2 gap-4 pb-4">
         <TabsMenu activeTab={activeTab} switchTab={switchTab} tabs={tabs} />
         {tabs.map((tab, idx) => {
           if (!alwaysRender && idx !== activeTabIdx) {
@@ -90,9 +90,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
           return (
             <React.Fragment key={tab.name}>
               <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"}>
-                <Slot className="w-full">
-                  <div>{tab.render()}</div>
-                </Slot>
+                <Slot className="w-full">{tab.render()}</Slot>
               </div>
             </React.Fragment>
           );
