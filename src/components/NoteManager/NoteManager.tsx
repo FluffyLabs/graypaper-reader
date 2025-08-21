@@ -2,7 +2,6 @@ import { memo, useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
 import { twMerge } from "tailwind-merge";
 import { validateMath } from "../../utils/validateMath";
-import { LabelsFilter } from "../LabelsFilter/LabelsFilter";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
@@ -28,8 +27,9 @@ function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, notes, labels, handleAddNote, handleDeleteNote, handleUpdateNote, handleToggleLabel } =
-    useContext(NotesContext) as INotesContext;
+  const { notesReady, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
+    NotesContext,
+  ) as INotesContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
@@ -91,7 +91,6 @@ function Notes() {
         </button>
       </div>
 
-      <LabelsFilter labels={labels} onToggleLabel={handleToggleLabel} />
       <MemoizedNotesList notes={notes} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
     </div>
   );

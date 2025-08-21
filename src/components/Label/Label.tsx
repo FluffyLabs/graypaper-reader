@@ -4,10 +4,12 @@ import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
 import "./Label.css";
 import { useMemo } from "react";
 
-export function Label({ label, icon = "" }: { label: PrefixedLabel; icon?: string }) {
+export function Label({ label, icon = "", className }: { label: PrefixedLabel; icon?: string; className?: string }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
+  const contrastColor = useMemo(() => bestTextColor(backgroundColor), [backgroundColor]);
+
   return (
-    <span style={{ backgroundColor }} className="label">
+    <span style={{ backgroundColor, color: contrastColor }} className={`label truncate ${className}`}>
       {icon} {label}
     </span>
   );
@@ -19,6 +21,35 @@ export function LabelString({ label, source = NoteSource.Local }: { label: UnPre
 
 function labelToColor(label: string) {
   return getColor(hashStringToIndex(label));
+}
+
+function luminance(r: number, g: number, b: number) {
+  const a = [r, g, b].map((v) => {
+    const value = v / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function contrast(rgb1: number[], rgb2: number[]) {
+  const lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
+  const lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+
+function bestTextColor(bgHex: string) {
+  const bg = [
+    Number.parseInt(bgHex.slice(1, 3), 16),
+    Number.parseInt(bgHex.slice(3, 5), 16),
+    Number.parseInt(bgHex.slice(5, 7), 16),
+  ];
+
+  const whiteContrast = contrast(bg, [255, 255, 255]);
+  const blackContrast = contrast(bg, [0, 0, 0]);
+
+  return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
 }
 
 function getColor(index: number) {
