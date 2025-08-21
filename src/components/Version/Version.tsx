@@ -56,7 +56,7 @@ export function Version() {
     if (open) {
       requestAnimationFrame(() => {
         if (currentItemRef.current && dropdownContentRef.current) {
-          currentItemRef.current.scrollIntoView({ block: "center", behavior: "instant" });
+          currentItemRef.current.scrollIntoView({ block: "center", behavior: "auto" });
         }
       });
     }
