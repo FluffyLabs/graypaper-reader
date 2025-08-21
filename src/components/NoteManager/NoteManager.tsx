@@ -27,8 +27,9 @@ function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, notes, labels, handleAddNote, handleDeleteNote, handleUpdateNote, handleToggleLabel } =
-    useContext(NotesContext) as INotesContext;
+  const { notesReady, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
+    NotesContext,
+  ) as INotesContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
   const handleAddNoteClick = useCallback(() => {
