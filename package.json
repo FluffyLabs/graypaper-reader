@@ -38,6 +38,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@fluffylabs/types": "^1.0.0",
     "@tailwindcss/postcss": "^4.1.10",
     "@tailwindcss/vite": "^4.1.10",
@@ -46,6 +48,7 @@
     "@types/react-dom": "^19.1.6",
     "@types/react-modal": "^3.16.3",
     "@vitejs/plugin-react": "^4.3.1",
+    "husky": "^9.1.7",
     "shelljs": "^0.10.0",
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3",
