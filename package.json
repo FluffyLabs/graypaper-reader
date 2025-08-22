@@ -14,8 +14,7 @@
     "cp-gp": "node ./scripts/cp-gp.js",
     "prebuild": "git submodule update --init && npm run cp-gp",
     "predev": "npm run cp-gp",
-    "serve": "vite preview",
-    "prepare": "husky"
+    "serve": "vite preview"
   },
   "dependencies": {
     "@fluffylabs/migrate-selection": "^1.0.0",
