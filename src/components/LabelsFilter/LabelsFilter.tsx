@@ -67,13 +67,14 @@ const LabelsFilterDumb: FC<{
           <span className="bg-[var(--border)] rounded-sm px-2 h-[18px] ml-4 mt-0.25">{allNodesActiveCount}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-auto max-w-72" align="end">
+      <DropdownMenuContent className="w-auto max-w-72" align="end" forcedColorScheme={forcedColorScheme}>
         {treeRoots.map((label) => (
           <Fragment key={label.prefixedLabel}>
             <DropdownMenuCheckboxItem
               key={label.prefixedLabel}
               checked={label.isActive}
               onCheckedChange={() => selectLabel(label)}
+              onSelect={(e) => e.preventDefault()}
               className={twMerge("pl-7", !label.isActive && "opacity-25")}
             >
               <Label label={label.prefixedLabel} />
@@ -83,6 +84,7 @@ const LabelsFilterDumb: FC<{
                 key={`${child.prefixedLabel}-children`}
                 checked={child.isActive}
                 onCheckedChange={() => selectLabel(child)}
+                onSelect={(e) => e.preventDefault()}
                 className={twMerge("pl-10", !child.isActive && "opacity-25")}
               >
                 <Label label={child.prefixedLabel} />
