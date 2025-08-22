@@ -9,7 +9,14 @@ export function Label({
   icon = "",
   className,
   variant = "filled",
-}: { label: PrefixedLabel; icon?: string; className?: string; variant?: "filled" | "outlined" }) {
+  showTooltip = false,
+}: {
+  label: PrefixedLabel;
+  icon?: string;
+  className?: string;
+  variant?: "filled" | "outlined";
+  showTooltip?: boolean;
+}) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   const contrastColor = useMemo(() => bestTextColor(backgroundColor), [backgroundColor]);
 
@@ -23,7 +30,7 @@ export function Label({
   );
 
   return (
-    <span style={style} className={`label truncate ${className}`}>
+    <span style={style} className={`label truncate ${className}`} title={showTooltip ? label : undefined}>
       {icon} {label}
     </span>
   );
