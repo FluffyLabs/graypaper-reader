@@ -1,4 +1,8 @@
-# .husky/pre-commit
-biome check --staged --write --files-ignore-unknown=true
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -e
+
+biome check --staged --write --files-ignore-unknown=true --no-errors-on-unmatched
 git update-index --again
 tsc --noEmit -p ./tsconfig.app.json
