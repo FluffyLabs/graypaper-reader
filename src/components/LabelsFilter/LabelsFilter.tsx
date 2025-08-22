@@ -75,9 +75,9 @@ const LabelsFilterDumb: FC<{
               checked={label.isActive}
               onCheckedChange={() => selectLabel(label)}
               onSelect={(e) => e.preventDefault()}
-              className={twMerge("pl-7", !label.isActive && "opacity-25")}
+              className={twMerge("pl-7")}
             >
-              <Label label={label.prefixedLabel} />
+              <Label label={label.prefixedLabel} variant={label.isActive ? "filled" : "outlined"} />
             </DropdownMenuCheckboxItem>
             {label.children.map((child) => (
               <DropdownMenuCheckboxItem
@@ -85,9 +85,9 @@ const LabelsFilterDumb: FC<{
                 checked={child.isActive}
                 onCheckedChange={() => selectLabel(child)}
                 onSelect={(e) => e.preventDefault()}
-                className={twMerge("pl-10", !child.isActive && "opacity-25")}
+                className={twMerge("pl-10")}
               >
-                <Label label={child.prefixedLabel} />
+                <Label label={child.prefixedLabel} variant={child.isActive ? "filled" : "outlined"} />
               </DropdownMenuCheckboxItem>
             ))}
           </Fragment>

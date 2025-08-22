@@ -4,12 +4,26 @@ import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
 import "./Label.css";
 import { useMemo } from "react";
 
-export function Label({ label, icon = "", className }: { label: PrefixedLabel; icon?: string; className?: string }) {
+export function Label({
+  label,
+  icon = "",
+  className,
+  variant = "filled",
+}: { label: PrefixedLabel; icon?: string; className?: string; variant?: "filled" | "outlined" }) {
   const backgroundColor = useMemo(() => labelToColor(label), [label]);
   const contrastColor = useMemo(() => bestTextColor(backgroundColor), [backgroundColor]);
 
+  const style = useMemo(
+    () => ({
+      backgroundColor: variant === "filled" ? backgroundColor : undefined,
+      color: variant === "filled" ? contrastColor : "inherit",
+      border: variant === "outlined" ? `1px solid ${backgroundColor}` : "1px solid transparent",
+    }),
+    [backgroundColor, contrastColor, variant],
+  );
+
   return (
-    <span style={{ backgroundColor, color: contrastColor }} className={`label truncate ${className}`}>
+    <span style={style} className={`label truncate ${className}`}>
       {icon} {label}
     </span>
   );
@@ -49,7 +63,7 @@ function bestTextColor(bgHex: string) {
   const whiteContrast = contrast(bg, [255, 255, 255]);
   const blackContrast = contrast(bg, [0, 0, 0]);
 
-  return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
+  return whiteContrast > blackContrast ? "#E0E0E0" : "#000000";
 }
 
 function getColor(index: number) {
