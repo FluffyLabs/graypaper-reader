@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 set -e
 
 npx --no biome check --staged --write --files-ignore-unknown=true --no-errors-on-unmatched
