@@ -1,0 +1,5 @@
+set -e
+
+npx --no biome check --staged --write --files-ignore-unknown=true --no-errors-on-unmatched
+git update-index --again
+npx --no tsc -- --noEmit -p ./tsconfig.app.json
