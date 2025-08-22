@@ -1,0 +1,4 @@
+# .husky/pre-commit
+biome check --staged --write --files-ignore-unknown=true
+git update-index --again
+tsc --noEmit -p ./tsconfig.app.json
