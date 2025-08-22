@@ -3,6 +3,6 @@
 
 set -e
 
-biome check --staged --write --files-ignore-unknown=true --no-errors-on-unmatched
+npx --no biome check --staged --write --files-ignore-unknown=true --no-errors-on-unmatched
 git update-index --again
-tsc --noEmit -p ./tsconfig.app.json
+npx --no tsc -- --noEmit -p ./tsconfig.app.json
