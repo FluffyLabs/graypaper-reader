@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import { type PrefixedLabel, prefixLabel } from "../NotesProvider/hooks/useLabels";
 import { NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
@@ -8,7 +9,7 @@ import { useMemo } from "react";
 export function Label({
   label,
   icon = "",
-  className,
+  className = "",
   variant = "filled",
   showTooltip = false,
 }: {
@@ -34,7 +35,7 @@ export function Label({
   return (
     <span
       style={style}
-      className={`label truncate ${className} rounded-xl px-2.5 py-0.5`}
+      className={twMerge("label truncate rounded-xl px-2.5 py-0.5", className)}
       title={showTooltip ? label : undefined}
     >
       {icon} {label}
