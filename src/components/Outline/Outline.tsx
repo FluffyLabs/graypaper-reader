@@ -66,7 +66,7 @@ const OutlineDumb: FC<{
     return (
       <ul className={twMerge(firstLevel ? "mt-0" : "my-3", className)}>
         {outline.map((item, index) => (
-          <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
+          <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.25 first-of-type:mt-0")}>
             {isSkeleton && (
               <OutlineLinkSkeleton
                 className={twMerge(
@@ -75,7 +75,6 @@ const OutlineDumb: FC<{
                   index % 4 === 1 && "w-64",
                   index % 4 === 2 && "w-48",
                   index % 4 === 3 && "w-24",
-                  !firstLevel && "mt-0.5",
                   "max-w-10/12",
                 )}
               />
@@ -85,8 +84,7 @@ const OutlineDumb: FC<{
                 dest={item.dest}
                 onClick={onClick}
                 className={twMerge(
-                  "underline underline-offset-2",
-                  !firstLevel && "dark:text-brand-light text-brand-dark mt-0.5",
+                  !firstLevel && "dark:text-brand-light text-brand-dark",
                   firstLevel && "dark:text-brand text-brand-darkest",
                 )}
               >
