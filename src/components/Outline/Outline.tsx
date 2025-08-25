@@ -65,38 +65,50 @@ const OutlineDumb: FC<{
 
     return (
       <ul className={twMerge(firstLevel ? "mt-0" : "my-3", className)}>
-        {outline.map((item, index) => (
-          <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
-            {isSkeleton && (
-              <OutlineLinkSkeleton
-                className={twMerge(
-                  "h-4.5",
-                  index % 4 === 0 && "w-52",
-                  index % 4 === 1 && "w-64",
-                  index % 4 === 2 && "w-48",
-                  index % 4 === 3 && "w-24",
-                  !firstLevel && "mt-0.5",
-                  "max-w-10/12",
-                )}
-              />
-            )}
-            {!isSkeleton && (
-              <Link
-                dest={item.dest}
-                onClick={onClick}
-                className={twMerge(
-                  "underline underline-offset-2",
-                  !firstLevel && "dark:text-brand-light text-brand-dark mt-0.5",
-                  firstLevel && "dark:text-brand text-brand-darkest",
-                )}
-              >
-                {firstLevel && item.title.replace(".", " > ")}
-                {!firstLevel && item.title}
-              </Link>
-            )}
-            {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
-          </li>
-        ))}
+        {outline.map((item, index) => {
+          const { title, number } = splitOutlineTitle(item.title);
+          return (
+            <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
+              {isSkeleton && (
+                <OutlineLinkSkeleton
+                  className={twMerge(
+                    "h-4.5",
+                    index % 4 === 0 && "w-52",
+                    index % 4 === 1 && "w-64",
+                    index % 4 === 2 && "w-48",
+                    index % 4 === 3 && "w-24",
+                    !firstLevel && "mt-0.5",
+                    "max-w-10/12",
+                  )}
+                />
+              )}
+              {!isSkeleton && (
+                <Link
+                  dest={item.dest}
+                  onClick={onClick}
+                  className={twMerge(
+                    !firstLevel && "dark:text-brand-light text-brand-dark mt-0.5",
+                    firstLevel && "dark:text-brand text-brand-darkest",
+                  )}
+                >
+                  {firstLevel && (
+                    <>
+                      <span>{number?.replace(".", " >")}</span>&nbsp;
+                      <span className="border-b-1 dark:border-brand/50 border-brand-darkest/50">{title}</span>
+                    </>
+                  )}
+                  {!firstLevel && (
+                    <>
+                      <span>{number}</span>&nbsp;
+                      <span className="border-b-1 dark:border-brand-light/50 border-brand-dark/50">{title}</span>
+                    </>
+                  )}
+                </Link>
+              )}
+              {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
+            </li>
+          );
+        })}
       </ul>
     );
   };
@@ -125,4 +137,21 @@ function Link({ dest, children, className, onClick }: ILinkProps) {
       {children}
     </a>
   );
+}
+
+function splitOutlineTitle(title: string): { number: string | null; title: string } {
+  const regex = /^((?:\d+(?:\.\d+)?|Appendix [A-Z]|[A-Z]\.\d+)\.)\s*(.+)$/;
+  const match = title.match(regex);
+
+  if (match) {
+    return {
+      number: match[1],
+      title: match[2],
+    };
+  }
+
+  return {
+    number: null,
+    title: title,
+  };
 }
