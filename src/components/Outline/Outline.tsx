@@ -85,9 +85,10 @@ const OutlineDumb: FC<{
                 dest={item.dest}
                 onClick={onClick}
                 className={twMerge(
-                  "underline underline-offset-2",
-                  !firstLevel && "dark:text-brand-light text-brand-dark mt-0.5",
-                  firstLevel && "dark:text-brand text-brand-darkest",
+                  "border-b-1",
+                  !firstLevel &&
+                    "dark:text-brand-light dark:border-brand-light/50 text-brand-dark border-brand-dark/50 mt-0.5",
+                  firstLevel && "dark:text-brand dark:border-brand/50 text-brand-darkest border-brand-darkest/50 ",
                 )}
               >
                 {firstLevel && item.title.replace(".", " > ")}
