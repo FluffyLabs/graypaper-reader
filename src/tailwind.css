@@ -5,22 +5,19 @@
 :root{
   --brand: rgb(97 237 226);
   --brand-light: rgb(200 243 240);
+  --brand-very-light: rgb(242 255 254);
   --brand-dark: rgb(18 152 141);
-  --brand-darkest: rgb(14 116 107);
-}
-
-.dark{
-  --brand: rgb(97 237 226);
-  --brand-light: rgb(200 243 240);
-  --brand-dark: rgb(18 152 141);
-  --brand-darkest: rgb(14 116 107);
+  --brand-very-dark: rgb(14 116 107);
+  --brand-darkest: rgb(14 53 50);
 }
 
 @theme{
   --color-brand: var(--brand);
   --color-brand-dark: var(--brand-dark);
   --color-brand-darkest: var(--brand-darkest);
+  --color-brand-very-dark: var(--brand-very-dark);
   --color-brand-light: var(--brand-light);
+  --color-brand-very-light: var(--brand-very-light);
 
   --animate-fade-in: fade-in 0.75s ease-in forwards;
 
