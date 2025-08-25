@@ -1,0 +1,13 @@
+language: "en-US"
+
+reviews:
+  profile: "chill"
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_instructions:
+    - path: "**/*.css"
+      instructions: "Review CSS code with focus on Tailwind CSS 4.x best practices and conventions. Ensure compatibility with Tailwind 4.x features and syntax."
+    - path: "**/*.{js,jsx,ts,tsx}"
+      instructions: "When reviewing Tailwind CSS classes, ensure they follow Tailwind 4.x conventions and suggest modern 4.x alternatives for deprecated patterns."
