@@ -19,14 +19,32 @@ export function contrast(rgb1: number[], rgb2: number[]) {
 }
 
 export function hslToHex(h: number, s: number, lightness: number) {
-  const l = lightness / 100;
-  const a = (s * Math.min(l, 1 - l)) / 100;
+  // Coerce inputs to numbers to handle potential non-numeric inputs gracefully.
+  // Although TypeScript types as 'number', this adds a layer of robustness.
+  let hue = Number(h);
+  let saturation = Number(s);
+  let light = Number(lightness);
+
+  // Clamp saturation and lightness into the [0, 100] range.
+  saturation = Math.max(0, Math.min(100, saturation));
+  light = Math.max(0, Math.min(100, light));
+
+  // Normalize hue into the [0, 360) range.
+  hue = ((hue % 360) + 360) % 360;
+
+  const l = light / 100;
+  const a = (saturation * Math.min(l, 1 - l)) / 100;
+
   const f = (n: number) => {
-    const k = (n + h / 30) % 12;
+    const k = (n + hue / 30) % 12;
     const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, "0"); // Convert to hex and pad if necessary
+
+    // Guard against NaN values for 'color' by using a default of 0.
+    // Then, round and convert to hex. Ensure the result is clamped to [0, 255].
+    const roundedColor = Math.round(255 * (Number.isNaN(color) ? 0 : color));
+    const clampedColor = Math.max(0, Math.min(255, roundedColor));
+
+    return clampedColor.toString(16).padStart(2, "0"); // Convert to hex and pad if necessary
   };
   return `#${f(0)}${f(8)}${f(4)}`;
 }
