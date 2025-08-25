@@ -1,6 +1,7 @@
 import { type PrefixedLabel, prefixLabel } from "../NotesProvider/hooks/useLabels";
 import { NoteSource } from "../NotesProvider/types/DecoratedNote";
 import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
+import { contrast, hslColorToCss, hslToHex } from "./color-utils";
 import "./Label.css";
 import { useMemo } from "react";
 
@@ -17,20 +18,25 @@ export function Label({
   variant?: "filled" | "outlined";
   showTooltip?: boolean;
 }) {
-  const backgroundColor = useMemo(() => labelToColor(label), [label]);
-  const contrastColor = useMemo(() => bestTextColor(backgroundColor), [backgroundColor]);
+  const mainColor = useMemo(() => labelToColor(label), [label]);
+  const contrastMainColor = useMemo(() => bestTextColor(mainColor.hex), [mainColor]);
+  const dimmedMainColor = useMemo(() => dimColor(mainColor), [mainColor]);
 
   const style = useMemo(
     () => ({
-      backgroundColor: variant === "filled" ? backgroundColor : undefined,
-      color: variant === "filled" ? contrastColor : "inherit",
-      border: variant === "outlined" ? `1px solid ${backgroundColor}` : "1px solid transparent",
+      backgroundColor: variant === "filled" ? mainColor.hex : hslColorToCss(dimmedMainColor.hsl),
+      color: variant === "filled" ? contrastMainColor : mainColor.hex,
+      border: variant === "filled" ? "1px solid transparent" : `1px solid ${mainColor.hex}`,
     }),
-    [backgroundColor, contrastColor, variant],
+    [dimmedMainColor, contrastMainColor, variant, mainColor],
   );
 
   return (
-    <span style={style} className={`label truncate ${className}`} title={showTooltip ? label : undefined}>
+    <span
+      style={style}
+      className={`label truncate ${className} rounded-xl px-2.5 py-0.5`}
+      title={showTooltip ? label : undefined}
+    >
       {icon} {label}
     </span>
   );
@@ -40,24 +46,11 @@ export function LabelString({ label, source = NoteSource.Local }: { label: UnPre
   return <Label label={prefixLabel(source, label)} />;
 }
 
-function labelToColor(label: string) {
-  return getColor(hashStringToIndex(label));
-}
-
-function luminance(r: number, g: number, b: number) {
-  const a = [r, g, b].map((v) => {
-    const value = v / 255;
-    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-  });
-  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-}
-
-function contrast(rgb1: number[], rgb2: number[]) {
-  const lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
-  const lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
-  const brightest = Math.max(lum1, lum2);
-  const darkest = Math.min(lum1, lum2);
-  return (brightest + 0.05) / (darkest + 0.05);
+function dimColor(mainColor: { hsl: [number, number, number] }) {
+  const newDimmedSaturation = mainColor.hsl[1] * 0.75;
+  const newDimmedLightness = mainColor.hsl[2] / 5;
+  const newHsl = [mainColor.hsl[0], newDimmedSaturation, newDimmedLightness] as [number, number, number];
+  return { hsl: newHsl };
 }
 
 function bestTextColor(bgHex: string) {
@@ -73,13 +66,10 @@ function bestTextColor(bgHex: string) {
   return whiteContrast > blackContrast ? "#E0E0E0" : "#000000";
 }
 
-function getColor(index: number) {
-  const size = 120;
-  const hue = (index * (360 / size)) % 360;
-  return hslToHex(hue, 90, 40);
+function labelToColor(label: string) {
+  return getColor(hashStringToIndex(label));
 }
 
-// Function to hash a string to an index
 function hashStringToIndex(label: string) {
   let hash = 0;
   for (let i = 0; i < label.length; i++) {
@@ -88,15 +78,10 @@ function hashStringToIndex(label: string) {
   return hash;
 }
 
-function hslToHex(h: number, s: number, lightness: number) {
-  const l = lightness / 100;
-  const a = (s * Math.min(l, 1 - l)) / 100;
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, "0"); // Convert to hex and pad if necessary
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
+function getColor(index: number) {
+  const size = 120;
+  const hue = (index * (360 / size)) % 360;
+  const hsl = [hue, 80, 65] as [number, number, number];
+  const hex = hslToHex(hsl[0], hsl[1], hsl[2]);
+  return { hsl, hex };
 }
