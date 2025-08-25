@@ -25,6 +25,7 @@ export interface INotesContext {
   canUndo: boolean;
   canRedo: boolean;
   remoteSources: IRemoteSource[];
+  labelsAreLoaded: boolean;
   handleSetRemoteSources(r: IRemoteSource, remove?: true): void;
   handleAddNote(note: IStorageNote): void;
   handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
@@ -93,7 +94,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const allNotesReady = useMemo(() => localNotesReady && remoteNotesReady, [localNotesReady, remoteNotesReady]);
 
-  const [filteredNotes, labels, handleToggleLabel] = useLabels(allNotes);
+  const { filteredNotes, labels, labelsAreLoaded, toggleLabel: handleToggleLabel } = useLabels(allNotes);
 
   const context: INotesContext = {
     notesPinned,
@@ -104,6 +105,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     labels,
     canUndo,
     canRedo,
+    labelsAreLoaded,
     handleSetRemoteSources: useCallback((newVal: IRemoteSource, remove?: true) => {
       setRemoteSources((remoteSources) => {
         let newRemoteSources = remoteSources;
