@@ -20,16 +20,28 @@ const emptyLabels: ILabelTreeNode[] = [];
 const emptyCallback = () => {};
 
 export function LabelsFilter({ forcedColorScheme }: { forcedColorScheme?: "dark" | "light" }) {
-  const { labels = emptyLabels, handleToggleLabel = emptyCallback } = useContext(NotesContext) ?? {};
+  const {
+    labels = emptyLabels,
+    handleToggleLabel = emptyCallback,
+    labelsAreLoaded = false,
+  } = useContext(NotesContext) ?? {};
 
-  return <LabelsFilterDumb labels={labels} onToggleLabel={handleToggleLabel} forcedColorScheme={forcedColorScheme} />;
+  return (
+    <LabelsFilterDumb
+      labels={labels}
+      labelsAreLoaded={labelsAreLoaded}
+      onToggleLabel={handleToggleLabel}
+      forcedColorScheme={forcedColorScheme}
+    />
+  );
 }
 
 const LabelsFilterDumb: FC<{
   labels: ILabelTreeNode[];
+  labelsAreLoaded: boolean;
   onToggleLabel: (label: ILabelTreeNode) => void;
   forcedColorScheme?: "dark" | "light";
-}> = ({ labels, onToggleLabel, forcedColorScheme }) => {
+}> = ({ labels, labelsAreLoaded, onToggleLabel, forcedColorScheme }) => {
   const treeRoots = useMemo(() => {
     const roots = new Map(labels.map((x) => [x.prefixedLabel, x]));
     for (const label of labels) {
@@ -47,24 +59,30 @@ const LabelsFilterDumb: FC<{
     [onToggleLabel],
   );
 
-  const allNodesActiveCount = useMemo(() => {
-    let count = 0;
-    for (const label of labels) {
-      for (const child of label.children) {
-        if (child.isActive) {
-          count++;
-        }
-      }
-    }
-    return count;
+  const childrenStats = useMemo(() => {
+    const allChildren = labels.flatMap((label) => label.children);
+
+    return {
+      active: allChildren.filter((child) => child.isActive).length,
+      total: allChildren.length,
+    };
   }, [labels]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-[32px] px-5" forcedColorScheme={forcedColorScheme}>
+        <Button
+          variant="outline"
+          className={twMerge("h-[32px] px-5", !labelsAreLoaded && "pointer-events-none")}
+          forcedColorScheme={forcedColorScheme}
+        >
           Labels notes{" "}
-          <span className="bg-[var(--border)] rounded-sm px-2 h-[18px] ml-4 mt-0.25">{allNodesActiveCount}</span>
+          <span className="bg-[var(--border)] rounded-sm px-2 h-[18px] ml-4 mt-0.25 min-w-11">
+            <span className={twMerge(!labelsAreLoaded && "animate-fade-in")}>
+              {!labelsAreLoaded && <TextSkeleton className="w-6 h-4 m-0.5" />}
+              {labelsAreLoaded && `${childrenStats.active}/${childrenStats.total}`}
+            </span>
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto max-w-72" align="end" forcedColorScheme={forcedColorScheme}>
@@ -104,5 +122,16 @@ const LabelsFilterDumb: FC<{
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const TextSkeleton: FC<{ className: string }> = ({ className }) => {
+  return (
+    <div
+      className={twMerge(
+        "h-4 w-24 bg-gray-300/85 dark:bg-[var(--brand-light)] dark:opacity-15 rounded-md animate-pulse",
+        className,
+      )}
+    />
   );
 };

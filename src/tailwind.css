@@ -21,4 +21,11 @@
   --color-brand-dark: var(--brand-dark);
   --color-brand-darkest: var(--brand-darkest);
   --color-brand-light: var(--brand-light);
+
+  --animate-fade-in: fade-in 0.75s ease-in forwards;
+
+  @keyframes fade-in {
+    from { opacity: 0 }
+    to   { opacity: 1 }
+  }
 }

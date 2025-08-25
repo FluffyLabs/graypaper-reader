@@ -109,20 +109,27 @@ export function getFilteredNotes<T extends IStorageNote | IDecoratedNote>(
   });
 }
 
+const emptyArray: unknown[] = [];
+
 /**
  * Maintains a list list of all labels (across all nodes) and allow to activate/deactivate them
  * to filter given list of all decorated notes.
  */
-export function useLabels(
-  allNotes: IDecoratedNote[],
-): [IDecoratedNote[], ILabelTreeNode[], (label: ILabelTreeNode) => void] {
+export function useLabels(allNotes: IDecoratedNote[]): {
+  filteredNotes: IDecoratedNote[];
+  labels: ILabelTreeNode[];
+  toggleLabel: (label: ILabelTreeNode) => void;
+  labelsAreLoaded: boolean;
+} {
   const [storageLabels, setStorageLabels] = useState<IStorageLabel[]>([]);
-  const [labels, setLabels] = useState<ILabelTreeNode[]>([]);
+  const [labels, setLabels] = useState<ILabelTreeNode[]>(emptyArray as ILabelTreeNode[]);
 
   // load and save storage labels to Local Storage
   useEffect(() => {
-    setStorageLabels(loadFromLocalStorage());
+    const storageLabels = loadFromLocalStorage();
+    setStorageLabels(storageLabels);
   }, []);
+
   useEffect(() => {
     if (storageLabels.length) {
       saveToLocalStorage(storageLabels);
@@ -186,20 +193,26 @@ export function useLabels(
     for (const label of storageLabels) {
       activity.set(label.label, label.isActive);
     }
+
     return activity;
   }, [storageLabels]);
 
   // Re-build the labels tree on changes in notes or storage labels.
   useEffect(() => {
     const uniqueLabels = new Set<PrefixedLabel>();
+
     allNotes.map((note) => {
       note.original.labels.map((label) => {
         uniqueLabels.add(prefixLabel(note.source, label));
       });
     });
 
-    setLabels(
-      buildLabelTree(
+    setLabels((prev) => {
+      if (prev.length === 0 && uniqueLabels.size === 0) {
+        return prev;
+      }
+
+      return buildLabelTree(
         Array.from(uniqueLabels.values()).map((prefixedLabel) => {
           const activeByDefault = !prefixedLabel.startsWith(LABEL_REMOTE);
           const activeInStorage = storageActivity.get(prefixedLabel);
@@ -210,8 +223,8 @@ export function useLabels(
             isActive,
           };
         }),
-      ),
-    );
+      );
+    });
   }, [allNotes, storageActivity]);
 
   // filter notes when labels are changing
@@ -221,5 +234,5 @@ export function useLabels(
     return getFilteredNotes(allNotes, activeLabels);
   }, [allNotes, labels]);
 
-  return [filteredNotes, labels, toggleLabel];
+  return { filteredNotes, labels, toggleLabel, labelsAreLoaded: labels !== emptyArray };
 }
