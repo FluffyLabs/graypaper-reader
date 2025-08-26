@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import "./App.css";
 
-import { AppsSidebar } from "@fluffylabs/shared-ui";
+import { AppsSidebar, Content } from "@fluffylabs/shared-ui";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
 import { Header } from "./components/Header/Header";
@@ -36,9 +36,9 @@ export function App() {
                   left={
                     <div className="h-full w-full flex flex-row items-stretch justify-center">
                       <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
-                      <div className="box-border h-full w-full relative overflow-hidden bg-background">
+                      <Content>
                         <PdfViewer />
-                      </div>
+                      </Content>
                       <div className="controls">
                         <PinNotesToggle />
                         <LightThemeToggle />
