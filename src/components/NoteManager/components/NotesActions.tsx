@@ -111,7 +111,7 @@ export function NotesActions() {
 
   return (
     <>
-      <div className="notes-actions">
+      <div className="flex gap-1 text-sm">
         <button className="default-button" onClick={handleUndo} disabled={!canUndo}>
           ↺ undo
         </button>

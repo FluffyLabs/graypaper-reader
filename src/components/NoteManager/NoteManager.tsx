@@ -6,6 +6,7 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
+import { Selection } from "../Selection/Selection";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { NotesActions } from "./components/NotesActions";
 import { NotesList } from "./components/NotesList";
@@ -14,7 +15,8 @@ const DEFAULT_AUTHOR = "";
 
 export function NoteManager({ className }: { className?: string }) {
   return (
-    <div className={twMerge("notes-wrapper", className)}>
+    <div className={twMerge("notes-wrapper gap-4", className)}>
+      <Selection />
       <Notes />
       <NotesActions />
     </div>
