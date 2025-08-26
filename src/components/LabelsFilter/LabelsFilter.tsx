@@ -76,7 +76,7 @@ const LabelsFilterDumb: FC<{
           className={twMerge("h-[32px] px-5", !labelsAreLoaded && "pointer-events-none")}
           forcedColorScheme={forcedColorScheme}
         >
-          Labels notes{" "}
+          Notes labels{" "}
           <span className="bg-[var(--border)] rounded-sm px-2 h-[18px] ml-4 mt-0.25 min-w-11">
             <span className={twMerge(!labelsAreLoaded && "animate-fade-in")}>
               {!labelsAreLoaded && <TextSkeleton className="w-6 h-4 m-0.5" />}
