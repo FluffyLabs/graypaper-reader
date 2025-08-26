@@ -9,6 +9,18 @@
   --brand-dark: rgb(18 152 141);
   --brand-very-dark: rgb(14 116 107);
   --brand-darkest: rgb(14 53 50);
+
+  --sidebar-foreground: var(--color-gray-600);
+
+    color-scheme: light;
+}
+
+.dark{
+  --sidebar-foreground: rgb(255 255 255);
+  --sidebar-foreground: var(--color-gray-300);
+  /* Force light mode rendering */
+
+  color-scheme: dark;
 }
 
 @theme{
@@ -18,6 +30,8 @@
   --color-brand-very-dark: var(--brand-very-dark);
   --color-brand-light: var(--brand-light);
   --color-brand-very-light: var(--brand-very-light);
+
+  --color-sidebar-foreground: var(--sidebar-foreground);
 
   --animate-fade-in: fade-in 0.75s ease-in forwards;
 

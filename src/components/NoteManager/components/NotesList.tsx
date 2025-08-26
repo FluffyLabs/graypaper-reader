@@ -12,7 +12,7 @@ export const NotesList = ({
   onDeleteNote: (noteToDelete: IDecoratedNote) => void;
 }) => {
   if (notes.length === 0) {
-    return <div className="no-notes">No notes available.</div>;
+    return <div className="no-notes text-sidebar-foreground">No notes available.</div>;
   }
 
   return (

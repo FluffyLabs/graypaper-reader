@@ -17,6 +17,10 @@
   min-width: fit-content;
 }
 
+.pdfViewer .page{
+  background-color: #101010;
+}
+
 .pdfViewer.light .page{
   filter: invert(1) contrast(1.6);
 }
@@ -39,9 +43,4 @@
 
 .pdfViewer .textLayer ::selection {
   background: rgba(0, 50, 255, 0.25);
-}
-
-.pdfViewer .page {
-  background-color: var(--sidebar)
-
 }

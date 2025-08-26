@@ -174,7 +174,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
           ➡️
         </button>
       </div>
-      <div className={`search-results ${isLoading ? "search-loading" : ""}`}>
+      <div className={`search-results text-sidebar-foreground ${isLoading ? "search-loading" : ""}`}>
         Found {matches.count} results on {matches.pagesAndCount.length} pages.
         <ul>
           {matches.pagesAndCount.map((res) => (
