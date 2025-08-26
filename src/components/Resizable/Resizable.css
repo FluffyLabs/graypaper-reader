@@ -23,13 +23,15 @@
 
 .resizable .right {
   width: calc(30% - 2px);
+  border-left: 1px solid light-dark(#fff, #3d3d3d);
 }
 
 .resizable .handle {
-  width: 6px;
+  width: 10px;
   cursor: col-resize;
   height: 100%;
-  background-color: light-dark(#ddd, #555);
+  border-right: 1px solid light-dark(#d4d4d4, #181818);
+  background-color: var(--color-sidebar);
 }
 @media (max-width: 640px) {
   .resizable .handle {
@@ -37,7 +39,7 @@
   }
 }
 .resizable .handle:hover {
-  background-color: light-dark(#bbb, #777);
+  background-color: light-dark(#d4d4d4, #181818);
 }
 
 .resizable .overlay {
