@@ -88,7 +88,7 @@ const OutlineDumb: FC<{
                   onClick={onClick}
                   className={twMerge(
                     !firstLevel && "dark:text-brand-light text-brand-dark mt-0.5",
-                    firstLevel && "dark:text-brand text-brand-darkest",
+                    firstLevel && "dark:text-brand text-brand-very-dark",
                   )}
                 >
                   {firstLevel && (
