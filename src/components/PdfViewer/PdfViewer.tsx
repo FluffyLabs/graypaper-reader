@@ -112,7 +112,7 @@ export function PdfViewer() {
     <>
       <div
         ref={handleRootRef}
-        className="pdf-viewer-root"
+        className="pdf-viewer-root bg-inherit"
         onMouseDown={removeSelection}
         onMouseUp={handleViewerMouseUp}
         onWheel={handleWheel}
