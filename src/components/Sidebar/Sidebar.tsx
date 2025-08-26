@@ -5,7 +5,6 @@ import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
 import { Search } from "../Search/Search";
-import { Selection } from "../Selection/Selection";
 import { Tabs } from "../Tabs/Tabs";
 
 export function Sidebar() {
@@ -49,8 +48,7 @@ export function Sidebar() {
 
   return (
     <div className="sidebar bg-sidebar">
-      <div className="content">
-        <Selection activeTab={tab} switchTab={setTab} />
+      <div className="content mt-2">
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} alwaysRender />
       </div>
     </div>

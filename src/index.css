@@ -53,11 +53,14 @@ h1 {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: light-dark(#f9f9f9, #1a1a1a);
+  background-color: light-dark(#e7e7e7, #1a1a1a);
   cursor: pointer;
   transition: border-color 0.25s;
 }
-.default-button:hover {
+.default-button:disabled{
+  opacity: 0.5;
+}
+.default-button:hover:not(:disabled) {
   border-color: #646cff;
 }
 .default-button:focus,

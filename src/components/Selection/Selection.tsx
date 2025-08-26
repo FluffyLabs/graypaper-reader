@@ -4,12 +4,7 @@ import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 
-type SelectionProps = {
-  activeTab: string;
-  switchTab: (tab: "notes") => void;
-};
-
-export function Selection({ activeTab, switchTab }: SelectionProps) {
+export function Selection() {
   const { selectedBlocks, selectionString, pageNumber } = useContext(SelectionContext) as ISelectionContext;
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
@@ -39,33 +34,6 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
     window.setTimeout(() => setLinkCreated(false), 2000);
   }, [selectedBlocks]);
 
-  const openNotes = useCallback(() => {
-    switchTab("notes");
-  }, [switchTab]);
-
-  const Button = ({
-    onClick,
-    tooltip,
-    children,
-  }: {
-    onClick: () => void;
-    tooltip: string;
-    children: ReactNode;
-  }) => {
-    return (
-      <button
-        data-tooltip-id="selection-tooltip"
-        data-tooltip-content={tooltip}
-        data-tooltip-place="bottom"
-        disabled={!selectedBlocks.length}
-        onClick={onClick}
-        className="default-button"
-      >
-        {children}
-      </button>
-    );
-  };
-
   return (
     <div className="selection shrink-0">
       <blockquote>{selectionString}</blockquote>
@@ -80,16 +48,40 @@ export function Selection({ activeTab, switchTab }: SelectionProps) {
         )}
       </small>
       <div className="actions">
-        <Button onClick={createLink} tooltip="Create a shareable link to the selected content.">
+        <Button
+          onClick={createLink}
+          tooltip="Create a shareable link to the selected content."
+          disabled={selectedBlocks.length === 0}
+        >
           {linkCreated ? <span>Copied</span> : "Link"}
         </Button>
-        {activeTab !== "notes" && (
-          <Button onClick={openNotes} tooltip="Create a local note to the selected content.">
-            Add note
-          </Button>
-        )}
         <Tooltip id="selection-tooltip" />
       </div>
     </div>
   );
 }
+
+const Button = ({
+  onClick,
+  tooltip,
+  children,
+  disabled = false,
+}: {
+  onClick: () => void;
+  tooltip: string;
+  children: ReactNode;
+  disabled?: boolean;
+}) => {
+  return (
+    <button
+      data-tooltip-id="selection-tooltip"
+      data-tooltip-content={tooltip}
+      data-tooltip-place="bottom"
+      disabled={disabled}
+      onClick={onClick}
+      className="default-button"
+    >
+      {children}
+    </button>
+  );
+};
