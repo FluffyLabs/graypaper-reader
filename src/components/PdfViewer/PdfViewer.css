@@ -17,11 +17,11 @@
   min-width: fit-content;
 }
 
-.pdfViewer.light {
+.pdfViewer.light .page{
   filter: invert(1) contrast(1.6);
 }
 
-.pdfViewer.gray {
+.pdfViewer.gray .page {
   filter: invert(1);
 }
 
