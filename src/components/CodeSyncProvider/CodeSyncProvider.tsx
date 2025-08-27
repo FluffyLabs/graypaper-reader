@@ -31,8 +31,10 @@ const BIBLIOGRAPHY_TITLE = "References";
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
 const isPathologicalBlock = (block: { width: number; height: number }) => {
-  /* checking simple for dimension is an naive attempt to find too big blocks; there is a risk that it matches healthy big blocks */
-  return (block.height > 0.15 && block.width > 0.15) || block.height > 0.15 || block.width > 0.95;
+  // Block is pathological if:
+  // - Height exceeds 15% of page height, OR
+  // - Width exceeds 95% of page width
+  return block.height > 0.15 || block.width > 0.95;
 };
 
 export function CodeSyncProvider({ children }: PropsWithChildren) {
