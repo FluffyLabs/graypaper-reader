@@ -2,6 +2,7 @@ import { migrateSelection as migrateSelectionRaw } from "@fluffylabs/links-metad
 import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/links-metadata";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
+import { isFeatureEnabled } from "../../devtools";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { debugDrawBlock } from "./debugDrawBlock";
 import { useSynctexStore } from "./hooks/useSynctexStore";
@@ -43,28 +44,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     async function loadSynctex() {
-      const mod = 0;
       const synctex = await synctexStore.getSynctex(version);
-      synctex.blocksByFileIdAndLine.forEach((fileAndLine) => {
-        fileAndLine.forEach((blocks) => {
-          blocks
-            .filter((b) => b.modified !== true)
-            .forEach((block) => {
-              console.log(block.top);
-              block.top = block.top + mod;
-              block.modified = true;
-            });
-        });
-      });
-      synctex.blocksByPage.forEach((pageBlocks) => {
-        pageBlocks
-          .filter((b) => b.modified !== true)
-          .forEach((block) => {
-            console.log(block.top);
-            block.top = block.top + mod;
-            block.modified = true;
-          });
-      });
       setSynctexData(synctex);
     }
 
@@ -75,7 +55,6 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
   const getSynctexBlockAtLocation = useCallback(
     (left: number, top: number, pageNumber: number) => {
-      console.log("start getSynctexBlockAtLocation");
       if (!synctexData) return null;
 
       const blocksInCurrPage = synctexData.blocksByPage.get(pageNumber) || [];
@@ -134,12 +113,13 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       const rangeOfBlocks =
         synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) ?? [];
 
-      const badBlocks = rangeOfBlocks.filter((block) => isPathologicalBlock(block)) || [];
       const goodBlocks = rangeOfBlocks.filter((block) => !isPathologicalBlock(block)) || [];
 
-      console.log(badBlocks);
-
-      goodBlocks.forEach((b) => debugDrawBlock(startBlockId.pageNumber, b));
+      if (isFeatureEnabled("DEBUG_DRAW_BLOCKS")) {
+        for (const block of goodBlocks) {
+          debugDrawBlock(startBlockId.pageNumber, block);
+        }
+      }
 
       return goodBlocks;
     },

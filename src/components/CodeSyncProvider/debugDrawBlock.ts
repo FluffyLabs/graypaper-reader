@@ -23,7 +23,6 @@ function drawRectangle(page: number, rectParams: { width: number; height: number
 
   const x1 = left * canvasWidth;
   const y1 = top * canvasHeight;
-  console.log(y1, canvasHeight);
   const rectWidth = width * canvasWidth;
   const rectHeight = height * canvasHeight;
 
