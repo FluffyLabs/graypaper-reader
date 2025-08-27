@@ -3,6 +3,7 @@ import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } f
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { debugDrawBlock } from "./debugDrawBlock";
 import { useSynctexStore } from "./hooks/useSynctexStore";
 import { useTexStore } from "./hooks/useTexStore";
 
@@ -30,7 +31,7 @@ export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
 const isPathologicalBlock = (block: { width: number; height: number }) => {
   /* checking simple for dimension is an naive attempt to find too big blocks; there is a risk that it matches healthy big blocks */
-  return (block.height > 0.1 && block.width > 0.1) || block.height > 0.5 || block.width > 0.5;
+  return (block.height > 0.15 && block.width > 0.15) || block.height > 0.15 || block.width > 0.95;
 };
 
 export function CodeSyncProvider({ children }: PropsWithChildren) {
@@ -42,7 +43,29 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     async function loadSynctex() {
-      setSynctexData(await synctexStore.getSynctex(version));
+      const mod = 0;
+      const synctex = await synctexStore.getSynctex(version);
+      synctex.blocksByFileIdAndLine.forEach((fileAndLine) => {
+        fileAndLine.forEach((blocks) => {
+          blocks
+            .filter((b) => b.modified !== true)
+            .forEach((block) => {
+              console.log(block.top);
+              block.top = block.top + mod;
+              block.modified = true;
+            });
+        });
+      });
+      synctex.blocksByPage.forEach((pageBlocks) => {
+        pageBlocks
+          .filter((b) => b.modified !== true)
+          .forEach((block) => {
+            console.log(block.top);
+            block.top = block.top + mod;
+            block.modified = true;
+          });
+      });
+      setSynctexData(synctex);
     }
 
     if (version) {
@@ -108,12 +131,17 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       }
 
       // todo: for now we assume selections are within one page
-      return (
-        synctexData.blocksByPage
-          .get(startBlockId.pageNumber)
-          ?.slice(startBlockId.index, endBlockId.index + 1)
-          .filter((block) => !isPathologicalBlock(block)) || []
-      );
+      const rangeOfBlocks =
+        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) ?? [];
+
+      const badBlocks = rangeOfBlocks.filter((block) => isPathologicalBlock(block)) || [];
+      const goodBlocks = rangeOfBlocks.filter((block) => !isPathologicalBlock(block)) || [];
+
+      console.log(badBlocks);
+
+      goodBlocks.forEach((b) => debugDrawBlock(startBlockId.pageNumber, b));
+
+      return goodBlocks;
     },
     [synctexData],
   );
