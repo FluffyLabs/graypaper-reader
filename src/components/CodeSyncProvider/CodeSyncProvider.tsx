@@ -2,7 +2,9 @@ import { migrateSelection as migrateSelectionRaw } from "@fluffylabs/links-metad
 import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/links-metadata";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
+import { isFeatureEnabled } from "../../devtools";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
+import { debugDrawBlock } from "./debugDrawBlock";
 import { useSynctexStore } from "./hooks/useSynctexStore";
 import { useTexStore } from "./hooks/useTexStore";
 
@@ -28,6 +30,13 @@ const BIBLIOGRAPHY_TITLE = "References";
 
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
+const isPathologicalBlock = (block: { width: number; height: number }) => {
+  // Block is pathological if:
+  // - Height exceeds 15% of page height, OR
+  // - Width exceeds 95% of page width
+  return block.height > 0.15 || block.width > 0.95;
+};
+
 export function CodeSyncProvider({ children }: PropsWithChildren) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
   const texStore = useTexStore();
@@ -37,7 +46,8 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     async function loadSynctex() {
-      setSynctexData(await synctexStore.getSynctex(version));
+      const synctex = await synctexStore.getSynctex(version);
+      setSynctexData(synctex);
     }
 
     if (version) {
@@ -55,6 +65,11 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       for (let i = 0; i < blocksInCurrPage.length; i++) {
         const currBlock = blocksInCurrPage[i];
+
+        if (isPathologicalBlock(currBlock)) {
+          continue;
+        }
+
         if (
           left >= currBlock.left - BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
           left <= currBlock.left + currBlock.width + BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
@@ -97,9 +112,18 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       }
 
       // todo: for now we assume selections are within one page
-      return (
-        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) || []
-      );
+      const rangeOfBlocks =
+        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) ?? [];
+
+      const goodBlocks = rangeOfBlocks.filter((block) => !isPathologicalBlock(block)) || [];
+
+      if (isFeatureEnabled("DEBUG_DRAW_BLOCKS")) {
+        for (const block of goodBlocks) {
+          debugDrawBlock(startBlockId.pageNumber, block);
+        }
+      }
+
+      return goodBlocks;
     },
     [synctexData],
   );
