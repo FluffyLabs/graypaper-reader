@@ -106,7 +106,12 @@ export function PdfViewer() {
     window.getSelection()?.empty();
   }, []);
 
-  if (!pdfDocument) return <div className={`pdf-viewer-loading ${theme} animate-fade-in`}>Loading...</div>;
+  if (!pdfDocument)
+    return (
+      <div className="pdf-viewer-loading bg-inherit animate-fade-in" role="status" aria-live="polite" aria-busy="true">
+        Loading...
+      </div>
+    );
 
   return (
     <>
