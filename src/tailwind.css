@@ -11,16 +11,12 @@
   --brand-darkest: rgb(14 53 50);
 
   --sidebar-foreground: var(--color-gray-600);
-
-    color-scheme: light;
 }
 
 .dark{
   --sidebar-foreground: rgb(255 255 255);
   --sidebar-foreground: var(--color-gray-300);
   /* Force light mode rendering */
-
-  color-scheme: dark;
 }
 
 @theme{
