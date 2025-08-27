@@ -29,6 +29,10 @@
   filter: invert(1);
 }
 
+.pdfViewer .page.loading::after{
+  background-color: inherit;
+}
+
 .pdfViewer .textLayer {
   /* Bump the z-index of text layer, so that we can display highlights
    * between the page background and the text layer (selection is on top)
