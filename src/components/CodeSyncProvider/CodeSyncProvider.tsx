@@ -28,6 +28,11 @@ const BIBLIOGRAPHY_TITLE = "References";
 
 export const CodeSyncContext = createContext<ICodeSyncContext | null>(null);
 
+const isPathologicalBlock = (block: { width: number; height: number }) => {
+  /* checking simple for dimension is an naive attempt to find too big blocks; there is a risk that it matches healthy big blocks */
+  return (block.height > 0.1 && block.width > 0.1) || block.height > 0.5 || block.width > 0.5;
+};
+
 export function CodeSyncProvider({ children }: PropsWithChildren) {
   const [synctexData, setSynctexData] = useState<ISynctexData>();
   const texStore = useTexStore();
@@ -47,6 +52,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
   const getSynctexBlockAtLocation = useCallback(
     (left: number, top: number, pageNumber: number) => {
+      console.log("start getSynctexBlockAtLocation");
       if (!synctexData) return null;
 
       const blocksInCurrPage = synctexData.blocksByPage.get(pageNumber) || [];
@@ -55,6 +61,11 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       for (let i = 0; i < blocksInCurrPage.length; i++) {
         const currBlock = blocksInCurrPage[i];
+
+        if (isPathologicalBlock(currBlock)) {
+          continue;
+        }
+
         if (
           left >= currBlock.left - BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
           left <= currBlock.left + currBlock.width + BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH &&
@@ -98,7 +109,10 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
 
       // todo: for now we assume selections are within one page
       return (
-        synctexData.blocksByPage.get(startBlockId.pageNumber)?.slice(startBlockId.index, endBlockId.index + 1) || []
+        synctexData.blocksByPage
+          .get(startBlockId.pageNumber)
+          ?.slice(startBlockId.index, endBlockId.index + 1)
+          .filter((block) => !isPathologicalBlock(block)) || []
       );
     },
     [synctexData],

@@ -48,3 +48,7 @@
 .pdfViewer .textLayer ::selection {
   background: rgba(0, 50, 255, 0.25);
 }
+
+.pdfViewer .textLayer .endOfContent, .pdfViewer .textLayer br{
+  pointer-events: none;
+}
