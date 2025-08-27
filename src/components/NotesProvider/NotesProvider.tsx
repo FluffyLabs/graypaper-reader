@@ -94,7 +94,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const allNotesReady = useMemo(() => localNotesReady && remoteNotesReady, [localNotesReady, remoteNotesReady]);
 
-  const { filteredNotes, labels, labelsAreLoaded, toggleLabel: handleToggleLabel } = useLabels(allNotes);
+  const { filteredNotes, labels, toggleLabel: handleToggleLabel } = useLabels(allNotes);
 
   const context: INotesContext = {
     notesPinned,
@@ -105,7 +105,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     labels,
     canUndo,
     canRedo,
-    labelsAreLoaded,
+    labelsAreLoaded: allNotesReady,
     handleSetRemoteSources: useCallback((newVal: IRemoteSource, remove?: true) => {
       setRemoteSources((remoteSources) => {
         let newRemoteSources = remoteSources;

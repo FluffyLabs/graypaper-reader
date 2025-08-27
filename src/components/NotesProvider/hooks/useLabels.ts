@@ -109,7 +109,7 @@ export function getFilteredNotes<T extends IStorageNote | IDecoratedNote>(
   });
 }
 
-const emptyArray: unknown[] = [];
+const initialEmptyArray: unknown[] = [];
 
 /**
  * Maintains a list list of all labels (across all nodes) and allow to activate/deactivate them
@@ -119,10 +119,9 @@ export function useLabels(allNotes: IDecoratedNote[]): {
   filteredNotes: IDecoratedNote[];
   labels: ILabelTreeNode[];
   toggleLabel: (label: ILabelTreeNode) => void;
-  labelsAreLoaded: boolean;
 } {
   const [storageLabels, setStorageLabels] = useState<IStorageLabel[]>([]);
-  const [labels, setLabels] = useState<ILabelTreeNode[]>(emptyArray as ILabelTreeNode[]);
+  const [labels, setLabels] = useState<ILabelTreeNode[]>(initialEmptyArray as ILabelTreeNode[]);
 
   // load and save storage labels to Local Storage
   useEffect(() => {
@@ -234,5 +233,5 @@ export function useLabels(allNotes: IDecoratedNote[]): {
     return getFilteredNotes(allNotes, activeLabels);
   }, [allNotes, labels]);
 
-  return { filteredNotes, labels, toggleLabel, labelsAreLoaded: labels !== emptyArray };
+  return { filteredNotes, labels, toggleLabel };
 }

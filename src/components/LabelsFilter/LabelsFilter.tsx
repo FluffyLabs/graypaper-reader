@@ -3,6 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@fluffylabs/shared-ui";
 import { type FC, Fragment, useCallback, useContext, useMemo } from "react";
@@ -86,6 +87,7 @@ const LabelsFilterDumb: FC<{
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto max-w-72" align="end" forcedColorScheme={forcedColorScheme}>
+        {treeRoots.length === 0 && <DropdownMenuLabel className="text-center opacity-65">No labels</DropdownMenuLabel>}
         {treeRoots.map((label) => (
           <Fragment key={label.prefixedLabel}>
             <DropdownMenuCheckboxItem
