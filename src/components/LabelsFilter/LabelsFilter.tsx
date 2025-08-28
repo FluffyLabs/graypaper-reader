@@ -57,13 +57,13 @@ const LabelsFilterDumb: FC<{
   );
 
   const childrenStats = useMemo(() => {
-    const allChildren = labels.flatMap((label) => label.children);
+    const allChildren = treeRoots.flatMap((root) => root.children);
 
     return {
       active: allChildren.filter((child) => child.isActive).length,
       total: allChildren.length,
     };
-  }, [labels]);
+  }, [treeRoots]);
 
   return (
     <DropdownMenu>
