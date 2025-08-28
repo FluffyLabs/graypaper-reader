@@ -1,8 +1,8 @@
 import { Header as FluffyHeader } from "@fluffylabs/shared-ui";
 import type React from "react";
-import { LabelsFilter } from "../LabelsFilter";
 import { Version } from "../Version";
 import toolLogoUrl from "./../../assets/tool-logo.svg";
+import { NotesButtonsGroup } from "./components";
 
 export const Header: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
       ghRepoName="graypaper-reader"
       endSlot={
         <div className="flex pl-4">
-          <LabelsFilter forcedColorScheme="dark" />
+          <NotesButtonsGroup />
           <Version />
         </div>
       }
