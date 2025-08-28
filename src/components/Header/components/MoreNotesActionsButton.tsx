@@ -46,7 +46,7 @@ export const MoreButtonNotesActionsButton = () => {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <ConfirmDropdownMenuItem
-            className="flex gap-4 justify-end"
+            className="flex gap-4 justify-between"
             onClick={handleDeleteNotes}
             confirmChildren={
               <>
