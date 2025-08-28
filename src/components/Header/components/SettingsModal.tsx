@@ -8,10 +8,11 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
   return (
     <Modal style={modalStyles} isOpen={isOpen} onRequestClose={onClose} contentLabel="Settings">
-      <button className="default-button settings-close" onClick={onClose}>
+      <button className="default-button float-right" onClick={onClose}>
         ✖︎
       </button>
-      <div className="settings-title">Settings</div>
+      <div className="text-2xl font-bold mb-4">Settings</div>
+
       <RemoteSources remoteSources={remoteSources} onChange={handleSetRemoteSources} />
 
       <br />

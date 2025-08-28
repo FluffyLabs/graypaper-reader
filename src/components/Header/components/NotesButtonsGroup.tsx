@@ -14,6 +14,7 @@ export const NotesButtonsGroup = () => {
     <>
       <ButtonGroup>
         <Button
+          forcedColorScheme="dark"
           variant="outline"
           onClick={handleUndo}
           disabled={!canUndo}
@@ -26,6 +27,7 @@ export const NotesButtonsGroup = () => {
           ↺
         </Button>
         <Button
+          forcedColorScheme="dark"
           variant="outline"
           onClick={handleRedo}
           disabled={!canRedo}
@@ -39,6 +41,7 @@ export const NotesButtonsGroup = () => {
         </Button>
         <LabelsFilter forcedColorScheme="dark" />
         <Button
+          forcedColorScheme="dark"
           variant="outline"
           onClick={() => setNotesPinned(!notesPinned)}
           className="h-[32px]"
