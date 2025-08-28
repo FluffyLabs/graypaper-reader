@@ -114,21 +114,19 @@ export function PdfViewer() {
     );
 
   return (
-    <>
-      <div
-        ref={handleRootRef}
-        className="pdf-viewer-root bg-inherit"
-        onMouseDown={removeSelection}
-        onMouseUp={handleViewerMouseUp}
-        onWheel={handleWheel}
-      >
-        {pagesLoaded ? (
-          <>
-            <NoteRenderer />
-            <SelectionRenderer />
-          </>
-        ) : null}
-      </div>
-    </>
+    <div
+      ref={handleRootRef}
+      className="pdf-viewer-root bg-inherit absolute"
+      onMouseDown={removeSelection}
+      onMouseUp={handleViewerMouseUp}
+      onWheel={handleWheel}
+    >
+      {pagesLoaded ? (
+        <>
+          <NoteRenderer />
+          <SelectionRenderer />
+        </>
+      ) : null}
+    </div>
   );
 }

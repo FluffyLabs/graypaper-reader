@@ -52,3 +52,11 @@
 .pdfViewer .textLayer .endOfContent, .pdfViewer .textLayer br{
   pointer-events: none;
 }
+
+.pdf-viewer-root {
+  position: absolute
+}
+
+.pdf-viewer-root, .pdf-viewer-root *, .pdf-viewer-root :after, .pdf-viewer-root :before {
+  box-sizing: initial;
+}
