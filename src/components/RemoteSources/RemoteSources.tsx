@@ -19,7 +19,7 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
   );
 
   return (
-    <>
+    <div className="text-sidebar-foreground">
       <h3>Sources of remote notes</h3>
       {remoteSources.map((x) => (
         <RemoteSource key={x.id} source={x} onChange={onChange} />
@@ -40,6 +40,6 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
         guaranteed to be correct.
       </em>
       <hr />
-    </>
+    </div>
   );
 }
