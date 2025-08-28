@@ -25,7 +25,6 @@ export interface INotesContext {
   canUndo: boolean;
   canRedo: boolean;
   remoteSources: IRemoteSource[];
-  labelsAreLoaded: boolean;
   handleSetRemoteSources(r: IRemoteSource, remove?: true): void;
   handleAddNote(note: IStorageNote): void;
   handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
@@ -122,7 +121,6 @@ export function NotesProvider({ children }: INotesProviderProps) {
     labels,
     canUndo,
     canRedo,
-    labelsAreLoaded: allNotesReady,
     handleSetRemoteSources,
     handleToggleLabel,
     handleAddNote: useCallback(

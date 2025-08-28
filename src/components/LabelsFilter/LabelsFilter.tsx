@@ -21,16 +21,12 @@ const emptyLabels: ILabelTreeNode[] = [];
 const emptyCallback = () => {};
 
 export function LabelsFilter({ forcedColorScheme }: { forcedColorScheme?: "dark" | "light" }) {
-  const {
-    labels = emptyLabels,
-    handleToggleLabel = emptyCallback,
-    labelsAreLoaded = false,
-  } = useContext(NotesContext) ?? {};
+  const { labels = emptyLabels, handleToggleLabel = emptyCallback, notesReady } = useContext(NotesContext) ?? {};
 
   return (
     <LabelsFilterDumb
       labels={labels}
-      labelsAreLoaded={labelsAreLoaded}
+      labelsAreLoaded={notesReady ?? false}
       onToggleLabel={handleToggleLabel}
       forcedColorScheme={forcedColorScheme}
     />
