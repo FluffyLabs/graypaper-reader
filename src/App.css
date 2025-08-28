@@ -3,14 +3,6 @@
   height: 100vh;
 }
 
-.pdf-viewer-container {
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background-color: #999;
-}
 
 .viewer {
   box-sizing: border-box;

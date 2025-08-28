@@ -96,6 +96,23 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const { filteredNotes, labels, toggleLabel: handleToggleLabel } = useLabels(allNotes);
 
+  const handleSetRemoteSources = useCallback((newSource: IRemoteSource, remove?: true) => {
+    setRemoteSources((prevRemoteSources) => {
+      let newRemoteSources = prevRemoteSources;
+      if (newSource.id === NEW_REMOTE_SOURCE_ID) {
+        const newId = 1 + Math.max(NEW_REMOTE_SOURCE_ID, ...prevRemoteSources.map((x) => x.id));
+        const newSourceWithSafeId = { ...newSource, id: newId };
+        newRemoteSources = [...prevRemoteSources, newSourceWithSafeId];
+      } else {
+        newRemoteSources = prevRemoteSources
+          .map((x) => (x.id === newSource.id ? newSource : x))
+          .filter((x) => (remove === true ? x.id !== newSource.id : true));
+      }
+      remote.saveToLocalStorage(newRemoteSources);
+      return newRemoteSources;
+    });
+  }, []);
+
   const context: INotesContext = {
     notesPinned,
     setNotesPinned,
@@ -106,21 +123,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     canUndo,
     canRedo,
     labelsAreLoaded: allNotesReady,
-    handleSetRemoteSources: useCallback((newVal: IRemoteSource, remove?: true) => {
-      setRemoteSources((remoteSources) => {
-        let newRemoteSources = remoteSources;
-        if (newVal.id === NEW_REMOTE_SOURCE_ID) {
-          newVal.id = 1 + Math.max(NEW_REMOTE_SOURCE_ID, ...remoteSources.map((x) => x.id));
-          newRemoteSources = [...remoteSources, newVal];
-        } else {
-          newRemoteSources = remoteSources
-            .map((x) => (x.id === newVal.id ? newVal : x))
-            .filter((x) => (remove === true ? x.id !== newVal.id : true));
-        }
-        remote.saveToLocalStorage(newRemoteSources);
-        return newRemoteSources;
-      });
-    }, []),
+    handleSetRemoteSources,
     handleToggleLabel,
     handleAddNote: useCallback(
       (note) =>
