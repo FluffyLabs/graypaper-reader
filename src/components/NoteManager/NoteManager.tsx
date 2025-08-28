@@ -8,7 +8,6 @@ import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { Selection } from "../Selection/Selection";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
-import { NotesActions } from "./components/NotesActions";
 import { NotesList } from "./components/NotesList";
 
 const DEFAULT_AUTHOR = "";
@@ -18,7 +17,6 @@ export function NoteManager({ className }: { className?: string }) {
     <div className={twMerge("notes-wrapper gap-4", className)}>
       <Selection />
       <Notes />
-      <NotesActions />
     </div>
   );
 }
