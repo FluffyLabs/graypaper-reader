@@ -34,7 +34,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-modal": "^3.16.3",
-    "react-tooltip": "^5.28.1",
+    "react-tooltip": "^5.29.1",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
