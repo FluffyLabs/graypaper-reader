@@ -1,18 +1,18 @@
 import { Button, ButtonGroup } from "@fluffylabs/shared-ui";
-import { useContext } from "react";
+import { type FC, useContext } from "react";
 import { Tooltip } from "react-tooltip";
 import { LabelsFilter } from "../../LabelsFilter";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { MoreButtonNotesActionsButton } from "./MoreNotesActionsButton";
 
-export const NotesButtonsGroup = () => {
+export const NotesButtonsGroup: FC<{ className?: string }> = ({ className }) => {
   const { canUndo, canRedo, handleUndo, handleRedo, notesPinned, setNotesPinned } = useContext(
     NotesContext,
   ) as INotesContext;
 
   return (
     <>
-      <ButtonGroup>
+      <ButtonGroup className={className}>
         <Button
           forcedColorScheme="dark"
           variant="outline"

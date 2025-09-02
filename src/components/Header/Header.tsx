@@ -10,10 +10,13 @@ export const Header: React.FC = () => {
       toolNameSrc={toolLogoUrl}
       ghRepoName="graypaper-reader"
       endSlot={
-        <div className="flex pl-4">
-          <NotesButtonsGroup />
-          <Version />
-        </div>
+        <>
+          <div className="flex pl-4">
+            <NotesButtonsGroup className="max-sm:hidden" />
+            <Version />
+          </div>
+          <FluffyHeader.GithubDropdownMenu className="max-sm:hidden" />
+        </>
       }
     />
   );

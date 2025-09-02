@@ -1,6 +1,6 @@
 .resizable {
   position: relative;
-  height: calc(100vh - var(--header-height));
+  height: calc(100svh - var(--header-height));
   width: 100vw;
   display: flex;
 }

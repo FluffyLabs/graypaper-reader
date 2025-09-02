@@ -1,6 +1,6 @@
+/*@source "../node_modules/@fluffylabs/shared-ui/dist/";*/
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-@source "../node_modules/@fluffylabs/shared-ui/dist/";
 
 @theme{
   --animate-fade-in: fade-in 0.75s ease-in forwards;
