@@ -42,7 +42,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@fluffylabs/types": "^1.0.0",
-    "@tailwindcss/postcss": "^4.1.10",
+    "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.10",
     "@types/katex": "^0.16.7",
     "@types/react": "^19.1.7",
