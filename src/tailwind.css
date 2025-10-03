@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fluffylabs/shared-ui/theme.css";
 
 @theme{
   --animate-fade-in: fade-in 0.75s ease-in forwards;
@@ -8,5 +9,3 @@
     to   { opacity: 1 }
   }
 }
-
-@import "@fluffylabs/shared-ui/theme.css";
