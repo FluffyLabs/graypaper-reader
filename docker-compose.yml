@@ -4,29 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile.playwright
     volumes:
-      # Only mount specific test directories we need to persist
-      - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
-      - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
-    environment:
-      - PLAYWRIGHT_START_SERVER=true
-      - PLAYWRIGHT_PORT=5173
-      - PLAYWRIGHT_HOST=localhost
-      - CI=true
-      - DISPLAY=:99 # Required for Playwright to run in headful mode, even if we're using headless
-    ports:
-      - "5173:5173"
-    working_dir: /app/tools/snapshot-tests
-    command: ["npm", "run", "test"]
-    networks:
-      - playwright-network
-
-  # Service for updating snapshots
-  playwright-update:
-    build:
-      context: .
-      dockerfile: Dockerfile.playwright
-    volumes:
-      # Only mount specific test directories we need to persist
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
       - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
     environment:
@@ -35,8 +12,24 @@ services:
       - PLAYWRIGHT_HOST=localhost
       - CI=true
       - DISPLAY=:99
-    ports:
-      - "5173:5173" # Use a different port to avoid conflicts if both services are up
+    working_dir: /app/tools/snapshot-tests
+    command: ["npm", "run", "test"]
+    networks:
+      - playwright-network
+
+  playwright-update:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    volumes:
+      - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
+      - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
+    environment:
+      - PLAYWRIGHT_START_SERVER=true
+      - PLAYWRIGHT_PORT=5173
+      - PLAYWRIGHT_HOST=localhost
+      - CI=true
+      - DISPLAY=:99
     working_dir: /app/tools/snapshot-tests
     command: "npm run test:update"
     networks:
