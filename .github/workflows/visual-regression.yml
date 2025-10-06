@@ -28,17 +28,9 @@ jobs:
             playwright-test \
             sh -c "cd tools/snapshot-tests && npm run test"
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-${{ github.run_number }}
-          path: tools/snapshot-tests/test-results/
-          retention-days: 30
-
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && hashFiles('tools/snapshot-tests/playwright-report/**') != '' }}
         with:
           name: playwright-report-${{ github.run_number }}
           path: tools/snapshot-tests/playwright-report/
@@ -54,9 +46,11 @@ jobs:
 
             const body = `## Visual Regression Test Report ${testStatus}
 
+            📊 **Visual Test Report**: [View Report](${reportUrl})
             🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-            // Find existing comment from this workflow
+            *Report will be available in ~2 minutes after workflow completion*`;
+
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -69,7 +63,6 @@ jobs:
             );
 
             if (botComment) {
-              // Update existing comment
               await github.rest.issues.updateComment({
                 comment_id: botComment.id,
                 owner: context.repo.owner,
@@ -77,7 +70,6 @@ jobs:
                 body: body
               });
             } else {
-              // Create new comment
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
