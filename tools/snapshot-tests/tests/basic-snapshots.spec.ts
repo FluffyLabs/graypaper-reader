@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
 
-const origin = "http://localhost:5173";
-const hostname = "http://localhost:5173/#/ab2cdbd?v=0.7.2";
+const port = process.env.PLAYWRIGHT_PORT || "5173";
+const host = process.env.PLAYWRIGHT_HOST || "localhost";
+const origin = `http://${host}:${port}`;
+const hostname = `${origin}/#/ab2cdbd?v=0.7.2`;
 
 function getCommonContext() {
   return {
@@ -61,8 +63,10 @@ test.describe("Homepage Tests", () => {
       await expect(page).toHaveScreenshot("search-initial.png", { fullPage: true });
       const searchInput = page.locator('input[placeholder*="search"]');
       await searchInput.first().fill("protocol");
+      await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
       await expect(page).toHaveScreenshot("search-with-query.png", { fullPage: true });
       await searchInput.first().fill("blockchain");
+      await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
       await expect(page).toHaveScreenshot("search-with-results.png", { fullPage: true });
     });
   });

@@ -9,7 +9,9 @@
   "scripts": {
     "start": "playwright test --ui",
     "test": "playwright test",
-    "test:update": "playwright test --update-snapshots"
+    "test:update": "playwright test --update-snapshots",
+    "test:with-server": "PLAYWRIGHT_START_SERVER=true playwright test",
+    "test:local": "PLAYWRIGHT_START_SERVER=true PLAYWRIGHT_PORT=5173 PLAYWRIGHT_HOST=localhost playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",

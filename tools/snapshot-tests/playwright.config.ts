@@ -9,9 +9,18 @@ export default defineConfig({
   reporter: "html",
   use: {
     trace: "on-first-retry",
-
     viewport: { width: 1280, height: 720 },
   },
+
+  webServer: process.env.PLAYWRIGHT_START_SERVER
+    ? {
+        command: `npm run serve -- --port ${process.env.PLAYWRIGHT_PORT || 5173}`,
+        url: `http://localhost:${process.env.PLAYWRIGHT_PORT || 5173}`,
+        reuseExistingServer: !process.env.CI,
+        cwd: "../../", // Go back to the root directory to run the serve command
+        timeout: 120 * 1000,
+      }
+    : undefined,
 
   projects: [
     {
