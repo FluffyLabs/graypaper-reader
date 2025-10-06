@@ -33,5 +33,20 @@ $ npm ci      # install dependencies
 $ npm run dev # run the development version
 ```
 
+# Running e2e (snapshosts) tests locally
 
+Visual snapshots tests checks for visual regression.
 
+To run visual snapshots tests:
+
+```bash
+cd tools/snapshot-tests
+npm install
+npm run test 
+```
+
+One can also run test with UI simply via:
+
+```bash
+npm start
+```
