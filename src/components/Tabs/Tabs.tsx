@@ -115,6 +115,7 @@ export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void
       key={t.name}
       disabled={t.name === activeTab}
       onClick={() => switchTab(t.name)}
+      data-testid={`tab-${t.name}`}
       className={twMerge(
         "grow h-8 capitalize",
         "hover:bg-brand-very-light text-[var(--brand-darkest)] dark:text-brand  dark:hover:text-brand hover:text-[var(--secondary-foreground)] dark:hover:bg-brand-darkest",

@@ -104,6 +104,7 @@ export function Note({ note, onEditNote, onDeleteNote }: NoteProps) {
         {isEditable ? (
           <button
             className={`default-button ${isEditing ? "save" : "edit"}`}
+            data-testid={isEditing ? "save-button" : "edit-button"}
             onClick={isEditing ? handleSaveClick : handleEditClick}
           >
             {isEditing ? "save" : "✏️"}
