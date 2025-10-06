@@ -15,7 +15,11 @@
     "cp-gp": "node ./scripts/cp-gp.js",
     "prebuild": "git submodule update --init && npm run cp-gp",
     "predev": "npm run cp-gp",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "docker:build": "docker-compose build",
+    "docker:test": "docker-compose run --rm playwright-tests",
+    "docker:test:update": "docker-compose run --rm playwright-update",
+    "docker:clean": "docker-compose down && docker system prune -f"
   },
   "dependencies": {
     "@fluffylabs/migrate-selection": "^1.0.0",

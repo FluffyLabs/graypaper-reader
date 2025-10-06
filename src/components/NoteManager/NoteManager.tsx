@@ -82,7 +82,8 @@ function Notes() {
           autoFocus
           value={noteContent}
           onChange={(ev) => setNoteContent(ev.currentTarget.value)}
-          placeholder="Add a note to the selected fragment. Math typesetting is supported! Use standard delimiters such as $...$, \[...\] or \begin{equation}...\end{equation}."
+          // placeholder="Add a note to the selected fragment. Math typesetting is supported! Use standard delimiters such as $...$, \[...\] or \begin{equation}...\end{equation}."
+          placeholder="TWOJA STARA!!"
         />
 
         {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}

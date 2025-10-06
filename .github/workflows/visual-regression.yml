@@ -1,0 +1,75 @@
+name: Visual Regression Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Build Docker image
+        run: docker build -f Dockerfile.playwright -t playwright-test .
+
+      - name: Run visual regression tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results \
+            -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
+            -e CI=true \
+            playwright-test \
+            sh -c "cd tools/snapshot-tests && npm run test"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.run_number }}
+          path: tools/snapshot-tests/test-results/
+          retention-days: 30
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ github.run_number }}
+          path: tools/snapshot-tests/playwright-report/
+          retention-days: 30
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: tools/snapshot-tests/playwright-report
+          destination_dir: visual-reports/${{ github.run_number }}
+
+      - name: Comment PR with Visual Test Report
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const reportUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/visual-reports/${{ github.run_number }}`;
+            const testStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
+
+            const body = `## Visual Regression Test Report ${testStatus}
+
+            📊 **Visual Test Report**: [View Report](${reportUrl})
+            🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            *Report will be available in ~2 minutes after workflow completion*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
