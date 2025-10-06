@@ -44,14 +44,6 @@ jobs:
           path: tools/snapshot-tests/playwright-report/
           retention-days: 30
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: tools/snapshot-tests/playwright-report
-          destination_dir: visual-reports/${{ github.run_number }}
-
       - name: Comment PR with Visual Test Report
         uses: actions/github-script@v7
         if: always() && github.event_name == 'pull_request'
@@ -62,10 +54,7 @@ jobs:
 
             const body = `## Visual Regression Test Report ${testStatus}
 
-            📊 **Visual Test Report**: [View Report](${reportUrl})
             🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-            *Report will be available in ~2 minutes after workflow completion*`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
