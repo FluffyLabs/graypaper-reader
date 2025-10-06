@@ -89,7 +89,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
           }
           return (
             <React.Fragment key={tab.name}>
-              <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"}>
+              <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"} data-testid={`tab-content-${tab.name}`}>
                 <Slot className="w-full">{tab.render()}</Slot>
               </div>
             </React.Fragment>
