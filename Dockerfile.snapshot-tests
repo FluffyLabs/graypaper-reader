@@ -70,6 +70,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=test-dependencies /app/tools/snapshot-tests/node_modules ./tools/snapshot-tests/
+COPY --from=test-dependencies /app/tools/snapshot-tests/package*.json ./tools/snapshot-tests/
 COPY tools/snapshot-tests/tests ./tools/snapshot-tests/tests
 COPY tools/snapshot-tests/playwright.config.ts ./tools/snapshot-tests/
 
@@ -80,7 +81,7 @@ ENV CI=true
 
 EXPOSE 5173
 
-CMD ["npm", "run", "test:with-server"]
+CMD ["/bin/sh", "-lc", "cd tools/snapshot-tests && npm run test:with-server"]
 
 # ============================================
 # Stage 5: Development (Optional)
