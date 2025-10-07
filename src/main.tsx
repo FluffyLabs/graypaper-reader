@@ -5,8 +5,8 @@ import { LocationProvider } from "./components/LocationProvider/LocationProvider
 import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider.tsx";
 import { initDevTools } from "./devtools/initDevTools";
 
-import "./tailwind.css";
 import "@fluffylabs/shared-ui/style.css";
+import "./tailwind.css";
 import "./variables.css";
 import "./index.css";
 import "./font.css";
