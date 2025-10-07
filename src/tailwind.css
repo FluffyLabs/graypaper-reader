@@ -1,5 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight" layer(base);
 @import "@fluffylabs/shared-ui/theme.css";
+@import "@fluffylabs/shared-ui/style.css";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
 
 @theme{
   --animate-fade-in: fade-in 0.75s ease-in forwards;
