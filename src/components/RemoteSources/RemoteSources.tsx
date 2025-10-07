@@ -1,3 +1,4 @@
+import { Button } from "@fluffylabs/shared-ui";
 import { useCallback, useState } from "react";
 import type { IRemoteSource } from "../NotesProvider/types/RemoteSource";
 import { RemoteSource } from "./components/RemoteSource";
@@ -28,9 +29,9 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
       {isAddingNew ? (
         <RemoteSource onChange={handleOnChange} />
       ) : (
-        <button className="default-button" onClick={() => setAddingNew(true)}>
+        <Button variant="outline" size="sm" onClick={() => setAddingNew(true)}>
           ➕ new source
-        </button>
+        </Button>
       )}
       <br />
       <br />

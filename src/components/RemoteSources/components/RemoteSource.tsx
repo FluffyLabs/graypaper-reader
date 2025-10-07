@@ -1,3 +1,4 @@
+import { Button } from "@fluffylabs/shared-ui";
 import "./RemoteSource.css";
 import { useCallback, useState } from "react";
 import { NEW_REMOTE_SOURCE_ID } from "../../NotesProvider/consts/remoteSources";
@@ -56,13 +57,13 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <br />
         <Versions isEditing={isEditing} versions={versions} onChange={setVersions} />
         <br />
-        <button className="default-button" disabled={!isFilled} onClick={handleEdit}>
+        <Button variant="outline" disabled={!isFilled} onClick={handleEdit}>
           ok
-        </button>
+        </Button>
         {id > NEW_REMOTE_SOURCE_ID ? (
-          <button className="default-button" onClick={handleRemove}>
+          <Button variant="outline" onClick={handleRemove}>
             remove
-          </button>
+          </Button>
         ) : null}
       </div>
     );

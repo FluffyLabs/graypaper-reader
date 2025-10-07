@@ -16,6 +16,7 @@ export const MoreButtonNotesActionsButton = () => {
   const { handleExport, handleDeleteNotes } = useContext(NotesContext) as INotesContext;
   const { fileImportRef, handleFileSelected, onImport } = useImport();
   const [isModalOpen, setModalOpen] = useState(false);
+
   const toggleModal = useCallback(() => {
     setModalOpen((x) => !x);
   }, []);
@@ -30,7 +31,7 @@ export const MoreButtonNotesActionsButton = () => {
             ...
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-auto max-w-72" align="end" forcedColorScheme="dark">
+        <DropdownMenuContent className="w-auto max-w-72 dark" align="end" forcedColorScheme="dark">
           <DropdownMenuItem className="flex gap-4 justify-between" onClick={onImport}>
             <span>Import</span>
             <span>📂</span>
