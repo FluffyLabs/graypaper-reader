@@ -41,15 +41,14 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         with:
           script: |
-            const reportUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/visual-reports/${{ github.run_number }}`;
             const testStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
 
             const body = `## Visual Regression Test Report ${testStatus}
 
-            📊 **Visual Test Report**: [View Report](${reportUrl})
-            🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Github run id: ${{github.run_id}}
 
-            *Report will be available in ~2 minutes after workflow completion*`;
+            🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `
 
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
