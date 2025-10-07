@@ -1,0 +1,81 @@
+name: Visual Regression Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Build Docker image
+        run: docker build -f Dockerfile.snapshot-tests -t playwright-test .
+
+      - name: Run visual regression tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results \
+            -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
+            -e CI=true \
+            playwright-test \
+            sh -c "cd tools/snapshot-tests && npm run test"
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('tools/snapshot-tests/playwright-report/**') != '' }}
+        with:
+          name: playwright-report-${{ github.run_number }}
+          path: tools/snapshot-tests/playwright-report/
+          retention-days: 30
+
+      - name: Comment PR with Visual Test Report
+        uses: actions/github-script@v7
+        if: ${{ always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        with:
+          script: |
+            const testStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
+
+            const body = `## Visual Regression Test Report ${testStatus}
+
+            Github run id: ${{github.run_id}}
+
+            🔗 **Artifacts**: [Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `
+
+            const comments = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const botComment = comments.data.find(comment =>
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.includes('Visual Regression Test Report')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }

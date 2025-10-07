@@ -1,0 +1,100 @@
+FROM mcr.microsoft.com/playwright:v1.55.1-noble AS base
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# ============================================
+# Stage 1: Main Dependencies
+# This stage only rebuilds when main package.json files change
+# ============================================
+FROM base AS main-dependencies
+
+COPY package*.json ./
+COPY shared/links-metadata/package*.json ./shared/links-metadata/
+
+RUN npm ci
+
+# ============================================
+# Stage 2: Test Dependencies
+# This stage only rebuilds when test package.json files change
+# ============================================
+FROM base AS test-dependencies
+
+COPY tools/snapshot-tests/package*.json ./tools/snapshot-tests/
+
+RUN cd tools/snapshot-tests && npm install
+
+RUN cd tools/snapshot-tests && npx playwright install chromium
+
+# ============================================
+# Stage 3: Source and Build
+# This stage handles source code and building
+# ============================================
+FROM main-dependencies AS builder
+
+COPY .git ./.git
+COPY .gitmodules ./
+
+COPY scripts ./scripts/
+
+COPY shared/links-metadata ./shared/links-metadata/
+
+RUN cd shared/links-metadata
+
+COPY tsconfig*.json ./
+COPY vite.config.ts ./
+COPY vitest.config.ts ./
+COPY tailwind.config.js ./
+COPY biome.jsonc ./
+COPY index.html ./
+
+COPY public ./public/
+COPY src ./src/
+
+RUN npm run build
+
+# ============================================
+# Stage 4: Test Runner
+# Final stage for running tests
+# ============================================
+FROM test-dependencies AS test-runner
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=test-dependencies /app/tools/snapshot-tests/node_modules ./tools/snapshot-tests/
+COPY --from=test-dependencies /app/tools/snapshot-tests/package*.json ./tools/snapshot-tests/
+COPY tools/snapshot-tests/tests ./tools/snapshot-tests/tests
+COPY tools/snapshot-tests/playwright.config.ts ./tools/snapshot-tests/
+
+ENV PLAYWRIGHT_START_SERVER=true
+ENV PLAYWRIGHT_PORT=5173
+ENV PLAYWRIGHT_HOST=localhost
+ENV CI=true
+
+EXPOSE 5173
+
+CMD ["/bin/sh", "-lc", "cd tools/snapshot-tests && npm run test:with-server"]
+
+# ============================================
+# Stage 5: Development (Optional)
+# Use this stage for interactive development/debugging
+# Build with: docker build --target development -f Dockerfile.playwright -t playwright-dev .
+# Run with: docker run -it playwright-dev bash
+# ============================================
+FROM test-runner AS development
+
+# Install additional dev tools if needed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    vim \
+    less \
+    && rm -rf /var/lib/apt/lists/*
+
+CMD ["/bin/bash"]

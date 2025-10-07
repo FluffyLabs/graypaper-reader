@@ -89,7 +89,7 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
           }
           return (
             <React.Fragment key={tab.name}>
-              <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"}>
+              <div className={idx === activeTabIdx ? "min-h-0 flex" : "hidden"} data-testid={`tab-content-${tab.name}`}>
                 <Slot className="w-full">{tab.render()}</Slot>
               </div>
             </React.Fragment>
@@ -115,6 +115,7 @@ export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void
       key={t.name}
       disabled={t.name === activeTab}
       onClick={() => switchTab(t.name)}
+      data-testid={`tab-${t.name}`}
       className={twMerge(
         "grow h-8 capitalize",
         "hover:bg-brand-very-light text-[var(--brand-darkest)] dark:text-brand  dark:hover:text-brand hover:text-[var(--secondary-foreground)] dark:hover:bg-brand-darkest",

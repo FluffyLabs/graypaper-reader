@@ -33,5 +33,41 @@ $ npm ci      # install dependencies
 $ npm run dev # run the development version
 ```
 
+# Running e2e (snapshots) tests locally
 
+Visual snapshot tests checks for visual regression.
 
+## Docker-based Testing (Recommended)
+
+For consistent snapshots that match GitHub Actions:
+
+```bash
+# Build Docker images
+npm run docker:build
+
+# Run tests
+npm run docker:test
+# Then open tools/snapshot-test/playwright-report/index.html for visual regression report
+
+# Update snapshots
+npm run docker:test:update
+
+```
+
+## Local Testing 
+
+To run all visual snapshots tests locally:
+
+```bash
+cd tools/snapshot-tests
+npm install
+npm run test 
+```
+
+One can also run tests with UI simply via:
+
+```bash
+npm start
+```
+
+**Note**: Local testing may produce different snapshots than CI due to environment differences. Use Docker-based testing for consistent results.

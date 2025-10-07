@@ -1,0 +1,20 @@
+{
+  "name": "snapshot-tests",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "playwright test --ui",
+    "test": "playwright test",
+    "test:update": "playwright test --update-snapshots",
+    "test:with-server": "PLAYWRIGHT_START_SERVER=true playwright test",
+    "test:local": "PLAYWRIGHT_START_SERVER=true PLAYWRIGHT_PORT=5173 PLAYWRIGHT_HOST=localhost playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^22.13.14"
+  }
+}

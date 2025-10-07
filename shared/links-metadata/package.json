@@ -17,7 +17,8 @@
   "description": "Migrate graypaper reader notes between versions.",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@fluffylabs/types": "^1.0.0"
+    "@fluffylabs/types": "^1.0.0",
+    "@tsconfig/node20": "^20.1.6"
   },
   "dependencies": {
     "fastest-levenshtein": "^1.0.16"
