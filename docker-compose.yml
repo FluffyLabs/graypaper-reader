@@ -1,8 +1,8 @@
 services:
-  playwright-tests:
+  snapshot-tests:
     build:
       context: .
-      dockerfile: Dockerfile.playwright
+      dockerfile: Dockerfile.snapshot-tests
     volumes:
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
       - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
@@ -17,10 +17,10 @@ services:
     networks:
       - playwright-network
 
-  playwright-update:
+  snapshot-tests-update:
     build:
       context: .
-      dockerfile: Dockerfile.playwright
+      dockerfile: Dockerfile.snapshot-tests
     volumes:
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
       - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report

@@ -17,8 +17,8 @@
     "predev": "npm run cp-gp",
     "serve": "vite preview",
     "docker:build": "docker-compose build",
-    "docker:test": "docker-compose run --rm playwright-tests",
-    "docker:test:update": "docker-compose run --rm playwright-update",
+    "docker:test": "docker-compose run --rm snapshot-tests",
+    "docker:test:update": "docker-compose run --rm snapshot-tests-update",
     "docker:clean": "docker-compose down && docker system prune -f"
   },
   "dependencies": {

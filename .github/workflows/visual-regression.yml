@@ -17,7 +17,7 @@ jobs:
           submodules: "true"
 
       - name: Build Docker image
-        run: docker build -f Dockerfile.playwright -t playwright-test .
+        run: docker build -f Dockerfile.snapshot-tests -t playwright-test .
 
       - name: Run visual regression tests
         run: |
