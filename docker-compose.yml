@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.snapshot-tests
     volumes:
+      - ./tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
       - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
     environment:
@@ -22,6 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile.snapshot-tests
     volumes:
+      - ./tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
       - ./tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report
     environment:
