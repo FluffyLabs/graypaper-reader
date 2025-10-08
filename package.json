@@ -17,13 +17,13 @@
     "predev": "npm run cp-gp",
     "serve": "vite preview",
     "docker:build": "docker-compose build",
-    "docker:test": "docker-compose run --rm snapshot-tests",
+    "docker:test": "./scripts/run-docker-snapshot-tests.sh",
     "docker:test:update": "docker-compose run --rm snapshot-tests-update",
     "docker:clean": "docker-compose down && docker system prune -f"
   },
   "dependencies": {
     "@fluffylabs/migrate-selection": "^1.0.0",
-    "@fluffylabs/shared-ui": "^0.3.2",
+    "@fluffylabs/shared-ui": "^0.3.3",
     "@fluffylabs/synctex-store": "^1.0.0",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-popover": "^1.1.14",
