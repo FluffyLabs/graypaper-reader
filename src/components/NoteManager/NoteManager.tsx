@@ -27,7 +27,7 @@ function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
+  const { notesReady, activeNotes, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
     NotesContext,
   ) as INotesContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
@@ -91,7 +91,12 @@ function Notes() {
         </button>
       </div>
 
-      <MemoizedNotesList notes={notes} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+      <MemoizedNotesList
+        activeNotes={activeNotes}
+        notes={notes}
+        onEditNote={handleUpdateNote}
+        onDeleteNote={handleDeleteNote}
+      />
     </div>
   );
 }

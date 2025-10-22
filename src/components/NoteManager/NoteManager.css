@@ -1,3 +1,13 @@
+.note-manager{
+  --inactive-note-bg: #999;
+  --active-note-bg: var(--color-brand-very-light);
+}
+
+.dark .note-manager{
+  --inactive-note-bg: #444;
+  --active-note-bg: #3A4949;
+}
+
 .notes-wrapper {
   height: 100%;
   display: flex;

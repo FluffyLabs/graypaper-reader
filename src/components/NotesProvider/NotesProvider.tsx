@@ -8,6 +8,7 @@ import { useRemoteNotes } from "./hooks/useRemoteNotes";
 import { type IDecoratedNote, NoteSource } from "./types/DecoratedNote";
 import type { IRemoteSource } from "./types/RemoteSource";
 import type { INotesEnvelope, IStorageNote } from "./types/StorageNote";
+import { areSelectionsEqual } from "./utils/areSelectionsEqual";
 import { downloadNotesAsJson, importNotesFromJson } from "./utils/notesImportExport";
 import * as notes from "./utils/notesLocalStorage";
 import * as remote from "./utils/remoteSources";
@@ -21,6 +22,7 @@ export interface INotesContext {
   setNotesPinned: (v: boolean) => void;
   notesReady: boolean;
   notes: IDecoratedNote[];
+  activeNotes: IDecoratedNote[];
   labels: ILabelTreeNode[];
   canUndo: boolean;
   canRedo: boolean;
@@ -112,11 +114,20 @@ export function NotesProvider({ children }: INotesProviderProps) {
     });
   }, []);
 
+  const activeNotes = useMemo(() => {
+    if (!locationParams || !locationParams.selectionStart || !locationParams.selectionEnd) return [];
+
+    const { selectionStart, selectionEnd } = locationParams;
+
+    return filteredNotes.filter((note) => areSelectionsEqual(note.current, { selectionStart, selectionEnd }));
+  }, [filteredNotes, locationParams]);
+
   const context: INotesContext = {
     notesPinned,
     setNotesPinned,
     notesReady: allNotesReady,
     notes: filteredNotes,
+    activeNotes,
     remoteSources,
     labels,
     canUndo,
