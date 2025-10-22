@@ -138,6 +138,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   return (
     <NoteLayout.Root value={note}>
       <div
+        data-testid="notes-manager-card"
         className={cn(
           "note rounded-xl p-4 flex flex-col gap-2",
           active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)]",
