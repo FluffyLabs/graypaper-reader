@@ -74,7 +74,7 @@ function Notes() {
   }, [selectedBlocks]);
 
   return (
-    <div className="note-manager" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
+    <div className="note-manager flex flex-col gap-2.5" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
       <div className="new-note">
         <textarea
           disabled={selectedBlocks.length === 0}

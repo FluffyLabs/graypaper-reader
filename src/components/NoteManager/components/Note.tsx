@@ -1,4 +1,4 @@
-import { type ChangeEvent, type MouseEventHandler, useCallback, useContext, useState } from "react";
+import { type ChangeEvent, type MouseEventHandler, createContext, useCallback, useContext, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
@@ -7,7 +7,7 @@ import type { IStorageNote, UnPrefixedLabel } from "../../NotesProvider/types/St
 import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import "./Note.css";
-import { cn } from "@fluffylabs/shared-ui";
+import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 
 export type NotesItem = {
@@ -20,6 +20,16 @@ type NoteProps = {
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
+};
+
+const noteContext = createContext<IDecoratedNote | null>(null);
+
+const useNoteContext = () => {
+  const context = useContext(noteContext);
+  if (!context) {
+    throw new Error("useNoteContext must be used within a NoteContextProvider");
+  }
+  return context;
 };
 
 export function Note({ note, active = false, onEditNote, onDeleteNote }: NoteProps) {
@@ -96,56 +106,89 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   };
 
   return (
-    <div
-      className={cn(
-        "note",
-        active && "bg-[var(--active-note-bg)]",
-        !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
-      )}
-      onClick={handleWholeNoteClick}
-      onKeyDown={handleWholeNoteClick}
-    >
-      <NoteLink note={note} onEditNote={onEditNote} />
-      {isEditing ? (
-        <>
-          <textarea
-            className={noteContentError ? "error" : ""}
-            onChange={handleNoteContentChange}
-            value={noteDirty.content}
-            autoFocus
-          />
-          {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-        </>
-      ) : (
-        <blockquote>
-          {note.original.author}
-          <NoteContent content={note.original.content} />
-        </blockquote>
-      )}
-      {isEditing ? <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} /> : null}
-      <div className="actions">
-        {!isEditing ? <NoteLabels note={note} /> : null}
-
-        {isEditing ? (
-          <button className="remove default-button" onClick={handleDeleteClick}>
-            delete
-          </button>
-        ) : null}
-
-        <div className="fill" />
-
-        {isEditable ? (
-          <button
-            className={`default-button ${isEditing ? "save" : "edit"}`}
-            data-testid={isEditing ? "save-button" : "edit-button"}
-            onClick={isEditing ? handleSaveClick : handleEditClick}
-          >
-            {isEditing ? "save" : "✏️"}
-          </button>
-        ) : null}
-
-        {isEditing ? <button onClick={handleCancelClick}>cancel</button> : null}
+    <NoteLayout.Root value={note}>
+      <div
+        className={cn(
+          "note rounded-xl p-4 flex flex-col gap-2",
+          active && "bg-[var(--active-note-bg)]",
+          !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
+        )}
+        onClick={handleWholeNoteClick}
+        onKeyDown={handleWholeNoteClick}
+      >
+        {!active && (
+          <>
+            <NoteLink note={note} onEditNote={onEditNote} />
+            <NoteLayout.Text />
+          </>
+        )}
+        {active && !isEditing && (
+          <>
+            <div className="flex justify-between">
+              <NoteLink note={note} onEditNote={onEditNote} />
+              {isEditable && (
+                <button
+                  className={`default-button ${isEditing ? "save" : "edit"}`}
+                  data-testid={isEditing ? "save-button" : "edit-button"}
+                  onClick={isEditing ? handleSaveClick : handleEditClick}
+                >
+                  {isEditing ? "save" : "✏️"}
+                </button>
+              )}
+            </div>
+            <NoteLayout.Text />
+            {!isEditing ? <NoteLabels note={note} /> : null}
+          </>
+        )}
+        {active && isEditing && (
+          <>
+            <>
+              <NoteLink note={note} onEditNote={onEditNote} />
+              <textarea
+                className={noteContentError ? "error" : ""}
+                onChange={handleNoteContentChange}
+                value={noteDirty.content}
+                autoFocus
+              />
+              {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+              <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} />
+              <div className="actions gap-2">
+                <Button variant="" size="sm">
+                  Delete
+                </Button>
+                <button className="remove default-button" onClick={handleDeleteClick}>
+                  delete
+                </button>
+                <div className="fill" />
+                <button
+                  className={`default-button ${isEditing ? "save" : "edit"}`}
+                  data-testid={isEditing ? "save-button" : "edit-button"}
+                  onClick={isEditing ? handleSaveClick : handleEditClick}
+                >
+                  {isEditing ? "save" : "✏️"}
+                </button>
+                <button onClick={handleCancelClick}>cancel</button>
+              </div>
+            </>
+          </>
+        )}
       </div>
-    </div>
+    </NoteLayout.Root>
   );
 }
+
+const NoteText = () => {
+  const note = useNoteContext();
+
+  return (
+    <blockquote className="whitespace-pre-wrap">
+      {note.original.author}
+      <NoteContent content={note.original.content} />
+    </blockquote>
+  );
+};
+
+const NoteLayout = {
+  Root: noteContext.Provider,
+  Text: NoteText,
+};
