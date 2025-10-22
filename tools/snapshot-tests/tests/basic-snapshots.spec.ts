@@ -1,4 +1,4 @@
-import { type Page, expect, test } from "@playwright/test";
+import { type BrowserContext, type Page, expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
@@ -20,91 +20,96 @@ function getCommonContext() {
   };
 }
 
-test.describe("Homepage Tests", () => {
-  test('page title is "Gray Paper Reader"', async ({ page }) => {
-    await page.goto(hostname);
-    await expect(page).toHaveTitle("Gray Paper Reader");
-  });
+test.describe
+  .serial("Homepage Tests", () => {
+    let context: BrowserContext;
+    let page: Page;
 
-  test("homepage screenshot - with outline", async ({ page }) => {
-    await page.goto(hostname, { waitUntil: "networkidle" });
-    await page.evaluate(() => document.fonts.ready);
-    await expect(page).toHaveScreenshot("homepage-outline.png", { fullPage: true });
-  });
-
-  test.describe
-    .serial("Notes Tab", () => {
-      let page: Page;
-      const timeout = 10_000;
-
-      test.beforeAll(async ({ browser }) => {
-        const context = await browser.newContext(getCommonContext());
-
-        page = await context.newPage();
-        await page.goto(hostname, { waitUntil: "networkidle" });
-        await page.evaluate(() => document.fonts.ready);
-      });
-
-      test("notes tab - initial state", async ({ browser }) => {
-        await page.click('[data-testid="tab-notes"]', { timeout });
-        await page.locator('[data-testid="tab-content-notes"]').waitFor({ state: "visible", timeout });
-        await expect(page).toHaveScreenshot("notes-tab-initial.png", {
-          // biome-ignore lint/style/noNonNullAssertion: boundingBox is expected to exist at this point
-          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
-          fullPage: false,
-          animations: "disabled",
-        });
-      });
-
-      test("notes tab - after note activation", async ({ browser }) => {
-        await page.click('[data-testid="notes-manager-card"]', { timeout });
-        await page
-          .locator('[data-testid="selected-text"]')
-          .filter({ hasNotText: "" })
-          .waitFor({ state: "visible", timeout });
-        await expect(page).toHaveScreenshot("notes-tab-after-note-activation.png", {
-          // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
-          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
-          fullPage: false,
-          animations: "disabled",
-        });
-      });
-
-      test("notes tab - after set to edit mode", async ({ browser }) => {
-        await page.click('[data-testid="edit-button"]', { timeout });
-        await expect(page).toHaveScreenshot("notes-tab-after-note-edit.png", {
-          // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
-          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
-          fullPage: false,
-          animations: "disabled",
-        });
-      });
+    test.beforeAll(async ({ browser }) => {
+      context = await browser.newContext(getCommonContext());
+      page = await context.newPage();
     });
 
-  test.describe("Search Functionality", () => {
-    test("search - initial state", async ({ page }) => {
+    test('page title is "Gray Paper Reader"', async () => {
+      await page.goto(hostname);
+      await expect(page).toHaveTitle("Gray Paper Reader");
+    });
+
+    test("homepage screenshot - with outline", async () => {
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await expect(page).toHaveScreenshot("homepage-outline.png", { fullPage: true });
+    });
 
-      // Click on search tab or search input
-      const searchTab = page.locator('[data-testid="tab-search"]');
+    test.describe
+      .serial("Notes Tab", () => {
+        const timeout = 2_500;
 
-      if ((await searchTab.count()) > 0) {
-        await searchTab.click();
-        await page.locator('[data-testid="tab-content-search"]').waitFor({ state: "visible" });
-      }
+        test.beforeAll(async () => {
+          await page.goto(hostname, { waitUntil: "networkidle" });
+          await page.evaluate(() => document.fonts.ready);
+        });
 
-      await expect(page).toHaveScreenshot("search-initial.png", { fullPage: true });
-      const searchInput = page.locator('input[placeholder*="search"]');
-      await searchInput.first().fill("protocol");
-      await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
-      await expect(page).toHaveScreenshot("search-with-query.png", { fullPage: true });
-      await searchInput.first().fill("blockchain");
-      await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
-      await expect(page).toHaveScreenshot("search-with-results.png", { fullPage: true });
+        test("notes tab - initial state", async ({ browser }) => {
+          await page.click('[data-testid="tab-notes"]', { timeout });
+          await page.locator('[data-testid="tab-content-notes"]').waitFor({ state: "visible", timeout });
+          await expect(page).toHaveScreenshot("notes-tab-initial.png", {
+            // biome-ignore lint/style/noNonNullAssertion: boundingBox is expected to exist at this point
+            clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+            fullPage: false,
+            animations: "disabled",
+          });
+        });
+
+        test("notes tab - after note activation", async ({ browser }) => {
+          await page.click('[data-testid="notes-manager-card"]', { timeout });
+          await page
+            .locator('[data-testid="selected-text"]')
+            .filter({ hasNotText: "" })
+            .waitFor({ state: "visible", timeout });
+          await expect(page).toHaveScreenshot("notes-tab-after-note-activation.png", {
+            // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
+            clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+            fullPage: false,
+            animations: "disabled",
+          });
+        });
+
+        test("notes tab - after set to edit mode", async ({ browser }) => {
+          await page.click('[data-testid="edit-button"]', { timeout });
+          await expect(page).toHaveScreenshot("notes-tab-after-note-edit.png", {
+            // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
+            clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+            fullPage: false,
+            animations: "disabled",
+          });
+        });
+      });
+
+    test.describe("Search Functionality", () => {
+      test("search - initial state", async () => {
+        await page.goto(hostname, { waitUntil: "networkidle" });
+        await page.evaluate(() => document.fonts.ready);
+
+        // Click on search tab or search input
+        const searchTab = page.locator('[data-testid="tab-search"]');
+
+        if ((await searchTab.count()) > 0) {
+          await searchTab.click();
+          await page.locator('[data-testid="tab-content-search"]').waitFor({ state: "visible" });
+        }
+
+        await expect(page).toHaveScreenshot("search-initial.png", { fullPage: true });
+        const searchInput = page.locator('input[placeholder*="search"]');
+        await searchInput.first().fill("protocol");
+        await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
+        await expect(page).toHaveScreenshot("search-with-query.png", { fullPage: true });
+        await searchInput.first().fill("blockchain");
+        await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
+        await expect(page).toHaveScreenshot("search-with-results.png", { fullPage: true });
+      });
     });
   });
-});
 
 test.describe("Top Bar Tests", () => {
   test.describe("GitHub Dropdown", () => {
