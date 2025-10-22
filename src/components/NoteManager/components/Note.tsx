@@ -140,7 +140,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       <div
         className={cn(
           "note rounded-xl p-4 flex flex-col gap-2",
-          active && "bg-[var(--active-note-bg)]",
+          active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)]",
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
         role={!active ? "button" : undefined}
