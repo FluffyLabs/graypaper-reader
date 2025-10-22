@@ -90,7 +90,6 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   }, [note, isEditable]);
 
   const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
-    console.log("asdasd");
     setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
   };
 
@@ -245,6 +244,7 @@ const SelectedText = () => {
             className="p-2 h-6 -top-0.5 relative"
             data-testid={"edit-button"}
             onClick={handleEditClick}
+            aria-label="Edit note"
           >
             ✏️
           </Button>
