@@ -94,12 +94,28 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     setIsEditing(false);
   }, []);
 
-  const handleWholeNoteClick = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+  const handleWholeNoteClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target;
 
     if (target instanceof Element && (target.closest("button") || target.closest("a"))) {
       e.preventDefault();
       return;
+    }
+
+    if (active) {
+      return;
+    }
+
+    setLocationParams({
+      version: note.original.version,
+      selectionStart: note.original.selectionStart,
+      selectionEnd: note.original.selectionEnd,
+    });
+  };
+
+  const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "Enter") {
+      e.preventDefault();
     }
 
     if (active) {
@@ -128,7 +144,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
         onClick={handleWholeNoteClick}
-        onKeyDown={handleWholeNoteClick}
+        onKeyDown={handleNoteEnter}
       >
         {!active && (
           <>
