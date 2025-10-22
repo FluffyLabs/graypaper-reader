@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { validateMath } from "../../../utils/validateMath";
@@ -17,6 +18,7 @@ import { NoteLink } from "./NoteLink";
 import "./Note.css";
 import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
+import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -30,7 +32,13 @@ type NoteProps = {
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
-const noteContext = createContext<IDecoratedNote | null>(null);
+const noteContext = createContext<{
+  note: IDecoratedNote;
+  isEditable: boolean;
+  handleEditClick: () => void;
+  onEditNote: INotesContext["handleUpdateNote"];
+  isEditing: boolean;
+} | null>(null);
 
 const useNoteContext = () => {
   const context = useContext(noteContext);
@@ -135,13 +143,24 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     }
   }, [active]);
 
+  const noteLayoutContext = useMemo(
+    () => ({
+      note,
+      isEditable,
+      handleEditClick,
+      onEditNote,
+      isEditing,
+    }),
+    [note, isEditable, handleEditClick, onEditNote, isEditing],
+  );
+
   return (
-    <NoteLayout.Root value={note}>
+    <NoteLayout.Root value={noteLayoutContext}>
       <div
         data-testid="notes-manager-card"
         className={cn(
           "note rounded-xl p-4 flex flex-col gap-2",
-          active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)]",
+          active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)] mb-1",
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
         role={!active ? "button" : undefined}
@@ -158,20 +177,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
         )}
         {active && !isEditing && (
           <>
-            <div className="flex justify-between items-start">
-              <NoteLink note={note} onEditNote={onEditNote} />
-              {isEditable && (
-                <Button
-                  variant="ghost"
-                  intent="neutralStrong"
-                  className="p-2 h-8"
-                  data-testid={isEditing ? "save-button" : "edit-button"}
-                  onClick={isEditing ? handleSaveClick : handleEditClick}
-                >
-                  ✏️
-                </Button>
-              )}
-            </div>
+            <NoteLayout.SelectedText />
             <NoteLayout.Text />
             {!isEditing ? <NoteLabels note={note} /> : null}
           </>
@@ -179,7 +185,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
         {active && isEditing && (
           <>
             <>
-              <NoteLink note={note} onEditNote={onEditNote} />
+              <NoteLayout.SelectedText />
               <textarea
                 className={noteContentError ? "error" : ""}
                 onChange={handleNoteContentChange}
@@ -209,7 +215,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
 }
 
 const NoteText = () => {
-  const note = useNoteContext();
+  const { note } = useNoteContext();
 
   return (
     <blockquote className="whitespace-pre-wrap">
@@ -219,7 +225,33 @@ const NoteText = () => {
   );
 };
 
+const SelectedText = () => {
+  const { selectionString } = useContext(SelectionContext) as ISelectionContext;
+  const { handleEditClick, isEditable, note, onEditNote, isEditing } = useNoteContext();
+
+  return (
+    <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border">
+      <div className="flex justify-between">
+        <NoteLink note={note} onEditNote={onEditNote} />
+        {isEditable && !isEditing && (
+          <Button
+            variant="ghost"
+            intent="neutralStrong"
+            className="p-2 h-6 -top-0.5 relative"
+            data-testid={"edit-button"}
+            onClick={handleEditClick}
+          >
+            ✏️
+          </Button>
+        )}
+      </div>
+      <blockquote className="italic">{selectionString}</blockquote>
+    </div>
+  );
+};
+
 const NoteLayout = {
   Root: noteContext.Provider,
   Text: NoteText,
+  SelectedText: SelectedText,
 };
