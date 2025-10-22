@@ -58,6 +58,10 @@ test.describe("Homepage Tests", () => {
 
       test("notes tab - after note activation", async ({ browser }) => {
         await page.click('[data-testid="notes-manager-card"]', { timeout });
+        await page
+          .locator('[data-testid="selected-text"]')
+          .filter({ hasNotText: "" })
+          .waitFor({ state: "visible", timeout });
         await expect(page).toHaveScreenshot("notes-tab-after-note-activation.png", {
           // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
           clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,

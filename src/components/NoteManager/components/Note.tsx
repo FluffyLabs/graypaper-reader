@@ -250,7 +250,9 @@ const SelectedText = () => {
           </Button>
         )}
       </div>
-      <blockquote className="italic">{selectionString}</blockquote>
+      <blockquote className="italic" data-testid="selected-text">
+        {selectionString}
+      </blockquote>
     </div>
   );
 };
