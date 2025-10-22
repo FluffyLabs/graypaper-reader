@@ -16,7 +16,7 @@ import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import "./Note.css";
 import { Button, cn } from "@fluffylabs/shared-ui";
-import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
+import { useLocationContext } from "../../LocationProvider/LocationProvider";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -47,7 +47,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   });
   const [noteContentError, setNoteContentError] = useState("");
 
-  const { setLocationParams } = useContext(LocationContext) as ILocationContext;
+  const { setLocationParams } = useLocationContext();
 
   const isEditable = note.source !== NoteSource.Remote;
 
