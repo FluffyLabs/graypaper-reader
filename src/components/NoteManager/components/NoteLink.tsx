@@ -108,7 +108,7 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
 
       <OutlineLink
         firstLevel
-        title={`${section} ${subSection ? `${subSection} ` : ""}`}
+        title={`${section} ${subSection ? ` > ${subSection} ` : ""}`}
         number={`p. ${pageNumber} >`}
         onClick={handleNoteTitleClick}
         href="#"
