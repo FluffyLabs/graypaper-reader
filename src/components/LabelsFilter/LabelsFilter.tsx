@@ -69,7 +69,7 @@ const LabelsFilterDumb: FC<{
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
+          variant="tertiary"
           className={twMerge("h-[32px] px-5", !labelsAreLoaded && "pointer-events-none")}
           forcedColorScheme={forcedColorScheme}
         >

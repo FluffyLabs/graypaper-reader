@@ -15,7 +15,7 @@ export const NotesButtonsGroup: FC<{ className?: string }> = ({ className }) => 
       <ButtonGroup className={className}>
         <Button
           forcedColorScheme="dark"
-          variant="outline"
+          variant="tertiary"
           onClick={handleUndo}
           disabled={!canUndo}
           className="h-[32px]"
@@ -28,7 +28,7 @@ export const NotesButtonsGroup: FC<{ className?: string }> = ({ className }) => 
         </Button>
         <Button
           forcedColorScheme="dark"
-          variant="outline"
+          variant="tertiary"
           onClick={handleRedo}
           disabled={!canRedo}
           className="h-[32px]"
@@ -42,7 +42,7 @@ export const NotesButtonsGroup: FC<{ className?: string }> = ({ className }) => 
         <LabelsFilter forcedColorScheme="dark" />
         <Button
           forcedColorScheme="dark"
-          variant="outline"
+          variant="tertiary"
           onClick={() => setNotesPinned(!notesPinned)}
           className="h-[32px]"
           data-tooltip-id="notes-button-tooltip"
