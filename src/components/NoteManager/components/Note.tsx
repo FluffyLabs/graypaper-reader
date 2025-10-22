@@ -17,7 +17,7 @@ import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import "./Note.css";
 import { Button, cn } from "@fluffylabs/shared-ui";
-import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
+import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 
 export type NotesItem = {
@@ -55,7 +55,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   });
   const [noteContentError, setNoteContentError] = useState("");
 
-  const { setLocationParams } = useContext(LocationContext) as ILocationContext;
+  const { setLocationParams } = useLocationContext();
 
   const isEditable = note.source !== NoteSource.Remote;
 
@@ -90,6 +90,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   }, [note, isEditable]);
 
   const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
+    console.log("asdasd");
     setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
   };
 
@@ -122,6 +123,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   };
 
   const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.target instanceof Element && (e.target.closest("input") || e.target.closest("textarea"))) {
+      return;
+    }
+
     if (e.key !== "Enter" && e.key !== "Space") {
       e.preventDefault();
     }
@@ -230,8 +235,8 @@ const SelectedText = () => {
   const { handleEditClick, isEditable, note, onEditNote, isEditing } = useNoteContext();
 
   return (
-    <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border">
-      <div className="flex justify-between">
+    <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
+      <div className="flex justify-between gap-1">
         <NoteLink note={note} onEditNote={onEditNote} />
         {isEditable && !isEditing && (
           <Button

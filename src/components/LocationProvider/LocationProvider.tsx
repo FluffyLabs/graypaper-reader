@@ -28,6 +28,14 @@ const BASE64_VALIDATION_REGEX = /^#[-A-Za-z0-9+/]*={0,3}$/;
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
+export const useLocationContext = () => {
+  const context = useContext(LocationContext);
+  if (!context) {
+    throw new Error("useLocationContext must be used within a LocationProvider");
+  }
+  return context;
+};
+
 export function LocationProvider({ children }: ILocationProviderProps) {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const [locationParams, setLocationParams] = useState<ILocationParams>();
