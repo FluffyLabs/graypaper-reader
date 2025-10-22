@@ -5,6 +5,7 @@ import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/C
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
+import { OutlineLink } from "../../Outline";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 
 type NoteLinkProps = {
@@ -105,9 +106,13 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         </a>
       )}
 
-      <a href="#" onClick={handleNoteTitleClick} className="default-link">
-        p. {pageNumber} &gt; {section} {subSection ? `> ${subSection}` : null}
-      </a>
+      <OutlineLink
+        firstLevel
+        title={`${section} ${subSection ? `${subSection} ` : ""}`}
+        number={`p. ${pageNumber} >`}
+        onClick={handleNoteTitleClick}
+        href="#"
+      />
 
       {migrationFlag && isEditable && (
         <a

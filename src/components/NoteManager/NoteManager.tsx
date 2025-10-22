@@ -27,7 +27,7 @@ function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
+  const { notesReady, activeNotes, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
     NotesContext,
   ) as INotesContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
@@ -74,7 +74,7 @@ function Notes() {
   }, [selectedBlocks]);
 
   return (
-    <div className="note-manager" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
+    <div className="note-manager flex flex-col gap-2.5" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
       <div className="new-note">
         <textarea
           disabled={selectedBlocks.length === 0}
@@ -91,7 +91,12 @@ function Notes() {
         </button>
       </div>
 
-      <MemoizedNotesList notes={notes} onEditNote={handleUpdateNote} onDeleteNote={handleDeleteNote} />
+      <MemoizedNotesList
+        activeNotes={activeNotes}
+        notes={notes}
+        onEditNote={handleUpdateNote}
+        onDeleteNote={handleDeleteNote}
+      />
     </div>
   );
 }
