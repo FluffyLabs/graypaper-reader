@@ -188,15 +188,15 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
               {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
               <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} />
               <div className="actions gap-2">
-                <Button variant="tertiary" intent="destructive" size="sm" onClick={handleDeleteClick}>
+                <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
                   Delete
                 </Button>
                 <div className="fill" />
+                <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
+                  Cancel
+                </Button>
                 <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
                   Save
-                </Button>
-                <Button variant="secondary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
-                  Cancel
                 </Button>
               </div>
             </>
