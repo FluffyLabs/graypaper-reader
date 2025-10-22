@@ -1,4 +1,12 @@
-import { type ChangeEvent, type MouseEventHandler, createContext, useCallback, useContext, useState } from "react";
+import {
+  type ChangeEvent,
+  type MouseEventHandler,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
@@ -105,6 +113,12 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     });
   };
 
+  useEffect(() => {
+    if (!active) {
+      setIsEditing(false);
+    }
+  }, [active]);
+
   return (
     <NoteLayout.Root value={note}>
       <div
@@ -124,16 +138,18 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
         )}
         {active && !isEditing && (
           <>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-start">
               <NoteLink note={note} onEditNote={onEditNote} />
               {isEditable && (
-                <button
-                  className={`default-button ${isEditing ? "save" : "edit"}`}
+                <Button
+                  variant="ghost"
+                  intent="neutralStrong"
+                  className="p-2 h-8"
                   data-testid={isEditing ? "save-button" : "edit-button"}
                   onClick={isEditing ? handleSaveClick : handleEditClick}
                 >
-                  {isEditing ? "save" : "✏️"}
-                </button>
+                  ✏️
+                </Button>
               )}
             </div>
             <NoteLayout.Text />
@@ -153,21 +169,16 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
               {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
               <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} />
               <div className="actions gap-2">
-                <Button variant="" size="sm">
+                <Button variant="tertiary" intent="destructive" size="sm" onClick={handleDeleteClick}>
                   Delete
                 </Button>
-                <button className="remove default-button" onClick={handleDeleteClick}>
-                  delete
-                </button>
                 <div className="fill" />
-                <button
-                  className={`default-button ${isEditing ? "save" : "edit"}`}
-                  data-testid={isEditing ? "save-button" : "edit-button"}
-                  onClick={isEditing ? handleSaveClick : handleEditClick}
-                >
-                  {isEditing ? "save" : "✏️"}
-                </button>
-                <button onClick={handleCancelClick}>cancel</button>
+                <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
+                  Save
+                </Button>
+                <Button variant="secondary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
+                  Cancel
+                </Button>
               </div>
             </>
           </>

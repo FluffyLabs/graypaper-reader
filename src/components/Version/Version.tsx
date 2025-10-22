@@ -76,7 +76,7 @@ export function Version() {
       )}
       <DropdownMenu onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" forcedColorScheme="dark" className="flex-1 justify-between h-[32px]">
+          <Button variant="tertiary" forcedColorScheme="dark" className="flex-1 justify-between h-[32px]">
             <span className="px-2">{getCurrentVersionLabel()}</span>
             <ChevronDown className="ml-2 h-5 w-4" />
           </Button>

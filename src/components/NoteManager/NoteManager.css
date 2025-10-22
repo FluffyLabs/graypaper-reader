@@ -1,6 +1,6 @@
 .note-manager{
-  --inactive-note-bg: #999;
-  --active-note-bg: var(--color-brand-very-light);
+  --inactive-note-bg: #ebebeb;
+  --active-note-bg: #d8e8e7
 }
 
 .dark .note-manager{
@@ -71,26 +71,6 @@
   display: flex;
 }
 
-.note-manager button.remove {
-  color: #f22;
-}
-
 .note-manager .fill {
   flex: 1;
-}
-
-.note-manager button.save {
-  color: #2a2;
-}
-
-.note-manager button.edit {
-  font-size: 8px;
-  background: none;
-  filter: grayscale(100%);
-  opacity: 30%;
-  transition: all 200ms ease-in-out;
-}
-.note-manager .note:hover button.edit {
-  filter: none;
-  opacity: 100%;
 }

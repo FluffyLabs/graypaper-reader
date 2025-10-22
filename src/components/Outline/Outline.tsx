@@ -1,5 +1,5 @@
 import "./Outline.css";
-import { type FC, type ReactNode, memo, useCallback, useContext, useEffect, useState } from "react";
+import { type FC, memo, useCallback, useContext, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { PdfContext } from "../PdfProvider/PdfProvider";
@@ -110,21 +110,6 @@ const OutlineDumb: FC<{
 });
 
 OutlineDumb.displayName = "OutlineDumb";
-
-type ILinkProps = {
-  dest: TOutlineSingleSlim["dest"];
-  children: ReactNode;
-  onClick: (dest: TOutlineSingleSlim["dest"]) => void;
-  className?: string;
-};
-
-function Link({ dest, children, className, onClick }: ILinkProps) {
-  return (
-    <a onClick={() => dest && onClick(dest)} className={twMerge("cursor-pointer hover:opacity-75", className)}>
-      {children}
-    </a>
-  );
-}
 
 function splitOutlineTitle(title: string): { number: string | null; title: string } {
   const regex = /^((?:\d+(?:\.\d+)?|Appendix [A-Z]|[A-Z]\.\d+)\.)\s*(.+)$/;

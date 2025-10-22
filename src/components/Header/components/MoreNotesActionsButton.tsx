@@ -27,7 +27,7 @@ export const MoreButtonNotesActionsButton = () => {
       <SettingsModal isOpen={isModalOpen} onClose={toggleModal} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" forcedColorScheme="dark" className="h-[32px]">
+          <Button variant="tertiary" forcedColorScheme="dark" className="h-[32px]">
             ...
           </Button>
         </DropdownMenuTrigger>
