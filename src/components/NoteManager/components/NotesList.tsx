@@ -4,10 +4,12 @@ import { Note } from "./Note";
 
 export const NotesList = ({
   notes,
+  activeNotes,
   onEditNote,
   onDeleteNote,
 }: {
   notes: IDecoratedNote[];
+  activeNotes: IDecoratedNote[];
   onEditNote: (noteToReplace: IDecoratedNote, newNote: IStorageNote) => void;
   onDeleteNote: (noteToDelete: IDecoratedNote) => void;
 }) => {
@@ -18,7 +20,13 @@ export const NotesList = ({
   return (
     <>
       {notes.map((note) => (
-        <Note key={note.key} note={note} onEditNote={onEditNote} onDeleteNote={onDeleteNote} />
+        <Note
+          key={note.key}
+          active={activeNotes.includes(note)}
+          note={note}
+          onEditNote={onEditNote}
+          onDeleteNote={onDeleteNote}
+        />
       ))}
     </>
   );

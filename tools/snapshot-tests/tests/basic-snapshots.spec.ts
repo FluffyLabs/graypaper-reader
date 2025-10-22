@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
@@ -32,20 +32,50 @@ test.describe("Homepage Tests", () => {
     await expect(page).toHaveScreenshot("homepage-outline.png", { fullPage: true });
   });
 
-  test.describe("Notes Tab", () => {
-    test("notes tab - initial state", async ({ browser }) => {
-      const context = await browser.newContext(getCommonContext());
+  test.describe
+    .serial("Notes Tab", () => {
+      let page: Page;
+      const timeout = 10_000;
 
-      const page = await context.newPage();
-      await page.goto(hostname, { waitUntil: "networkidle" });
-      await page.evaluate(() => document.fonts.ready);
-      await page.click('[data-testid="tab-notes"]');
-      await page.locator('[data-testid="tab-content-notes"]').waitFor({ state: "visible" });
-      await expect(page).toHaveScreenshot("notes-tab-initial.png", { fullPage: true });
-      await page.click('[data-testid="edit-button"]', { timeout: 2500 });
-      await expect(page).toHaveScreenshot("notes-tab-edit.png", { fullPage: true });
+      test.beforeAll(async ({ browser }) => {
+        const context = await browser.newContext(getCommonContext());
+
+        page = await context.newPage();
+        await page.goto(hostname, { waitUntil: "networkidle" });
+        await page.evaluate(() => document.fonts.ready);
+      });
+
+      test("notes tab - initial state", async ({ browser }) => {
+        await page.click('[data-testid="tab-notes"]', { timeout });
+        await page.locator('[data-testid="tab-content-notes"]').waitFor({ state: "visible", timeout });
+        await expect(page).toHaveScreenshot("notes-tab-initial.png", {
+          // biome-ignore lint/style/noNonNullAssertion: boundingBox is expected to exist at this point
+          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+          fullPage: false,
+          animations: "disabled",
+        });
+      });
+
+      test("notes tab - after note activation", async ({ browser }) => {
+        await page.click('[data-testid="notes-manager-card"]', { timeout });
+        await expect(page).toHaveScreenshot("notes-tab-after-note-activation.png", {
+          // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
+          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+          fullPage: false,
+          animations: "disabled",
+        });
+      });
+
+      test("notes tab - after set to edit mode", async ({ browser }) => {
+        await page.click('[data-testid="edit-button"]', { timeout });
+        await expect(page).toHaveScreenshot("notes-tab-after-note-edit.png", {
+          // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
+          clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+          fullPage: false,
+          animations: "disabled",
+        });
+      });
     });
-  });
 
   test.describe("Search Functionality", () => {
     test("search - initial state", async ({ page }) => {

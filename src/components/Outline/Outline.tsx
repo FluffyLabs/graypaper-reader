@@ -1,9 +1,10 @@
 import "./Outline.css";
-import { type FC, type ReactNode, memo, useCallback, useContext, useEffect, useState } from "react";
+import { type FC, memo, useCallback, useContext, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import { OutlineLink } from "./OutlineLink";
 import { OutlineLinkSkeleton, outlineForSkeleton } from "./Skeleton";
 import type { TOutlineComplete, TOutlineSingleSlim } from "./types";
 
@@ -83,27 +84,13 @@ const OutlineDumb: FC<{
                 />
               )}
               {!isSkeleton && (
-                <Link
-                  dest={item.dest}
-                  onClick={onClick}
-                  className={twMerge(
-                    !firstLevel && "dark:text-brand-dark text-brand-dark mt-0.5",
-                    firstLevel && "dark:text-brand text-brand-very-dark",
-                  )}
-                >
-                  {firstLevel && (
-                    <>
-                      <span>{number?.replace(".", " >")}</span>&nbsp;
-                      <span className="border-b-1 dark:border-brand/50 border-brand-darkest/50">{title}</span>
-                    </>
-                  )}
-                  {!firstLevel && (
-                    <>
-                      <span>{number}</span>&nbsp;
-                      <span className="border-b-1 dark:border-brand-light/50 border-brand-dark/50">{title}</span>
-                    </>
-                  )}
-                </Link>
+                <OutlineLink
+                  href={item.dest?.toString() || "#"}
+                  firstLevel={firstLevel}
+                  onClick={() => onClick(item.dest)}
+                  title={title}
+                  number={firstLevel ? number?.replace(".", " >") : number ?? undefined}
+                />
               )}
               {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
             </li>
@@ -123,21 +110,6 @@ const OutlineDumb: FC<{
 });
 
 OutlineDumb.displayName = "OutlineDumb";
-
-type ILinkProps = {
-  dest: TOutlineSingleSlim["dest"];
-  children: ReactNode;
-  onClick: (dest: TOutlineSingleSlim["dest"]) => void;
-  className?: string;
-};
-
-function Link({ dest, children, className, onClick }: ILinkProps) {
-  return (
-    <a onClick={() => dest && onClick(dest)} className={twMerge("cursor-pointer hover:opacity-75", className)}>
-      {children}
-    </a>
-  );
-}
 
 function splitOutlineTitle(title: string): { number: string | null; title: string } {
   const regex = /^((?:\d+(?:\.\d+)?|Appendix [A-Z]|[A-Z]\.\d+)\.)\s*(.+)$/;

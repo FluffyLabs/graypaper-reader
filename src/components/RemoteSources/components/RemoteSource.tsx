@@ -57,11 +57,11 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <br />
         <Versions isEditing={isEditing} versions={versions} onChange={setVersions} />
         <br />
-        <Button variant="outline" disabled={!isFilled} onClick={handleEdit}>
+        <Button variant="tertiary" disabled={!isFilled} onClick={handleEdit}>
           ok
         </Button>
         {id > NEW_REMOTE_SOURCE_ID ? (
-          <Button variant="outline" onClick={handleRemove}>
+          <Button variant="tertiary" intent="destructive" onClick={handleRemove}>
             remove
           </Button>
         ) : null}

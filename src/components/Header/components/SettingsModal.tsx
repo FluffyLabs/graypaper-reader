@@ -14,7 +14,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
           <RemoteSources remoteSources={remoteSources} onChange={handleSetRemoteSources} />
         </DialogModal.Body>
         <DialogModal.Footer className="flex gap-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="tertiary" onClick={onClose}>
             Close
           </Button>
         </DialogModal.Footer>

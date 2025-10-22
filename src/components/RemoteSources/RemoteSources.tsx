@@ -29,7 +29,7 @@ export function RemoteSources({ remoteSources, onChange }: RemoteSourcesProps) {
       {isAddingNew ? (
         <RemoteSource onChange={handleOnChange} />
       ) : (
-        <Button variant="outline" size="sm" onClick={() => setAddingNew(true)}>
+        <Button variant="tertiary" size="sm" onClick={() => setAddingNew(true)}>
           ➕ new source
         </Button>
       )}
