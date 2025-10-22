@@ -36,7 +36,7 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className="border-b-1 dark:border-brand/50 border-brand-darkest/50">{title}</span>
+          <span className="border-b dark:border-brand/50 border-brand-darkest/50">{title}</span>
         </>
       )}
       {!firstLevel && (
@@ -46,7 +46,7 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className="border-b-1 dark:border-brand-light/50 border-brand-dark/50">{title}</span>
+          <span className="border-b dark:border-brand-light/50 border-brand-dark/50">{title}</span>
         </>
       )}
     </a>

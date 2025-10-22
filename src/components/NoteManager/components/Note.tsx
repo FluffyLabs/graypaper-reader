@@ -114,7 +114,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   };
 
   const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "Enter") {
+    if (e.key !== "Enter" && e.key !== "Space") {
       e.preventDefault();
     }
 
@@ -143,6 +143,9 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
           active && "bg-[var(--active-note-bg)]",
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
+        role={!active ? "button" : undefined}
+        tabIndex={!active ? 0 : undefined}
+        aria-label={!active ? "Activate label" : ""}
         onClick={handleWholeNoteClick}
         onKeyDown={handleNoteEnter}
       >
