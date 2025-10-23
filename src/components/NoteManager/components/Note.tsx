@@ -126,9 +126,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       return;
     }
 
-    if (e.key !== "Enter" && e.key !== "Space") {
-      e.preventDefault();
-    }
+    const isActivation = e.key === "Enter" || e.key === " " || e.code === "Space";
+    if (!isActivation) return;
+
+    e.preventDefault();
 
     if (active) {
       return;
