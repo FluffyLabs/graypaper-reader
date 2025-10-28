@@ -55,7 +55,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
   });
   const [noteContentError, setNoteContentError] = useState("");
 
-  const { setLocationParams } = useLocationContext();
+  const { setLocationParams, locationParams } = useLocationContext();
 
   const isEditable = note.source !== NoteSource.Remote;
 
@@ -115,7 +115,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     }
 
     setLocationParams({
-      version: note.original.version,
+      version: locationParams.version,
       selectionStart: note.original.selectionStart,
       selectionEnd: note.original.selectionEnd,
     });
