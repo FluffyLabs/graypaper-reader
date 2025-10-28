@@ -18,6 +18,7 @@ export function useTextLayerRendered(eventBus: pdfJsViewer.EventBus | undefined)
     eventBus.on("textlayerrendered", handleTextLayerRendered);
 
     return () => {
+      textLayerRenderedRef.current = [];
       eventBus.off("textlayerrendered", handleTextLayerRendered);
     };
   }, [eventBus]);
