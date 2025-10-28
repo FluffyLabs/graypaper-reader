@@ -10,7 +10,9 @@ export function useTextLayerRendered(eventBus: pdfJsViewer.EventBus | undefined)
     }
 
     const handleTextLayerRendered = (e: { pageNumber: number }) => {
-      textLayerRenderedRef.current = Array.from(new Set([...textLayerRenderedRef.current, e.pageNumber]));
+      if (!textLayerRenderedRef.current.includes(e.pageNumber)) {
+        textLayerRenderedRef.current.push(e.pageNumber);
+      }
     };
 
     eventBus.on("textlayerrendered", handleTextLayerRendered);
