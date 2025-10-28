@@ -4,19 +4,17 @@ import { subtractBorder } from "../../../utils/subtractBorder";
 import { type IPdfContext, PdfContext } from "../../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
-import { useTextLayer } from "../utils";
 
 const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
 const SELECTION_OPACITY = 0.3;
 const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
-  const { viewer, eventBus } = useContext(PdfContext) as IPdfContext;
+  const { viewer, textLayerRenderedRef } = useContext(PdfContext) as IPdfContext;
   const { selectedBlocks, pageNumber, lastScrolledTo, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
-  const textLayerRendered = useTextLayer(eventBus);
   const [retryScrolling, setRetryScrolling] = useState(0);
 
   useEffect(() => {
@@ -61,7 +59,8 @@ export function SelectionRenderer() {
   }, [selectedBlocks, setSelectionString]);
 
   useEffect(() => {
-    if (!viewer || !selectedBlocks.length || pageNumber === null || !textLayerRendered.includes(pageNumber)) return;
+    if (!viewer || !selectedBlocks.length || pageNumber === null || !textLayerRenderedRef.current.includes(pageNumber))
+      return;
 
     const pageElement = viewer.getPageView(pageNumber - 1)?.div;
     const textLayerElement = viewer.getPageView(pageNumber - 1)?.textLayer?.div;
@@ -106,7 +105,7 @@ export function SelectionRenderer() {
     }
 
     setSelectionString(document.getSelection()?.toString() || "");
-  }, [selectedBlocks, pageNumber, viewer, textLayerRendered, setSelectionString]);
+  }, [selectedBlocks, pageNumber, viewer, textLayerRenderedRef, setSelectionString]);
 
   const pageOffset = pageNumber ? pageOffsets.current[pageNumber] : null;
 
