@@ -2,29 +2,26 @@ import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffyl
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
+import type { ILocationParams, SearchParams } from "./types";
+import {
+  BASE64_VALIDATION_REGEX,
+  SEGMENT_SEPARATOR,
+  SELECTION_DECOMPOSE_PATTERN,
+  SELECTION_SEGMENT_INDEX,
+  VERSION_SEGMENT_INDEX,
+} from "./utils/constants";
+import { locationParamsToHash } from "./utils/locationParamsToHash";
 
 export interface ILocationContext {
   locationParams: ILocationParams;
   setLocationParams: (newParams: ILocationParams) => void;
   synctexBlocksToSelectionParams: (blocks: ISynctexBlock[]) => ISelectionParams;
-}
-
-interface ILocationParams extends Partial<ISelectionParams> {
-  version: string;
-  search?: string;
-  section?: string;
+  getHashFromLocationParams: (params: ILocationParams) => string;
 }
 
 interface ILocationProviderProps {
   children: ReactNode;
 }
-
-const VERSION_SEGMENT_INDEX = 0;
-const SELECTION_SEGMENT_INDEX = 1;
-const SEGMENT_SEPARATOR = "/";
-const SELECTION_DECOMPOSE_PATTERN = /[0-9A-F]{6}/gi;
-const SHORT_COMMIT_HASH_LENGTH = 7; // as many as git uses for `git rev-parse --short`
-const BASE64_VALIDATION_REGEX = /^#[-A-Za-z0-9+/]*={0,3}$/;
 
 export const LocationContext = createContext<ILocationContext | null>(null);
 
@@ -53,30 +50,17 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const handleSetLocationParams = useCallback(
     (newParams?: ILocationParams) => {
-      const fullVersion = newParams?.version;
-      const version = fullVersion
-        ? fullVersion.substring(0, SHORT_COMMIT_HASH_LENGTH)
-        : metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH);
-      const versionName = fullVersion ? metadata.versions[fullVersion]?.name : metadata.versions[metadata.latest]?.name;
+      if (!newParams) return;
+      const hash = locationParamsToHash(newParams, metadata);
+      window.location.hash = hash;
+    },
+    [metadata],
+  );
 
-      const stringifiedParams = [];
-
-      stringifiedParams[VERSION_SEGMENT_INDEX] = version;
-
-      if (newParams?.selectionStart && newParams?.selectionEnd) {
-        stringifiedParams[SELECTION_SEGMENT_INDEX] = [
-          encodePageNumberAndIndex(newParams.selectionStart.pageNumber, newParams.selectionStart.index),
-          encodePageNumberAndIndex(newParams.selectionEnd.pageNumber, newParams.selectionEnd.index),
-        ].join("");
-      }
-
-      // we never put search/section to the URL,
-      // yet we keep them in `locationParams`.
-      const params: SearchParams = {
-        v: versionName,
-        rest: `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`,
-      };
-      window.location.hash = serializeSearchParams(params);
+  const getHashFromLocationParams = useCallback(
+    (params: ILocationParams) => {
+      const hash = locationParamsToHash(params, metadata);
+      return hash;
     },
     [metadata],
   );
@@ -191,19 +175,15 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       locationParams,
       setLocationParams: handleSetLocationParams,
       synctexBlocksToSelectionParams,
+      getHashFromLocationParams,
     };
-  }, [locationParams, handleSetLocationParams, synctexBlocksToSelectionParams]);
+  }, [locationParams, handleSetLocationParams, synctexBlocksToSelectionParams, getHashFromLocationParams]);
 
   if (!context) {
     return null;
   }
 
   return <LocationContext.Provider value={context}>{children}</LocationContext.Provider>;
-}
-
-function encodePageNumberAndIndex(pageNumber: number, index: number) {
-  const asHexByte = (num: number) => (num & 0xff).toString(16).padStart(2, "0");
-  return `${asHexByte(pageNumber)}${asHexByte(index)}${asHexByte(index >> 8)}`;
 }
 
 function decodePageNumberAndIndex(s: string) {
@@ -214,13 +194,6 @@ function decodePageNumberAndIndex(s: string) {
   index += fromHex(s.substring(4, 6)) << 8;
   return { pageNumber, index };
 }
-
-type SearchParams = {
-  rest: string;
-  v?: string;
-  search?: string;
-  section?: string;
-};
 
 function extractSearchParams(hash: string): SearchParams {
   // skip the leading '/'
@@ -245,14 +218,4 @@ function extractSearchParams(hash: string): SearchParams {
   }
 
   return result;
-}
-function serializeSearchParams({ rest, ...searchParams }: SearchParams) {
-  const search = [];
-  for (const key of Object.keys(searchParams)) {
-    const val = searchParams[key as keyof typeof searchParams];
-    if (val) {
-      search.push(`${key}=${encodeURIComponent(val)}`);
-    }
-  }
-  return `${rest}${search.length > 0 ? `?${search.join("&")}` : ""}`;
 }
