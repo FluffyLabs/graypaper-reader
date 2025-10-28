@@ -2,8 +2,9 @@ import { jsPDF } from "jspdf";
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Dispatch, MutableRefObject, ReactNode, SetStateAction } from "react";
+import type { Dispatch, MutableRefObject, ReactNode, RefObject, SetStateAction } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
+import { useTextLayerRendered } from "./hooks/useTextLayerRendered";
 
 const CMAP_URL = "node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
@@ -30,8 +31,9 @@ export interface IPdfContext extends IPdfServices {
   theme: ITheme;
   setTheme: Dispatch<SetStateAction<ITheme>>;
   visiblePages: number[];
-  pageOffsets: MutableRefObject<DOMRect[]>;
+  pageOffsets: RefObject<DOMRect[]>;
   downloadPdfWithTheme: () => void;
+  textLayerRenderedRef: RefObject<number[]>;
 }
 
 interface IPdfProviderProps {
@@ -162,6 +164,7 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
   const [theme, setTheme] = useState<ITheme>(loadThemeSettingFromLocalStorage());
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const pageOffsets = useRef([]);
+  const { textLayerRenderedRef } = useTextLayerRendered(services.eventBus);
 
   // Initial setup
   useEffect(() => {
@@ -236,8 +239,9 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
       visiblePages,
       pageOffsets,
       downloadPdfWithTheme,
+      textLayerRenderedRef,
     }),
-    [theme, viewer, visiblePages, services, scale, downloadPdfWithTheme],
+    [theme, viewer, visiblePages, services, scale, downloadPdfWithTheme, textLayerRenderedRef],
   );
 
   return <PdfContext.Provider value={context}>{children}</PdfContext.Provider>;
