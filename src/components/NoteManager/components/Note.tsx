@@ -168,18 +168,20 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
             <NoteLayout.SelectedText />
             <NoteLabels note={note} />
             <NoteLayout.Text />
-            <div className="flex flex-1 justify-end">
-              <Button
-                variant="ghost"
-                intent="neutralStrong"
-                className="p-2 h-6 -top-0.5 relative"
-                data-testid={"edit-button"}
-                onClick={handleEditClick}
-                aria-label="Edit note"
-              >
-                ✏️
-              </Button>
-            </div>
+            {isEditable && (
+              <div className="flex flex-1 justify-end">
+                <Button
+                  variant="ghost"
+                  intent="neutralStrong"
+                  className="p-2 h-6 -top-0.5 relative"
+                  data-testid={"edit-button"}
+                  onClick={handleEditClick}
+                  aria-label="Edit note"
+                >
+                  ✏️
+                </Button>
+              </div>
+            )}
           </>
         )}
         {active && isEditing && (
