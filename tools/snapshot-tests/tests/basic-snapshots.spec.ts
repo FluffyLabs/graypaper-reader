@@ -66,7 +66,7 @@ test.describe
           await page
             .locator('[data-testid="selected-text"]')
             .filter({ hasNotText: "" })
-            .waitFor({ state: "visible", timeout: timeout * 20 });
+            .waitFor({ state: "visible", timeout: timeout * 2 });
           await expect(page).toHaveScreenshot("notes-tab-after-note-activation.png", {
             // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
             clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
