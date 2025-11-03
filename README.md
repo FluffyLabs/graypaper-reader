@@ -52,7 +52,7 @@ npm run docker:test
 # Update snapshots
 npm run docker:test:update
 ```
-This will update all the snapshots. You can compare it afterwards in your local Git GUI or Github web interface, and take actions if something is wrong.
+This will update all the snapshots. You can compare it afterward in your local Git GUI or Github web interface, and take actions if something is wrong.
 
 ## Local Testing 
 
