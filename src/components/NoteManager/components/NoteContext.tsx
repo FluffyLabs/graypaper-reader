@@ -17,7 +17,7 @@ export const noteContext = createContext<{
 export const useNoteContext = () => {
   const context = useContext(noteContext);
   if (!context) {
-    throw new Error("useNoteContext must be used within a NoteContextProvider");
+    throw new Error("useNoteContext must be used within a <noteContext.Provider/>");
   }
   return context;
 };
