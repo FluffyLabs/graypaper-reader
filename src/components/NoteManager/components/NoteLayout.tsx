@@ -1,0 +1,70 @@
+import { Textarea, cn } from "@fluffylabs/shared-ui";
+import { type ComponentProps, useContext, useRef } from "react";
+import { NoteContent } from "../../NoteContent/NoteContent";
+import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
+import { noteContext, useNoteContext } from "./NoteContext";
+import { NoteLink } from "./NoteLink";
+
+export const NoteText = () => {
+  const { note } = useNoteContext();
+
+  return (
+    <blockquote className="whitespace-pre-wrap">
+      {note.original.author}
+      <NoteContent content={note.original.content} />
+    </blockquote>
+  );
+};
+
+export const SelectedText = () => {
+  const { selectionString } = useContext(SelectionContext) as ISelectionContext;
+  const { note, onEditNote } = useNoteContext();
+
+  return (
+    <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
+      <div className="flex justify-between gap-1">
+        <NoteLink note={note} onEditNote={onEditNote} />
+      </div>
+      <blockquote className="italic" data-testid="selected-text">
+        {selectionString}
+      </blockquote>
+    </div>
+  );
+};
+
+export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
+  const { className, ...restOfProps } = props;
+  const { handleSaveClick, handleCancelClick, noteDirty, handleNoteContentChange } = useNoteContext();
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && (event.ctrlKey === true || event.metaKey === true)) {
+      event.preventDefault();
+      handleSaveClick();
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      handleCancelClick();
+    }
+  };
+
+  return (
+    <Textarea
+      {...restOfProps}
+      ref={ref}
+      autoFocus
+      onKeyDown={handleKeyDown}
+      value={noteDirty.content}
+      onChange={handleNoteContentChange}
+      className={cn("dark:border-[#728D8D] dark:bg-[#475959] bg-[#eef4f4] border-[#a7bbbb]", className)}
+    />
+  );
+};
+
+export const NoteLayout = {
+  Root: noteContext.Provider,
+  Text: NoteText,
+  TextArea: NoteTextArea,
+  SelectedText: SelectedText,
+};

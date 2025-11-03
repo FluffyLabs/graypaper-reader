@@ -1,24 +1,14 @@
-import {
-  type ChangeEvent,
-  type MouseEventHandler,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
-import { NoteContent } from "../../NoteContent/NoteContent";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
-import type { IStorageNote, UnPrefixedLabel } from "../../NotesProvider/types/StorageNote";
-import { NoteLabels, NoteLabelsEdit } from "./NoteLabels";
+import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import "./Note.css";
 import { Button, cn } from "@fluffylabs/shared-ui";
 import { useLocationContext } from "../../LocationProvider/LocationProvider";
-import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
+import { NoteLayout } from "./NoteLayout";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -32,22 +22,6 @@ type NoteProps = {
   onDeleteNote: INotesContext["handleDeleteNote"];
 };
 
-const noteContext = createContext<{
-  note: IDecoratedNote;
-  isEditable: boolean;
-  handleEditClick: () => void;
-  onEditNote: INotesContext["handleUpdateNote"];
-  isEditing: boolean;
-} | null>(null);
-
-const useNoteContext = () => {
-  const context = useContext(noteContext);
-  if (!context) {
-    throw new Error("useNoteContext must be used within a NoteContextProvider");
-  }
-  return context;
-};
-
 export function Note({ note, active = false, onEditNote, onDeleteNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
@@ -59,15 +33,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
 
   const isEditable = note.source !== NoteSource.Remote;
 
-  const handleEditLabels = useCallback(
-    (labels: UnPrefixedLabel[]) => {
-      noteDirty.labels = [...new Set(labels)];
-      setNoteDirty({ ...noteDirty });
-    },
-    [noteDirty],
-  );
-
-  const handleSaveClick = useCallback<MouseEventHandler>(() => {
+  const handleSaveClick = useCallback(() => {
     const mathValidationError = validateMath(noteDirty.content);
     setNoteContentError("");
 
@@ -89,9 +55,12 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     setNoteContentError("");
   }, [note, isEditable]);
 
-  const handleNoteContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
-    setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
-  };
+  const handleNoteContentChange = useCallback(
+    (ev: ChangeEvent<HTMLTextAreaElement>) => {
+      setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
+    },
+    [noteDirty],
+  );
 
   const handleDeleteClick = useCallback(() => {
     onDeleteNote(note);
@@ -153,10 +122,24 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       note,
       isEditable,
       handleEditClick,
+      handleSaveClick,
+      handleCancelClick,
       onEditNote,
       isEditing,
+      noteDirty,
+      handleNoteContentChange,
     }),
-    [note, isEditable, handleEditClick, onEditNote, isEditing],
+    [
+      note,
+      isEditable,
+      handleEditClick,
+      handleSaveClick,
+      handleCancelClick,
+      onEditNote,
+      isEditing,
+      noteDirty,
+      handleNoteContentChange,
+    ],
   );
 
   return (
@@ -183,22 +166,29 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
         {active && !isEditing && (
           <>
             <NoteLayout.SelectedText />
+            <NoteLabels note={note} />
             <NoteLayout.Text />
-            {!isEditing ? <NoteLabels note={note} /> : null}
+            <div className="flex flex-1 justify-end">
+              <Button
+                variant="ghost"
+                intent="neutralStrong"
+                className="p-2 h-6 -top-0.5 relative"
+                data-testid={"edit-button"}
+                onClick={handleEditClick}
+                aria-label="Edit note"
+              >
+                ✏️
+              </Button>
+            </div>
           </>
         )}
         {active && isEditing && (
           <>
             <>
               <NoteLayout.SelectedText />
-              <textarea
-                className={noteContentError ? "error" : ""}
-                onChange={handleNoteContentChange}
-                value={noteDirty.content}
-                autoFocus
-              />
+              <NoteLabels note={note} />
+              <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
               {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-              <NoteLabelsEdit note={note} onNewLabels={handleEditLabels} />
               <div className="actions gap-2">
                 <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
                   Delete
@@ -218,48 +208,3 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     </NoteLayout.Root>
   );
 }
-
-const NoteText = () => {
-  const { note } = useNoteContext();
-
-  return (
-    <blockquote className="whitespace-pre-wrap">
-      {note.original.author}
-      <NoteContent content={note.original.content} />
-    </blockquote>
-  );
-};
-
-const SelectedText = () => {
-  const { selectionString } = useContext(SelectionContext) as ISelectionContext;
-  const { handleEditClick, isEditable, note, onEditNote, isEditing } = useNoteContext();
-
-  return (
-    <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
-      <div className="flex justify-between gap-1">
-        <NoteLink note={note} onEditNote={onEditNote} />
-        {isEditable && !isEditing && (
-          <Button
-            variant="ghost"
-            intent="neutralStrong"
-            className="p-2 h-6 -top-0.5 relative"
-            data-testid={"edit-button"}
-            onClick={handleEditClick}
-            aria-label="Edit note"
-          >
-            ✏️
-          </Button>
-        )}
-      </div>
-      <blockquote className="italic" data-testid="selected-text">
-        {selectionString}
-      </blockquote>
-    </div>
-  );
-};
-
-const NoteLayout = {
-  Root: noteContext.Provider,
-  Text: NoteText,
-  SelectedText: SelectedText,
-};
