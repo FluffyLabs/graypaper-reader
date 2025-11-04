@@ -19,7 +19,8 @@
 
 .notes-wrapper .note-manager {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
@@ -34,11 +35,6 @@
   width: 100%;
   box-sizing: border-box;
   border-radius: 6px;
-}
-
-.note-manager .note textarea,
-.note-manager .note input {
-  border: 1px solid #767676;
 }
 
 .note-manager .validation-message {

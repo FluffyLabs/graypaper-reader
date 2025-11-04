@@ -73,12 +73,6 @@ h1 {
   border-color: #fff874;
 }
 
-textarea {
-  border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
-  border-width: 1px;
-  background-color: field;
-}
-
 input {
   border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
   border-width: 1px;

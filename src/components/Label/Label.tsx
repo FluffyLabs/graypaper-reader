@@ -1,7 +1,4 @@
 import { twMerge } from "tailwind-merge";
-import { type PrefixedLabel, prefixLabel } from "../NotesProvider/hooks/useLabels";
-import { NoteSource } from "../NotesProvider/types/DecoratedNote";
-import type { UnPrefixedLabel } from "../NotesProvider/types/StorageNote";
 import { contrast, hslColorToCss, hslToHex } from "./color-utils";
 import "./Label.css";
 import { useMemo } from "react";
@@ -13,7 +10,7 @@ export function Label({
   variant = "filled",
   showTooltip = false,
 }: {
-  label: PrefixedLabel;
+  label: string;
   icon?: string;
   className?: string;
   variant?: "filled" | "outlined";
@@ -41,10 +38,6 @@ export function Label({
       {icon} {label}
     </span>
   );
-}
-
-export function LabelString({ label, source = NoteSource.Local }: { label: UnPrefixedLabel; source?: NoteSource }) {
-  return <Label label={prefixLabel(source, label)} />;
 }
 
 function dimColor(mainColor: { hsl: [number, number, number] }) {

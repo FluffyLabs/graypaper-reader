@@ -1,5 +1,6 @@
 import { type ChangeEventHandler, useCallback, useState } from "react";
-import { LabelString } from "../../Label/Label";
+import { Label } from "../../Label/Label";
+import { prefixLabel } from "../../NotesProvider/hooks/useLabels";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 
 type NoteLabelsProps = {
@@ -10,7 +11,7 @@ export function NoteLabels({ note }: { note: IDecoratedNote }) {
   return (
     <div className="labels">
       {note.original.labels.map((label) => (
-        <LabelString key={label} label={label} source={note.source} />
+        <Label key={label} label={prefixLabel(note.source, label)} variant="outlined" />
       ))}
     </div>
   );
