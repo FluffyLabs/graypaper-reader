@@ -1,5 +1,6 @@
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import "./NoteManager.css";
+import { Button, Textarea } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -75,8 +76,8 @@ function Notes() {
 
   return (
     <div className="note-manager flex flex-col gap-2.5" style={{ opacity: notesReady ? 1.0 : 0.3 }}>
-      <div className="new-note">
-        <textarea
+      <div className="flex flex-col p-2 gap-2">
+        <Textarea
           disabled={selectedBlocks.length === 0}
           className={noteContentError ? "error" : ""}
           autoFocus
@@ -86,9 +87,9 @@ function Notes() {
         />
 
         {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-        <button disabled={noteContent.length < 1} onClick={handleAddNoteClick} className="default-button">
+        <Button disabled={noteContent.length < 1} onClick={handleAddNoteClick} variant="secondary">
           Add
-        </button>
+        </Button>
       </div>
 
       <MemoizedNotesList
