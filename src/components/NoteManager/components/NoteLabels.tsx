@@ -24,14 +24,10 @@ export function NoteLabels() {
           endSlot={
             isEditing && (
               <TinyIconButton
-                icon={
-                  <CircleX
-                    style={{ zoom: 0.5 }}
-                    onClick={() => handleNoteLabelsChange([...noteDirty.labels.filter((l) => l !== label)])}
-                  />
-                }
+                icon={<CircleX style={{ zoom: 0.5 }} />}
                 aria-label="remove"
                 className="p-0.5 h-4 relative top-0 hover:text-destructive"
+                onClick={() => handleNoteLabelsChange([...noteDirty.labels.filter((l) => l !== label)])}
               />
             )
           }
