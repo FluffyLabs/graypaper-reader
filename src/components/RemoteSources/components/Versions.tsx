@@ -1,6 +1,6 @@
+import { Checkbox } from "@fluffylabs/shared-ui";
 import { useContext, useMemo } from "react";
 import { type IMetadataContext, MetadataContext } from "../../MetadataProvider/MetadataProvider";
-import { Checkbox } from "@fluffylabs/shared-ui";
 
 type VersionsProps = {
   versions: string[] | null;
@@ -25,8 +25,7 @@ export function Versions({ isEditing = false, versions, onChange }: VersionsProp
   if (isEditing) {
     const allVersionsOption = (
       <label>
-        <Checkbox checked={isAllVersions} onCheckedChange={() => onChange?.(isAllVersions ? [] : null)} /> all
-        versions
+        <Checkbox checked={isAllVersions} onCheckedChange={() => onChange?.(isAllVersions ? [] : null)} /> all versions
       </label>
     );
 

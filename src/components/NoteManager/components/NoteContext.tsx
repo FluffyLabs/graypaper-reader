@@ -1,7 +1,7 @@
 import { type ChangeEvent, createContext, useContext } from "react";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
-import { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 
 export const noteContext = createContext<{
   note: IDecoratedNote;
@@ -11,7 +11,7 @@ export const noteContext = createContext<{
   handleCancelClick: () => void;
   handleNoteContentChange: (ev: ChangeEvent<HTMLTextAreaElement>) => void;
   handleNoteLabelsChange: (labels: string[]) => void;
-  noteDirty: IStorageNote
+  noteDirty: IStorageNote;
   onEditNote: INotesContext["handleUpdateNote"];
   isEditing: boolean;
 } | null>(null);

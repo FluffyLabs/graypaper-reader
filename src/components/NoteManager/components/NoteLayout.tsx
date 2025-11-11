@@ -1,11 +1,11 @@
-import { Textarea, cn } from "@fluffylabs/shared-ui";
+import type { Textarea } from "@fluffylabs/shared-ui";
 import { type ComponentProps, useContext, useRef } from "react";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { noteContext, useNoteContext } from "./NoteContext";
+import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import { NoteSimpleTextarea } from "./SiimpleComponents";
-import { NoteLabels } from "./NoteLabels";
 
 export const NoteText = () => {
   const { note } = useNoteContext();

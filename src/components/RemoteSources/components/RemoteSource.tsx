@@ -40,13 +40,16 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
     onChange(source, true);
   }, [source, onChange]);
 
-  const toggleEnabled = useCallback((checked : boolean) => {
-    if (!source) {
-      console.error("Toggling a non-existing remote source.");
-      return;
-    }
-    onChange({ ...source, isEnabled: checked });
-  }, [onChange, source]);
+  const toggleEnabled = useCallback(
+    (checked: boolean) => {
+      if (!source) {
+        console.error("Toggling a non-existing remote source.");
+        return;
+      }
+      onChange({ ...source, isEnabled: checked });
+    },
+    [onChange, source],
+  );
 
   if (isEditing) {
     return (
@@ -72,7 +75,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
   return (
     <div className="remote-source">
       <label style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-        <Checkbox  checked={isEnabled} onCheckedChange={toggleEnabled} />
+        <Checkbox checked={isEnabled} onCheckedChange={toggleEnabled} />
         <strong>{name}</strong>
       </label>
       {id > 0 ? (

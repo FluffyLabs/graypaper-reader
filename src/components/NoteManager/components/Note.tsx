@@ -1,12 +1,12 @@
+import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
+import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
-import { NoteLink } from "./NoteLink";
-import { Button, cn } from "@fluffylabs/shared-ui";
-import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import { NoteLayout } from "./NoteLayout";
+import { NoteLink } from "./NoteLink";
 import { TinyIconButton } from "./SiimpleComponents";
 
 export type NotesItem = {
@@ -134,7 +134,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       isEditing,
       noteDirty,
       handleNoteContentChange,
-      handleNoteLabelsChange
+      handleNoteLabelsChange,
     }),
     [
       note,
@@ -146,7 +146,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       isEditing,
       noteDirty,
       handleNoteContentChange,
-      handleNoteLabelsChange
+      handleNoteLabelsChange,
     ],
   );
 
@@ -178,12 +178,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
             <NoteLayout.Labels />
             {isEditable && (
               <div className="flex flex-1 justify-end">
-                <TinyIconButton
-                  data-testid={"edit-button"}
-                  onClick={handleEditClick}
-                  aria-label="Edit note"
-                  icon="✏️"
-                />
+                <TinyIconButton data-testid={"edit-button"} onClick={handleEditClick} aria-label="Edit note" icon="✏️" />
               </div>
             )}
           </>
