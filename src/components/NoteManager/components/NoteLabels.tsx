@@ -57,7 +57,7 @@ export function NoteLabelsEdit() {
     [currentInput, noteDirty.labels, labels],
   );
 
-  const handleEnter = (value: string) => {
+  const handleSelectLabel = (value: string) => {
     const isValid = value !== "";
 
     if (!isValid) {
@@ -85,10 +85,10 @@ export function NoteLabelsEdit() {
   };
 
   return (
-    <NoteInput
+    <NoteInputWithDropdown
       visibleLabels={visibleLabels}
-      onEnter={handleEnter}
-      onBackspace={handleBackspace}
+      onSelectLabel={handleSelectLabel}
+      onDoubleBackspace={handleBackspace}
       className="inline max-w-34 px-2 py-1 ml-[2px] mt-0.5 ring-0 text-xs"
       value={currentInput}
       onChange={(e) => setCurrentInput(e.currentTarget.value)}
@@ -97,13 +97,13 @@ export function NoteLabelsEdit() {
 }
 
 type NoteInputProps = ComponentProps<typeof Input> & {
-  onEnter?: (value: string) => void;
-  onBackspace?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  onSelectLabel?: (value: string) => void;
+  onDoubleBackspace?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   visibleLabels: string[];
 };
 
-export const NoteInput = (props: NoteInputProps) => {
-  const { onKeyDown, onEnter, onBackspace, visibleLabels, className, ...restOfProps } = props;
+export const NoteInputWithDropdown = (props: NoteInputProps) => {
+  const { onKeyDown, onSelectLabel, onDoubleBackspace, visibleLabels, className, ...restOfProps } = props;
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -116,15 +116,13 @@ export const NoteInput = (props: NoteInputProps) => {
         handleItemSelect(visibleLabels[selectedIndex]);
         event.preventDefault();
       } else if (event.currentTarget.value.trim()) {
-        onEnter?.(event.currentTarget.value);
-        // Clear input after adding label but keep dropdown open
+        onSelectLabel?.(event.currentTarget.value);
         event.currentTarget.value = "";
         restOfProps.onChange?.({ currentTarget: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
       }
-      // Don't close dropdown on Enter for multiselect
     } else if (event.key === "Backspace") {
       if (isInBackspace) {
-        onBackspace?.(event);
+        onDoubleBackspace?.(event);
         clearTimeout(inBackspaceTimeoutRef.current);
         setIsInBackspace(false);
       } else if (inputRef.current?.value.length === 0) {
@@ -161,15 +159,10 @@ export const NoteInput = (props: NoteInputProps) => {
   };
 
   const handleItemSelect = (value: string) => {
-    console.log("Selected:", value);
-    // Don't close dropdown for multiselect
     if (inputRef.current) {
-      // Add the selected label
-      onEnter?.(value.replace("local/", ""));
-      // Clear the input for next selection
+      onSelectLabel?.(value.replace("local/", ""));
       inputRef.current.value = "";
       restOfProps.onChange?.({ currentTarget: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
-      // Keep focus on input
       inputRef.current.focus();
     }
   };
@@ -200,11 +193,9 @@ export const NoteInput = (props: NoteInputProps) => {
         align="end"
         sideOffset={5}
         onOpenAutoFocus={(e) => {
-          // Critical: Prevent focus from moving to the popover
           e.preventDefault();
         }}
         onInteractOutside={(e) => {
-          // Don't close when clicking on the input
           const target = e.target as HTMLElement;
           if (target === inputRef.current) {
             e.preventDefault();
