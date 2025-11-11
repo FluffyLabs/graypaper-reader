@@ -85,7 +85,6 @@ function NoteLabelsEdit() {
       visibleLabels={visibleLabels}
       onSelectLabel={handleSelectLabel}
       onDoubleBackspace={handleBackspace}
-      className="inline max-w-34 px-2 py-1 ml-[2px] mt-0.5 ring-0 text-xs"
       value={currentInput}
       onChange={(e) => setCurrentInput(e.currentTarget.value)}
     />
@@ -171,10 +170,11 @@ const NoteInputWithDropdown = (props: NoteInputProps) => {
           {...restOfProps}
           intent={isInBackspace ? "warning" : "neutral"}
           className={cn(
+            "inline max-w-38 px-2 py-1 ml-[2px] mt-0.5 ring-0 text-xs",
             isInBackspace && "dark:placeholder:text-warning placeholder:text-warning-foreground",
             className,
           )}
-          placeholder={isInBackspace ? "Confirm backspace" : "Add label"}
+          placeholder={isInBackspace ? "Backspace to remove" : "Add label"}
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
           onChange={handleInputChange}
