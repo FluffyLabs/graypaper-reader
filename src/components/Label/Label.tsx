@@ -34,12 +34,12 @@ export function Label({
     <span
       style={style}
       className={twMerge(
-        "label truncate rounded-xl px-2.5 py-0.5 bg-[var(--light-bg-color)] dark:bg-[var(--dark-bg-color)] text-[var(--light-text-color)] dark:text-[var(--dark-text-color)]",
+        "label inline-flex items-center min-w-0 max-w-full rounded-xl px-2.5 py-0.5 bg-[var(--light-bg-color)] dark:bg-[var(--dark-bg-color)] text-[var(--light-text-color)] dark:text-[var(--dark-text-color)]",
         className,
       )}
       title={showTooltip ? label : undefined}
     >
-      <span>{label}</span>
+      <span className="truncate">{label}</span>
       {endSlot}
     </span>
   );
