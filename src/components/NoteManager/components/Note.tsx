@@ -54,19 +54,13 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     setNoteContentError("");
   }, [note, isEditable]);
 
-  const handleNoteLabelsChange = useCallback(
-    (labels: string[]) => {
-      setNoteDirty({ ...noteDirty, labels });
-    },
-    [noteDirty],
-  );
+  const handleNoteLabelsChange = useCallback((labels: string[]) => {
+    setNoteDirty((prevNoteDirty) => ({ ...prevNoteDirty, labels }));
+  }, []);
 
-  const handleNoteContentChange = useCallback(
-    (ev: ChangeEvent<HTMLTextAreaElement>) => {
-      setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
-    },
-    [noteDirty],
-  );
+  const handleNoteContentChange = useCallback((ev: ChangeEvent<HTMLTextAreaElement>) => {
+    setNoteDirty((prev) => ({ ...prev, content: ev.currentTarget.value }));
+  }, []);
 
   const handleDeleteClick = useCallback(() => {
     onDeleteNote(note);
