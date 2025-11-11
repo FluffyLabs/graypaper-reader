@@ -48,7 +48,7 @@ function NoteLabelsEdit() {
       labels
         .filter((label) => label.prefixedLabel === "local")
         .flatMap((label) => label.children.map((child) => child.prefixedLabel))
-        .filter((label) => !noteDirty.labels.some((diryLabel) => `local/${diryLabel}` === label))
+        .filter((label) => !noteDirty.labels.some((dirtyLabel) => `local/${dirtyLabel}` === label))
         .filter((label) => label.toLocaleLowerCase().includes(currentInput.toLocaleLowerCase())),
     [currentInput, noteDirty.labels, labels],
   );
