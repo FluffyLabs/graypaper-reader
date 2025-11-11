@@ -42,7 +42,7 @@ export function NoteLabels() {
   );
 }
 
-export function NoteLabelsEdit() {
+function NoteLabelsEdit() {
   const { noteDirty, handleNoteLabelsChange } = useNoteContext();
   const { labels } = useContext(NotesContext) as INotesContext;
   const [currentInput, setCurrentInput] = useState("");
@@ -102,7 +102,7 @@ type NoteInputProps = ComponentProps<typeof Input> & {
   visibleLabels: string[];
 };
 
-export const NoteInputWithDropdown = (props: NoteInputProps) => {
+const NoteInputWithDropdown = (props: NoteInputProps) => {
   const { onKeyDown, onSelectLabel, onDoubleBackspace, visibleLabels, className, ...restOfProps } = props;
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
