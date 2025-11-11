@@ -21,10 +21,10 @@ export function Label({
 
   const style = useMemo(
     () => ({
-      "--dark-bg-color": hslColorToCss(dimmedMainColor.dark),
-      "--light-bg-color": hslColorToCss(dimmedMainColor.light),
+      "--dark-bg-color": hslColorToCss(variant === "filled" ? mainColor.hsl : dimmedMainColor.dark),
+      "--light-bg-color": hslColorToCss(variant === "filled" ? mainColor.hsl : dimmedMainColor.light),
       "--dark-text-color": variant === "filled" ? contrastMainColor : mainColor.hex,
-      "--light-text-color": "#000000",
+      "--light-text-color": variant === "filled" ? contrastMainColor : "#000000",
       border: variant === "filled" ? "1px solid transparent" : `1px solid ${mainColor.hex}`,
     }),
     [contrastMainColor, variant, mainColor, dimmedMainColor],
