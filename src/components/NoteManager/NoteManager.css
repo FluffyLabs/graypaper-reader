@@ -24,19 +24,6 @@
 }
 
 
-.note-manager .new-note button {
-  width: 100%;
-}
-
-.note-manager textarea,
-.note-manager input {
-  padding: 1rem;
-  resize: vertical;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 6px;
-}
-
 .note-manager .validation-message {
   padding-bottom: 10px;
   color: #f22;

@@ -1,17 +1,17 @@
 import { twMerge } from "tailwind-merge";
 import { contrast, hslColorToCss, hslToHex } from "./color-utils";
 import "./Label.css";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
 export function Label({
   label,
-  icon = "",
+  endSlot,
   className = "",
   variant = "filled",
   showTooltip = false,
 }: {
   label: string;
-  icon?: string;
+  endSlot?: ReactNode;
   className?: string;
   variant?: "filled" | "outlined";
   showTooltip?: boolean;
@@ -35,7 +35,8 @@ export function Label({
       className={twMerge("label truncate rounded-xl px-2.5 py-0.5", className)}
       title={showTooltip ? label : undefined}
     >
-      {icon} {label}
+      {label}
+      {endSlot}
     </span>
   );
 }

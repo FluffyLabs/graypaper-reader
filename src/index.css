@@ -72,13 +72,3 @@ h1 {
 .default-button.toggled {
   border-color: #fff874;
 }
-
-input {
-  border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
-  border-width: 1px;
-  background-color: field;
-  padding: 1px 0px;
-  padding-block: 1px;
-  padding-inline: 2px;
-  border-radius: 4px;
-}

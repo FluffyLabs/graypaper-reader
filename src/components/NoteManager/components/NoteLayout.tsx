@@ -4,6 +4,8 @@ import { NoteContent } from "../../NoteContent/NoteContent";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { noteContext, useNoteContext } from "./NoteContext";
 import { NoteLink } from "./NoteLink";
+import { NoteSimpleTextarea } from "./SiimpleComponents";
+import { NoteLabels } from "./NoteLabels";
 
 export const NoteText = () => {
   const { note } = useNoteContext();
@@ -33,7 +35,6 @@ export const SelectedText = () => {
 };
 
 export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
-  const { className, ...restOfProps } = props;
   const { handleSaveClick, handleCancelClick, noteDirty, handleNoteContentChange } = useNoteContext();
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -50,14 +51,13 @@ export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
   };
 
   return (
-    <Textarea
-      {...restOfProps}
+    <NoteSimpleTextarea
+      {...props}
       ref={ref}
       autoFocus
       onKeyDown={handleKeyDown}
       value={noteDirty.content}
       onChange={handleNoteContentChange}
-      className={cn("dark:border-[#728D8D] dark:bg-[#475959] bg-[#eef4f4] border-[#a7bbbb]", className)}
     />
   );
 };
@@ -67,4 +67,5 @@ export const NoteLayout = {
   Text: NoteText,
   TextArea: NoteTextArea,
   SelectedText: SelectedText,
+  Labels: NoteLabels,
 };

@@ -1,50 +1,95 @@
-import { type ChangeEventHandler, useCallback, useState } from "react";
+import { ComponentProps, useState } from "react";
 import { Label } from "../../Label/Label";
 import { prefixLabel } from "../../NotesProvider/hooks/useLabels";
-import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
+import { useNoteContext } from "./NoteContext";
+import { Input } from "@fluffylabs/shared-ui";
+import { NoteSimpleInput, TinyIconButton } from "./SiimpleComponents";
+import { CircleX } from "lucide-react"
 
-type NoteLabelsProps = {
-  note: IDecoratedNote;
-};
+export function NoteLabels() {
+  const { note, isEditing, noteDirty } = useNoteContext()
 
-export function NoteLabels({ note }: { note: IDecoratedNote }) {
+  const labels = isEditing ? noteDirty.labels : note.original.labels;
+
   return (
-    <div className="labels">
-      {note.original.labels.map((label) => (
-        <Label key={label} label={prefixLabel(note.source, label)} variant="outlined" />
+    <div className="labels items-start justify-start flex gap-x-1 gap-y-0.5 flex-wrap">
+      {labels.map((label) => (
+        <Label key={label} label={prefixLabel(note.source, label)} variant="outlined" endSlot={<TinyIconButton icon={<CircleX style={{zoom: 0.5}}/>} aria-label="remove" className="p-0.5 h-4" />} />
       ))}
+      {isEditing && (
+        <NoteLabelsEdit  />
+      )}
     </div>
   );
 }
 
-type NoteLabelsEditProps = NoteLabelsProps & {
-  onNewLabels: (labels: string[]) => void;
-};
+export function NoteLabelsEdit() {
+  const { noteDirty, handleNoteLabelsChange  } = useNoteContext()
+  const [currentInput, setCurrentInput] = useState("");
 
-const SEPARATOR = ",";
-const JOINER = ", ";
+  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value.trim()
+    const isValid = value !== "";
 
-export function NoteLabelsEdit({ note, onNewLabels }: NoteLabelsEditProps) {
-  const labels = note.original.labels.join(JOINER);
-  const [currentInput, setCurrentInput] = useState(labels);
+    if (!isValid){
+      //TODO: do something when input is invalid
+      return;
+    }
 
-  const updateLabels = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (e) => {
-      const labels = e.target.value;
-      setCurrentInput(labels);
-      const newLabels = labels.split(SEPARATOR).map((l) => l.trim());
-      onNewLabels(newLabels);
-    },
-    [onNewLabels],
-  );
+    if (value) {
+      const newUniqueLabels = new Set(noteDirty.labels)
+      newUniqueLabels.add(value)
+      handleNoteLabelsChange(Array.from(newUniqueLabels));
+      setCurrentInput("");
+    }
+  }
+
+  const handleBackspace = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value !== ""){
+      return;
+    }
+
+    const withRemovedLastItem = noteDirty.labels.slice(0, -1);
+    handleNoteLabelsChange(withRemovedLastItem);
+    requestAnimationFrame(()=>{
+      setCurrentInput(noteDirty.labels.at(-1) || "");
+    })
+  }
 
   return (
-    <input
-      className="labels-edit"
-      onChange={updateLabels}
-      placeholder="comma (,) - separated labels"
-      type="text"
+    <NoteInput
+      onEnter={handleEnter}
+      onBackspace={handleBackspace}
+      className="inline max-w-24 px-2 py-1 ml-[2px] mt-0.5 ring-0 text-xs"
+      placeholder="Add label"
       value={currentInput}
+      onChange={e=>setCurrentInput(e.currentTarget.value)}
+    />
+  );
+}
+
+type NoteInputProps = ComponentProps<typeof Input> & {
+  onEnter?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  onBackspace?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+};
+
+export const NoteInput = (props: NoteInputProps) => {
+  const { onKeyDown, onEnter, onBackspace, ...restOfProps } = props;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" ) {
+      onEnter?.(event);
+    } else if (event.key === "Backspace") {
+      onBackspace?.(event);
+    }
+
+    onKeyDown?.(event);
+  };
+
+  return (
+    <NoteSimpleInput
+      {...restOfProps}
+      onKeyDown={handleKeyDown}
     />
   );
 }

@@ -109,7 +109,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         </a>
         {notes.map((note) => (
           <Fragment key={note.key}>
-            <NoteLabels note={note} />
+            {/*<NoteLabels note={note} />*/}
             {note.original.author}
             <NoteContent content={note.original.content} />
             <br />
