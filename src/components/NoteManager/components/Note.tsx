@@ -1,14 +1,13 @@
+import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
+import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
-import { NoteLabels } from "./NoteLabels";
-import { NoteLink } from "./NoteLink";
-import "./Note.css";
-import { Button, cn } from "@fluffylabs/shared-ui";
-import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import { NoteLayout } from "./NoteLayout";
+import { NoteLink } from "./NoteLink";
+import { TinyIconButton } from "./SiimpleComponents";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -55,12 +54,13 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     setNoteContentError("");
   }, [note, isEditable]);
 
-  const handleNoteContentChange = useCallback(
-    (ev: ChangeEvent<HTMLTextAreaElement>) => {
-      setNoteDirty({ ...noteDirty, content: ev.currentTarget.value });
-    },
-    [noteDirty],
-  );
+  const handleNoteLabelsChange = useCallback((labels: string[]) => {
+    setNoteDirty((prevNoteDirty) => ({ ...prevNoteDirty, labels }));
+  }, []);
+
+  const handleNoteContentChange = useCallback((ev: ChangeEvent<HTMLTextAreaElement>) => {
+    setNoteDirty((prev) => ({ ...prev, content: ev.currentTarget.value }));
+  }, []);
 
   const handleDeleteClick = useCallback(() => {
     onDeleteNote(note);
@@ -128,6 +128,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       isEditing,
       noteDirty,
       handleNoteContentChange,
+      handleNoteLabelsChange,
     }),
     [
       note,
@@ -139,6 +140,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       isEditing,
       noteDirty,
       handleNoteContentChange,
+      handleNoteLabelsChange,
     ],
   );
 
@@ -166,20 +168,11 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
         {active && !isEditing && (
           <>
             <NoteLayout.SelectedText />
-            <NoteLabels note={note} />
             <NoteLayout.Text />
+            <NoteLayout.Labels />
             {isEditable && (
               <div className="flex flex-1 justify-end">
-                <Button
-                  variant="ghost"
-                  intent="neutralStrong"
-                  className="p-2 h-6 -top-0.5 relative"
-                  data-testid={"edit-button"}
-                  onClick={handleEditClick}
-                  aria-label="Edit note"
-                >
-                  ✏️
-                </Button>
+                <TinyIconButton data-testid={"edit-button"} onClick={handleEditClick} aria-label="Edit note" icon="✏️" />
               </div>
             )}
           </>
@@ -188,9 +181,9 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
           <>
             <>
               <NoteLayout.SelectedText />
-              <NoteLabels note={note} />
               <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
               {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+              <NoteLayout.Labels />
               <div className="actions gap-2">
                 <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
                   Delete

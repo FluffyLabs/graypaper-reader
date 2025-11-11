@@ -1,17 +1,16 @@
+import { type ReactNode, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { contrast, hslColorToCss, hslToHex } from "./color-utils";
-import "./Label.css";
-import { useMemo } from "react";
 
 export function Label({
   label,
-  icon = "",
+  endSlot,
   className = "",
   variant = "filled",
   showTooltip = false,
 }: {
   label: string;
-  icon?: string;
+  endSlot?: ReactNode;
   className?: string;
   variant?: "filled" | "outlined";
   showTooltip?: boolean;
@@ -22,29 +21,34 @@ export function Label({
 
   const style = useMemo(
     () => ({
-      backgroundColor: variant === "filled" ? mainColor.hex : hslColorToCss(dimmedMainColor.hsl),
-      color: variant === "filled" ? contrastMainColor : mainColor.hex,
+      "--dark-bg-color": hslColorToCss(variant === "filled" ? mainColor.hsl : dimmedMainColor.dark),
+      "--light-bg-color": hslColorToCss(variant === "filled" ? mainColor.hsl : dimmedMainColor.light),
+      "--dark-text-color": variant === "filled" ? contrastMainColor : mainColor.hex,
+      "--light-text-color": variant === "filled" ? contrastMainColor : "#000000",
       border: variant === "filled" ? "1px solid transparent" : `1px solid ${mainColor.hex}`,
     }),
-    [dimmedMainColor, contrastMainColor, variant, mainColor],
+    [contrastMainColor, variant, mainColor, dimmedMainColor],
   );
 
   return (
     <span
       style={style}
-      className={twMerge("label truncate rounded-xl px-2.5 py-0.5", className)}
+      className={twMerge(
+        "label inline-flex items-center min-w-0 max-w-full rounded-xl px-2.5 py-0.5 bg-[var(--light-bg-color)] dark:bg-[var(--dark-bg-color)] text-[var(--light-text-color)] dark:text-[var(--dark-text-color)]",
+        className,
+      )}
       title={showTooltip ? label : undefined}
     >
-      {icon} {label}
+      <span className="truncate">{label}</span>
+      {endSlot}
     </span>
   );
 }
 
 function dimColor(mainColor: { hsl: [number, number, number] }) {
-  const newDimmedSaturation = mainColor.hsl[1] * 0.75;
-  const newDimmedLightness = mainColor.hsl[2] / 5;
-  const newHsl = [mainColor.hsl[0], newDimmedSaturation, newDimmedLightness] as [number, number, number];
-  return { hsl: newHsl };
+  const darkColor = [mainColor.hsl[0], mainColor.hsl[1] * 0.75, mainColor.hsl[2] / 5] as [number, number, number];
+  const lightColor = [mainColor.hsl[0], 80, 90] as [number, number, number];
+  return { dark: darkColor, light: lightColor };
 }
 
 function bestTextColor(bgHex: string) {

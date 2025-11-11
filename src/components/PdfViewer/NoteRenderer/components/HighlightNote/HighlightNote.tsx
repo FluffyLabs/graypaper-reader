@@ -2,7 +2,6 @@ import "./HighlightNote.css";
 import { Fragment, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { CodeSyncContext, type ICodeSyncContext } from "../../../../CodeSyncProvider/CodeSyncProvider";
 import { NoteContent } from "../../../../NoteContent/NoteContent";
-import { NoteLabels } from "../../../../NoteManager/components/NoteLabels";
 import type { IDecoratedNote } from "../../../../NotesProvider/types/DecoratedNote";
 import { Highlighter } from "../../../Highlighter/Highlighter";
 
@@ -109,7 +108,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         </a>
         {notes.map((note) => (
           <Fragment key={note.key}>
-            <NoteLabels note={note} />
+            {/*<NoteLabels note={note} />*/}
             {note.original.author}
             <NoteContent content={note.original.content} />
             <br />

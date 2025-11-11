@@ -4,6 +4,7 @@ import { type ILocationContext, LocationContext } from "../LocationProvider/Loca
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
+import { Input } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { useTabsContext } from "../Tabs/Tabs";
 
@@ -45,7 +46,7 @@ export function Search({
 
   return (
     <div className={twMerge("search-wrapper w-full", className)}>
-      <input
+      <Input
         ref={inputRef}
         autoFocus
         type="text"
