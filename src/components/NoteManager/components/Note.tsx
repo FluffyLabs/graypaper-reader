@@ -85,8 +85,8 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
 
     setLocationParams({
       version: locationParams.version,
-      selectionStart: note.original.selectionStart,
-      selectionEnd: note.original.selectionEnd,
+      selectionStart: note.current.selectionStart,
+      selectionEnd: note.current.selectionEnd,
     });
   };
 
@@ -105,9 +105,9 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
     }
 
     setLocationParams({
-      version: note.original.version,
-      selectionStart: note.original.selectionStart,
-      selectionEnd: note.original.selectionEnd,
+      version: locationParams.version,
+      selectionStart: note.current.selectionStart,
+      selectionEnd: note.current.selectionEnd,
     });
   };
 
