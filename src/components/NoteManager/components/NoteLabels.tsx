@@ -14,7 +14,7 @@ export function NoteLabels() {
   const labels = isEditing ? noteDirty.labels : note.original.labels;
 
   return (
-    <div className="labels items-start justify-start flex gap-x-1 gap-y-1 flex-wrap">
+    <div className="labels items-start justify-start flex gap-x-1 gap-y-1 flex-wrap min-w-0">
       {labels.map((label) => (
         <Label
           key={label}
