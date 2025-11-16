@@ -159,12 +159,19 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
           <>
             <NoteLayout.SelectedText />
             <NoteLayout.Text />
-            <NoteLayout.Labels />
-            {isEditable && (
-              <div className="flex flex-1 justify-end">
-                <TinyIconButton data-testid={"edit-button"} onClick={handleEditClick} aria-label="Edit note" icon="✏️" />
-              </div>
-            )}
+            <div className="flex justify-between items-end max-w-[100%]">
+              <NoteLayout.Labels />
+              {isEditable && (
+                <div className="flex flex-1 justify-end">
+                  <TinyIconButton
+                    data-testid={"edit-button"}
+                    onClick={handleEditClick}
+                    aria-label="Edit note"
+                    icon="✏️"
+                  />
+                </div>
+              )}
+            </div>
           </>
         )}
         {active && isEditing && (
