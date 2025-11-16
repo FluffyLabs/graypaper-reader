@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useEffect, useMemo, useState } from "react";
+import { type ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const METADATA_HOST = "";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
@@ -33,6 +33,14 @@ interface IMetadataProviderProps {
 }
 
 export const MetadataContext = createContext<IMetadataContext | null>(null);
+
+export const useMetadataContext = () => {
+  const context = useContext(MetadataContext);
+  if (!context) {
+    throw new Error("useMetadataContext must be used within a MetadataProvider");
+  }
+  return context;
+};
 
 export function MetadataProvider({ children }: IMetadataProviderProps) {
   const [metadata, setMetadata] = useState<IMetadata>();

@@ -10,6 +10,7 @@ import "./index.css";
 import "./font.css";
 
 import { App } from "./App.tsx";
+import { VersionProvider } from "./components/LocationProvider/VersionProvider.tsx";
 
 initDevTools();
 
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById("root") ?? document.body).render(
   <React.StrictMode>
     <MetadataProvider>
       <LocationProvider>
-        <App />
+        <VersionProvider>
+          <App />
+        </VersionProvider>
       </LocationProvider>
     </MetadataProvider>
   </React.StrictMode>,

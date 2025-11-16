@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import "./NoteManager.css";
 import { Button, Textarea } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
@@ -6,6 +6,7 @@ import { validateMath } from "../../utils/validateMath";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
+import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { Selection } from "../Selection/Selection";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
@@ -27,7 +28,7 @@ const MemoizedNotesList = memo(NotesList);
 function Notes() {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState("");
-  const { locationParams } = useContext(LocationContext) as ILocationContext;
+  const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
   const { notesReady, activeNotes, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
     NotesContext,
   ) as INotesContext;
@@ -67,6 +68,17 @@ function Notes() {
     handleClearSelection();
   }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
 
+  const locationRef = useRef({ locationParams, setLocationParams });
+  locationRef.current = { locationParams, setLocationParams };
+
+  const handleSelectNote = useCallback((note: IDecoratedNote) => {
+    locationRef.current.setLocationParams({
+      selectionStart: note.current.selectionStart,
+      selectionEnd: note.current.selectionEnd,
+      version: locationRef.current.locationParams.version,
+    });
+  }, []);
+
   useEffect(() => {
     if (selectedBlocks.length === 0) {
       setNoteContent("");
@@ -97,6 +109,7 @@ function Notes() {
         notes={notes}
         onEditNote={handleUpdateNote}
         onDeleteNote={handleDeleteNote}
+        onSelectNote={handleSelectNote}
       />
     </div>
   );
