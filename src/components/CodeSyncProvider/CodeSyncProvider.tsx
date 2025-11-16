@@ -1,6 +1,6 @@
 import { migrateSelection as migrateSelectionRaw } from "@fluffylabs/links-metadata";
 import type { ISelectionParams, ISynctexBlock, ISynctexBlockId, ISynctexData } from "@fluffylabs/links-metadata";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { isFeatureEnabled } from "../../devtools";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -196,14 +196,24 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
     [synctexStore, texStore],
   );
 
-  const context = {
-    getSynctexBlockAtLocation,
-    getSynctexBlockById,
-    getSynctexBlockRange,
-    getSectionTitleAtSynctexBlock,
-    getSubsectionTitleAtSynctexBlock,
-    migrateSelection,
-  };
+  const context = useMemo(
+    () => ({
+      getSynctexBlockAtLocation,
+      getSynctexBlockById,
+      getSynctexBlockRange,
+      getSectionTitleAtSynctexBlock,
+      getSubsectionTitleAtSynctexBlock,
+      migrateSelection,
+    }),
+    [
+      getSynctexBlockAtLocation,
+      getSynctexBlockById,
+      getSynctexBlockRange,
+      getSectionTitleAtSynctexBlock,
+      getSubsectionTitleAtSynctexBlock,
+      migrateSelection,
+    ],
+  );
 
   return <CodeSyncContext.Provider value={context}>{children}</CodeSyncContext.Provider>;
 }

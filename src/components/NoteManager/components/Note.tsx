@@ -1,7 +1,6 @@
 import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
-import { useLocationContext } from "../../LocationProvider/LocationProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
@@ -19,16 +18,15 @@ type NoteProps = {
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
+  onSelectNote: (note: IDecoratedNote) => void;
 };
 
-export function Note({ note, active = false, onEditNote, onDeleteNote }: NoteProps) {
+export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
     ...note.original,
   });
   const [noteContentError, setNoteContentError] = useState("");
-
-  const { setLocationParams, locationParams } = useLocationContext();
 
   const isEditable = note.source !== NoteSource.Remote;
 
@@ -83,11 +81,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       return;
     }
 
-    setLocationParams({
-      version: locationParams.version,
-      selectionStart: note.original.selectionStart,
-      selectionEnd: note.original.selectionEnd,
-    });
+    onSelectNote(note);
   };
 
   const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -104,11 +98,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       return;
     }
 
-    setLocationParams({
-      version: note.original.version,
-      selectionStart: note.original.selectionStart,
-      selectionEnd: note.original.selectionEnd,
-    });
+    onSelectNote(note);
   };
 
   useEffect(() => {
@@ -161,7 +151,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote }: NotePro
       >
         {!active && (
           <>
-            <NoteLink note={note} onEditNote={onEditNote} />
+            <NoteLink note={note} active={false} />
             <NoteLayout.Text />
           </>
         )}

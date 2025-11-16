@@ -20,12 +20,12 @@ export const NoteText = () => {
 
 export const SelectedText = () => {
   const { selectionString } = useContext(SelectionContext) as ISelectionContext;
-  const { note, onEditNote } = useNoteContext();
+  const { note } = useNoteContext();
 
   return (
     <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
       <div className="flex justify-between gap-1">
-        <NoteLink note={note} onEditNote={onEditNote} />
+        <NoteLink note={note} active={true} />
       </div>
       <blockquote className="italic" data-testid="selected-text">
         {selectionString}

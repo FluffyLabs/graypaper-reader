@@ -6,7 +6,7 @@ import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider
 import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
 import { Header } from "./components/Header/Header";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
-import { type ILocationContext, LocationContext } from "./components/LocationProvider/LocationProvider";
+import { useVersionContext } from "./components/LocationProvider/VersionProvider";
 import { type IMetadataContext, MetadataContext } from "./components/MetadataProvider/MetadataProvider";
 import { NotesProvider } from "./components/NotesProvider/NotesProvider";
 import { PdfProvider } from "./components/PdfProvider/PdfProvider";
@@ -17,9 +17,7 @@ import { Sidebar } from "./components/Sidebar/Sidebar";
 import { ZoomControls } from "./components/ZoomControls/ZoomControls";
 
 export function App() {
-  const {
-    locationParams: { version },
-  } = useContext(LocationContext) as ILocationContext;
+  const { version } = useVersionContext();
 
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 

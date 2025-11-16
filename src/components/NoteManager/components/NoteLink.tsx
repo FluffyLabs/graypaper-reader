@@ -3,44 +3,49 @@ import { type MouseEventHandler, useCallback, useContext, useEffect, useMemo, us
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
-import type { INotesContext } from "../../NotesProvider/NotesProvider";
+import { useVersionContext } from "../../LocationProvider/VersionProvider";
+import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import { OutlineLink } from "../../Outline";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
+import { useNoteContext } from "./NoteContext";
 
 type NoteLinkProps = {
   note: IDecoratedNote;
-  onEditNote: INotesContext["handleUpdateNote"];
+  active?: boolean;
 };
 
-export function NoteLink({ note, onEditNote }: NoteLinkProps) {
+export function NoteLink({ note, active = false }: NoteLinkProps) {
   const [sectionTitle, setTitle] = useState({
     section: "",
     subSection: "" as string | null,
   });
-  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
+
   const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
-  const { locationParams, getHashFromLocationParams } = useContext(LocationContext) as ILocationContext;
+
+  const { version } = useVersionContext();
+  const { getHashFromLocationParams } = useGetLocationParamsToHash();
 
   const migrationFlag = !note.current.isUpToDate;
   const isEditable = note.source !== NoteSource.Remote;
 
-  const { selectionStart, selectionEnd } = note.current;
-  const { pageNumber } = selectionStart;
+  const {
+    selectionStart: { pageNumber },
+  } = note.current;
 
   useEffect(() => {
     (async () => {
-      const section = getSectionTitleAtSynctexBlock(selectionStart);
-      const subSection = getSubsectionTitleAtSynctexBlock(selectionStart);
+      const section = getSectionTitleAtSynctexBlock(note.current.selectionStart);
+      const subSection = getSubsectionTitleAtSynctexBlock(note.current.selectionStart);
 
       setTitle({
         section: (await section) ?? "[no section]",
         subSection: await subSection,
       });
     })();
-  }, [selectionStart, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+  }, [getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock, note]);
 
   const handleNoteLinkClick = useCallback<MouseEventHandler>((e) => {
     e.preventDefault();
@@ -49,38 +54,14 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
     window.location.hash = href;
   }, []);
 
-  const handleMigrateClick = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-
-      if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
-
-      if (
-        (!isSameBlock(locationParams.selectionStart, selectionStart) ||
-          !isSameBlock(locationParams.selectionEnd, selectionEnd)) &&
-        !confirm("The selection has been altered. Are you sure you want to update the note?")
-      ) {
-        return;
-      }
-
-      onEditNote(note, {
-        ...note.original,
-        selectionStart: locationParams.selectionStart,
-        selectionEnd: locationParams.selectionEnd,
-        version: locationParams.version,
-      });
-    },
-    [locationParams, note, selectionStart, selectionEnd, onEditNote],
-  );
-
   const currentVersionLink = useMemo(
     () =>
       getHashFromLocationParams({
-        version: locationParams.version,
-        selectionStart: note.original.selectionStart,
-        selectionEnd: note.original.selectionEnd,
+        version: version,
+        selectionStart: note.current.selectionStart,
+        selectionEnd: note.current.selectionEnd,
       }),
-    [locationParams, note, getHashFromLocationParams],
+    [version, note.current, getHashFromLocationParams],
   );
 
   const originalLink = useMemo(
@@ -117,19 +98,52 @@ export function NoteLink({ note, onEditNote }: NoteLinkProps) {
         onClick={handleNoteLinkClick}
       />
 
-      {migrationFlag && isEditable && (
-        <a
-          href="#"
-          onClick={handleMigrateClick}
-          data-tooltip-id="note-link"
-          data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
-          data-tooltip-place="top"
-          className={`default-link ${selectedBlocks.length === 0 ? "disabled update" : "update"}`}
-        >
-          (update version)
-        </a>
-      )}
+      {migrationFlag && isEditable && active && <UpdateVersionLink note={note} />}
       <Tooltip id="note-link" />
     </div>
   );
 }
+
+const UpdateVersionLink = ({ note }: { note: IDecoratedNote }) => {
+  const { locationParams } = useContext(LocationContext) as ILocationContext;
+  const { onEditNote } = useNoteContext();
+  const { version } = useVersionContext();
+  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
+
+  const handleMigrateClick = useCallback<MouseEventHandler>(
+    (e) => {
+      e.preventDefault();
+
+      if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
+
+      if (
+        (!isSameBlock(locationParams.selectionStart, note.current.selectionStart) ||
+          !isSameBlock(locationParams.selectionEnd, note.current.selectionEnd)) &&
+        !confirm("The selection has been altered. Are you sure you want to update the note?")
+      ) {
+        return;
+      }
+
+      onEditNote(note, {
+        ...note.original,
+        selectionStart: locationParams.selectionStart,
+        selectionEnd: locationParams.selectionEnd,
+        version,
+      });
+    },
+    [version, locationParams, note, onEditNote],
+  );
+
+  return (
+    <a
+      href="#"
+      onClick={handleMigrateClick}
+      data-tooltip-id="note-link"
+      data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
+      data-tooltip-place="top"
+      className={`default-link ${selectedBlocks.length === 0 ? "disabled update" : "update"}`}
+    >
+      (update version)
+    </a>
+  );
+};
