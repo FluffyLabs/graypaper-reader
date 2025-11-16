@@ -4,18 +4,20 @@ import { subtractBorder } from "../../../utils/subtractBorder";
 import { type IPdfContext, PdfContext } from "../../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { Highlighter, type IHighlighterColor } from "../Highlighter/Highlighter";
+import { useIsCurrentPageRendered } from "./useIsCurrentPageRendered";
 
 const SELECTION_COLOR: IHighlighterColor = { r: 0, g: 100, b: 200 };
 const SELECTION_OPACITY = 0.3;
 const SCROLL_TO_OFFSET_PX: number = 200;
 
 export function SelectionRenderer() {
-  const { viewer, textLayerRenderedRef } = useContext(PdfContext) as IPdfContext;
+  const { viewer } = useContext(PdfContext) as IPdfContext;
   const { selectedBlocks, pageNumber, lastScrolledTo, setSelectionString } = useContext(
     SelectionContext,
   ) as ISelectionContext;
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
   const [retryScrolling, setRetryScrolling] = useState(0);
+  const { isCurrentPageTextLayerRendered } = useIsCurrentPageRendered();
 
   useEffect(() => {
     // not ready yet
@@ -59,8 +61,9 @@ export function SelectionRenderer() {
   }, [selectedBlocks, setSelectionString]);
 
   useEffect(() => {
-    if (!viewer || !selectedBlocks.length || pageNumber === null || !textLayerRenderedRef.current.includes(pageNumber))
+    if (!viewer || !selectedBlocks.length || pageNumber === null || !isCurrentPageTextLayerRendered) {
       return;
+    }
 
     const pageElement = viewer.getPageView(pageNumber - 1)?.div;
     const textLayerElement = viewer.getPageView(pageNumber - 1)?.textLayer?.div;
@@ -105,7 +108,7 @@ export function SelectionRenderer() {
     }
 
     setSelectionString(document.getSelection()?.toString() || "");
-  }, [selectedBlocks, pageNumber, viewer, textLayerRenderedRef, setSelectionString]);
+  }, [selectedBlocks, pageNumber, viewer, isCurrentPageTextLayerRendered, setSelectionString]);
 
   const pageOffset = pageNumber ? pageOffsets.current[pageNumber] : null;
 
