@@ -91,7 +91,7 @@ export function migrateBlock(
   const relativePosition = sourceSiblingBlocks.indexOf(sourceBlock) / (sourceSiblingBlocks.length - 1);
 
   const targetLineNumber =
-    sourceBlock.line && sourceLines[sourceBlock.line - 1].startsWith("\\end")
+    sourceBlock.line && (sourceLines[sourceBlock.line - 1]?.startsWith("\\end") ?? false)
       ? findMultiLineMatch(sourceLines, sourceBlock.line, targetContent)
       : findSingleLineMatch(findFirstNonEmptyLineUpwards(sourceLines, sourceBlock.line), targetContent);
 
