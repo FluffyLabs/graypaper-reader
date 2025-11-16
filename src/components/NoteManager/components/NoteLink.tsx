@@ -1,10 +1,12 @@
 import { isSameBlock } from "@fluffylabs/links-metadata";
+import { Badge } from "@fluffylabs/shared-ui";
 import { type MouseEventHandler, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
 import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
+import { useMetadataContext } from "../../MetadataProvider/MetadataProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import { OutlineLink } from "../../Outline";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
@@ -74,6 +76,9 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
     [note, getHashFromLocationParams],
   );
 
+  const { metadata } = useMetadataContext();
+  const noteOriginalVersionShort = metadata.versions[note.original.version]?.name;
+
   const { section, subSection } = sectionTitle;
   return (
     <div className="note-link">
@@ -86,7 +91,9 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
           className="icon default-link"
           onClick={handleNoteLinkClick}
         >
-          ⚠
+          <Badge intent="destructive" className="px-1 py-0 text-xs">
+            v{noteOriginalVersionShort}
+          </Badge>
         </a>
       )}
 
