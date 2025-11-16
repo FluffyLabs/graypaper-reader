@@ -71,7 +71,7 @@ function Notes() {
   const locationRef = useRef({ locationParams, setLocationParams });
   locationRef.current = { locationParams, setLocationParams };
 
-  const handelSelectNote = useCallback((note: IDecoratedNote) => {
+  const handleSelectNote = useCallback((note: IDecoratedNote) => {
     locationRef.current.setLocationParams({
       selectionStart: note.current.selectionStart,
       selectionEnd: note.current.selectionEnd,
@@ -109,7 +109,7 @@ function Notes() {
         notes={notes}
         onEditNote={handleUpdateNote}
         onDeleteNote={handleDeleteNote}
-        onSelectNote={handelSelectNote}
+        onSelectNote={handleSelectNote}
       />
     </div>
   );
