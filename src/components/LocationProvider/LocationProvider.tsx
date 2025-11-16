@@ -36,7 +36,6 @@ export const useLocationContext = () => {
 
 export function LocationProvider({ children }: ILocationProviderProps) {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
-  console.log(metadata);
   const [locationParams, setLocationParams] = useState<ILocationParams>();
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 

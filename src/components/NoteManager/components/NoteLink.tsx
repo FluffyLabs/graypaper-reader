@@ -58,10 +58,10 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
     () =>
       getHashFromLocationParams({
         version: version,
-        selectionStart: note.original.selectionStart,
-        selectionEnd: note.original.selectionEnd,
+        selectionStart: note.current.selectionStart,
+        selectionEnd: note.current.selectionEnd,
       }),
-    [version, note, getHashFromLocationParams],
+    [version, note.current, getHashFromLocationParams],
   );
 
   const originalLink = useMemo(

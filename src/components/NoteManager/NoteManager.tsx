@@ -69,6 +69,7 @@ function Notes() {
   }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
 
   const locationRef = useRef({ locationParams, setLocationParams });
+  locationRef.current = { locationParams, setLocationParams };
 
   const handelSelectNote = useCallback((note: IDecoratedNote) => {
     locationRef.current.setLocationParams({
