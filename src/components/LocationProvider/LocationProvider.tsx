@@ -2,6 +2,7 @@ import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffyl
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
+import { useGetLocationParamsToHash } from "./hooks/useGetLocationParamsToHash";
 import type { ILocationParams, SearchParams } from "./types";
 import {
   BASE64_VALIDATION_REGEX,
@@ -35,6 +36,7 @@ export const useLocationContext = () => {
 
 export function LocationProvider({ children }: ILocationProviderProps) {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
+  console.log(metadata);
   const [locationParams, setLocationParams] = useState<ILocationParams>();
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
@@ -57,13 +59,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
     [metadata],
   );
 
-  const getHashFromLocationParams = useCallback(
-    (params: ILocationParams) => {
-      const hash = locationParamsToHash(params, metadata);
-      return hash;
-    },
-    [metadata],
-  );
+  const { getHashFromLocationParams } = useGetLocationParamsToHash();
 
   const handleHashChange = useCallback(() => {
     const { rest: newHash, search, section } = extractSearchParams(window.location.hash);
