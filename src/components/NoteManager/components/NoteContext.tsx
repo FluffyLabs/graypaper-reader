@@ -4,8 +4,10 @@ import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 
 export const noteContext = createContext<{
+  active: boolean;
   note: IDecoratedNote;
   isEditable: boolean;
+  handleSelectNote: (deactivate?: boolean) => void;
   handleEditClick: () => void;
   handleSaveClick: () => void;
   handleCancelClick: () => void;

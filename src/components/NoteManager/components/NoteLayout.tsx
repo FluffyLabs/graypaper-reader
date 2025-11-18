@@ -3,6 +3,7 @@ import { type ComponentProps, useContext, useRef } from "react";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { noteContext, useNoteContext } from "./NoteContext";
+import { NoteDropdown } from "./NoteDropdown";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
 import { NoteSimpleTextarea } from "./SiimpleComponents";
@@ -68,4 +69,5 @@ export const NoteLayout = {
   TextArea: NoteTextArea,
   SelectedText: SelectedText,
   Labels: NoteLabels,
+  Dropdown: NoteDropdown,
 };

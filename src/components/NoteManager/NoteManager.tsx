@@ -71,10 +71,10 @@ function Notes() {
   const locationRef = useRef({ locationParams, setLocationParams });
   locationRef.current = { locationParams, setLocationParams };
 
-  const handleSelectNote = useCallback((note: IDecoratedNote) => {
+  const handleSelectNote = useCallback((note: IDecoratedNote, deative?: boolean) => {
     locationRef.current.setLocationParams({
-      selectionStart: note.current.selectionStart,
-      selectionEnd: note.current.selectionEnd,
+      selectionStart: deative ? undefined : note.current.selectionStart,
+      selectionEnd: deative ? undefined : note.current.selectionEnd,
       version: locationRef.current.locationParams.version,
     });
   }, []);

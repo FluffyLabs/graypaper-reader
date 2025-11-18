@@ -1,12 +1,11 @@
 import { Button, cn } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 import { NoteLayout } from "./NoteLayout";
 import { NoteLink } from "./NoteLink";
-import { TinyIconButton } from "./SiimpleComponents";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -18,7 +17,7 @@ type NoteProps = {
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
-  onSelectNote: (note: IDecoratedNote) => void;
+  onSelectNote: (note: IDecoratedNote, deactivate?: boolean) => void;
 };
 
 export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
@@ -107,8 +106,19 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
     }
   }, [active]);
 
+  const onSelectNoteRef = useRef<NoteProps["onSelectNote"] | undefined>(undefined);
+  onSelectNoteRef.current = onSelectNote;
+
+  const memoizedOnSelectNote = useCallback(
+    (deactivate?: boolean) => {
+      onSelectNoteRef.current?.(note, deactivate);
+    },
+    [note],
+  );
+
   const noteLayoutContext = useMemo(
     () => ({
+      active,
       note,
       isEditable,
       handleEditClick,
@@ -119,8 +129,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       noteDirty,
       handleNoteContentChange,
       handleNoteLabelsChange,
+      handleSelectNote: memoizedOnSelectNote,
     }),
     [
+      active,
       note,
       isEditable,
       handleEditClick,
@@ -131,6 +143,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       noteDirty,
       handleNoteContentChange,
       handleNoteLabelsChange,
+      memoizedOnSelectNote,
     ],
   );
 
@@ -152,7 +165,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
         {!active && (
           <>
             <NoteLink note={note} active={false} />
-            <NoteLayout.Text />
+            <div className="flex justify-between items-end max-w-[100%]">
+              <NoteLayout.Text />
+              <NoteLayout.Dropdown />
+            </div>
           </>
         )}
         {active && !isEditing && (
@@ -161,16 +177,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
             <NoteLayout.Text />
             <div className="flex justify-between items-end max-w-[100%]">
               <NoteLayout.Labels />
-              {isEditable && (
-                <div className="flex flex-1 justify-end">
-                  <TinyIconButton
-                    data-testid={"edit-button"}
-                    onClick={handleEditClick}
-                    aria-label="Edit note"
-                    icon="✏️"
-                  />
-                </div>
-              )}
+              <NoteLayout.Dropdown />
             </div>
           </>
         )}
