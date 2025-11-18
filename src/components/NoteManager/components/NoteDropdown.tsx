@@ -7,10 +7,48 @@ import {
   DropdownMenuTrigger,
   cn,
 } from "@fluffylabs/shared-ui";
+import {
+  type MouseEvent,
+  type MouseEventHandler,
+  type PropsWithChildren,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { useNoteContext } from "./NoteContext";
 
-export const NoteDropdown = ({ buttonClassName }: { buttonClassName?: string }) => {
-  const { active, handleSelectNote } = useNoteContext();
+export const NoteDropdown = ({ buttonClassName, onDelete }: { buttonClassName?: string; onDelete?: () => void }) => {
+  const { active, handleSelectNote, noteOriginalVersionShort, note, handleEditClick, currentVersionLink } =
+    useNoteContext();
+
+  const handleOpenClose = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    handleSelectNote({ type: active ? "close" : "currentVersion" });
+  };
+
+  const copyLink = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(`${window.location.origin}/#${currentVersionLink}`);
+  };
+
+  const openInDifferentVersion = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    handleSelectNote({ type: "originalVersion" });
+  };
+
+  const removeNote = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onDelete?.();
+  };
+
+  const editNode = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (!active) {
+      handleSelectNote();
+    }
+    handleEditClick();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,21 +75,116 @@ export const NoteDropdown = ({ buttonClassName }: { buttonClassName?: string }) 
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuItem onClick={() => handleSelectNote(active)}>
+        <DropdownMenuItem onClick={handleOpenClose}>
           {!active && <span>Open</span>}
           {active && <span>Close</span>}
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <span>Billing</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <span>Settings</span>
-        </DropdownMenuItem>
+        <DropdownMenuItemWithDelayedAlertOnClick onClick={copyLink} alertSlot={<span>Link copied!</span>}>
+          Copy link
+        </DropdownMenuItemWithDelayedAlertOnClick>
+        {!note.current.isUpToDate && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={openInDifferentVersion}>Open in v{noteOriginalVersionShort}</DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <span>Log out</span>
+        <DropdownMenuItem onClick={editNode}>
+          <span>Edit note</span>
         </DropdownMenuItem>
+        <TwoStepDropdownMenuItem onClick={removeNote} confirmationSlot={<span>Are you sure?</span>}>
+          <span>Remove note</span>
+        </TwoStepDropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const DropdownMenuItemWithDelayedAlertOnClick = ({
+  children,
+  onClick,
+  alertSlot,
+}: PropsWithChildren<{ alertSlot: ReactNode; onClick: MouseEventHandler<HTMLDivElement> }>) => {
+  const [isDelayedAlert, setIsDelayedAlert] = useState(false);
+
+  useEffect(() => {
+    if (!isDelayedAlert) {
+      return;
+    }
+
+    const timeoutHandle = setTimeout(() => {
+      setIsDelayedAlert(false);
+      // Simulate Escape key press to close dropdown
+      const escapeEvent = new KeyboardEvent("keydown", {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        bubbles: true,
+      });
+      document.dispatchEvent(escapeEvent);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutHandle);
+    };
+  }, [isDelayedAlert]);
+
+  return (
+    <DropdownMenuItem
+      className={cn(isDelayedAlert ? "bg-info/25 hover:bg-info/25 text-info-foreground" : "")}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isDelayedAlert) {
+          setIsDelayedAlert(true);
+          onClick(e);
+        }
+      }}
+    >
+      {isDelayedAlert ? alertSlot : children}
+    </DropdownMenuItem>
+  );
+};
+
+const TwoStepDropdownMenuItem = ({
+  children,
+  confirmationSlot,
+  onClick,
+}: PropsWithChildren<{ confirmationSlot: ReactNode; onClick: MouseEventHandler<HTMLDivElement> }>) => {
+  const [isConfirmation, setIsConfirmation] = useState(false);
+
+  useEffect(() => {
+    if (!isConfirmation) {
+      return;
+    }
+
+    const timeoutHandle = setTimeout(() => {
+      setIsConfirmation(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutHandle);
+    };
+  }, [isConfirmation]);
+
+  const handleOnClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isConfirmation) {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsConfirmation(true);
+    } else {
+      onClick(e);
+    }
+  };
+
+  return (
+    <DropdownMenuItem
+      onClick={handleOnClick}
+      className={cn(isConfirmation ? "text-destructive hover:bg-destructive/20 hover:text-destructive" : "")}
+    >
+      {!isConfirmation && children}
+      {isConfirmation && confirmationSlot}
+    </DropdownMenuItem>
   );
 };

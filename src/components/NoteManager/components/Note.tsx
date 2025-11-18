@@ -1,9 +1,13 @@
 import { Button, cn } from "@fluffylabs/shared-ui";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
+import { useVersionContext } from "../../LocationProvider/VersionProvider";
+import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
+import { useMetadataContext } from "../../MetadataProvider/MetadataProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import type { ISingleNoteContext } from "./NoteContext";
 import { NoteLayout } from "./NoteLayout";
 import { NoteLink } from "./NoteLink";
 
@@ -17,16 +21,21 @@ type NoteProps = {
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
-  onSelectNote: (note: IDecoratedNote, deactivate?: boolean) => void;
+  onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 };
 
 export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
+
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
     ...note.original,
   });
-  const [noteContentError, setNoteContentError] = useState("");
 
+  const [noteContentError, setNoteContentError] = useState("");
+  const { metadata } = useMetadataContext();
+  const { version } = useVersionContext();
+  const { getHashFromLocationParams } = useGetLocationParamsToHash();
+  const noteOriginalVersionShort = metadata.versions[note.original.version]?.name;
   const isEditable = note.source !== NoteSource.Remote;
 
   const handleSaveClick = useCallback(() => {
@@ -80,7 +89,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       return;
     }
 
-    onSelectNote(note);
+    onSelectNote(note, { type: "currentVersion" });
   };
 
   const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -97,7 +106,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       return;
     }
 
-    onSelectNote(note);
+    onSelectNote(note, { type: "currentVersion" });
   };
 
   useEffect(() => {
@@ -110,27 +119,51 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
   onSelectNoteRef.current = onSelectNote;
 
   const memoizedOnSelectNote = useCallback(
-    (deactivate?: boolean) => {
-      onSelectNoteRef.current?.(note, deactivate);
+    ({ type = "currentVersion" }: { type?: "currentVersion" | "originalVersion" | "close" } = {}) => {
+      onSelectNoteRef.current?.(note, { type });
     },
     [note],
   );
 
+  const currentVersionLink = useMemo(
+    () =>
+      getHashFromLocationParams({
+        version: version,
+        selectionStart: note.current.selectionStart,
+        selectionEnd: note.current.selectionEnd,
+      }),
+    [version, note.current, getHashFromLocationParams],
+  );
+
+  const originalLink = useMemo(
+    () =>
+      getHashFromLocationParams({
+        version: note.original.version,
+        selectionStart: note.original.selectionStart,
+        selectionEnd: note.original.selectionEnd,
+      }),
+    [note, getHashFromLocationParams],
+  );
+
   const noteLayoutContext = useMemo(
-    () => ({
-      active,
-      note,
-      isEditable,
-      handleEditClick,
-      handleSaveClick,
-      handleCancelClick,
-      onEditNote,
-      isEditing,
-      noteDirty,
-      handleNoteContentChange,
-      handleNoteLabelsChange,
-      handleSelectNote: memoizedOnSelectNote,
-    }),
+    () =>
+      ({
+        active,
+        note,
+        isEditable,
+        handleEditClick,
+        handleSaveClick,
+        handleCancelClick,
+        onEditNote,
+        isEditing,
+        noteDirty,
+        handleNoteContentChange,
+        handleNoteLabelsChange,
+        handleSelectNote: memoizedOnSelectNote,
+        noteOriginalVersionShort,
+        currentVersionLink,
+        originalVersionLink: originalLink,
+      }) satisfies ISingleNoteContext,
     [
       active,
       note,
@@ -144,6 +177,9 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       handleNoteContentChange,
       handleNoteLabelsChange,
       memoizedOnSelectNote,
+      noteOriginalVersionShort,
+      currentVersionLink,
+      originalLink,
     ],
   );
 
@@ -167,7 +203,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
             <NoteLink note={note} active={false} />
             <div className="flex justify-between items-end max-w-[100%]">
               <NoteLayout.Text />
-              <NoteLayout.Dropdown />
+              <NoteLayout.Dropdown onDelete={handleDeleteClick} />
             </div>
           </>
         )}
@@ -177,7 +213,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
             <NoteLayout.Text />
             <div className="flex justify-between items-end max-w-[100%]">
               <NoteLayout.Labels />
-              <NoteLayout.Dropdown />
+              <NoteLayout.Dropdown onDelete={handleDeleteClick} />
             </div>
           </>
         )}

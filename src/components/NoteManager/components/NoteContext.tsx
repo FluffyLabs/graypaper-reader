@@ -3,11 +3,11 @@ import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 
-export const noteContext = createContext<{
+export type ISingleNoteContext = {
   active: boolean;
   note: IDecoratedNote;
   isEditable: boolean;
-  handleSelectNote: (deactivate?: boolean) => void;
+  handleSelectNote: (opts?: { type?: "currentVersion" | "originalVersion" | "close" }) => void;
   handleEditClick: () => void;
   handleSaveClick: () => void;
   handleCancelClick: () => void;
@@ -16,7 +16,12 @@ export const noteContext = createContext<{
   noteDirty: IStorageNote;
   onEditNote: INotesContext["handleUpdateNote"];
   isEditing: boolean;
-} | null>(null);
+  noteOriginalVersionShort: string | undefined;
+  originalVersionLink: string | undefined;
+  currentVersionLink: string | undefined;
+};
+
+export const noteContext = createContext<ISingleNoteContext | null>(null);
 
 export const useNoteContext = () => {
   const context = useContext(noteContext);
