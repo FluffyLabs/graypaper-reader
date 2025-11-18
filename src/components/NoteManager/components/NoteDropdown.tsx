@@ -17,7 +17,11 @@ import {
 } from "react";
 import { useNoteContext } from "./NoteContext";
 
-export const NoteDropdown = ({ buttonClassName, onDelete }: { buttonClassName?: string; onDelete?: () => void }) => {
+export const NoteDropdown = ({
+  buttonClassName,
+  onDelete,
+  onOpenChange,
+}: { buttonClassName?: string; onDelete?: () => void; onOpenChange?: (open: boolean) => void }) => {
   const { active, handleSelectNote, noteOriginalVersionShort, note, handleEditClick, currentVersionLink } =
     useNoteContext();
 
@@ -50,12 +54,12 @@ export const NoteDropdown = ({ buttonClassName, onDelete }: { buttonClassName?: 
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           intent="neutralMedium"
-          className={cn("p-2 h-6 -top-0.5 relative", buttonClassName)}
+          className={cn("p-2 h-6", buttonClassName)}
           data-testid={"dropdown-button"}
           aria-label="dropdown button"
         >

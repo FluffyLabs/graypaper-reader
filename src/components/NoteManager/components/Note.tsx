@@ -183,12 +183,46 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
     ],
   );
 
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const mousePositionRef = useRef({ x: 0, y: 0 });
+
+  const noteRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePositionRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isDropdownOpen]);
+
+  const handleIsDropdownOpen = (isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
+
+    if (!isOpen && noteRef.current) {
+      const rect = noteRef.current.getBoundingClientRect();
+
+      const isMouseInside =
+        mousePositionRef.current.x >= rect.left &&
+        mousePositionRef.current.x <= rect.right &&
+        mousePositionRef.current.y >= rect.top &&
+        mousePositionRef.current.y <= rect.bottom;
+
+      setIsHovered(isMouseInside);
+    }
+  };
+
   return (
     <NoteLayout.Root value={noteLayoutContext}>
       <div
+        ref={noteRef}
         data-testid="notes-manager-card"
         className={cn(
-          "note rounded-xl p-4 flex flex-col gap-2",
+          "note rounded-xl p-4 relative",
           active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)] mb-1",
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
@@ -197,47 +231,56 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
         aria-label={!active ? "Activate label" : ""}
         onClick={handleWholeNoteClick}
         onKeyDown={handleNoteEnter}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          if (!isDropdownOpen) {
+            setIsHovered(false);
+          }
+        }}
       >
-        {!active && (
-          <>
-            <NoteLink note={note} active={false} />
-            <div className="flex justify-between items-end max-w-[100%]">
+        <div className="flex flex-col gap-2">
+          {!active && (
+            <>
+              <NoteLink note={note} active={false} />
               <NoteLayout.Text />
-              <NoteLayout.Dropdown onDelete={handleDeleteClick} />
-            </div>
-          </>
-        )}
-        {active && !isEditing && (
-          <>
-            <NoteLayout.SelectedText />
-            <NoteLayout.Text />
-            <div className="flex justify-between items-end max-w-[100%]">
-              <NoteLayout.Labels />
-              <NoteLayout.Dropdown onDelete={handleDeleteClick} />
-            </div>
-          </>
-        )}
-        {active && isEditing && (
-          <>
+            </>
+          )}
+          {active && !isEditing && (
             <>
               <NoteLayout.SelectedText />
-              <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
-              {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+              <NoteLayout.Text />
               <NoteLayout.Labels />
-              <div className="actions gap-2">
-                <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
-                  Delete
-                </Button>
-                <div className="fill" />
-                <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
-                  Cancel
-                </Button>
-                <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
-                  Save
-                </Button>
-              </div>
             </>
-          </>
+          )}
+          {active && isEditing && (
+            <>
+              <>
+                <NoteLayout.SelectedText />
+                <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
+                {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+                <NoteLayout.Labels />
+                <div className="actions gap-2">
+                  <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
+                    Delete
+                  </Button>
+                  <div className="fill" />
+                  <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
+                    Cancel
+                  </Button>
+                  <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
+                    Save
+                  </Button>
+                </div>
+              </>
+            </>
+          )}
+        </div>
+        {(isHovered || isDropdownOpen) && !isEditing && (
+          <NoteLayout.Dropdown
+            onDelete={handleDeleteClick}
+            buttonClassName="absolute right-2 bottom-4 bg-inherit"
+            onOpenChange={handleIsDropdownOpen}
+          />
         )}
       </div>
     </NoteLayout.Root>
