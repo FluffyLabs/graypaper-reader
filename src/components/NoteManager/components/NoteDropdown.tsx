@@ -93,7 +93,7 @@ export const NoteDropdown = ({
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={editNode}>
+        <DropdownMenuItem onClick={editNode} data-testid="edit-note-button">
           <span>Edit note</span>
         </DropdownMenuItem>
         <TwoStepDropdownMenuItem onClick={removeNote} confirmationSlot={<span>Are you sure?</span>}>

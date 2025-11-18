@@ -75,8 +75,18 @@ test.describe
           });
         });
 
+        test("notes tab - after opening dropdown", async ({ browser }) => {
+          await page.click('[data-testid="dropdown-button"]', { timeout });
+          await expect(page).toHaveScreenshot("notes-tab-after-opening-dropdown.png", {
+            // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
+            clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
+            fullPage: false,
+            animations: "disabled",
+          });
+        });
+
         test("notes tab - after set to edit mode", async ({ browser }) => {
-          await page.click('[data-testid="edit-button"]', { timeout });
+          await page.click('[data-testid="edit-note-button"]', { timeout });
           await expect(page).toHaveScreenshot("notes-tab-after-note-edit.png", {
             // biome-ignore lint/style/noNonNullAssertion: boundingBox is guaranteed to exist at this point
             clip: (await page.locator('[data-testid="tab-content-notes"] .note-manager').boundingBox())!,
