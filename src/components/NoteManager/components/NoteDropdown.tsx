@@ -16,26 +16,30 @@ import {
   useState,
 } from "react";
 import { useNoteContext } from "./NoteContext";
+import { DropdownMenuItemCopyButton } from "./SimpleComponents/DropdownMenuItemCopyButton";
 
 export const NoteDropdown = ({
   buttonClassName,
   onDelete,
   onOpenChange,
 }: { buttonClassName?: string; onDelete?: () => void; onOpenChange?: (open: boolean) => void }) => {
-  const { active, handleSelectNote, noteOriginalVersionShort, note, handleEditClick, currentVersionLink } =
-    useNoteContext();
+  const {
+    active,
+    handleSelectNote,
+    noteOriginalVersionShort,
+    note,
+    handleEditClick,
+    currentVersionLink,
+    isEditable,
+    originalVersionLink,
+  } = useNoteContext();
 
-  const handleOpenClose = (e: MouseEvent<HTMLDivElement>) => {
+  const handleOpenClose = (e: MouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
     handleSelectNote({ type: active ? "close" : "currentVersion" });
   };
 
-  const copyLink = (e: MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(`${window.location.origin}/#${currentVersionLink}`);
-  };
-
-  const openInDifferentVersion = (e: MouseEvent<HTMLDivElement>) => {
+  const openInDifferentVersion = (e: MouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
     handleSelectNote({ type: "originalVersion" });
   };
@@ -79,75 +83,40 @@ export const NoteDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuItem onClick={handleOpenClose}>
-          {!active && <span>Open</span>}
-          {active && <span>Close</span>}
+        <DropdownMenuItem disabled={active} asChild>
+          <a href={`#${currentVersionLink}`} onClick={handleOpenClose} className="flex justify-between items-center">
+            <span>Open</span>
+            <DropdownMenuItemCopyButton href={`#${currentVersionLink}`} />
+          </a>
         </DropdownMenuItem>
-        <DropdownMenuItemWithDelayedAlertOnClick onClick={copyLink} alertSlot={<span>Link copied!</span>}>
-          Copy link
-        </DropdownMenuItemWithDelayedAlertOnClick>
         {!note.current.isUpToDate && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openInDifferentVersion}>Open in v{noteOriginalVersionShort}</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href={`#${originalVersionLink}`}
+                onClick={openInDifferentVersion}
+                className="justify-between items-center"
+              >
+                <span>Open in v{noteOriginalVersionShort}</span>
+                <DropdownMenuItemCopyButton href={`#${originalVersionLink}`} />
+              </a>
+            </DropdownMenuItem>
           </>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={editNode} data-testid="edit-note-button">
-          <span>Edit note</span>
-        </DropdownMenuItem>
-        <TwoStepDropdownMenuItem onClick={removeNote} confirmationSlot={<span>Are you sure?</span>}>
-          <span>Remove note</span>
-        </TwoStepDropdownMenuItem>
+        {isEditable && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={editNode} data-testid="edit-note-button">
+              <span>Edit note</span>
+            </DropdownMenuItem>
+            <TwoStepDropdownMenuItem onClick={removeNote} confirmationSlot={<span>Are you sure?</span>}>
+              <span>Remove note</span>
+            </TwoStepDropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-};
-
-const DropdownMenuItemWithDelayedAlertOnClick = ({
-  children,
-  onClick,
-  alertSlot,
-}: PropsWithChildren<{ alertSlot: ReactNode; onClick: MouseEventHandler<HTMLDivElement> }>) => {
-  const [isDelayedAlert, setIsDelayedAlert] = useState(false);
-
-  useEffect(() => {
-    if (!isDelayedAlert) {
-      return;
-    }
-
-    const timeoutHandle = setTimeout(() => {
-      setIsDelayedAlert(false);
-      // Simulate Escape key press to close dropdown
-      const escapeEvent = new KeyboardEvent("keydown", {
-        key: "Escape",
-        code: "Escape",
-        keyCode: 27,
-        bubbles: true,
-      });
-      document.dispatchEvent(escapeEvent);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeoutHandle);
-    };
-  }, [isDelayedAlert]);
-
-  return (
-    <DropdownMenuItem
-      className={cn(isDelayedAlert ? "bg-info/25 hover:bg-info/25 text-info-foreground" : "")}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!isDelayedAlert) {
-          setIsDelayedAlert(true);
-          onClick(e);
-        }
-      }}
-    >
-      {isDelayedAlert ? alertSlot : children}
-    </DropdownMenuItem>
   );
 };
 

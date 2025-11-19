@@ -6,7 +6,7 @@ import { Label } from "../../Label/Label";
 import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { prefixLabel } from "../../NotesProvider/hooks/useLabels";
 import { useNoteContext } from "./NoteContext";
-import { NoteSimpleInput, TinyIconButton } from "./SiimpleComponents";
+import { NoteSimpleInput, TinyIconButton } from "./SimpleComponents";
 
 export function NoteLabels() {
   const { note, isEditing, noteDirty, handleNoteLabelsChange } = useNoteContext();

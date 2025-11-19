@@ -6,7 +6,7 @@ import { noteContext, useNoteContext } from "./NoteContext";
 import { NoteDropdown } from "./NoteDropdown";
 import { NoteLabels } from "./NoteLabels";
 import { NoteLink } from "./NoteLink";
-import { NoteSimpleTextarea } from "./SiimpleComponents";
+import { NoteSimpleTextarea } from "./SimpleComponents";
 
 export const NoteText = () => {
   const { note } = useNoteContext();
