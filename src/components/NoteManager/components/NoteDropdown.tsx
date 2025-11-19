@@ -84,7 +84,7 @@ export const NoteDropdown = ({
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             role="img"
-            aria-label="dropdown button"
+            aria-hidden="true"
           >
             <circle cx="8" cy="3" r="1.5" fill="currentColor" />
             <circle cx="8" cy="8" r="1.5" fill="currentColor" />
