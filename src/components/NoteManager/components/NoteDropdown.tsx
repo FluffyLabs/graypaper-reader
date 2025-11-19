@@ -83,10 +83,10 @@ export const NoteDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuItem disabled={active} asChild>
+        <DropdownMenuItem asChild>
           <a href={`#${currentVersionLink}`} onClick={handleOpenClose} className="flex justify-between items-center">
             <span>Open</span>
-            <DropdownMenuItemCopyButton href={`#${currentVersionLink}`} />
+            <DropdownMenuItemCopyButton href={`/#${currentVersionLink}`} />
           </a>
         </DropdownMenuItem>
         {!note.current.isUpToDate && (
@@ -99,7 +99,7 @@ export const NoteDropdown = ({
                 className="justify-between items-center"
               >
                 <span>Open in v{noteOriginalVersionShort}</span>
-                <DropdownMenuItemCopyButton href={`#${originalVersionLink}`} />
+                <DropdownMenuItemCopyButton href={`/#${originalVersionLink}`} />
               </a>
             </DropdownMenuItem>
           </>

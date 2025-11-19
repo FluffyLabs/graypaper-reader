@@ -37,7 +37,7 @@ export const DropdownMenuItemCopyButton = ({ href }: { href: string }) => {
 
         if (!isDelayedAlert) {
           setIsDelayedAlert(true);
-          navigator.clipboard.writeText(`${window.location.origin}/${href}`);
+          navigator.clipboard.writeText(`${window.location.origin}${href}`);
         }
       }}
       className="py-3.5 px-3.5 my-[-8px]"
