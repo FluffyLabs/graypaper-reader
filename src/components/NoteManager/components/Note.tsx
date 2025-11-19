@@ -1,12 +1,15 @@
 import { Button, cn } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
+import { useVersionContext } from "../../LocationProvider/VersionProvider";
+import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
+import { useMetadataContext } from "../../MetadataProvider/MetadataProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import type { ISingleNoteContext } from "./NoteContext";
 import { NoteLayout } from "./NoteLayout";
 import { NoteLink } from "./NoteLink";
-import { TinyIconButton } from "./SiimpleComponents";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -18,16 +21,21 @@ type NoteProps = {
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
-  onSelectNote: (note: IDecoratedNote) => void;
+  onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 };
 
 export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
+
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
     ...note.original,
   });
-  const [noteContentError, setNoteContentError] = useState("");
 
+  const [noteContentError, setNoteContentError] = useState("");
+  const { metadata } = useMetadataContext();
+  const { version } = useVersionContext();
+  const { getHashFromLocationParams } = useGetLocationParamsToHash();
+  const noteOriginalVersionShort = metadata.versions[note.original.version]?.name;
   const isEditable = note.source !== NoteSource.Remote;
 
   const handleSaveClick = useCallback(() => {
@@ -81,7 +89,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       return;
     }
 
-    onSelectNote(note);
+    onSelectNote(note, { type: "currentVersion" });
   };
 
   const handleNoteEnter = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -98,7 +106,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       return;
     }
 
-    onSelectNote(note);
+    onSelectNote(note, { type: "currentVersion" });
   };
 
   useEffect(() => {
@@ -107,20 +115,57 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
     }
   }, [active]);
 
+  const onSelectNoteRef = useRef<NoteProps["onSelectNote"] | undefined>(undefined);
+  onSelectNoteRef.current = onSelectNote;
+
+  const memoizedOnSelectNote = useCallback(
+    ({ type = "currentVersion" }: { type?: "currentVersion" | "originalVersion" | "close" } = {}) => {
+      onSelectNoteRef.current?.(note, { type });
+    },
+    [note],
+  );
+
+  const currentVersionLink = useMemo(
+    () =>
+      getHashFromLocationParams({
+        version: version,
+        selectionStart: note.current.selectionStart,
+        selectionEnd: note.current.selectionEnd,
+      }),
+    [version, note.current, getHashFromLocationParams],
+  );
+
+  const originalLink = useMemo(
+    () =>
+      getHashFromLocationParams({
+        version: note.original.version,
+        selectionStart: note.original.selectionStart,
+        selectionEnd: note.original.selectionEnd,
+      }),
+    [note, getHashFromLocationParams],
+  );
+
   const noteLayoutContext = useMemo(
-    () => ({
-      note,
-      isEditable,
-      handleEditClick,
-      handleSaveClick,
-      handleCancelClick,
-      onEditNote,
-      isEditing,
-      noteDirty,
-      handleNoteContentChange,
-      handleNoteLabelsChange,
-    }),
+    () =>
+      ({
+        active,
+        note,
+        isEditable,
+        handleEditClick,
+        handleSaveClick,
+        handleCancelClick,
+        onEditNote,
+        isEditing,
+        noteDirty,
+        handleNoteContentChange,
+        handleNoteLabelsChange,
+        handleSelectNote: memoizedOnSelectNote,
+        noteOriginalVersionShort,
+        currentVersionLink,
+        originalVersionLink: originalLink,
+      }) satisfies ISingleNoteContext,
     [
+      active,
       note,
       isEditable,
       handleEditClick,
@@ -131,15 +176,58 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
       noteDirty,
       handleNoteContentChange,
       handleNoteLabelsChange,
+      memoizedOnSelectNote,
+      noteOriginalVersionShort,
+      currentVersionLink,
+      originalLink,
     ],
   );
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const mousePositionRef = useRef({ x: 0, y: 0 });
+
+  const noteRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePositionRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isDropdownOpen]);
+
+  const handleIsDropdownOpen = (isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
+
+    if (!isOpen && noteRef.current) {
+      const rect = noteRef.current.getBoundingClientRect();
+
+      const isMouseInside =
+        mousePositionRef.current.x >= rect.left &&
+        mousePositionRef.current.x <= rect.right &&
+        mousePositionRef.current.y >= rect.top &&
+        mousePositionRef.current.y <= rect.bottom;
+
+      setIsHovered(isMouseInside);
+
+      // Check if focus is still within the note element
+      const isFocusInside = noteRef.current.contains(document.activeElement);
+      setIsFocused(isFocusInside);
+    }
+  };
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>
       <div
+        ref={noteRef}
         data-testid="notes-manager-card"
         className={cn(
-          "note rounded-xl p-4 flex flex-col gap-2",
+          "note rounded-xl p-4 relative",
           active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)] mb-1",
           !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
         )}
@@ -148,53 +236,62 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
         aria-label={!active ? "Activate label" : ""}
         onClick={handleWholeNoteClick}
         onKeyDown={handleNoteEnter}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          if (!isDropdownOpen) {
+            setIsHovered(false);
+          }
+        }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          if (!isDropdownOpen) {
+            setIsFocused(false);
+          }
+        }}
       >
-        {!active && (
-          <>
-            <NoteLink note={note} active={false} />
-            <NoteLayout.Text />
-          </>
-        )}
-        {active && !isEditing && (
-          <>
-            <NoteLayout.SelectedText />
-            <NoteLayout.Text />
-            <div className="flex justify-between items-end max-w-[100%]">
-              <NoteLayout.Labels />
-              {isEditable && (
-                <div className="flex flex-1 justify-end">
-                  <TinyIconButton
-                    data-testid={"edit-button"}
-                    onClick={handleEditClick}
-                    aria-label="Edit note"
-                    icon="✏️"
-                  />
-                </div>
-              )}
-            </div>
-          </>
-        )}
-        {active && isEditing && (
-          <>
+        <div className="flex flex-col gap-2">
+          {!active && (
+            <>
+              <NoteLink note={note} active={false} />
+              <NoteLayout.Text />
+            </>
+          )}
+          {active && !isEditing && (
             <>
               <NoteLayout.SelectedText />
-              <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
-              {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+              <NoteLayout.Text />
               <NoteLayout.Labels />
-              <div className="actions gap-2">
-                <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
-                  Delete
-                </Button>
-                <div className="fill" />
-                <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
-                  Cancel
-                </Button>
-                <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
-                  Save
-                </Button>
-              </div>
             </>
-          </>
+          )}
+          {active && isEditing && (
+            <>
+              <>
+                <NoteLayout.SelectedText />
+                <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
+                {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+                <NoteLayout.Labels />
+                <div className="actions gap-2">
+                  <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
+                    Delete
+                  </Button>
+                  <div className="fill" />
+                  <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
+                    Cancel
+                  </Button>
+                  <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
+                    Save
+                  </Button>
+                </div>
+              </>
+            </>
+          )}
+        </div>
+        {(isHovered || isFocused || isDropdownOpen) && !isEditing && (
+          <NoteLayout.Dropdown
+            onDelete={handleDeleteClick}
+            buttonClassName="absolute right-2 bottom-4 bg-inherit"
+            onOpenChange={handleIsDropdownOpen}
+          />
         )}
       </div>
     </NoteLayout.Root>

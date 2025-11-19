@@ -16,7 +16,7 @@ export const NotesList = ({
   activeNotes: IDecoratedNote[];
   onEditNote: (noteToReplace: IDecoratedNote, newNote: IStorageNote) => void;
   onDeleteNote: (noteToDelete: IDecoratedNote) => void;
-  onSelectNote: (note: IDecoratedNote) => void;
+  onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 }) => {
   if (notes.length === 0) {
     return <div className="no-notes text-sidebar-foreground">No notes available.</div>;

@@ -1,15 +1,9 @@
-import { isSameBlock } from "@fluffylabs/links-metadata";
 import { Badge } from "@fluffylabs/shared-ui";
-import { type MouseEventHandler, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { type MouseEvent, useContext, useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
-import { type ILocationContext, LocationContext } from "../../LocationProvider/LocationProvider";
-import { useVersionContext } from "../../LocationProvider/VersionProvider";
-import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
-import { useMetadataContext } from "../../MetadataProvider/MetadataProvider";
-import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
+import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import { OutlineLink } from "../../Outline";
-import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { useNoteContext } from "./NoteContext";
 
 type NoteLinkProps = {
@@ -17,7 +11,7 @@ type NoteLinkProps = {
   active?: boolean;
 };
 
-export function NoteLink({ note, active = false }: NoteLinkProps) {
+export function NoteLink({ note }: NoteLinkProps) {
   const [sectionTitle, setTitle] = useState({
     section: "",
     subSection: "" as string | null,
@@ -27,11 +21,9 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
     CodeSyncContext,
   ) as ICodeSyncContext;
 
-  const { version } = useVersionContext();
-  const { getHashFromLocationParams } = useGetLocationParamsToHash();
+  const { noteOriginalVersionShort, currentVersionLink, originalVersionLink, handleSelectNote } = useNoteContext();
 
   const migrationFlag = !note.current.isUpToDate;
-  const isEditable = note.source !== NoteSource.Remote;
 
   const {
     selectionStart: { pageNumber },
@@ -49,47 +41,27 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
     })();
   }, [getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock, note]);
 
-  const handleNoteLinkClick = useCallback<MouseEventHandler>((e) => {
+  const handleMigrationLinkOpen = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const href = e.currentTarget.getAttribute("href");
-    if (!href) return;
-    window.location.hash = href;
-  }, []);
+    handleSelectNote({ type: "originalVersion" });
+  };
 
-  const currentVersionLink = useMemo(
-    () =>
-      getHashFromLocationParams({
-        version: version,
-        selectionStart: note.current.selectionStart,
-        selectionEnd: note.current.selectionEnd,
-      }),
-    [version, note.current, getHashFromLocationParams],
-  );
-
-  const originalLink = useMemo(
-    () =>
-      getHashFromLocationParams({
-        version: note.original.version,
-        selectionStart: note.original.selectionStart,
-        selectionEnd: note.original.selectionEnd,
-      }),
-    [note, getHashFromLocationParams],
-  );
-
-  const { metadata } = useMetadataContext();
-  const noteOriginalVersionShort = metadata.versions[note.original.version]?.name;
+  const handleLinkOpen = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    handleSelectNote();
+  };
 
   const { section, subSection } = sectionTitle;
   return (
     <div className="note-link">
       {migrationFlag && (
         <a
-          href={`#${originalLink}`}
+          href={`#${originalVersionLink}`}
           data-tooltip-id="note-link"
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
           className="icon default-link"
-          onClick={handleNoteLinkClick}
+          onClick={handleMigrationLinkOpen}
         >
           <Badge intent="destructive" className="px-1 py-0 text-xs">
             v{noteOriginalVersionShort}
@@ -102,55 +74,10 @@ export function NoteLink({ note, active = false }: NoteLinkProps) {
         firstLevel
         title={subSection ? `${section} > ${subSection}` : section}
         number={`p. ${pageNumber} >`}
-        onClick={handleNoteLinkClick}
+        onClick={handleLinkOpen}
       />
 
-      {migrationFlag && isEditable && active && <UpdateVersionLink note={note} />}
       <Tooltip id="note-link" />
     </div>
   );
 }
-
-const UpdateVersionLink = ({ note }: { note: IDecoratedNote }) => {
-  const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { onEditNote } = useNoteContext();
-  const { version } = useVersionContext();
-  const { selectedBlocks } = useContext(SelectionContext) as ISelectionContext;
-
-  const handleMigrateClick = useCallback<MouseEventHandler>(
-    (e) => {
-      e.preventDefault();
-
-      if (!locationParams.selectionStart || !locationParams.selectionEnd) return;
-
-      if (
-        (!isSameBlock(locationParams.selectionStart, note.current.selectionStart) ||
-          !isSameBlock(locationParams.selectionEnd, note.current.selectionEnd)) &&
-        !confirm("The selection has been altered. Are you sure you want to update the note?")
-      ) {
-        return;
-      }
-
-      onEditNote(note, {
-        ...note.original,
-        selectionStart: locationParams.selectionStart,
-        selectionEnd: locationParams.selectionEnd,
-        version,
-      });
-    },
-    [version, locationParams, note, onEditNote],
-  );
-
-  return (
-    <a
-      href="#"
-      onClick={handleMigrateClick}
-      data-tooltip-id="note-link"
-      data-tooltip-content="Make sure the selection is accurate or adjust it in the current version and update the note."
-      data-tooltip-place="top"
-      className={`default-link ${selectedBlocks.length === 0 ? "disabled update" : "update"}`}
-    >
-      (update version)
-    </a>
-  );
-};

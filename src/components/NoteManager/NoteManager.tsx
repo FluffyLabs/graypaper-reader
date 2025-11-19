@@ -1,5 +1,6 @@
 import { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import "./NoteManager.css";
+import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { Button, Textarea } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { validateMath } from "../../utils/validateMath";
@@ -34,6 +35,21 @@ function Notes() {
   ) as INotesContext;
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
 
+  const handleAddNoteRef = useRef(handleAddNote);
+  handleAddNoteRef.current = handleAddNote;
+  const handleDeleteNoteRef = useRef(handleDeleteNote);
+  handleDeleteNoteRef.current = handleDeleteNote;
+  const handleUpdateNoteRef = useRef(handleUpdateNote);
+  handleUpdateNoteRef.current = handleUpdateNote;
+
+  const memoizedHandleDeleteNote = useCallback((note: IDecoratedNote) => {
+    handleDeleteNoteRef.current(note);
+  }, []);
+
+  const memoizedHandleUpdateNote = useCallback((note: IDecoratedNote, newNote: IStorageNote) => {
+    handleUpdateNoteRef.current(note, newNote);
+  }, []);
+
   const handleAddNoteClick = useCallback(() => {
     if (
       selectedBlocks.length === 0 ||
@@ -64,20 +80,38 @@ function Notes() {
       labels: [LABEL_LOCAL],
     };
 
-    handleAddNote(newNote);
+    handleAddNoteRef.current(newNote);
     handleClearSelection();
-  }, [noteContent, pageNumber, selectedBlocks, handleAddNote, handleClearSelection, locationParams]);
+  }, [noteContent, pageNumber, selectedBlocks, handleClearSelection, locationParams]);
 
   const locationRef = useRef({ locationParams, setLocationParams });
   locationRef.current = { locationParams, setLocationParams };
 
-  const handleSelectNote = useCallback((note: IDecoratedNote) => {
-    locationRef.current.setLocationParams({
-      selectionStart: note.current.selectionStart,
-      selectionEnd: note.current.selectionEnd,
-      version: locationRef.current.locationParams.version,
-    });
-  }, []);
+  const memoizedHandleSelectNote = useCallback(
+    (note: IDecoratedNote, { type = "currentVersion" }: { type: "currentVersion" | "originalVersion" | "close" }) => {
+      let selectionStart: ISynctexBlockId | undefined = note.current.selectionStart;
+      let selectionEnd: ISynctexBlockId | undefined = note.current.selectionEnd;
+      let version: string | undefined = locationRef.current.locationParams.version;
+
+      if (type === "originalVersion") {
+        selectionStart = note.original.selectionStart;
+        selectionEnd = note.original.selectionEnd;
+        version = note.original.version;
+      }
+
+      if (type === "close") {
+        selectionStart = undefined;
+        selectionEnd = undefined;
+      }
+
+      locationRef.current.setLocationParams({
+        selectionStart,
+        selectionEnd,
+        version: version,
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (selectedBlocks.length === 0) {
@@ -107,9 +141,9 @@ function Notes() {
       <MemoizedNotesList
         activeNotes={activeNotes}
         notes={notes}
-        onEditNote={handleUpdateNote}
-        onDeleteNote={handleDeleteNote}
-        onSelectNote={handleSelectNote}
+        onEditNote={memoizedHandleUpdateNote}
+        onDeleteNote={memoizedHandleDeleteNote}
+        onSelectNote={memoizedHandleSelectNote}
       />
     </div>
   );
