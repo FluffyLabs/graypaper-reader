@@ -57,6 +57,16 @@ export const NoteDropdown = ({
     handleEditClick();
   };
 
+  const handleCopyComplete = () => {
+    const escapeEvent = new KeyboardEvent("keydown", {
+      key: "Escape",
+      code: "Escape",
+      keyCode: 27,
+      bubbles: true,
+    });
+    document.dispatchEvent(escapeEvent);
+  };
+
   return (
     <DropdownMenu onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
@@ -86,7 +96,7 @@ export const NoteDropdown = ({
         <DropdownMenuItem asChild>
           <a href={`#${currentVersionLink}`} onClick={handleOpenClose} className="flex justify-between items-center">
             <span>Open</span>
-            <DropdownMenuItemCopyButton href={`/#${currentVersionLink}`} />
+            <DropdownMenuItemCopyButton href={`/#${currentVersionLink}`} onCopyComplete={handleCopyComplete} />
           </a>
         </DropdownMenuItem>
         {!note.current.isUpToDate && (
@@ -99,7 +109,7 @@ export const NoteDropdown = ({
                 className="justify-between items-center"
               >
                 <span>Open in v{noteOriginalVersionShort}</span>
-                <DropdownMenuItemCopyButton href={`/#${originalVersionLink}`} />
+                <DropdownMenuItemCopyButton href={`/#${originalVersionLink}`} onCopyComplete={handleCopyComplete} />
               </a>
             </DropdownMenuItem>
           </>

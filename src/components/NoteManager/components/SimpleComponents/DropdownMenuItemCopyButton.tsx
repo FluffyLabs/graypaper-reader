@@ -1,10 +1,12 @@
 import { Button } from "@fluffylabs/shared-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";
 
-export const DropdownMenuItemCopyButton = ({ href }: { href: string }) => {
+export const DropdownMenuItemCopyButton = ({ href, onCopyComplete }: { href: string; onCopyComplete: () => void }) => {
   const [isDelayedAlert, setIsDelayedAlert] = useState(false);
+  const onCopyCompleteRef = useRef(onCopyComplete);
+  onCopyCompleteRef.current = onCopyComplete;
 
   useEffect(() => {
     if (!isDelayedAlert) {
@@ -13,13 +15,7 @@ export const DropdownMenuItemCopyButton = ({ href }: { href: string }) => {
 
     const timeoutHandle = setTimeout(() => {
       setIsDelayedAlert(false);
-      const escapeEvent = new KeyboardEvent("keydown", {
-        key: "Escape",
-        code: "Escape",
-        keyCode: 27,
-        bubbles: true,
-      });
-      document.dispatchEvent(escapeEvent);
+      onCopyCompleteRef.current?.();
     }, 2000);
 
     return () => {
