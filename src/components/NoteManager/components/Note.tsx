@@ -184,6 +184,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
   );
 
   const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const mousePositionRef = useRef({ x: 0, y: 0 });
 
@@ -213,6 +214,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
         mousePositionRef.current.y <= rect.bottom;
 
       setIsHovered(isMouseInside);
+
+      // Check if focus is still within the note element
+      const isFocusInside = noteRef.current.contains(document.activeElement);
+      setIsFocused(isFocusInside);
     }
   };
 
@@ -235,6 +240,12 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
         onMouseLeave={() => {
           if (!isDropdownOpen) {
             setIsHovered(false);
+          }
+        }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          if (!isDropdownOpen) {
+            setIsFocused(false);
           }
         }}
       >
@@ -275,7 +286,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
             </>
           )}
         </div>
-        {(isHovered || isDropdownOpen) && !isEditing && (
+        {(isHovered || isFocused || isDropdownOpen) && !isEditing && (
           <NoteLayout.Dropdown
             onDelete={handleDeleteClick}
             buttonClassName="absolute right-2 bottom-4 bg-inherit"
