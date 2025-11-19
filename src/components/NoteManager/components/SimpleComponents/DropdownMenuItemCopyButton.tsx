@@ -27,6 +27,7 @@ export const DropdownMenuItemCopyButton = ({ href, onCopyComplete }: { href: str
     <Button
       variant="ghost"
       size="icon"
+      aria-label="Copy link to clipboard"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
