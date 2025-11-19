@@ -34,9 +34,9 @@ export const DropdownMenuItemCopyButton = ({ href, onCopyComplete }: { href: str
         e.stopPropagation();
 
         if (!secondaryState) {
-          setSecondaryState("success");
           try {
             navigator.clipboard.writeText(`${window.location.origin}${href}`);
+            setSecondaryState("success");
           } catch (error) {
             setSecondaryState("error");
             console.error("Failed to copy link:", error);

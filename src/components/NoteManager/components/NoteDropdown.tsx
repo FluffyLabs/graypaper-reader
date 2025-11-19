@@ -106,7 +106,7 @@ export const NoteDropdown = ({
               <a
                 href={`#${originalVersionLink}`}
                 onClick={openInDifferentVersion}
-                className="justify-between items-center"
+                className="flex justify-between items-center"
               >
                 <span>Open in v{noteOriginalVersionShort}</span>
                 <DropdownMenuItemCopyButton href={`/#${originalVersionLink}`} onCopyComplete={handleCopyComplete} />
