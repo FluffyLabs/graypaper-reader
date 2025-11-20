@@ -53,7 +53,7 @@ export const NoteDropdown = ({
 
   const contentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { setIsTracked: setTrackMousePosition, mousePositionRef } = useToggagleableMousePositionTracking(false);
+  const { setIsTracked: setTrackMousePosition, mousePositionRef } = useToggleableMousePositionTracking(false);
 
   const handleCopyInitiated = () => {
     setTrackMousePosition(true);
@@ -154,7 +154,7 @@ export const NoteDropdown = ({
   );
 };
 
-const useToggagleableMousePositionTracking = (initialIsTracked: boolean) => {
+const useToggleableMousePositionTracking = (initialIsTracked: boolean) => {
   const [isTracked, setIsTracked] = useState(initialIsTracked);
   const mousePositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
