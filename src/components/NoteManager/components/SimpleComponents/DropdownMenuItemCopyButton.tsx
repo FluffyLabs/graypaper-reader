@@ -27,14 +27,14 @@ export const DropdownMenuItemCopyButton = ({
     };
   }, [secondaryState]);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!secondaryState) {
       try {
         onCopyInitiated();
-        navigator.clipboard.writeText(`${window.location.origin}${href}`);
+        await navigator.clipboard.writeText(`${window.location.origin}${href}`);
         setSecondaryState("success");
       } catch (error) {
         setSecondaryState("error");

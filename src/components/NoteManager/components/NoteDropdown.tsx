@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   cn,
 } from "@fluffylabs/shared-ui";
-import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { type MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react";
 import { useNoteContext } from "./NoteContext";
 import { DropdownMenuItemCopyButton } from "./SimpleComponents/DropdownMenuItemCopyButton";
 import { TwoStepDropdownMenuItem } from "./SimpleComponents/TwoStepDropdownMenuItem";
@@ -28,22 +28,22 @@ export const NoteDropdown = ({
     originalVersionLink,
   } = useNoteContext();
 
-  const handleOpenClose = (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleOpenClose = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
     handleSelectNote({ type: active ? "close" : "currentVersion" });
   };
 
-  const openInDifferentVersion = (e: MouseEvent<HTMLAnchorElement>) => {
+  const openInDifferentVersion = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
     handleSelectNote({ type: "originalVersion" });
   };
 
-  const removeNote = (e: MouseEvent<HTMLDivElement>) => {
+  const removeNote = (e: ReactMouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     onDelete?.();
   };
 
-  const editNode = (e: MouseEvent<HTMLDivElement>) => {
+  const editNode = (e: ReactMouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if (!active) {
       handleSelectNote();
@@ -160,14 +160,17 @@ const useToggagleableMousePositionTracking = (initialIsTracked: boolean) => {
 
   useEffect(() => {
     if (!isTracked) {
+      return;
     }
 
-    document.addEventListener("mousemove", (e) => {
+    const handler = (e: MouseEvent) => {
       mousePositionRef.current = { x: e.clientX, y: e.clientY };
-    });
+    };
+
+    document.addEventListener("mousemove", handler);
 
     return () => {
-      document.removeEventListener("mousemove", () => {});
+      document.removeEventListener("mousemove", handler);
     };
   }, [isTracked]);
 
