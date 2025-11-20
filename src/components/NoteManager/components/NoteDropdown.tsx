@@ -7,16 +7,10 @@ import {
   DropdownMenuTrigger,
   cn,
 } from "@fluffylabs/shared-ui";
-import {
-  type MouseEvent,
-  type MouseEventHandler,
-  type PropsWithChildren,
-  type ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { useNoteContext } from "./NoteContext";
 import { DropdownMenuItemCopyButton } from "./SimpleComponents/DropdownMenuItemCopyButton";
+import { TwoStepDropdownMenuItem } from "./SimpleComponents/TwoStepDropdownMenuItem";
 
 export const NoteDropdown = ({
   buttonClassName,
@@ -57,20 +51,42 @@ export const NoteDropdown = ({
     handleEditClick();
   };
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { setIsTracked: setTrackMousePosition, mousePositionRef } = useToggagleableMousePositionTracking(false);
+
+  const handleCopyInitiated = () => {
+    setTrackMousePosition(true);
+  };
+
   const handleCopyComplete = () => {
-    const escapeEvent = new KeyboardEvent("keydown", {
-      key: "Escape",
-      code: "Escape",
-      keyCode: 27,
-      bubbles: true,
-    });
-    document.dispatchEvent(escapeEvent);
+    const isMouseOverButton =
+      buttonRef.current && mousePositionRef.current
+        ? isMouseOverElement(mousePositionRef.current, buttonRef.current)
+        : false;
+    const isMouseOverContent =
+      contentRef.current && mousePositionRef.current
+        ? isMouseOverElement(mousePositionRef.current, contentRef.current)
+        : false;
+
+    const shouldDropdownBeClosed = !isMouseOverButton && !isMouseOverContent;
+
+    if (shouldDropdownBeClosed) {
+      const escapeEvent = new KeyboardEvent("keydown", {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        bubbles: true,
+      });
+      document.dispatchEvent(escapeEvent);
+    }
   };
 
   return (
     <DropdownMenu onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
+          ref={buttonRef}
           variant="ghost"
           intent="neutralMedium"
           className={cn("p-2 h-6", buttonClassName)}
@@ -92,11 +108,15 @@ export const NoteDropdown = ({
           </svg>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
+      <DropdownMenuContent className="w-56" align="end" ref={contentRef}>
         <DropdownMenuItem asChild>
           <a href={`#${currentVersionLink}`} onClick={handleOpenClose} className="flex justify-between items-center">
             <span>Open</span>
-            <DropdownMenuItemCopyButton href={`/#${currentVersionLink}`} onCopyComplete={handleCopyComplete} />
+            <DropdownMenuItemCopyButton
+              href={`/#${currentVersionLink}`}
+              onCopyComplete={handleCopyComplete}
+              onCopyInitiated={handleCopyInitiated}
+            />
           </a>
         </DropdownMenuItem>
         {!note.current.isUpToDate && (
@@ -109,7 +129,11 @@ export const NoteDropdown = ({
                 className="flex justify-between items-center"
               >
                 <span>Open in v{noteOriginalVersionShort}</span>
-                <DropdownMenuItemCopyButton href={`/#${originalVersionLink}`} onCopyComplete={handleCopyComplete} />
+                <DropdownMenuItemCopyButton
+                  href={`/#${originalVersionLink}`}
+                  onCopyComplete={handleCopyComplete}
+                  onCopyInitiated={handleCopyInitiated}
+                />
               </a>
             </DropdownMenuItem>
           </>
@@ -130,44 +154,27 @@ export const NoteDropdown = ({
   );
 };
 
-const TwoStepDropdownMenuItem = ({
-  children,
-  confirmationSlot,
-  onClick,
-}: PropsWithChildren<{ confirmationSlot: ReactNode; onClick: MouseEventHandler<HTMLDivElement> }>) => {
-  const [isConfirmation, setIsConfirmation] = useState(false);
+const useToggagleableMousePositionTracking = (initialIsTracked: boolean) => {
+  const [isTracked, setIsTracked] = useState(initialIsTracked);
+  const mousePositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (!isConfirmation) {
-      return;
+    if (!isTracked) {
     }
 
-    const timeoutHandle = setTimeout(() => {
-      setIsConfirmation(false);
-    }, 2000);
+    document.addEventListener("mousemove", (e) => {
+      mousePositionRef.current = { x: e.clientX, y: e.clientY };
+    });
 
     return () => {
-      clearTimeout(timeoutHandle);
+      document.removeEventListener("mousemove", () => {});
     };
-  }, [isConfirmation]);
+  }, [isTracked]);
 
-  const handleOnClick: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!isConfirmation) {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsConfirmation(true);
-    } else {
-      onClick(e);
-    }
-  };
+  return { isTracked, setIsTracked, mousePositionRef };
+};
 
-  return (
-    <DropdownMenuItem
-      onClick={handleOnClick}
-      className={cn(isConfirmation ? "text-destructive hover:bg-destructive/20 hover:text-destructive" : "")}
-    >
-      {!isConfirmation && children}
-      {isConfirmation && confirmationSlot}
-    </DropdownMenuItem>
-  );
+const isMouseOverElement = (mousePos: { x: number; y: number }, element: HTMLElement) => {
+  const rect = element.getBoundingClientRect();
+  return mousePos.x >= rect.left && mousePos.x <= rect.right && mousePos.y >= rect.top && mousePos.y <= rect.bottom;
 };

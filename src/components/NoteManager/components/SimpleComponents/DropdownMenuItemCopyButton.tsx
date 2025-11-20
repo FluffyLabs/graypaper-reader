@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "../icons/CheckIcon";
 import { CopyIcon } from "../icons/CopyIcon";
 
-export const DropdownMenuItemCopyButton = ({ href, onCopyComplete }: { href: string; onCopyComplete: () => void }) => {
+export const DropdownMenuItemCopyButton = ({
+  href,
+  onCopyComplete,
+  onCopyInitiated,
+}: { href: string; onCopyComplete: () => void; onCopyInitiated: () => void }) => {
   const [secondaryState, setSecondaryState] = useState<"success" | "error" | undefined>(undefined);
   const onCopyCompleteRef = useRef(onCopyComplete);
   onCopyCompleteRef.current = onCopyComplete;
@@ -23,26 +27,29 @@ export const DropdownMenuItemCopyButton = ({ href, onCopyComplete }: { href: str
     };
   }, [secondaryState]);
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!secondaryState) {
+      try {
+        onCopyInitiated();
+        navigator.clipboard.writeText(`${window.location.origin}${href}`);
+        setSecondaryState("success");
+      } catch (error) {
+        setSecondaryState("error");
+        console.error("Failed to copy link:", error);
+      }
+    }
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
       aria-label="Copy link to clipboard"
       disabled={secondaryState !== undefined}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!secondaryState) {
-          try {
-            navigator.clipboard.writeText(`${window.location.origin}${href}`);
-            setSecondaryState("success");
-          } catch (error) {
-            setSecondaryState("error");
-            console.error("Failed to copy link:", error);
-          }
-        }
-      }}
+      onClick={handleClick}
       className="py-3.5 px-3.5 my-[-8px]"
     >
       {!secondaryState && <CopyIcon />}
