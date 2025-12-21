@@ -2,6 +2,7 @@ import { memo, useCallback, useContext, useRef } from "react";
 import "./NoteManager.css";
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { twMerge } from "tailwind-merge";
+import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
@@ -33,24 +34,24 @@ function Notes() {
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
   const keepShowingNewNote = useRef<{ selectionEnd: ISynctexBlockId; selectionStart: ISynctexBlockId }>(undefined);
 
-  const handleAddNoteRef = useRef(handleAddNote);
-  handleAddNoteRef.current = handleAddNote;
-  const handleDeleteNoteRef = useRef(handleDeleteNote);
-  handleDeleteNoteRef.current = handleDeleteNote;
-  const handleUpdateNoteRef = useRef(handleUpdateNote);
-  handleUpdateNoteRef.current = handleUpdateNote;
+  const latestHandleAddNote = useLatestCallback(handleAddNote);
+  const latestDeleteNote = useLatestCallback(handleDeleteNote);
+  const latestUpdateNote = useLatestCallback(handleUpdateNote);
 
   const memoizedHandleDeleteNote = useCallback(
     (note: IDecoratedNote) => {
-      handleDeleteNoteRef.current(note);
+      latestDeleteNote.current(note);
       handleClearSelection();
     },
-    [handleClearSelection],
+    [handleClearSelection, latestDeleteNote],
   );
 
-  const memoizedHandleUpdateNote = useCallback((note: IDecoratedNote, newNote: IStorageNote) => {
-    handleUpdateNoteRef.current(note, newNote);
-  }, []);
+  const memoizedHandleUpdateNote = useCallback(
+    (note: IDecoratedNote, newNote: IStorageNote) => {
+      latestUpdateNote.current(note, newNote);
+    },
+    [latestUpdateNote],
+  );
 
   const handleNewNoteCancel = useCallback(() => {
     handleClearSelection();
@@ -78,13 +79,13 @@ function Notes() {
         labels: [LABEL_LOCAL],
       };
 
-      handleAddNoteRef.current(newNote);
+      latestHandleAddNote.current(newNote);
       keepShowingNewNote.current = {
         selectionStart: locationParams.selectionStart,
         selectionEnd: locationParams.selectionEnd,
       };
     },
-    [pageNumber, selectedBlocks, locationParams],
+    [pageNumber, selectedBlocks, locationParams, latestHandleAddNote],
   );
 
   const locationRef = useRef({ locationParams, setLocationParams });
