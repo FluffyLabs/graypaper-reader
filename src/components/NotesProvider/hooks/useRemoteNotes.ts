@@ -27,32 +27,50 @@ export function useRemoteNotes(
 
   // load remote notes
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       const newRemoteNotes: IStorageNote[] = [];
       for (const source of remoteNotesSources) {
         try {
           const data = await fetch(source);
+          if (cancelled) break;
           const content = await data.text();
+          if (cancelled) break;
           const notes = importNotesFromJson(content, { defaultLabel: LABEL_REMOTE });
           newRemoteNotes.push(...notes.notes);
         } catch (e) {
           console.warn(`Error loading remote notes from ${source}`, e);
         }
       }
-      setRemoteNotes((envelope) => ({
-        ...envelope,
-        notes: newRemoteNotes,
-      }));
+
+      if (!cancelled) {
+        setRemoteNotes((envelope) => ({
+          ...envelope,
+          notes: newRemoteNotes,
+        }));
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [remoteNotesSources]);
 
   // auto-decorate remote notes
   useEffect(() => {
+    let cancelled = false;
     setRemoteNotesReady(false);
+
     decorateNotes(remoteNotes.notes, NoteSource.Remote, currentVersion).then((notes) => {
+      if (cancelled) return;
       setRemoteNotesDecorated(notes);
       setRemoteNotesReady(true);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [remoteNotes, currentVersion, decorateNotes]);
 
   return {
