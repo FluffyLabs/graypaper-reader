@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useRef } from "react";
+import { memo, useCallback, useContext, useEffect, useRef } from "react";
 import "./NoteManager.css";
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { twMerge } from "tailwind-merge";
@@ -117,6 +117,12 @@ function Notes() {
   );
 
   const isActiveNotes = notes.some((note) => activeNotes.includes(note));
+
+  useEffect(() => {
+    if (notesReady) {
+      keepShowingNewNote.current = undefined;
+    }
+  }, [notesReady]);
 
   return (
     <div
