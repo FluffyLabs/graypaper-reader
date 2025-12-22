@@ -126,6 +126,8 @@ function Notes() {
     >
       {locationParams.selectionEnd &&
         locationParams.selectionStart &&
+        pageNumber !== null &&
+        selectedBlocks.length > 0 &&
         !isActiveNotes &&
         (notesReady || areSelectionsEqual(locationParams, keepShowingNewNote.current)) && (
           <NewNote
