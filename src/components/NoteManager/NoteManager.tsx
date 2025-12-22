@@ -5,7 +5,6 @@ import { twMerge } from "tailwind-merge";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
-import { LABEL_LOCAL } from "../NotesProvider/consts/labels";
 import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { areSelectionsEqual } from "../NotesProvider/utils/areSelectionsEqual";
@@ -58,7 +57,7 @@ function Notes() {
   }, [handleClearSelection]);
 
   const handleAddNoteClick = useCallback(
-    ({ noteContent }: { noteContent: string }) => {
+    ({ noteContent, labels }: { noteContent: string; labels: string[] }) => {
       if (
         selectedBlocks.length === 0 ||
         pageNumber === null ||
@@ -76,7 +75,7 @@ function Notes() {
         selectionStart: locationParams.selectionStart,
         selectionEnd: locationParams.selectionEnd,
         version: locationParams.version,
-        labels: [LABEL_LOCAL],
+        labels,
       };
 
       latestHandleAddNote.current(newNote);

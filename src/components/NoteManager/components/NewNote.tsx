@@ -14,7 +14,7 @@ type NewNoteProps = {
   selectionEnd: ISynctexBlockId;
   version: string;
   onCancel: () => void;
-  onSave: ({ noteContent }: { noteContent: string }) => void;
+  onSave: ({ noteContent, labels }: { noteContent: string; labels: string[] }) => void;
 };
 
 export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSave }: NewNoteProps) => {
@@ -22,6 +22,7 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
 
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState<string | null>(null);
+  const [labels, setLabels] = useState<string[]>(["local"]);
 
   const latestOnCancel = useLatestCallback(onCancel);
   const latestOnSave = useLatestCallback(onSave);
@@ -37,8 +38,8 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
       return;
     }
 
-    latestOnSave.current({ noteContent });
-  }, [noteContent, latestOnSave]);
+    latestOnSave.current({ noteContent, labels });
+  }, [noteContent, latestOnSave, labels]);
 
   const currentVersionLink = "";
   const originalVersionLink = "";
@@ -53,14 +54,14 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
       ({
         author: "",
         content: noteContent,
-        labels: [],
+        labels,
         date: dateRef.current,
         noteVersion: 3,
         selectionEnd,
         selectionStart,
         version,
       }) satisfies INoteV3,
-    [noteContent, version, selectionStart, selectionEnd],
+    [noteContent, version, selectionStart, selectionEnd, labels],
   );
 
   const note = useMemo(
@@ -102,7 +103,7 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
         note,
         noteDirty,
         handleNoteContentChange,
-        handleNoteLabelsChange: () => {},
+        handleNoteLabelsChange: setLabels,
         handleSelectNote: () => {},
         noteOriginalVersionShort: "",
         currentVersionLink,
