@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useRef } from "react";
 import "./NoteManager.css";
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
+import { cn } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -125,10 +126,7 @@ function Notes() {
   }, [notesReady]);
 
   return (
-    <div
-      className="note-manager flex flex-col gap-2.5"
-      style={{ opacity: notesReady ? 1.0 : 0.3, pointerEvents: notesReady ? "auto" : "none" }}
-    >
+    <div className={cn("note-manager flex flex-col gap-2.5", !notesReady && "opacity-30 pointer-events-none")}>
       {locationParams.selectionEnd &&
         locationParams.selectionStart &&
         pageNumber !== null &&

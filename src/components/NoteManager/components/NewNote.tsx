@@ -1,6 +1,6 @@
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { Button } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { validateMath } from "../../../utils/validateMath";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
@@ -18,8 +18,6 @@ type NewNoteProps = {
 };
 
 export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSave }: NewNoteProps) => {
-  const dateRef = useRef(new Date().getTime());
-
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState<string | null>(null);
   const [labels, setLabels] = useState<string[]>(["local"]);
@@ -49,75 +47,29 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
     setNoteContentError(null);
   }, []);
 
-  const noteDirty = useMemo(
-    () =>
-      ({
-        author: "",
-        content: noteContent,
-        labels,
-        date: dateRef.current,
-        noteVersion: 3,
-        selectionEnd,
-        selectionStart,
-        version,
-      }) satisfies INoteV3,
-    [noteContent, version, selectionStart, selectionEnd, labels],
-  );
+  const noteDirty = useDumbDirtyNoteObj({ noteContent, labels, selectionEnd, selectionStart, version });
+  const note = useDumbNoteObj({ version, selectionStart, selectionEnd });
 
-  const note = useMemo(
-    () =>
-      ({
-        current: {
-          isMigrated: true,
-          isUpToDate: true,
-          selectionEnd,
-          selectionStart,
-          version,
-        },
-        key: "newNote",
-        original: {
-          author: "",
-          content: "",
-          date: dateRef.current,
-          labels: [],
-          noteVersion: 3,
-          selectionEnd,
-          selectionStart,
-          version,
-        },
-        source: NoteSource.Local,
-      }) satisfies IDecoratedNote,
-    [selectionEnd, selectionStart, version],
-  );
-
-  const noteLayoutContext = useMemo(
-    () =>
-      ({
-        active: true,
-        isEditable: true,
-        handleEditClick: () => {},
-        handleSaveClick,
-        handleCancelClick,
-        onEditNote: () => {},
-        isEditing: true,
-        note,
-        noteDirty,
-        handleNoteContentChange,
-        handleNoteLabelsChange: setLabels,
-        handleSelectNote: () => {},
-        noteOriginalVersionShort: "",
-        currentVersionLink,
-        originalVersionLink,
-      }) satisfies ISingleNoteContext,
-    [noteDirty, handleNoteContentChange, note, handleCancelClick, handleSaveClick],
-  );
+  const noteLayoutContext = useNewNoteLayoutContext({
+    note,
+    noteDirty,
+    currentVersionLink,
+    handleCancelClick,
+    handleNoteContentChange,
+    handleNoteLabelsChange: setLabels,
+    handleSaveClick,
+    originalVersionLink,
+  });
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>
       <NoteContainer active={true}>
         <div className="flex flex-col gap-2">
           <NoteLayout.SelectedText />
-          <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
+          <NoteLayout.TextArea
+            className={noteContentError ? "error" : ""}
+            placeholder="Add your note for this section..."
+          />
           {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
           <NoteLayout.Labels />
           <div className="actions gap-2">
@@ -134,3 +86,113 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
     </NoteLayout.Root>
   );
 };
+
+const useDumbNoteObj = ({
+  version,
+  selectionStart,
+  selectionEnd,
+}: { version: string; selectionStart: ISynctexBlockId; selectionEnd: ISynctexBlockId }) =>
+  useMemo(
+    () =>
+      ({
+        current: {
+          isMigrated: true,
+          isUpToDate: true,
+          selectionEnd,
+          selectionStart,
+          version,
+        },
+        key: "newNote",
+        original: {
+          author: "",
+          content: "",
+          date: 0,
+          labels: [],
+          noteVersion: 3,
+          selectionEnd,
+          selectionStart,
+          version,
+        },
+        source: NoteSource.Local,
+      }) satisfies IDecoratedNote,
+    [selectionEnd, selectionStart, version],
+  );
+
+const useDumbDirtyNoteObj = ({
+  noteContent,
+  labels,
+  selectionEnd,
+  selectionStart,
+  version,
+}: {
+  noteContent: string;
+  labels: string[];
+  selectionEnd: ISynctexBlockId;
+  selectionStart: ISynctexBlockId;
+  version: string;
+}) =>
+  useMemo(
+    () =>
+      ({
+        author: "",
+        content: noteContent,
+        labels,
+        date: 0,
+        noteVersion: 3,
+        selectionEnd,
+        selectionStart,
+        version,
+      }) satisfies INoteV3,
+    [noteContent, version, selectionStart, selectionEnd, labels],
+  );
+
+const useNewNoteLayoutContext = ({
+  handleSaveClick,
+  handleCancelClick,
+  note,
+  noteDirty,
+  handleNoteContentChange,
+  handleNoteLabelsChange,
+  currentVersionLink,
+  originalVersionLink,
+}: {
+  handleSaveClick: () => void;
+  handleCancelClick: () => void;
+  note: IDecoratedNote;
+  noteDirty: INoteV3;
+  handleNoteContentChange: ChangeEventHandler<HTMLTextAreaElement>;
+  handleNoteLabelsChange: (labels: string[]) => void;
+  currentVersionLink: string;
+  originalVersionLink: string;
+}) =>
+  useMemo(
+    () =>
+      ({
+        active: true,
+        isEditable: true,
+        handleEditClick: () => {},
+        handleSaveClick,
+        handleCancelClick,
+        onEditNote: () => {},
+        isEditing: true,
+        note,
+        noteDirty,
+        handleNoteContentChange,
+        handleNoteLabelsChange,
+        handleSelectNote: () => {},
+
+        noteOriginalVersionShort: "",
+        currentVersionLink,
+        originalVersionLink,
+      }) satisfies ISingleNoteContext,
+    [
+      noteDirty,
+      handleNoteContentChange,
+      handleNoteLabelsChange,
+      note,
+      handleCancelClick,
+      handleSaveClick,
+      currentVersionLink,
+      originalVersionLink,
+    ],
+  );
