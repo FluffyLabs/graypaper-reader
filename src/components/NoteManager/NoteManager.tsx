@@ -117,7 +117,7 @@ function Notes() {
     [],
   );
 
-  const isActiveNotes = notes.some((note) => activeNotes.includes(note));
+  const isActiveNotes = notes.some((note) => activeNotes.has(note));
 
   useEffect(() => {
     if (notesReady) {
