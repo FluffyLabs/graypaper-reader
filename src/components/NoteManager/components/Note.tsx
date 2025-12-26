@@ -1,4 +1,4 @@
-import { Button, cn } from "@fluffylabs/shared-ui";
+import { Button } from "@fluffylabs/shared-ui";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { useVersionContext } from "../../LocationProvider/VersionProvider";
@@ -10,6 +10,7 @@ import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 import type { ISingleNoteContext } from "./NoteContext";
 import { NoteLayout } from "./NoteLayout";
 import { NoteLink } from "./NoteLink";
+import { NoteContainer } from "./SimpleComponents/NoteContainer";
 
 export type NotesItem = {
   location: string; // serialized InDocSelection
@@ -223,14 +224,10 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>
-      <div
+      <NoteContainer
         ref={noteRef}
+        active={active}
         data-testid="notes-manager-card"
-        className={cn(
-          "note rounded-xl p-4 relative",
-          active && "bg-[var(--active-note-bg)] shadow-[0px_4px_0px_1px_var(--active-note-shadow-bg)] mb-1",
-          !active && "bg-[var(--inactive-note-bg)] cursor-pointer",
-        )}
         role={!active ? "button" : undefined}
         tabIndex={!active ? 0 : undefined}
         aria-label={!active ? "Activate label" : ""}
@@ -293,7 +290,7 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
             onOpenChange={handleIsDropdownOpen}
           />
         )}
-      </div>
+      </NoteContainer>
     </NoteLayout.Root>
   );
 }

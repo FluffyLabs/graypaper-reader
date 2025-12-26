@@ -80,11 +80,19 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   // Decorate all local notes.
   useEffect(() => {
+    let isCancelled = false;
+
     setLocalNotesReady(false);
     decorateNotes(localNotes.notes, NoteSource.Local, currentVersion).then((notes) => {
-      setLocalNotesDecorated(notes);
-      setLocalNotesReady(true);
+      if (!isCancelled) {
+        setLocalNotesDecorated(notes);
+        setLocalNotesReady(true);
+      }
     });
+
+    return () => {
+      isCancelled = true;
+    };
   }, [localNotes.notes, currentVersion, decorateNotes]);
 
   // Local and remote notes merged together.
