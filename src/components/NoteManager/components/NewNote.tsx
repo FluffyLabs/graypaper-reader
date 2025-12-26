@@ -1,6 +1,6 @@
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { Button } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, type ChangeEventHandler, useCallback, useMemo, useState } from "react";
+import { type ChangeEvent, type ChangeEventHandler, useCallback, useMemo, useRef, useState } from "react";
 import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { validateMath } from "../../../utils/validateMath";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
@@ -10,14 +10,14 @@ import { NoteLayout } from "./NoteLayout";
 import { NoteContainer } from "./SimpleComponents/NoteContainer";
 
 type NewNoteProps = {
-  selectionStart: ISynctexBlockId;
-  selectionEnd: ISynctexBlockId;
   version: string;
   onCancel: () => void;
   onSave: ({ noteContent, labels }: { noteContent: string; labels: string[] }) => void;
+  selectionStart: ISynctexBlockId;
+  selectionEnd: ISynctexBlockId;
 };
 
-export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSave }: NewNoteProps) => {
+export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEnd }: NewNoteProps) => {
   const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState<string | null>(null);
   const [labels, setLabels] = useState<string[]>(["local"]);
@@ -35,6 +35,10 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
       setNoteContentError(mathValidationError);
       return;
     }
+    if (!noteContent.trim()) {
+      setNoteContentError("Note content cannot be empty");
+      return;
+    }
 
     latestOnSave.current({ noteContent, labels });
   }, [noteContent, latestOnSave, labels]);
@@ -47,7 +51,7 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
     setNoteContentError(null);
   }, []);
 
-  const noteDirty = useDumbDirtyNoteObj({ noteContent, labels, selectionEnd, selectionStart, version });
+  const noteDirty = useDumbDirtyNoteObj({ noteContent, labels, version });
   const note = useDumbNoteObj({ version, selectionStart, selectionEnd });
 
   const noteLayoutContext = useNewNoteLayoutContext({
@@ -59,14 +63,27 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
     handleNoteLabelsChange: setLabels,
     handleSaveClick,
     originalVersionLink,
+    selectionStart,
+    selectionEnd,
   });
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleSelectionChange = () => {
+    console.log("Selection changed");
+    if (textAreaRef.current) {
+      textAreaRef.current.focus();
+      console.log("focus biatch!");
+    }
+  };
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>
       <NoteContainer active={true}>
         <div className="flex flex-col gap-2">
-          <NoteLayout.SelectedText />
+          <NoteLayout.SelectedText onSelectionChanged={handleSelectionChange} />
           <NoteLayout.TextArea
+            ref={textAreaRef}
             className={noteContentError ? "error" : ""}
             placeholder="Add your note for this section..."
           />
@@ -86,6 +103,12 @@ export const NewNote = ({ selectionEnd, selectionStart, version, onCancel, onSav
     </NoteLayout.Root>
   );
 };
+
+const createDumbISyntexBlockId = () =>
+  ({
+    index: 0,
+    pageNumber: 0,
+  }) satisfies ISynctexBlockId;
 
 const useDumbNoteObj = ({
   version,
@@ -115,20 +138,16 @@ const useDumbNoteObj = ({
         },
         source: NoteSource.Local,
       }) satisfies IDecoratedNote,
-    [selectionEnd, selectionStart, version],
+    [version, selectionStart, selectionEnd],
   );
 
 const useDumbDirtyNoteObj = ({
   noteContent,
   labels,
-  selectionEnd,
-  selectionStart,
   version,
 }: {
   noteContent: string;
   labels: string[];
-  selectionEnd: ISynctexBlockId;
-  selectionStart: ISynctexBlockId;
   version: string;
 }) =>
   useMemo(
@@ -139,11 +158,11 @@ const useDumbDirtyNoteObj = ({
         labels,
         date: 0,
         noteVersion: 3,
-        selectionEnd,
-        selectionStart,
+        selectionEnd: createDumbISyntexBlockId(),
+        selectionStart: createDumbISyntexBlockId(),
         version,
       }) satisfies INoteV3,
-    [noteContent, version, selectionStart, selectionEnd, labels],
+    [noteContent, version, labels],
   );
 
 const useNewNoteLayoutContext = ({
@@ -164,6 +183,8 @@ const useNewNoteLayoutContext = ({
   handleNoteLabelsChange: (labels: string[]) => void;
   currentVersionLink: string;
   originalVersionLink: string;
+  selectionStart: ISynctexBlockId;
+  selectionEnd: ISynctexBlockId;
 }) =>
   useMemo(
     () =>
@@ -180,7 +201,6 @@ const useNewNoteLayoutContext = ({
         handleNoteContentChange,
         handleNoteLabelsChange,
         handleSelectNote: () => {},
-
         noteOriginalVersionShort: "",
         currentVersionLink,
         originalVersionLink,

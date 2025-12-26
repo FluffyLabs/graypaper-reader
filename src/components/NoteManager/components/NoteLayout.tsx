@@ -1,5 +1,6 @@
 import type { Textarea } from "@fluffylabs/shared-ui";
-import { type ComponentProps, useContext, useRef } from "react";
+import { type ComponentProps, useContext, useEffect } from "react";
+import { usePrevious } from "../../../hooks/usePrevious";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
 import { noteContext, useNoteContext } from "./NoteContext";
@@ -19,9 +20,16 @@ export const NoteText = () => {
   );
 };
 
-export const SelectedText = () => {
+export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () => void }) => {
   const { selectionString } = useContext(SelectionContext) as ISelectionContext;
   const { note } = useNoteContext();
+  const prevSelectionString = usePrevious(selectionString);
+
+  useEffect(() => {
+    if (prevSelectionString !== selectionString) {
+      onSelectionChanged?.();
+    }
+  }, [prevSelectionString, selectionString, onSelectionChanged]);
 
   return (
     <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
@@ -37,7 +45,6 @@ export const SelectedText = () => {
 
 export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
   const { handleSaveClick, handleCancelClick, noteDirty, handleNoteContentChange } = useNoteContext();
-  const ref = useRef<HTMLTextAreaElement>(null);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && (event.ctrlKey === true || event.metaKey === true)) {
@@ -54,7 +61,6 @@ export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
   return (
     <NoteSimpleTextarea
       {...props}
-      ref={ref}
       autoFocus
       onKeyDown={handleKeyDown}
       value={noteDirty.content}
