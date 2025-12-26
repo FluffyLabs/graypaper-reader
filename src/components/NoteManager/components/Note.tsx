@@ -1,5 +1,5 @@
 import { Button } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
@@ -13,11 +13,12 @@ import { NoteLink } from "./NoteLink";
 import { NoteContainer } from "./SimpleComponents/NoteContainer";
 
 export type NotesItem = {
-  location: string; // serialized InDocSelection
+  location: string;
   content: string;
 };
 
 type NoteProps = {
+  ref?: RefObject<HTMLDivElement | null>;
   note: IDecoratedNote;
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
@@ -25,7 +26,7 @@ type NoteProps = {
   onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 };
 
-export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
+export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
@@ -189,7 +190,8 @@ export function Note({ note, active = false, onEditNote, onDeleteNote, onSelectN
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const mousePositionRef = useRef({ x: 0, y: 0 });
 
-  const noteRef = useRef<HTMLDivElement>(null);
+  const internalNoteRef = useRef<HTMLDivElement>(null);
+  const noteRef = ref ? ref : internalNoteRef;
 
   useEffect(() => {
     if (!isDropdownOpen) return;
