@@ -13,7 +13,7 @@ export const NotesList = ({
   onSelectNote,
 }: {
   notes: IDecoratedNote[];
-  activeNotes: IDecoratedNote[];
+  activeNotes: Set<IDecoratedNote>;
   onEditNote: (noteToReplace: IDecoratedNote, newNote: IStorageNote) => void;
   onDeleteNote: (noteToDelete: IDecoratedNote) => void;
   onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
@@ -21,7 +21,7 @@ export const NotesList = ({
   const noteToScrollToRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activeNotes.length > 0 && noteToScrollToRef.current && !isMostlyVisible(noteToScrollToRef.current)) {
+    if (activeNotes.size > 0 && noteToScrollToRef.current && !isMostlyVisible(noteToScrollToRef.current)) {
       noteToScrollToRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [activeNotes]);
@@ -29,8 +29,8 @@ export const NotesList = ({
   return (
     <>
       {notes.map((note) => {
-        const active = activeNotes.includes(note);
-        const isFirstActive = active && activeNotes[0] === note;
+        const active = activeNotes.has(note);
+        const isFirstActive = active && activeNotes.values().next().value === note;
 
         return (
           <MemoizedNote

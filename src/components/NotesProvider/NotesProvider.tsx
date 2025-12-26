@@ -22,7 +22,7 @@ export interface INotesContext {
   setNotesPinned: (v: boolean) => void;
   notesReady: boolean;
   notes: IDecoratedNote[];
-  activeNotes: IDecoratedNote[];
+  activeNotes: Set<IDecoratedNote>;
   labels: ILabelTreeNode[];
   canUndo: boolean;
   canRedo: boolean;
@@ -42,6 +42,8 @@ export interface INotesContext {
 interface INotesProviderProps {
   children: ReactNode;
 }
+
+const emptyActiveNotes = new Set<IDecoratedNote>();
 
 export function NotesProvider({ children }: INotesProviderProps) {
   const [remoteSources, setRemoteSources] = useState<IRemoteSource[]>([]);
@@ -123,11 +125,14 @@ export function NotesProvider({ children }: INotesProviderProps) {
   }, []);
 
   const activeNotes = useMemo(() => {
-    if (!locationParams || !locationParams.selectionStart || !locationParams.selectionEnd) return [];
+    if (!locationParams || !locationParams.selectionStart || !locationParams.selectionEnd) return emptyActiveNotes;
 
     const { selectionStart, selectionEnd } = locationParams;
 
-    return filteredNotes.filter((note) => areSelectionsEqual(note.current, { selectionStart, selectionEnd }));
+    const activeNotesArray = filteredNotes.filter((note) =>
+      areSelectionsEqual(note.current, { selectionStart, selectionEnd }),
+    );
+    return new Set(activeNotesArray);
   }, [filteredNotes, locationParams]);
 
   const context: INotesContext = {
