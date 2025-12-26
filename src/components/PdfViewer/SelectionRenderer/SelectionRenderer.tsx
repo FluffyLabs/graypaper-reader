@@ -55,12 +55,7 @@ export function SelectionRenderer() {
   }, [selectedBlocks, viewer, lastScrolledTo, retryScrolling, pageOffsets]);
 
   useEffect(() => {
-    if (!selectedBlocks.length) {
-      setSelectionString("");
-    }
-  }, [selectedBlocks, setSelectionString]);
-
-  useEffect(() => {
+    setSelectionString("");
     if (!viewer || !selectedBlocks.length || pageNumber === null || !isCurrentPageTextLayerRendered) {
       return;
     }
