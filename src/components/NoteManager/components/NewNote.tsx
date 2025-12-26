@@ -70,10 +70,8 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSelectionChange = () => {
-    console.log("Selection changed");
     if (textAreaRef.current) {
       textAreaRef.current.focus();
-      console.log("focus biatch!");
     }
   };
 
