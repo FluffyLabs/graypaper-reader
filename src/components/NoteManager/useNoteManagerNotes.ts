@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
@@ -27,6 +27,8 @@ export const useNoteManagerNotes = () => {
   const [notesManagerNotes, setNotesManagerNotes] = useState<INotesMangerNote[]>([]);
   const [sectionTitlesLoaded, setSectionTitlesLoaded] = useState(false);
 
+  const metadataCacheByKey = useRef(new Map<string, INotesMangerNote["metadata"]>());
+
   useEffect(() => {
     let canceled = false;
     if (!notesReady) {
@@ -36,30 +38,46 @@ export const useNoteManagerNotes = () => {
 
     (async () => {
       setSectionTitlesLoaded(false);
-      const results = Promise.all(
-        notes.map((note) =>
-          getSectionTitles(note, {
-            getSectionTitleAtSynctexBlock,
-            getSubsectionTitleAtSynctexBlock,
-          }).then((sectionTitle) => {
-            return [sectionTitle, note] as const;
-          }),
-        ),
-      );
+      const newNotesManagerNotes: INotesMangerNote[] = [];
+
+      const promiseArray: Promise<[INotesMangerNote["metadata"], IDecoratedNote]>[] = [];
 
       const timeStamp = Date.now();
-      const newNotesManagerNotes: INotesMangerNote[] = [];
-      for (const result of await results) {
+
+      for (const maybeNewNote of notes) {
+        const cachedEntry = metadataCacheByKey.current.get(maybeNewNote.key);
+        if (cachedEntry) {
+          promiseArray.push(Promise.resolve([cachedEntry, maybeNewNote]));
+        } else {
+          promiseArray.push(
+            getSectionTitles(maybeNewNote, {
+              getSectionTitleAtSynctexBlock,
+              getSubsectionTitleAtSynctexBlock,
+            }).then((sectionTitle) => {
+              return [sectionTitle, maybeNewNote] as const;
+            }),
+          );
+        }
+      }
+
+      const asyncResults = Promise.all(promiseArray);
+
+      for (const result of await asyncResults) {
         if (canceled) return;
         const [sectionTitles, note] = result;
-        newNotesManagerNotes.push({
+
+        const noteManagerNote = {
           noteObject: note,
           metadata: {
             sectionTitle: sectionTitles.sectionTitle,
             subSectionTitle: sectionTitles.subSectionTitle,
           },
-        });
+          cacheByKey: new Set<string>(notes.map((note) => note.key)),
+        };
+        metadataCacheByKey.current.set(note.key, noteManagerNote.metadata);
+        newNotesManagerNotes.push(noteManagerNote);
       }
+
       const endTimeStamp = Date.now();
       console.log(`getSectionTitles took ${endTimeStamp - timeStamp}ms`);
 

@@ -1,6 +1,5 @@
 import { Badge } from "@fluffylabs/shared-ui";
-import { type MouseEvent, useId } from "react";
-import { Tooltip } from "react-tooltip";
+import type { MouseEvent } from "react";
 import { OutlineLink } from "../../Outline";
 import { useNoteContext } from "./NoteContext";
 
@@ -26,8 +25,8 @@ export function NoteLink() {
 
   const { sectionTitle, subSectionTitle } = sectionTitles;
 
-  const id = useId();
-  console.log("NoteLink", id);
+  // const id = useId();
+  // console.log("NoteLink", id);
 
   return (
     <div className="note-link">
@@ -53,8 +52,6 @@ export function NoteLink() {
         number={`p. ${pageNumber} >`}
         onClick={handleLinkOpen}
       />
-
-      <Tooltip id="note-link" />
     </div>
   );
 }

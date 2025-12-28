@@ -1,5 +1,5 @@
 import type { Textarea } from "@fluffylabs/shared-ui";
-import { type ComponentProps, useContext, useEffect, useId } from "react";
+import { type ComponentProps, useContext, useEffect } from "react";
 import { usePrevious } from "../../../hooks/usePrevious";
 import { NoteContent } from "../../NoteContent/NoteContent";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
@@ -29,9 +29,6 @@ export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () =
       onSelectionChanged?.();
     }
   }, [prevSelectionString, selectionString, onSelectionChanged]);
-
-  const id = useId();
-  console.log("Note text", id);
 
   return (
     <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">

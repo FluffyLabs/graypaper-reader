@@ -57,6 +57,8 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
       return;
     }
 
+    noteDirty.content = content;
+
     onEditNote(note, noteDirty);
     setIsEditing(false);
   }, [note, noteDirty, onEditNote]);
@@ -192,6 +194,15 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const id = useId();
+  console.log({
+    id,
+    isHovered,
+    isFocused,
+    isDropdownOpen,
+  });
+
   const mousePositionRef = useRef({ x: 0, y: 0 });
 
   const internalNoteRef = useRef<HTMLDivElement>(null);
@@ -228,8 +239,16 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
     }
   };
 
-  const id = useId();
-  console.log("Note render", id);
+  useEffect(() => {
+    if (!active) {
+      setIsHovered(false);
+      setIsFocused(false);
+      setIsDropdownOpen(false);
+    }
+  }, [active]);
+
+  // const id = useId();
+  // console.log("Note render", id);
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>

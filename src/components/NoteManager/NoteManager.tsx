@@ -3,6 +3,7 @@ import "./NoteManager.css";
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { cn } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
+import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
@@ -38,13 +39,14 @@ function Notes() {
   } = useNoteManagerNotes();
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
   const keepShowingNewNote = useRef<{ selectionEnd: ISynctexBlockId; selectionStart: ISynctexBlockId }>(undefined);
+  const latestHandleClearSelection = useLatestCallback(handleClearSelection);
 
   const memoizedHandleDeleteNote = useCallback(
     (note: IDecoratedNote) => {
       latestDeleteNote.current(note);
-      handleClearSelection();
+      latestHandleClearSelection.current();
     },
-    [handleClearSelection, latestDeleteNote],
+    [latestHandleClearSelection, latestDeleteNote],
   );
 
   const memoizedHandleUpdateNote = useCallback(
@@ -122,12 +124,12 @@ function Notes() {
 
   const readyAndLoaded = notesReady && sectionTitlesLoaded;
 
-  console.log("state", {
-    readyAndLoaded,
-    notesReady,
-    sectionTitlesLoaded,
-    count: notes.length,
-  });
+  // console.log("state", {
+  //   readyAndLoaded,
+  //   notesReady,
+  //   sectionTitlesLoaded,
+  //   count: notes.length,
+  // });
 
   useEffect(() => {
     if (readyAndLoaded) {
