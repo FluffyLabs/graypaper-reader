@@ -277,7 +277,7 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
         <div className="flex flex-col gap-2">
           {!active && (
             <>
-              <NoteLink />
+              <NoteLink showTooltip={isHovered} />
               <NoteLayout.Text />
             </>
           )}

@@ -33,7 +33,7 @@ export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () =
   return (
     <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
       <div className="flex justify-between gap-1">
-        <NoteLink />
+        <NoteLink showTooltip={true} />
       </div>
       <blockquote className="italic max-h-68 overflow-y-auto" data-testid="selected-text">
         {selectionString}

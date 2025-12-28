@@ -1,9 +1,10 @@
 import { Badge } from "@fluffylabs/shared-ui";
-import type { MouseEvent } from "react";
+import { type MouseEvent, useId } from "react";
+import { Tooltip } from "react-tooltip";
 import { OutlineLink } from "../../Outline";
 import { useNoteContext } from "./NoteContext";
 
-export function NoteLink() {
+export function NoteLink({ showTooltip }: { showTooltip: boolean }) {
   const { note, sectionTitles, noteOriginalVersionShort, currentVersionLink, originalVersionLink, handleSelectNote } =
     useNoteContext();
 
@@ -25,15 +26,15 @@ export function NoteLink() {
 
   const { sectionTitle, subSectionTitle } = sectionTitles;
 
-  // const id = useId();
-  // console.log("NoteLink", id);
+  const id = useId();
+  const tooltipId = `note-link-${id}`;
 
   return (
     <div className="note-link">
       {migrationFlag && (
         <a
           href={`#${originalVersionLink}`}
-          data-tooltip-id="note-link"
+          data-tooltip-id={tooltipId}
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
           className="icon default-link"
@@ -52,6 +53,8 @@ export function NoteLink() {
         number={`p. ${pageNumber} >`}
         onClick={handleLinkOpen}
       />
+
+      {showTooltip && <Tooltip id={tooltipId} />}
     </div>
   );
 }
