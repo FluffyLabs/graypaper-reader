@@ -1,4 +1,4 @@
-import { type ChangeEvent, createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
@@ -11,7 +11,6 @@ export type ISingleNoteContext = {
   handleEditClick: () => void;
   handleSaveClick: () => void;
   handleCancelClick: () => void;
-  handleNoteContentChange: (ev: ChangeEvent<HTMLTextAreaElement>) => void;
   handleNoteLabelsChange: (labels: string[]) => void;
   noteDirty: IStorageNote;
   onEditNote: INotesContext["handleUpdateNote"];
@@ -19,6 +18,7 @@ export type ISingleNoteContext = {
   noteOriginalVersionShort: string | undefined;
   originalVersionLink: string | undefined;
   currentVersionLink: string | undefined;
+  sectionTitles: { sectionTitle: string; subSectionTitle: string };
 };
 
 export const noteContext = createContext<ISingleNoteContext | null>(null);

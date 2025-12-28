@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef } from "react";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
+import type { INotesMangerNote } from "../useNoteManagerNotes";
 import { Note } from "./Note";
 
 const MemoizedNote = memo(Note);
@@ -12,7 +13,7 @@ export const NotesList = ({
   onDeleteNote,
   onSelectNote,
 }: {
-  notes: IDecoratedNote[];
+  notes: INotesMangerNote[];
   activeNotes: Set<IDecoratedNote>;
   onEditNote: (noteToReplace: IDecoratedNote, newNote: IStorageNote) => void;
   onDeleteNote: (noteToDelete: IDecoratedNote) => void;
@@ -29,15 +30,16 @@ export const NotesList = ({
   return (
     <>
       {notes.map((note) => {
-        const active = activeNotes.has(note);
-        const isFirstActive = active && activeNotes.values().next().value === note;
+        const active = activeNotes.has(note.noteObject);
+        const isFirstActive = active && activeNotes.values().next().value === note.noteObject;
 
         return (
           <MemoizedNote
             ref={isFirstActive ? noteToScrollToRef : undefined}
-            key={note.key}
+            key={note.noteObject.key}
             active={active}
-            note={note}
+            note={note.noteObject}
+            sectionTitles={note.metadata}
             onEditNote={onEditNote}
             onDeleteNote={onDeleteNote}
             onSelectNote={onSelectNote}
