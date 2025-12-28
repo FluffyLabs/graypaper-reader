@@ -36,7 +36,7 @@ export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () =
       <div className="flex justify-between gap-1">
         <NoteLink note={note} active={true} />
       </div>
-      <blockquote className="italic" data-testid="selected-text">
+      <blockquote className="italic max-h-68 overflow-y-auto" data-testid="selected-text">
         {selectionString}
       </blockquote>
     </div>
