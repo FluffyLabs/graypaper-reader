@@ -17,8 +17,6 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
     pdfDocument?.getOutline().then((outline) => setOutline(outline));
   }, [pdfDocument]);
 
-  console.log(outline?.[0]);
-
   const section = locationParams.section?.toLowerCase();
 
   useEffect(() => {
