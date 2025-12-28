@@ -42,8 +42,6 @@ export const useNoteManagerNotes = () => {
 
       const promiseArray: Promise<[INotesMangerNote["metadata"], IDecoratedNote]>[] = [];
 
-      const timeStamp = Date.now();
-
       for (const maybeNewNote of notes) {
         const cachedEntry = metadataCacheByKey.current.get(maybeNewNote.key);
         if (cachedEntry) {
@@ -77,9 +75,6 @@ export const useNoteManagerNotes = () => {
         metadataCacheByKey.current.set(note.key, noteManagerNote.metadata);
         newNotesManagerNotes.push(noteManagerNote);
       }
-
-      const endTimeStamp = Date.now();
-      console.log(`getSectionTitles took ${endTimeStamp - timeStamp}ms`);
 
       setSectionTitlesLoaded(true);
       setNotesManagerNotes(newNotesManagerNotes);

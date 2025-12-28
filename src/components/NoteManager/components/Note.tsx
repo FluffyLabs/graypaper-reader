@@ -1,5 +1,5 @@
 import { Button } from "@fluffylabs/shared-ui";
-import { type RefObject, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
@@ -195,14 +195,6 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
   const [isFocused, setIsFocused] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const id = useId();
-  console.log({
-    id,
-    isHovered,
-    isFocused,
-    isDropdownOpen,
-  });
-
   const mousePositionRef = useRef({ x: 0, y: 0 });
 
   const internalNoteRef = useRef<HTMLDivElement>(null);
@@ -246,9 +238,6 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
       setIsDropdownOpen(false);
     }
   }, [active]);
-
-  // const id = useId();
-  // console.log("Note render", id);
 
   return (
     <NoteLayout.Root value={noteLayoutContext}>

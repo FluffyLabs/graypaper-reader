@@ -124,9 +124,6 @@ function Notes() {
 
   const readyAndLoaded = notesReady && sectionTitlesLoaded;
 
-  // console.log("state", {
-  //   readyAndLoaded,
-  //   notesReady,
   //   sectionTitlesLoaded,
   //   count: notes.length,
   // });
