@@ -51,6 +51,7 @@ function Notes() {
 
   const memoizedHandleUpdateNote = useCallback(
     (note: IDecoratedNote, newNote: IStorageNote) => {
+      note.original.content = newNote.content;
       latestUpdateNote.current(note, newNote);
     },
     [latestUpdateNote],
@@ -123,10 +124,6 @@ function Notes() {
   const isActiveNotes = notes.some((note) => activeNotes.has(note.noteObject));
 
   const readyAndLoaded = notesReady && sectionTitlesLoaded;
-
-  //   sectionTitlesLoaded,
-  //   count: notes.length,
-  // });
 
   useEffect(() => {
     if (readyAndLoaded) {
