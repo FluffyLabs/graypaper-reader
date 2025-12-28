@@ -17,7 +17,7 @@ export const useNoteManagerNotes = () => {
     NotesContext,
   ) as INotesContext;
 
-  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock, isSynctexLoaded } = useContext(
     CodeSyncContext,
   ) as ICodeSyncContext;
 
@@ -47,7 +47,7 @@ export const useNoteManagerNotes = () => {
 
   useEffect(() => {
     let canceled = false;
-    if (!notesReady) {
+    if (!notesReady || !isSynctexLoaded) {
       setSectionTitlesLoaded(false);
       return;
     }
@@ -98,7 +98,7 @@ export const useNoteManagerNotes = () => {
     return () => {
       canceled = true;
     };
-  }, [notes, notesReady, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+  }, [notes, notesReady, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock, isSynctexLoaded]);
 
   return {
     notesReady,
