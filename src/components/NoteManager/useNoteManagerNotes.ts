@@ -97,7 +97,6 @@ export const useNoteManagerNotes = () => {
     })();
 
     return () => {
-      console.timeEnd();
       canceled = true;
     };
   }, [notes, notesReady, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
