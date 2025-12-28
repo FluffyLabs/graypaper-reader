@@ -86,7 +86,6 @@ export const useNoteManagerNotes = () => {
             sectionTitle: sectionTitles.sectionTitle,
             subSectionTitle: sectionTitles.subSectionTitle,
           },
-          cacheByKey: new Set<string>(notes.map((note) => note.key)),
         };
         metadataCacheByKey.current.set(note.key, noteManagerNote.metadata);
         newNotesManagerNotes.push(noteManagerNote);
