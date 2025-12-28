@@ -1,8 +1,9 @@
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { Button } from "@fluffylabs/shared-ui";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { validateMath } from "../../../utils/validateMath";
+import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { INoteV3 } from "../../NotesProvider/types/StorageNote";
 import type { ISingleNoteContext } from "./NoteContext";
@@ -156,8 +157,6 @@ const useDumbDirtyNoteObj = ({
     [version, labels],
   );
 
-const sectionTitles = { sectionTitle: "", subSectionTitle: "" };
-
 const useNewNoteLayoutContext = ({
   handleSaveClick,
   handleCancelClick,
@@ -166,6 +165,8 @@ const useNewNoteLayoutContext = ({
   handleNoteLabelsChange,
   currentVersionLink,
   originalVersionLink,
+  selectionEnd,
+  selectionStart,
 }: {
   handleSaveClick: () => void;
   handleCancelClick: () => void;
@@ -176,8 +177,35 @@ const useNewNoteLayoutContext = ({
   originalVersionLink: string;
   selectionStart: ISynctexBlockId;
   selectionEnd: ISynctexBlockId;
-}) =>
-  useMemo(
+}) => {
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
+
+  const [sectionTitles, setSectionTitles] = useState<{ sectionTitle: string; subSectionTitle: string }>({
+    sectionTitle: "",
+    subSectionTitle: "",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (selectionStart && selectionEnd) {
+        const newSectionTitle = (await getSectionTitleAtSynctexBlock(selectionStart)) ?? "";
+        const newSubSectionTitle = (await getSubsectionTitleAtSynctexBlock(selectionStart)) ?? "";
+        if (cancelled) return;
+        setSectionTitles({
+          sectionTitle: newSectionTitle,
+          subSectionTitle: newSubSectionTitle,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectionStart, selectionEnd, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+
+  const context = useMemo(
     () =>
       ({
         active: true,
@@ -204,5 +232,9 @@ const useNewNoteLayoutContext = ({
       handleSaveClick,
       currentVersionLink,
       originalVersionLink,
+      sectionTitles,
     ],
   );
+
+  return context;
+};
