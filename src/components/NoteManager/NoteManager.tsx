@@ -51,6 +51,7 @@ function Notes() {
 
   const memoizedHandleUpdateNote = useCallback(
     (note: IDecoratedNote, newNote: IStorageNote) => {
+      // NOTE(optimistic): intentional mutation for immediate UI feedback; be aware this bypasses immutability
       note.original.content = newNote.content;
       updateNote(note, newNote);
     },
