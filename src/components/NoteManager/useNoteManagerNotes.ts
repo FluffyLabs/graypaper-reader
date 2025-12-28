@@ -120,7 +120,6 @@ async function getSectionTitles(
     getSubsectionTitleAtSynctexBlock,
   }: Pick<ICodeSyncContext, "getSectionTitleAtSynctexBlock" | "getSubsectionTitleAtSynctexBlock">,
 ) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
   const [sectionTitle, subSectionTitle] = await Promise.all([
     getSectionTitleAtSynctexBlock(note.current.selectionStart),
     getSubsectionTitleAtSynctexBlock(note.current.selectionStart),
