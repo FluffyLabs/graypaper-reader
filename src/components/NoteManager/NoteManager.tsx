@@ -5,7 +5,6 @@ import { cn } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { areSelectionsEqual } from "../NotesProvider/utils/areSelectionsEqual";
@@ -13,6 +12,7 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 import { InactiveNoteSkeleton } from "./components/InactiveNoteSkeleton";
 import { NewNote } from "./components/NewNote";
 import { NotesList } from "./components/NotesList";
+import { useNoteManagerNotes } from "./useNoteManagerNotes";
 
 const DEFAULT_AUTHOR = "";
 
@@ -28,29 +28,34 @@ const MemoizedNotesList = memo(NotesList);
 
 function Notes() {
   const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, activeNotes, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
-    NotesContext,
-  ) as INotesContext;
+  const {
+    notesManagerNotes: notes,
+    activeNotes,
+    latestHandleAddNote,
+    sectionTitlesLoaded,
+    notesReady,
+    deleteNote,
+    updateNote,
+  } = useNoteManagerNotes();
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
   const keepShowingNewNote = useRef<{ selectionEnd: ISynctexBlockId; selectionStart: ISynctexBlockId }>(undefined);
-
-  const latestHandleAddNote = useLatestCallback(handleAddNote);
-  const latestDeleteNote = useLatestCallback(handleDeleteNote);
-  const latestUpdateNote = useLatestCallback(handleUpdateNote);
+  const latestHandleClearSelection = useLatestCallback(handleClearSelection);
 
   const memoizedHandleDeleteNote = useCallback(
     (note: IDecoratedNote) => {
-      latestDeleteNote.current(note);
-      handleClearSelection();
+      deleteNote(note);
+      latestHandleClearSelection.current();
     },
-    [handleClearSelection, latestDeleteNote],
+    [latestHandleClearSelection, deleteNote],
   );
 
   const memoizedHandleUpdateNote = useCallback(
     (note: IDecoratedNote, newNote: IStorageNote) => {
-      latestUpdateNote.current(note, newNote);
+      // NOTE(optimistic): intentional mutation for immediate UI feedback; be aware this bypasses immutability
+      note.original.content = newNote.content;
+      updateNote(note, newNote);
     },
-    [latestUpdateNote],
+    [updateNote],
   );
 
   const handleNewNoteCancel = useCallback(() => {
@@ -117,22 +122,24 @@ function Notes() {
     [],
   );
 
-  const isActiveNotes = notes.some((note) => activeNotes.has(note));
+  const isActiveNotes = notes.some((note) => activeNotes.has(note.noteObject));
+
+  const readyAndLoaded = notesReady && sectionTitlesLoaded;
 
   useEffect(() => {
-    if (notesReady) {
+    if (readyAndLoaded) {
       keepShowingNewNote.current = undefined;
     }
-  }, [notesReady]);
+  }, [readyAndLoaded]);
 
   return (
-    <div className={cn("note-manager flex flex-col gap-2.5", !notesReady && "opacity-30 pointer-events-none")}>
+    <div className={cn("note-manager flex flex-col gap-2.5", !readyAndLoaded && "opacity-30 pointer-events-none")}>
       {locationParams.selectionEnd &&
         locationParams.selectionStart &&
         pageNumber !== null &&
         selectedBlocks.length > 0 &&
         !isActiveNotes &&
-        (notesReady || areSelectionsEqual(locationParams, keepShowingNewNote.current)) && (
+        (readyAndLoaded || areSelectionsEqual(locationParams, keepShowingNewNote.current)) && (
           <NewNote
             selectionStart={locationParams.selectionStart}
             selectionEnd={locationParams.selectionEnd}
@@ -142,7 +149,7 @@ function Notes() {
           />
         )}
 
-      {!notesReady && notes.length === 0 && (
+      {!readyAndLoaded && notes.length === 0 && (
         <>
           <InactiveNoteSkeleton />
           <InactiveNoteSkeleton />
@@ -151,7 +158,9 @@ function Notes() {
         </>
       )}
 
-      {notesReady && notes.length === 0 && <div className="no-notes text-sidebar-foreground">No notes available</div>}
+      {readyAndLoaded && notes.length === 0 && (
+        <div className="no-notes text-sidebar-foreground">No notes available</div>
+      )}
 
       {notes.length > 0 && (
         <MemoizedNotesList

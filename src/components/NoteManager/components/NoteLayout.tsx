@@ -22,7 +22,6 @@ export const NoteText = () => {
 
 export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () => void }) => {
   const { selectionString } = useContext(SelectionContext) as ISelectionContext;
-  const { note } = useNoteContext();
   const prevSelectionString = usePrevious(selectionString);
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () =
   return (
     <div className="px-6 py-3 bg-sidebar rounded-md border-brand-primary border flex flex-col gap-1">
       <div className="flex justify-between gap-1">
-        <NoteLink note={note} active={true} />
+        <NoteLink showTooltip={true} />
       </div>
       <blockquote className="italic max-h-68 overflow-y-auto" data-testid="selected-text">
         {selectionString}
@@ -44,7 +43,7 @@ export const SelectedText = ({ onSelectionChanged }: { onSelectionChanged?: () =
 };
 
 export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
-  const { handleSaveClick, handleCancelClick, noteDirty, handleNoteContentChange } = useNoteContext();
+  const { handleSaveClick, handleCancelClick, noteDirty } = useNoteContext();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && (event.ctrlKey === true || event.metaKey === true)) {
@@ -58,15 +57,7 @@ export const NoteTextArea = (props: ComponentProps<typeof Textarea>) => {
     }
   };
 
-  return (
-    <NoteSimpleTextarea
-      {...props}
-      autoFocus
-      onKeyDown={handleKeyDown}
-      value={noteDirty.content}
-      onChange={handleNoteContentChange}
-    />
-  );
+  return <NoteSimpleTextarea {...props} autoFocus onKeyDown={handleKeyDown} defaultValue={noteDirty.content} />;
 };
 
 export const NoteLayout = {

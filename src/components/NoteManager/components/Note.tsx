@@ -1,5 +1,5 @@
 import { Button } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
 import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
@@ -20,14 +20,16 @@ export type NotesItem = {
 type NoteProps = {
   ref?: RefObject<HTMLDivElement | null>;
   note: IDecoratedNote;
+  sectionTitles: { sectionTitle: string; subSectionTitle: string };
   active: boolean;
   onEditNote: INotesContext["handleUpdateNote"];
   onDeleteNote: INotesContext["handleDeleteNote"];
   onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 };
 
-export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
+export function Note({ ref, note, active = false, sectionTitles, onEditNote, onDeleteNote, onSelectNote }: NoteProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [noteDirty, setNoteDirty] = useState<IStorageNote>({
     ...note.original,
@@ -41,13 +43,21 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
   const isEditable = note.source !== NoteSource.Remote;
 
   const handleSaveClick = useCallback(() => {
-    const mathValidationError = validateMath(noteDirty.content);
+    const content = textAreaRef.current?.value ?? "";
+    const mathValidationError = validateMath(content);
     setNoteContentError("");
 
     if (mathValidationError) {
       setNoteContentError(mathValidationError);
       return;
     }
+
+    if (!content.trim()) {
+      setNoteContentError("Note content cannot be empty");
+      return;
+    }
+
+    noteDirty.content = content;
 
     onEditNote(note, noteDirty);
     setIsEditing(false);
@@ -64,10 +74,6 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
 
   const handleNoteLabelsChange = useCallback((labels: string[]) => {
     setNoteDirty((prevNoteDirty) => ({ ...prevNoteDirty, labels }));
-  }, []);
-
-  const handleNoteContentChange = useCallback((ev: ChangeEvent<HTMLTextAreaElement>) => {
-    setNoteDirty((prev) => ({ ...prev, content: ev.currentTarget.value }));
   }, []);
 
   const handleDeleteClick = useCallback(() => {
@@ -159,12 +165,12 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
         onEditNote,
         isEditing,
         noteDirty,
-        handleNoteContentChange,
         handleNoteLabelsChange,
         handleSelectNote: memoizedOnSelectNote,
         noteOriginalVersionShort,
         currentVersionLink,
         originalVersionLink: originalLink,
+        sectionTitles,
       }) satisfies ISingleNoteContext,
     [
       active,
@@ -176,18 +182,19 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
       onEditNote,
       isEditing,
       noteDirty,
-      handleNoteContentChange,
       handleNoteLabelsChange,
       memoizedOnSelectNote,
       noteOriginalVersionShort,
       currentVersionLink,
       originalLink,
+      sectionTitles,
     ],
   );
 
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const mousePositionRef = useRef({ x: 0, y: 0 });
 
   const internalNoteRef = useRef<HTMLDivElement>(null);
@@ -224,6 +231,14 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
     }
   };
 
+  useEffect(() => {
+    if (!active) {
+      setIsHovered(false);
+      setIsFocused(false);
+      setIsDropdownOpen(false);
+    }
+  }, [active]);
+
   return (
     <NoteLayout.Root value={noteLayoutContext}>
       <NoteContainer
@@ -251,7 +266,7 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
         <div className="flex flex-col gap-2">
           {!active && (
             <>
-              <NoteLink note={note} active={false} />
+              <NoteLink showTooltip={isHovered} />
               <NoteLayout.Text />
             </>
           )}
@@ -266,7 +281,7 @@ export function Note({ ref, note, active = false, onEditNote, onDeleteNote, onSe
             <>
               <>
                 <NoteLayout.SelectedText />
-                <NoteLayout.TextArea className={noteContentError ? "error" : ""} />
+                <NoteLayout.TextArea className={noteContentError ? "error" : ""} ref={textAreaRef} />
                 {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
                 <NoteLayout.Labels />
                 <div className="actions gap-2">

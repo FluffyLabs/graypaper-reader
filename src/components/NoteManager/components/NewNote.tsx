@@ -1,8 +1,9 @@
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
 import { Button } from "@fluffylabs/shared-ui";
-import { type ChangeEvent, type ChangeEventHandler, useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { validateMath } from "../../../utils/validateMath";
+import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
 import type { INoteV3 } from "../../NotesProvider/types/StorageNote";
 import type { ISingleNoteContext } from "./NoteContext";
@@ -18,7 +19,6 @@ type NewNoteProps = {
 };
 
 export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEnd }: NewNoteProps) => {
-  const [noteContent, setNoteContent] = useState("");
   const [noteContentError, setNoteContentError] = useState<string | null>(null);
   const [labels, setLabels] = useState<string[]>(["local"]);
 
@@ -30,6 +30,8 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
   }, [latestOnCancel]);
 
   const handleSaveClick = useCallback(() => {
+    const noteContent = textAreaRef.current?.value ?? "";
+
     const mathValidationError = validateMath(noteContent);
     if (mathValidationError) {
       setNoteContentError(mathValidationError);
@@ -41,17 +43,12 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
     }
 
     latestOnSave.current({ noteContent, labels });
-  }, [noteContent, latestOnSave, labels]);
+  }, [latestOnSave, labels]);
 
   const currentVersionLink = "";
   const originalVersionLink = "";
 
-  const handleNoteContentChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
-    setNoteContent(event.target.value);
-    setNoteContentError(null);
-  }, []);
-
-  const noteDirty = useDumbDirtyNoteObj({ noteContent, labels, version });
+  const noteDirty = useDumbDirtyNoteObj({ labels, version });
   const note = useDumbNoteObj({ version, selectionStart, selectionEnd });
 
   const noteLayoutContext = useNewNoteLayoutContext({
@@ -59,7 +56,6 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
     noteDirty,
     currentVersionLink,
     handleCancelClick,
-    handleNoteContentChange,
     handleNoteLabelsChange: setLabels,
     handleSaveClick,
     originalVersionLink,
@@ -140,11 +136,9 @@ const useDumbNoteObj = ({
   );
 
 const useDumbDirtyNoteObj = ({
-  noteContent,
   labels,
   version,
 }: {
-  noteContent: string;
   labels: string[];
   version: string;
 }) =>
@@ -152,7 +146,7 @@ const useDumbDirtyNoteObj = ({
     () =>
       ({
         author: "",
-        content: noteContent,
+        content: "",
         labels,
         date: 0,
         noteVersion: 3,
@@ -160,7 +154,7 @@ const useDumbDirtyNoteObj = ({
         selectionStart: createDumbISyntexBlockId(),
         version,
       }) satisfies INoteV3,
-    [noteContent, version, labels],
+    [version, labels],
   );
 
 const useNewNoteLayoutContext = ({
@@ -168,23 +162,50 @@ const useNewNoteLayoutContext = ({
   handleCancelClick,
   note,
   noteDirty,
-  handleNoteContentChange,
   handleNoteLabelsChange,
   currentVersionLink,
   originalVersionLink,
+  selectionEnd,
+  selectionStart,
 }: {
   handleSaveClick: () => void;
   handleCancelClick: () => void;
   note: IDecoratedNote;
   noteDirty: INoteV3;
-  handleNoteContentChange: ChangeEventHandler<HTMLTextAreaElement>;
   handleNoteLabelsChange: (labels: string[]) => void;
   currentVersionLink: string;
   originalVersionLink: string;
   selectionStart: ISynctexBlockId;
   selectionEnd: ISynctexBlockId;
-}) =>
-  useMemo(
+}) => {
+  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
+    CodeSyncContext,
+  ) as ICodeSyncContext;
+
+  const [sectionTitles, setSectionTitles] = useState<{ sectionTitle: string; subSectionTitle: string }>({
+    sectionTitle: "",
+    subSectionTitle: "",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (selectionStart && selectionEnd) {
+        const newSectionTitle = (await getSectionTitleAtSynctexBlock(selectionStart)) ?? "";
+        const newSubSectionTitle = (await getSubsectionTitleAtSynctexBlock(selectionStart)) ?? "";
+        if (cancelled) return;
+        setSectionTitles({
+          sectionTitle: newSectionTitle,
+          subSectionTitle: newSubSectionTitle,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectionStart, selectionEnd, getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock]);
+
+  const context = useMemo(
     () =>
       ({
         active: true,
@@ -196,21 +217,24 @@ const useNewNoteLayoutContext = ({
         isEditing: true,
         note,
         noteDirty,
-        handleNoteContentChange,
         handleNoteLabelsChange,
         handleSelectNote: () => {},
         noteOriginalVersionShort: "",
         currentVersionLink,
         originalVersionLink,
+        sectionTitles,
       }) satisfies ISingleNoteContext,
     [
       noteDirty,
-      handleNoteContentChange,
       handleNoteLabelsChange,
       note,
       handleCancelClick,
       handleSaveClick,
       currentVersionLink,
       originalVersionLink,
+      sectionTitles,
     ],
   );
+
+  return context;
+};
