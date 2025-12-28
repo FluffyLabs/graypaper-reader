@@ -17,6 +17,8 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
     pdfDocument?.getOutline().then((outline) => setOutline(outline));
   }, [pdfDocument]);
 
+  console.log(outline?.[0]);
+
   const section = locationParams.section?.toLowerCase();
 
   useEffect(() => {
@@ -85,9 +87,12 @@ const OutlineDumb: FC<{
               )}
               {!isSkeleton && (
                 <OutlineLink
-                  href={item.dest?.toString() || "#"}
+                  href={"#"}
                   firstLevel={firstLevel}
-                  onClick={() => onClick(item.dest)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClick(item.dest);
+                  }}
                   title={title}
                   number={firstLevel ? number?.replace(".", " >") : number ?? undefined}
                 />
