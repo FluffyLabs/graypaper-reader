@@ -31,11 +31,11 @@ function Notes() {
   const {
     notesManagerNotes: notes,
     activeNotes,
-    latestDeleteNote,
     latestHandleAddNote,
-    latestUpdateNote,
     sectionTitlesLoaded,
     notesReady,
+    deleteNote,
+    updateNote,
   } = useNoteManagerNotes();
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
   const keepShowingNewNote = useRef<{ selectionEnd: ISynctexBlockId; selectionStart: ISynctexBlockId }>(undefined);
@@ -43,18 +43,18 @@ function Notes() {
 
   const memoizedHandleDeleteNote = useCallback(
     (note: IDecoratedNote) => {
-      latestDeleteNote.current(note);
+      deleteNote(note);
       latestHandleClearSelection.current();
     },
-    [latestHandleClearSelection, latestDeleteNote],
+    [latestHandleClearSelection, deleteNote],
   );
 
   const memoizedHandleUpdateNote = useCallback(
     (note: IDecoratedNote, newNote: IStorageNote) => {
       note.original.content = newNote.content;
-      latestUpdateNote.current(note, newNote);
+      updateNote(note, newNote);
     },
-    [latestUpdateNote],
+    [updateNote],
   );
 
   const handleNewNoteCancel = useCallback(() => {

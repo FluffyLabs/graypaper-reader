@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
@@ -21,13 +21,29 @@ export const useNoteManagerNotes = () => {
     CodeSyncContext,
   ) as ICodeSyncContext;
 
+  const metadataCacheByKey = useRef(new Map<string, INotesMangerNote["metadata"]>());
+
   const latestHandleAddNote = useLatestCallback(handleAddNote);
   const latestDeleteNote = useLatestCallback(handleDeleteNote);
   const latestUpdateNote = useLatestCallback(handleUpdateNote);
+
+  const updateNote = useCallback<INotesContext["handleUpdateNote"]>(
+    (noteToReplace, newNote) => {
+      metadataCacheByKey.current.delete(noteToReplace.key);
+      latestUpdateNote.current(noteToReplace, newNote);
+    },
+    [latestUpdateNote],
+  );
+  const deleteNote = useCallback<INotesContext["handleDeleteNote"]>(
+    (noteToDelete) => {
+      metadataCacheByKey.current.delete(noteToDelete.key);
+      latestDeleteNote.current(noteToDelete);
+    },
+    [latestDeleteNote],
+  );
+
   const [notesManagerNotes, setNotesManagerNotes] = useState<INotesMangerNote[]>([]);
   const [sectionTitlesLoaded, setSectionTitlesLoaded] = useState(false);
-
-  const metadataCacheByKey = useRef(new Map<string, INotesMangerNote["metadata"]>());
 
   useEffect(() => {
     let canceled = false;
@@ -93,8 +109,8 @@ export const useNoteManagerNotes = () => {
     notes,
     notesManagerNotes,
     latestHandleAddNote,
-    latestDeleteNote,
-    latestUpdateNote,
+    deleteNote,
+    updateNote,
   };
 };
 
