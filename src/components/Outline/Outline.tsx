@@ -85,9 +85,12 @@ const OutlineDumb: FC<{
               )}
               {!isSkeleton && (
                 <OutlineLink
-                  href={item.dest?.toString() || "#"}
+                  href={"#"}
                   firstLevel={firstLevel}
-                  onClick={() => onClick(item.dest)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClick(item.dest);
+                  }}
                   title={title}
                   number={firstLevel ? number?.replace(".", " >") : number ?? undefined}
                 />
