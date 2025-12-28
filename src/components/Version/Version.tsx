@@ -17,9 +17,10 @@ export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const versions = Object.values(metadata.versions).filter(({ legacy }) => !legacy);
-  const currentVersionHash = metadata.versions[locationParams.version].hash;
-  const currentVersion = metadata.versions[locationParams.version];
+  const versions = [...Object.values(metadata.versions).filter(({ legacy }) => !legacy), metadata.nightly];
+  const isNightly = locationParams.version === metadata.nightly.hash;
+  const currentVersion = isNightly ? metadata.nightly : metadata.versions[locationParams.version];
+  const currentVersionHash = currentVersion.hash;
   const dropdownContentRef = useRef<HTMLDivElement>(null);
   const currentItemRef = useRef<HTMLDivElement>(null);
 
@@ -45,8 +46,8 @@ export function Version() {
   const getCurrentVersionLabel = () => {
     const date = new Date(currentVersion.date);
     const isLatest = currentVersion.hash === metadata.latest;
-    let label = isLatest ? "Latest" : "v";
-    if (currentVersion.name) {
+    let label = isNightly ? "Nightly" : isLatest ? "Latest" : "v";
+    if (currentVersion.name && !isNightly) {
       label += `: ${currentVersion.name}`;
     }
     return `${label} ${shortHash(currentVersion.hash)} (${date.toLocaleDateString()})`;
@@ -89,7 +90,7 @@ export function Version() {
                 key={version.hash}
                 ref={version.hash === currentVersionHash ? currentItemRef : null}
               >
-                <VersionOption version={version} latest={metadata.latest} />
+                <VersionOption version={version} latest={metadata.latest} nightly={metadata.nightly.hash} />
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -103,18 +104,20 @@ export function Version() {
   );
 }
 
-type VersionOptionProps = { version: IVersionInfo; latest: string };
-function VersionOption({ version, latest }: VersionOptionProps) {
+type VersionOptionProps = { version: IVersionInfo; latest: string; nightly: string };
+function VersionOption({ version, latest, nightly }: VersionOptionProps) {
   const date = new Date(version.date);
-  let latestText = "Latest";
-  let versionText = "v";
-  if (version.name) {
-    latestText += `: ${version.name}`;
-    versionText += `: ${version.name}`;
+  const isNightly = version.hash === nightly;
+  const isLatest = version.hash === latest;
+
+  let label = isNightly ? "Nightly" : isLatest ? "Latest" : "v";
+  if (version.name && !isNightly) {
+    label += `: ${version.name}`;
   }
+
   return (
     <span className="w-full">
-      {version.hash === latest ? latestText : versionText} {shortHash(version.hash)} ({date.toLocaleDateString()})
+      {label} {shortHash(version.hash)} ({date.toLocaleDateString()})
     </span>
   );
 }
