@@ -20,10 +20,18 @@ type NewNoteProps = {
 
 export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEnd }: NewNoteProps) => {
   const [noteContentError, setNoteContentError] = useState<string | null>(null);
+  const [noteLabelsError, setNoteLabelsError] = useState<string | null>(null);
   const [labels, setLabels] = useState<string[]>(["local"]);
 
   const latestOnCancel = useLatestCallback(onCancel);
   const latestOnSave = useLatestCallback(onSave);
+
+  const handleLabelsChange = useCallback((nextLabels: string[]) => {
+    setLabels(nextLabels);
+    if (nextLabels.length > 0) {
+      setNoteLabelsError(null);
+    }
+  }, []);
 
   const handleCancelClick = useCallback(() => {
     latestOnCancel.current();
@@ -31,6 +39,8 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
 
   const handleSaveClick = useCallback(() => {
     const noteContent = textAreaRef.current?.value ?? "";
+    setNoteContentError(null);
+    setNoteLabelsError(null);
 
     const mathValidationError = validateMath(noteContent);
     if (mathValidationError) {
@@ -39,6 +49,10 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
     }
     if (!noteContent.trim()) {
       setNoteContentError("Note content cannot be empty");
+      return;
+    }
+    if (labels.length === 0) {
+      setNoteLabelsError("Select at least one label");
       return;
     }
 
@@ -56,7 +70,7 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
     noteDirty,
     currentVersionLink,
     handleCancelClick,
-    handleNoteLabelsChange: setLabels,
+    handleNoteLabelsChange: handleLabelsChange,
     handleSaveClick,
     originalVersionLink,
     selectionStart,
@@ -83,6 +97,7 @@ export const NewNote = ({ version, onCancel, onSave, selectionStart, selectionEn
           />
           {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
           <NoteLayout.Labels />
+          {noteLabelsError ? <div className="validation-message">{noteLabelsError}</div> : null}
           <div className="actions gap-2">
             <div className="fill" />
             <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
