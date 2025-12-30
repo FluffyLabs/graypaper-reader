@@ -27,10 +27,19 @@ export const useNoteManagerNotes = () => {
   const latestDeleteNote = useLatestCallback(handleDeleteNote);
   const latestUpdateNote = useLatestCallback(handleUpdateNote);
 
+  const addNote = useCallback<INotesContext["handleAddNote"]>(
+    (noteToAdd) => {
+      const { isVisible } = latestHandleAddNote.current(noteToAdd);
+
+      return { isVisible };
+    },
+    [latestHandleAddNote],
+  );
+
   const updateNote = useCallback<INotesContext["handleUpdateNote"]>(
     (noteToReplace, newNote) => {
       metadataCacheByKey.current.delete(noteToReplace.key);
-      latestUpdateNote.current(noteToReplace, newNote);
+      return latestUpdateNote.current(noteToReplace, newNote);
     },
     [latestUpdateNote],
   );
@@ -106,7 +115,7 @@ export const useNoteManagerNotes = () => {
     sectionTitlesLoaded,
     notes,
     notesManagerNotes,
-    latestHandleAddNote,
+    addNote,
     deleteNote,
     updateNote,
   };

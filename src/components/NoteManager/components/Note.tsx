@@ -22,7 +22,7 @@ type NoteProps = {
   note: IDecoratedNote;
   sectionTitles: { sectionTitle: string; subSectionTitle: string };
   active: boolean;
-  onEditNote: INotesContext["handleUpdateNote"];
+  onEditNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
   onDeleteNote: INotesContext["handleDeleteNote"];
   onSelectNote: (note: IDecoratedNote, opts: { type: "currentVersion" | "originalVersion" | "close" }) => void;
 };
