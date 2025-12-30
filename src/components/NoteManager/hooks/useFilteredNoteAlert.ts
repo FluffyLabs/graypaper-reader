@@ -3,18 +3,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const FILTERED_NOTE_ALERT_MS = 6_000;
 
 export const useFilteredNoteAlert = () => {
-  const [noteAlertVisibilityState, setNoteAlertVisibiltyState] = useState<
+  const [noteAlertVisibilityState, setNoteAlertVisibilityState] = useState<
     "hidden" | "visibleForCreated" | "visibleForUpdated"
   >("hidden");
   const alertTimeoutRef = useRef<number | null>(null);
 
   const triggerFilteredNoteAlert = useCallback((type: "visibleForCreated" | "visibleForUpdated") => {
-    setNoteAlertVisibiltyState(type);
+    setNoteAlertVisibilityState(type);
     if (alertTimeoutRef.current) {
       window.clearTimeout(alertTimeoutRef.current);
     }
     alertTimeoutRef.current = window.setTimeout(() => {
-      setNoteAlertVisibiltyState("hidden");
+      setNoteAlertVisibilityState("hidden");
     }, FILTERED_NOTE_ALERT_MS);
   }, []);
 
@@ -27,7 +27,7 @@ export const useFilteredNoteAlert = () => {
   }, []);
 
   const closeNoteAlert = useCallback(() => {
-    setNoteAlertVisibiltyState("hidden");
+    setNoteAlertVisibilityState("hidden");
     if (alertTimeoutRef.current) {
       window.clearTimeout(alertTimeoutRef.current);
     }
