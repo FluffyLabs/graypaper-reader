@@ -28,8 +28,8 @@ export interface INotesContext {
   canRedo: boolean;
   remoteSources: IRemoteSource[];
   handleSetRemoteSources(r: IRemoteSource, remove?: true): void;
-  handleAddNote(note: IStorageNote): void;
-  handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): void;
+  handleAddNote(note: IStorageNote): { isVisible: boolean };
+  handleUpdateNote(noteToReplace: IDecoratedNote, newNote: IStorageNote): { isVisible: boolean };
   handleDeleteNote(note: IDecoratedNote): void;
   handleUndo(): void;
   handleRedo(): void;
@@ -105,7 +105,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const allNotesReady = useMemo(() => localNotesReady && remoteNotesReady, [localNotesReady, remoteNotesReady]);
 
-  const { filteredNotes, labels, toggleLabel: handleToggleLabel } = useLabels(allNotes);
+  const { filteredNotes, labels, toggleLabel: handleToggleLabel, isVisibleByActiveLabelsLatest } = useLabels(allNotes);
 
   const handleSetRemoteSources = useCallback((newSource: IRemoteSource, remove?: true) => {
     setRemoteSources((prevRemoteSources) => {
@@ -148,27 +148,37 @@ export function NotesProvider({ children }: INotesProviderProps) {
     handleSetRemoteSources,
     handleToggleLabel,
     handleAddNote: useCallback(
-      (note) =>
+      (note) => {
+        const isVisible = isVisibleByActiveLabelsLatest.current(note);
+
         updateLocalNotes(localNotes, {
           ...localNotes,
           notes: [note, ...localNotes.notes],
-        }),
-      [localNotes, updateLocalNotes],
+        });
+
+        return { isVisible };
+      },
+      [localNotes, updateLocalNotes, isVisibleByActiveLabelsLatest],
     ),
     handleUpdateNote: useCallback(
       (noteToReplace, newNote) => {
         if (noteToReplace.source === NoteSource.Remote) {
           console.warn("Refusing to edit remote note.", noteToReplace);
-          return;
+          return { isVisible: true };
         }
+
+        const isVisible = isVisibleByActiveLabelsLatest.current(newNote);
+
         const updateIdx = localNotesDecorated.indexOf(noteToReplace);
         const newNotes = localNotes.notes.map((note, idx) => (updateIdx === idx ? newNote : note));
         updateLocalNotes(localNotes, {
           ...localNotes,
           notes: newNotes,
         });
+
+        return { isVisible };
       },
-      [localNotes, localNotesDecorated, updateLocalNotes],
+      [localNotes, localNotesDecorated, updateLocalNotes, isVisibleByActiveLabelsLatest],
     ),
     handleDeleteNote: useCallback(
       (noteToDelete) => {

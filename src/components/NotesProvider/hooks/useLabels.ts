@@ -1,5 +1,6 @@
 import type { UnPrefixedLabel } from "@fluffylabs/links-metadata";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useState } from "react";
+import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
 import { type IDecoratedNote, NoteSource, isDecoratedNote } from "../types/DecoratedNote";
 import type { IStorageNote } from "../types/StorageNote";
@@ -119,6 +120,7 @@ export function useLabels(allNotes: IDecoratedNote[]): {
   filteredNotes: IDecoratedNote[];
   labels: ILabelTreeNode[];
   toggleLabel: (label: ILabelTreeNode) => void;
+  isVisibleByActiveLabelsLatest: RefObject<(note: IDecoratedNote | IStorageNote) => boolean>;
 } {
   const [storageLabels, setStorageLabels] = useState<IStorageLabel[]>([]);
   const [labels, setLabels] = useState<ILabelTreeNode[]>(initialEmptyArray as ILabelTreeNode[]);
@@ -226,12 +228,20 @@ export function useLabels(allNotes: IDecoratedNote[]): {
     });
   }, [allNotes, storageActivity]);
 
+  const activeLabels = useMemo(() => {
+    return labels.filter((label) => label.isActive).map((label) => label.prefixedLabel);
+  }, [labels]);
+
   // filter notes when labels are changing
   const filteredNotes = useMemo(() => {
-    const activeLabels = labels.filter((label) => label.isActive).map((label) => label.prefixedLabel);
     // filter out notes
     return getFilteredNotes(allNotes, activeLabels);
-  }, [allNotes, labels]);
+  }, [allNotes, activeLabels]);
 
-  return { filteredNotes, labels, toggleLabel };
+  const isVisibleByActiveLabelsLatest = useLatestCallback((note: IStorageNote | IDecoratedNote) => {
+    const filteringResult = getFilteredNotes([note], activeLabels);
+    return filteringResult.length > 0;
+  });
+
+  return { filteredNotes, labels, toggleLabel, isVisibleByActiveLabelsLatest };
 }

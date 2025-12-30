@@ -1,5 +1,4 @@
 import { createContext, useContext } from "react";
-import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../../NotesProvider/types/StorageNote";
 
@@ -13,7 +12,7 @@ export type ISingleNoteContext = {
   handleCancelClick: () => void;
   handleNoteLabelsChange: (labels: string[]) => void;
   noteDirty: IStorageNote;
-  onEditNote: INotesContext["handleUpdateNote"];
+  onEditNote: (noteToReplace: IDecoratedNote, newNote: IStorageNote) => void;
   isEditing: boolean;
   noteOriginalVersionShort: string | undefined;
   originalVersionLink: string | undefined;
