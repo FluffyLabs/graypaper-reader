@@ -28,6 +28,9 @@ export const useFilteredNoteAlert = () => {
 
   const closeNoteAlert = useCallback(() => {
     setNoteAlertVisibiltyState("hidden");
+    if (alertTimeoutRef.current) {
+      window.clearTimeout(alertTimeoutRef.current);
+    }
   }, []);
 
   return { noteAlertVisibilityState, triggerFilteredNoteAlert, closeNoteAlert };
