@@ -17,8 +17,11 @@ export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
-  const versions = [...Object.values(metadata.versions).filter(({ legacy }) => !legacy), metadata.nightly];
-  const isNightly = locationParams.version === metadata.nightly.hash;
+  const versions = [
+    ...Object.values(metadata.versions).filter(({ legacy }) => !legacy),
+    ...(metadata.nightly ? [metadata.nightly] : []),
+  ];
+  const isNightly = locationParams.version === metadata.nightly?.hash;
   const currentVersion = isNightly ? metadata.nightly : metadata.versions[locationParams.version];
   const currentVersionHash = currentVersion.hash;
   const dropdownContentRef = useRef<HTMLDivElement>(null);
@@ -90,7 +93,7 @@ export function Version() {
                 key={version.hash}
                 ref={version.hash === currentVersionHash ? currentItemRef : null}
               >
-                <VersionOption version={version} latest={metadata.latest} nightly={metadata.nightly.hash} />
+                <VersionOption version={version} latest={metadata.latest} nightly={metadata.nightly?.hash} />
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -104,7 +107,7 @@ export function Version() {
   );
 }
 
-type VersionOptionProps = { version: IVersionInfo; latest: string; nightly: string };
+type VersionOptionProps = { version: IVersionInfo; latest: string; nightly?: string };
 function VersionOption({ version, latest, nightly }: VersionOptionProps) {
   const date = new Date(version.date);
   const isNightly = version.hash === nightly;

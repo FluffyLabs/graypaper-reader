@@ -13,7 +13,7 @@ export interface IVersionInfo {
 
 export interface IMetadata {
   latest: string;
-  nightly: IVersionInfo;
+  nightly?: IVersionInfo;
   versions: {
     [key: string]: IVersionInfo;
   };
