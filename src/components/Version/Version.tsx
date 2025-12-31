@@ -24,7 +24,7 @@ export function Version() {
   const currentVersion =
     metadata.nightly && locationParams.version === metadata.nightly.hash
       ? metadata.nightly
-      : metadata.versions[locationParams.version];
+      : metadata.versions[locationParams.version] ?? metadata.versions[metadata.latest];
   const currentVersionHash = currentVersion.hash;
   const dropdownContentRef = useRef<HTMLDivElement>(null);
   const currentItemRef = useRef<HTMLDivElement>(null);
