@@ -38,14 +38,14 @@ export const useNoteManagerNotes = () => {
 
   const updateNote = useCallback<INotesContext["handleUpdateNote"]>(
     (noteToReplace, newNote) => {
-      metadataCacheByKey.current.delete(noteToReplace.key);
+      metadataCacheByKey.current.delete(createNoteCacheKey(noteToReplace));
       return latestUpdateNote.current(noteToReplace, newNote);
     },
     [latestUpdateNote],
   );
   const deleteNote = useCallback<INotesContext["handleDeleteNote"]>(
     (noteToDelete) => {
-      metadataCacheByKey.current.delete(noteToDelete.key);
+      metadataCacheByKey.current.delete(createNoteCacheKey(noteToDelete));
       latestDeleteNote.current(noteToDelete);
     },
     [latestDeleteNote],
@@ -68,7 +68,7 @@ export const useNoteManagerNotes = () => {
       const promiseArray: Promise<[INotesMangerNote["metadata"], IDecoratedNote]>[] = [];
 
       for (const maybeNewNote of notes) {
-        const cachedEntry = metadataCacheByKey.current.get(maybeNewNote.key);
+        const cachedEntry = metadataCacheByKey.current.get(createNoteCacheKey(maybeNewNote));
         if (cachedEntry) {
           promiseArray.push(Promise.resolve([cachedEntry, maybeNewNote]));
         } else {
@@ -96,7 +96,7 @@ export const useNoteManagerNotes = () => {
             subSectionTitle: sectionTitles.subSectionTitle,
           },
         };
-        metadataCacheByKey.current.set(note.key, noteManagerNote.metadata);
+        metadataCacheByKey.current.set(createNoteCacheKey(note), noteManagerNote.metadata);
         newNotesManagerNotes.push(noteManagerNote);
       }
 
@@ -138,3 +138,12 @@ async function getSectionTitles(
     subSectionTitle: subSectionTitle ?? "",
   };
 }
+
+const createNoteCacheKey = (note: IDecoratedNote) => {
+  return JSON.stringify({
+    key: note.key,
+    start: note.current.selectionStart,
+    end: note.current.selectionEnd,
+    version: note.current.version,
+  });
+};
