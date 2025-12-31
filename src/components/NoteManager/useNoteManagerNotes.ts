@@ -140,5 +140,10 @@ async function getSectionTitles(
 }
 
 const createNoteCacheKey = (note: IDecoratedNote) => {
-  return `${note.key}-${note.current.selectionStart}-${note.current.selectionEnd}-${note.current.version}`;
+  return JSON.stringify({
+    key: note.key,
+    start: note.current.selectionStart,
+    end: note.current.selectionEnd,
+    version: note.current.version,
+  });
 };
