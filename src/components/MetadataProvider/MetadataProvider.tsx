@@ -1,6 +1,6 @@
 import { type ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const METADATA_HOST = "";
+const METADATA_HOST = "https://gp.fluffylabs.dev";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
 export const LEGACY_READER_HOST = "https://old-graypaper.fluffylabs.dev";
 
