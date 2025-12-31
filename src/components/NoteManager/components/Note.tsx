@@ -36,6 +36,7 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
   });
 
   const [noteContentError, setNoteContentError] = useState("");
+  const [noteLabelsError, setNoteLabelsError] = useState("");
   const { metadata } = useMetadataContext();
   const { version } = useVersionContext();
   const { getHashFromLocationParams } = useGetLocationParamsToHash();
@@ -46,6 +47,7 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
     const content = textAreaRef.current?.value ?? "";
     const mathValidationError = validateMath(content);
     setNoteContentError("");
+    setNoteLabelsError("");
 
     if (mathValidationError) {
       setNoteContentError(mathValidationError);
@@ -54,6 +56,11 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
 
     if (!content.trim()) {
       setNoteContentError("Note content cannot be empty");
+      return;
+    }
+
+    if (noteDirty.labels.length === 0) {
+      setNoteLabelsError("Select at least one label");
       return;
     }
 
@@ -70,10 +77,14 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
     setIsEditing(true);
     setNoteDirty({ ...note.original });
     setNoteContentError("");
+    setNoteLabelsError("");
   }, [note, isEditable]);
 
   const handleNoteLabelsChange = useCallback((labels: string[]) => {
     setNoteDirty((prevNoteDirty) => ({ ...prevNoteDirty, labels }));
+    if (labels.length > 0) {
+      setNoteLabelsError("");
+    }
   }, []);
 
   const handleDeleteClick = useCallback(() => {
@@ -82,6 +93,7 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
 
   const handleCancelClick = useCallback(() => {
     setNoteContentError("");
+    setNoteLabelsError("");
     setIsEditing(false);
   }, []);
 
@@ -284,6 +296,7 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
                 <NoteLayout.TextArea className={noteContentError ? "error" : ""} ref={textAreaRef} />
                 {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
                 <NoteLayout.Labels />
+                {noteLabelsError ? <div className="validation-message">{noteLabelsError}</div> : null}
                 <div className="actions gap-2">
                   <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
                     Delete
