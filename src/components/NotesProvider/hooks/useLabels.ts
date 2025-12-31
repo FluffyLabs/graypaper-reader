@@ -239,6 +239,10 @@ export function useLabels(allNotes: IDecoratedNote[]): {
   }, [allNotes, activeLabels]);
 
   const isVisibleByActiveLabelsLatest = useLatestCallback((note: IStorageNote | IDecoratedNote) => {
+    if (labels.length === 0) {
+      return true;
+    }
+
     const filteringResult = getFilteredNotes([note], activeLabels);
     return filteringResult.length > 0;
   });
