@@ -80,7 +80,8 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
     const fullVersion =
       selectedVersion.length > 0
-        ? Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX]))
+        ? Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ??
+          (metadata.nightly?.hash.startsWith(rawParams[VERSION_SEGMENT_INDEX]) ? metadata.nightly.hash : null)
         : null;
 
     if (!fullVersion) {

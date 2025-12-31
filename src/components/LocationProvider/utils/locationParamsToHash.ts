@@ -14,7 +14,9 @@ export const locationParamsToHash = (params: ILocationParams, metadata: IMetadat
     ? fullVersion.substring(0, SHORT_COMMIT_HASH_LENGTH)
     : metadata.versions[metadata.latest]?.hash.substring(0, SHORT_COMMIT_HASH_LENGTH) ?? "";
   const versionName =
-    (fullVersion ? metadata.versions[fullVersion]?.name : metadata.versions[metadata.latest]?.name) ?? "";
+    (fullVersion
+      ? metadata.versions[fullVersion]?.name ?? (fullVersion === metadata.nightly?.hash ? "nightly" : null)
+      : metadata.versions[metadata.latest]?.name) ?? "";
 
   const stringifiedParams = [];
 
