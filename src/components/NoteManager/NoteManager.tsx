@@ -1,11 +1,10 @@
 import { memo, useCallback, useContext, useEffect, useRef } from "react";
 import "./NoteManager.css";
 import type { ISynctexBlockId } from "@fluffylabs/links-metadata";
-import { cn } from "@fluffylabs/shared-ui";
+import { Alert, Button, cn } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { useLatestCallback } from "../../hooks/useLatestCallback";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { type INotesContext, NotesContext } from "../NotesProvider/NotesProvider";
 import type { IDecoratedNote } from "../NotesProvider/types/DecoratedNote";
 import type { IStorageNote } from "../NotesProvider/types/StorageNote";
 import { areSelectionsEqual } from "../NotesProvider/utils/areSelectionsEqual";
@@ -13,6 +12,8 @@ import { type ISelectionContext, SelectionContext } from "../SelectionProvider/S
 import { InactiveNoteSkeleton } from "./components/InactiveNoteSkeleton";
 import { NewNote } from "./components/NewNote";
 import { NotesList } from "./components/NotesList";
+import { useFilteredNoteAlert } from "./hooks/useFilteredNoteAlert";
+import { useNoteManagerNotes } from "./useNoteManagerNotes";
 
 const DEFAULT_AUTHOR = "";
 
@@ -28,29 +29,40 @@ const MemoizedNotesList = memo(NotesList);
 
 function Notes() {
   const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
-  const { notesReady, activeNotes, notes, handleAddNote, handleDeleteNote, handleUpdateNote } = useContext(
-    NotesContext,
-  ) as INotesContext;
+  const {
+    notesManagerNotes: notes,
+    activeNotes,
+    addNote,
+    sectionTitlesLoaded,
+    notesReady,
+    deleteNote,
+    updateNote,
+  } = useNoteManagerNotes();
   const { selectedBlocks, pageNumber, handleClearSelection } = useContext(SelectionContext) as ISelectionContext;
   const keepShowingNewNote = useRef<{ selectionEnd: ISynctexBlockId; selectionStart: ISynctexBlockId }>(undefined);
-
-  const latestHandleAddNote = useLatestCallback(handleAddNote);
-  const latestDeleteNote = useLatestCallback(handleDeleteNote);
-  const latestUpdateNote = useLatestCallback(handleUpdateNote);
+  const latestHandleClearSelection = useLatestCallback(handleClearSelection);
+  const { noteAlertVisibilityState, triggerFilteredNoteAlert, closeNoteAlert } = useFilteredNoteAlert();
 
   const memoizedHandleDeleteNote = useCallback(
     (note: IDecoratedNote) => {
-      latestDeleteNote.current(note);
-      handleClearSelection();
+      deleteNote(note);
+      latestHandleClearSelection.current();
     },
-    [handleClearSelection, latestDeleteNote],
+    [latestHandleClearSelection, deleteNote],
   );
 
   const memoizedHandleUpdateNote = useCallback(
     (note: IDecoratedNote, newNote: IStorageNote) => {
-      latestUpdateNote.current(note, newNote);
+      // NOTE(optimistic): intentional mutation for immediate UI feedback; be aware this bypasses immutability
+      note.original.content = newNote.content;
+      note.original.labels = newNote.labels;
+      const { isVisible } = updateNote(note, newNote);
+      if (!isVisible) {
+        handleClearSelection();
+        triggerFilteredNoteAlert("visibleForUpdated");
+      }
     },
-    [latestUpdateNote],
+    [updateNote, handleClearSelection, triggerFilteredNoteAlert],
   );
 
   const handleNewNoteCancel = useCallback(() => {
@@ -79,13 +91,19 @@ function Notes() {
         labels,
       };
 
-      latestHandleAddNote.current(newNote);
+      const { isVisible } = addNote(newNote);
+
+      if (!isVisible) {
+        triggerFilteredNoteAlert("visibleForCreated");
+        handleClearSelection();
+      }
+
       keepShowingNewNote.current = {
         selectionStart: locationParams.selectionStart,
         selectionEnd: locationParams.selectionEnd,
       };
     },
-    [pageNumber, selectedBlocks, locationParams, latestHandleAddNote],
+    [pageNumber, selectedBlocks, locationParams, addNote, handleClearSelection, triggerFilteredNoteAlert],
   );
 
   const locationRef = useRef({ locationParams, setLocationParams });
@@ -117,51 +135,76 @@ function Notes() {
     [],
   );
 
-  const isActiveNotes = notes.some((note) => activeNotes.has(note));
+  const isActiveNotes = notes.some((note) => activeNotes.has(note.noteObject));
+
+  const readyAndLoaded = notesReady && sectionTitlesLoaded;
 
   useEffect(() => {
-    if (notesReady) {
+    if (readyAndLoaded) {
       keepShowingNewNote.current = undefined;
     }
-  }, [notesReady]);
+  }, [readyAndLoaded]);
 
   return (
-    <div className={cn("note-manager flex flex-col gap-2.5", !notesReady && "opacity-30 pointer-events-none")}>
-      {locationParams.selectionEnd &&
-        locationParams.selectionStart &&
-        pageNumber !== null &&
-        selectedBlocks.length > 0 &&
-        !isActiveNotes &&
-        (notesReady || areSelectionsEqual(locationParams, keepShowingNewNote.current)) && (
-          <NewNote
-            selectionStart={locationParams.selectionStart}
-            selectionEnd={locationParams.selectionEnd}
-            version={locationParams.version}
-            onCancel={handleNewNoteCancel}
-            onSave={handleAddNoteClick}
-          />
+    <>
+      {noteAlertVisibilityState !== "hidden" && (
+        <Alert intent="warning">
+          <Alert.Title>
+            {noteAlertVisibilityState === "visibleForUpdated"
+              ? "Note hidden after update"
+              : "Note hidden by label filter"}
+          </Alert.Title>
+          <div className="flex gap-4">
+            <Alert.Text>
+              {noteAlertVisibilityState === "visibleForUpdated"
+                ? "Updated note doesn't match active labels."
+                : "Created note doesn't match active labels."}
+            </Alert.Text>
+            <Button variant="secondary" intent="warning" size="sm" className="self-end" onClick={closeNoteAlert}>
+              Close
+            </Button>
+          </div>
+        </Alert>
+      )}
+      <div className={cn("note-manager flex flex-col gap-2.5", !readyAndLoaded && "opacity-30 pointer-events-none")}>
+        {locationParams.selectionEnd &&
+          locationParams.selectionStart &&
+          pageNumber !== null &&
+          selectedBlocks.length > 0 &&
+          !isActiveNotes &&
+          (readyAndLoaded || areSelectionsEqual(locationParams, keepShowingNewNote.current)) && (
+            <NewNote
+              selectionStart={locationParams.selectionStart}
+              selectionEnd={locationParams.selectionEnd}
+              version={locationParams.version}
+              onCancel={handleNewNoteCancel}
+              onSave={handleAddNoteClick}
+            />
+          )}
+
+        {!readyAndLoaded && notes.length === 0 && (
+          <>
+            <InactiveNoteSkeleton />
+            <InactiveNoteSkeleton />
+            <InactiveNoteSkeleton />
+            <InactiveNoteSkeleton />
+          </>
         )}
 
-      {!notesReady && notes.length === 0 && (
-        <>
-          <InactiveNoteSkeleton />
-          <InactiveNoteSkeleton />
-          <InactiveNoteSkeleton />
-          <InactiveNoteSkeleton />
-        </>
-      )}
+        {readyAndLoaded && notes.length === 0 && (
+          <div className="no-notes text-sidebar-foreground">No notes available</div>
+        )}
 
-      {notesReady && notes.length === 0 && <div className="no-notes text-sidebar-foreground">No notes available</div>}
-
-      {notes.length > 0 && (
-        <MemoizedNotesList
-          activeNotes={activeNotes}
-          notes={notes}
-          onEditNote={memoizedHandleUpdateNote}
-          onDeleteNote={memoizedHandleDeleteNote}
-          onSelectNote={memoizedHandleSelectNote}
-        />
-      )}
-    </div>
+        {notes.length > 0 && (
+          <MemoizedNotesList
+            activeNotes={activeNotes}
+            notes={notes}
+            onEditNote={memoizedHandleUpdateNote}
+            onDeleteNote={memoizedHandleDeleteNote}
+            onSelectNote={memoizedHandleSelectNote}
+          />
+        )}
+      </div>
+    </>
   );
 }

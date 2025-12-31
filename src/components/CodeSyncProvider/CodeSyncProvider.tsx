@@ -19,6 +19,7 @@ export interface ICodeSyncContext {
     sourceVersion: string,
     targetVersion: string,
   ): Promise<ISelectionParams | null>;
+  isSynctexLoaded: boolean;
 }
 
 const BLOCK_MATCHING_TOLERANCE_AS_FRACTION_OF_PAGE_WIDTH = 0.00375;
@@ -196,6 +197,8 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
     [synctexStore, texStore],
   );
 
+  const isSynctexLoaded = !!synctexData;
+
   const context = useMemo(
     () => ({
       getSynctexBlockAtLocation,
@@ -204,6 +207,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       getSectionTitleAtSynctexBlock,
       getSubsectionTitleAtSynctexBlock,
       migrateSelection,
+      isSynctexLoaded,
     }),
     [
       getSynctexBlockAtLocation,
@@ -212,6 +216,7 @@ export function CodeSyncProvider({ children }: PropsWithChildren) {
       getSectionTitleAtSynctexBlock,
       getSubsectionTitleAtSynctexBlock,
       migrateSelection,
+      isSynctexLoaded,
     ],
   );
 

@@ -1,45 +1,18 @@
 import { Badge } from "@fluffylabs/shared-ui";
-import { type MouseEvent, useContext, useEffect, useState } from "react";
+import { type MouseEvent, useId } from "react";
 import { Tooltip } from "react-tooltip";
-import { CodeSyncContext, type ICodeSyncContext } from "../../CodeSyncProvider/CodeSyncProvider";
-import type { IDecoratedNote } from "../../NotesProvider/types/DecoratedNote";
 import { OutlineLink } from "../../Outline";
 import { useNoteContext } from "./NoteContext";
 
-type NoteLinkProps = {
-  note: IDecoratedNote;
-  active?: boolean;
-};
-
-export function NoteLink({ note }: NoteLinkProps) {
-  const [sectionTitle, setTitle] = useState({
-    section: "",
-    subSection: "" as string | null,
-  });
-
-  const { getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock } = useContext(
-    CodeSyncContext,
-  ) as ICodeSyncContext;
-
-  const { noteOriginalVersionShort, currentVersionLink, originalVersionLink, handleSelectNote } = useNoteContext();
+export function NoteLink({ showTooltip }: { showTooltip: boolean }) {
+  const { note, sectionTitles, noteOriginalVersionShort, currentVersionLink, originalVersionLink, handleSelectNote } =
+    useNoteContext();
 
   const migrationFlag = !note.current.isUpToDate;
 
   const {
     selectionStart: { pageNumber },
   } = note.current;
-
-  useEffect(() => {
-    (async () => {
-      const section = getSectionTitleAtSynctexBlock(note.current.selectionStart);
-      const subSection = getSubsectionTitleAtSynctexBlock(note.current.selectionStart);
-
-      setTitle({
-        section: (await section) ?? "[no section]",
-        subSection: await subSection,
-      });
-    })();
-  }, [getSectionTitleAtSynctexBlock, getSubsectionTitleAtSynctexBlock, note]);
 
   const handleMigrationLinkOpen = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -51,13 +24,17 @@ export function NoteLink({ note }: NoteLinkProps) {
     handleSelectNote();
   };
 
-  const { section, subSection } = sectionTitle;
+  const { sectionTitle, subSectionTitle } = sectionTitles;
+
+  const id = useId();
+  const tooltipId = `note-link-${id}`;
+
   return (
     <div className="note-link">
       {migrationFlag && (
         <a
           href={`#${originalVersionLink}`}
-          data-tooltip-id="note-link"
+          data-tooltip-id={tooltipId}
           data-tooltip-content="This note was created in a different version. Click here to see in original context."
           data-tooltip-place="top"
           className="icon default-link"
@@ -72,12 +49,12 @@ export function NoteLink({ note }: NoteLinkProps) {
       <OutlineLink
         href={`#${currentVersionLink}`}
         firstLevel
-        title={subSection ? `${section} > ${subSection}` : section}
+        title={subSectionTitle ? `${sectionTitle} > ${subSectionTitle}` : sectionTitle ?? ""}
         number={`p. ${pageNumber} >`}
         onClick={handleLinkOpen}
       />
 
-      <Tooltip id="note-link" />
+      {showTooltip && <Tooltip id={tooltipId} />}
     </div>
   );
 }
