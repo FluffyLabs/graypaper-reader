@@ -21,8 +21,10 @@ export function Version() {
     ...Object.values(metadata.versions).filter(({ legacy }) => !legacy),
     ...(metadata.nightly ? [metadata.nightly] : []),
   ];
-  const isNightly = locationParams.version === metadata.nightly?.hash;
-  const currentVersion = isNightly ? metadata.nightly : metadata.versions[locationParams.version];
+  const currentVersion =
+    metadata.nightly && locationParams.version === metadata.nightly.hash
+      ? metadata.nightly
+      : metadata.versions[locationParams.version];
   const currentVersionHash = currentVersion.hash;
   const dropdownContentRef = useRef<HTMLDivElement>(null);
   const currentItemRef = useRef<HTMLDivElement>(null);
@@ -46,15 +48,7 @@ export function Version() {
     [setLocationParams, locationParams, migrateSelection],
   );
 
-  const getCurrentVersionLabel = () => {
-    const date = new Date(currentVersion.date);
-    const isLatest = currentVersion.hash === metadata.latest;
-    let label = isNightly ? "Nightly" : isLatest ? "Latest" : "v";
-    if (currentVersion.name && !isNightly) {
-      label += `: ${currentVersion.name}`;
-    }
-    return `${label} ${shortHash(currentVersion.hash)} (${date.toLocaleDateString()})`;
-  };
+  const getCurrentVersionLabel = () => getVersionLabel(currentVersion, metadata.latest, metadata.nightly?.hash);
 
   const handleOpenChange = (open: boolean) => {
     if (open) {
@@ -109,6 +103,10 @@ export function Version() {
 
 type VersionOptionProps = { version: IVersionInfo; latest: string; nightly?: string };
 function VersionOption({ version, latest, nightly }: VersionOptionProps) {
+  return <span className="w-full">{getVersionLabel(version, latest, nightly)}</span>;
+}
+
+function getVersionLabel(version: IVersionInfo, latest: string, nightly?: string) {
   const date = new Date(version.date);
   const isNightly = version.hash === nightly;
   const isLatest = version.hash === latest;
@@ -118,11 +116,7 @@ function VersionOption({ version, latest, nightly }: VersionOptionProps) {
     label += `: ${version.name}`;
   }
 
-  return (
-    <span className="w-full">
-      {label} {shortHash(version.hash)} ({date.toLocaleDateString()})
-    </span>
-  );
+  return `${label} ${shortHash(version.hash)} (${date.toLocaleDateString()})`;
 }
 
 function shortHash(h: string) {
