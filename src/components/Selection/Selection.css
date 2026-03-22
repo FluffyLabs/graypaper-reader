@@ -29,7 +29,7 @@
 .selection small {
   box-sizing: border-box;
   display: block;
-  font-family: monospace;
+  font-family: Inconsolata, monospace;
   margin-bottom: 1rem;
   overflow: hidden;
   padding: 0.2rem 0.3rem 0;
