@@ -4,7 +4,6 @@
     "includes": [
       "**",
       "!**/dist",
-      "!**/graypaper-archive",
       "!**/public",
       "!**/tools/matrix-bot/output/messages.json",
       "!**/tools/snapshot-tests/playwright-report"
