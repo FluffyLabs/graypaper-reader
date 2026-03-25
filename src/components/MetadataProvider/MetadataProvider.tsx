@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 
 const METADATA_HOST = "https://gp.fluffylabs.dev";
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;

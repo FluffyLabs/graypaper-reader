@@ -3,7 +3,6 @@
   height: 100svh;
 }
 
-
 .viewer {
   box-sizing: border-box;
   height: 100%;
@@ -58,14 +57,11 @@
 }
 
 .ReactModal__Overlay {
-  background: light-dark(
-    rgba(255, 255, 255, 0.5),
-    rgba(32, 32, 32, 0.75)
-  ) !important;
+  background: light-dark(rgba(255, 255, 255, 0.5), rgba(32, 32, 32, 0.75));
 }
 
 .ReactModal__Content {
-  background: var(--sidebar) !important;
+  background: var(--sidebar);
   /* border-color: light-dark(rgba(204, 204, 204), #111) !important; */
-  border-color: light-dark(rgba(204, 204, 204), #666) !important;
+  border-color: light-dark(rgba(204, 204, 204), #666);
 }

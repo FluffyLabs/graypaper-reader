@@ -1,44 +1,57 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
   "files": {
-    "ignore": [
-      "dist/**",
-      "graypaper-archive/**",
-      "public/**",
-      "tools/matrix-bot/output/messages.json",
-      "tools/snapshot-tests/playwright-report/**"
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/graypaper-archive",
+      "!**/public",
+      "!**/tools/matrix-bot/output/messages.json",
+      "!**/tools/snapshot-tests/playwright-report"
     ]
   },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
-    "ignore": [],
+    "includes": ["**"],
     "attributePosition": "auto",
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 120,
     "lineEnding": "lf"
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "javascript": {
     "formatter": {}
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "style": {
-        "useShorthandArrayType": "error"
+        "useConsistentArrayType": { "level": "error", "options": { "syntax": "shorthand" } }
       },
       "correctness": {
-        "noUnusedImports": "error"
+        "noUnusedImports": "error",
+        "noUnusedFunctionParameters": "off",
+        "useParseIntRadix": "off"
+      },
+      "suspicious": {
+        "useIterableCallbackReturn": "off"
       },
       "a11y": {
         "noAutofocus": "off",
         "useButtonType": "off",
-        "useValidAnchor": "off"
+        "useValidAnchor": "off",
+        "noStaticElementInteractions": "off",
+        "noLabelWithoutControl": "off",
+        "useGenericFontNames": "off",
+        "useFocusableInteractive": "off"
       }
     }
   }

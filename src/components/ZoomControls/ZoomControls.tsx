@@ -32,6 +32,6 @@ export function ZoomControls() {
 }
 
 function calcScale(current: number, change: number): string {
-  const scale = Number.parseInt(`${current * 100 + change * 100}`) / 100;
+  const scale = Number.parseInt(`${current * 100 + change * 100}`, 10) / 100;
   return Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale)).toString();
 }

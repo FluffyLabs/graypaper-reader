@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { LABEL_LOCAL } from "../consts/labels";
 import type { IStorageNote } from "../types/StorageNote";
-import { type INoteV2, exportNotesAsJson, importNotesFromJson } from "./notesImportExport";
+import { exportNotesAsJson, type INoteV2, importNotesFromJson } from "./notesImportExport";
 
 const exampleNotes: IStorageNote[] = [
   {

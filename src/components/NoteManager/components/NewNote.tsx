@@ -123,7 +123,11 @@ const useDumbNoteObj = ({
   version,
   selectionStart,
   selectionEnd,
-}: { version: string; selectionStart: ISynctexBlockId; selectionEnd: ISynctexBlockId }) =>
+}: {
+  version: string;
+  selectionStart: ISynctexBlockId;
+  selectionEnd: ISynctexBlockId;
+}) =>
   useMemo(
     () =>
       ({
@@ -150,13 +154,7 @@ const useDumbNoteObj = ({
     [version, selectionStart, selectionEnd],
   );
 
-const useDumbDirtyNoteObj = ({
-  labels,
-  version,
-}: {
-  labels: string[];
-  version: string;
-}) =>
+const useDumbDirtyNoteObj = ({ labels, version }: { labels: string[]; version: string }) =>
   useMemo(
     () =>
       ({

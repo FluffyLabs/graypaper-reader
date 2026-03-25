@@ -1,5 +1,5 @@
 import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
-import { type ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import { useGetLocationParamsToHash } from "./hooks/useGetLocationParamsToHash";
@@ -80,8 +80,8 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
     const fullVersion =
       selectedVersion.length > 0
-        ? Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ??
-          (metadata.nightly?.hash.startsWith(rawParams[VERSION_SEGMENT_INDEX]) ? metadata.nightly.hash : null)
+        ? (Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ??
+          (metadata.nightly?.hash.startsWith(rawParams[VERSION_SEGMENT_INDEX]) ? metadata.nightly.hash : null))
         : null;
 
     if (!fullVersion) {

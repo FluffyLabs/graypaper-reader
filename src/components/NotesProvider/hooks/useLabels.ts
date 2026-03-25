@@ -2,7 +2,7 @@ import type { UnPrefixedLabel } from "@fluffylabs/links-metadata";
 import { type RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { useLatestCallback } from "../../../hooks/useLatestCallback";
 import { LABEL_LOCAL, LABEL_REMOTE } from "../consts/labels";
-import { type IDecoratedNote, NoteSource, isDecoratedNote } from "../types/DecoratedNote";
+import { type IDecoratedNote, isDecoratedNote, NoteSource } from "../types/DecoratedNote";
 import type { IStorageNote } from "../types/StorageNote";
 import { loadFromLocalStorage, saveToLocalStorage } from "../utils/labelsLocalStorage";
 

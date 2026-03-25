@@ -1,7 +1,7 @@
 import { Header as FluffyHeader, useBreakpoint } from "@fluffylabs/shared-ui";
 import type React from "react";
-import { Version } from "../Version";
 import toolLogoUrl from "./../../assets/tool-logo.svg";
+import { Version } from "../Version";
 import { NotesButtonsGroup } from "./components";
 
 export const Header: React.FC = () => {

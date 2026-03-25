@@ -9,8 +9,8 @@ import {
 import { type FC, Fragment, useCallback, useContext, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { Label } from "../Label/Label";
-import { NotesContext } from "../NotesProvider/NotesProvider";
 import type { ILabelTreeNode } from "../NotesProvider/hooks/useLabels";
+import { NotesContext } from "../NotesProvider/NotesProvider";
 
 export type LabelsFilterProps = {
   labels: ILabelTreeNode[];

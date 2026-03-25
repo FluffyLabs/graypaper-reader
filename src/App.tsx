@@ -22,34 +22,32 @@ export function App() {
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
 
   return (
-    <>
-      <CodeSyncProvider>
-        <NotesProvider>
-          <PdfProvider pdfUrl={urlGetters.pdf(version)}>
-            <SelectionProvider>
-              <div>
-                <Header />
-                <Resizable
-                  left={
-                    <div className="h-full w-full flex flex-row items-stretch justify-center">
-                      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
-                      <Content>
-                        <PdfViewer />
-                      </Content>
-                      <div className="controls">
-                        <LightThemeToggle />
-                        <DownloadPdfWithTheme />
-                        <ZoomControls />
-                      </div>
+    <CodeSyncProvider>
+      <NotesProvider>
+        <PdfProvider pdfUrl={urlGetters.pdf(version)}>
+          <SelectionProvider>
+            <div>
+              <Header />
+              <Resizable
+                left={
+                  <div className="h-full w-full flex flex-row items-stretch justify-center">
+                    <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
+                    <Content>
+                      <PdfViewer />
+                    </Content>
+                    <div className="controls">
+                      <LightThemeToggle />
+                      <DownloadPdfWithTheme />
+                      <ZoomControls />
                     </div>
-                  }
-                  right={<Sidebar />}
-                />
-              </div>
-            </SelectionProvider>
-          </PdfProvider>
-        </NotesProvider>
-      </CodeSyncProvider>
-    </>
+                  </div>
+                }
+                right={<Sidebar />}
+              />
+            </div>
+          </SelectionProvider>
+        </PdfProvider>
+      </NotesProvider>
+    </CodeSyncProvider>
   );
 }

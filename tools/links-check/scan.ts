@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { SynctexStore, TexStore, findLinks, parseAndMigrateLink } from "@fluffylabs/links-metadata";
 import type { Metadata } from "@fluffylabs/links-metadata";
-import { type FileReport, type Path, type Report, printFileReport } from "./report";
+import { findLinks, parseAndMigrateLink, SynctexStore, TexStore } from "@fluffylabs/links-metadata";
+import { type FileReport, type Path, printFileReport, type Report } from "./report";
 
 class Timer {
   data = new Map();

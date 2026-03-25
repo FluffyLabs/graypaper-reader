@@ -2,8 +2,8 @@ import "./Outline.css";
 import { type FC, memo, useCallback, useContext, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
-import { PdfContext } from "../PdfProvider/PdfProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import { PdfContext } from "../PdfProvider/PdfProvider";
 import { OutlineLink } from "./OutlineLink";
 import { OutlineLinkSkeleton, outlineForSkeleton } from "./Skeleton";
 import type { TOutlineComplete, TOutlineSingleSlim } from "./types";
@@ -92,7 +92,7 @@ const OutlineDumb: FC<{
                     onClick(item.dest);
                   }}
                   title={title}
-                  number={firstLevel ? number?.replace(".", " >") : number ?? undefined}
+                  number={firstLevel ? number?.replace(".", " >") : (number ?? undefined)}
                 />
               )}
               {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
