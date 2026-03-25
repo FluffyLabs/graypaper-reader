@@ -50,6 +50,7 @@ jobs:
       - name: Run visual regression tests
         run: |
           docker run --rm \
+            -v ${{ github.workspace }}/tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests \
             -v ${{ github.workspace }}/tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results \
             -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
             -e CI=true \
