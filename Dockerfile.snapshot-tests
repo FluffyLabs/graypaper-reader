@@ -39,9 +39,6 @@ RUN cd tools/snapshot-tests && npx playwright install chromium
 # ============================================
 FROM main-dependencies AS builder
 
-COPY .git ./.git
-COPY .gitmodules ./
-
 COPY scripts ./scripts/
 
 COPY shared/links-metadata ./shared/links-metadata/
