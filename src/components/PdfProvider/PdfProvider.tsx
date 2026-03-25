@@ -1,8 +1,8 @@
 import { jsPDF } from "jspdf";
 import * as pdfJs from "pdfjs-dist";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
-import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Dispatch, MutableRefObject, ReactNode, RefObject, SetStateAction } from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { subtractBorder } from "../../utils/subtractBorder";
 import { useTextLayerRendered } from "./hooks/useTextLayerRendered";
 
@@ -118,6 +118,7 @@ async function renderPageWithTheme(page: pdfJs.PDFPageProxy, theme: ITheme, scal
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     const renderContext = {
+      canvas: canvas,
       canvasContext: context,
       viewport: viewport,
     };

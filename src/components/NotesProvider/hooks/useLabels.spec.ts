@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { type IStorageLabel, buildLabelTree } from "./useLabels";
+import { buildLabelTree, type IStorageLabel } from "./useLabels";
 
 const exampleLabels1: IStorageLabel[] = [
   {

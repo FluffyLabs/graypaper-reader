@@ -1,11 +1,11 @@
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  cn,
 } from "@fluffylabs/shared-ui";
 import { type MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react";
 import { useNoteContext } from "./NoteContext";
@@ -16,7 +16,11 @@ export const NoteDropdown = ({
   buttonClassName,
   onDelete,
   onOpenChange,
-}: { buttonClassName?: string; onDelete?: () => void; onOpenChange?: (open: boolean) => void }) => {
+}: {
+  buttonClassName?: string;
+  onDelete?: () => void;
+  onOpenChange?: (open: boolean) => void;
+}) => {
   const {
     active,
     handleSelectNote,

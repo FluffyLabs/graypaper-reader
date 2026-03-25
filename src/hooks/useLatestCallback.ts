@@ -1,6 +1,6 @@
 import { type RefObject, useRef } from "react";
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: generic callback type requires any
 export function useLatestCallback<T extends (...args: any[]) => any>(callback: T): RefObject<T> {
   const ref = useRef(callback);
   ref.current = callback;

@@ -1,10 +1,10 @@
-import { type Input, Popover, PopoverContent, cn } from "@fluffylabs/shared-ui";
+import { cn, type Input, Popover, PopoverContent } from "@fluffylabs/shared-ui";
 import { PopoverAnchor } from "@radix-ui/react-popover";
 import { CircleX } from "lucide-react";
 import { type ComponentProps, useContext, useMemo, useRef, useState } from "react";
 import { Label } from "../../Label/Label";
-import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { prefixLabel } from "../../NotesProvider/hooks/useLabels";
+import { type INotesContext, NotesContext } from "../../NotesProvider/NotesProvider";
 import { useNoteContext } from "./NoteContext";
 import { NoteSimpleInput, TinyIconButton } from "./SimpleComponents";
 
@@ -103,7 +103,7 @@ const NoteInputWithDropdown = (props: NoteInputProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInBackspace, setIsInBackspace] = useState(false);
-  const inBackspaceTimeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const inBackspaceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {

@@ -8,5 +8,5 @@
 }
 .highlighter-trigger:hover {
   transition: opacity 200ms ease-in-out;
-  opacity: 1.0 !important;
+  opacity: 1;
 }

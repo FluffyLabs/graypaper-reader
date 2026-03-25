@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import { MessagesLogger } from "./logger";
 import { listenToMessages } from "./server";
+
 dotenv.config();
 
 const homeserverUrl = "https://matrix.org";

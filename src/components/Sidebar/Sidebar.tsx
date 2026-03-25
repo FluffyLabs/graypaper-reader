@@ -47,7 +47,7 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="sidebar bg-sidebar">
+    <div className="gp-sidebar bg-sidebar">
       <div className="content mt-2">
         <Tabs tabs={tabs} activeTab={tab} switchTab={setTab} alwaysRender />
       </div>

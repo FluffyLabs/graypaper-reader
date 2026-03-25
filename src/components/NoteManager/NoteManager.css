@@ -1,14 +1,13 @@
-.note-manager{
+.note-manager {
   --inactive-note-bg: #ebebeb;
   --active-note-bg: #d8e8e7;
   --active-note-shadow-bg: #c8d9d8;
 }
 
-.dark .note-manager{
+.dark .note-manager {
   --inactive-note-bg: #444;
-  --active-note-bg: #3A4949;
-  --active-note-shadow-bg: #4A6565;
-
+  --active-note-bg: #3a4949;
+  --active-note-shadow-bg: #4a6565;
 }
 
 .notes-wrapper {
@@ -23,7 +22,6 @@
   overflow-x: hidden;
 }
 
-
 .note-manager .validation-message {
   padding-bottom: 10px;
   color: #f22;
@@ -32,8 +30,6 @@
 .note-manager textarea.error {
   border: 1px solid #f22;
 }
-
-
 
 .note-manager .icon {
   margin-right: 3px;

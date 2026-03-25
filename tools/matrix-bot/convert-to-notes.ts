@@ -1,6 +1,6 @@
 import fs, { readFileSync } from "node:fs";
 import path from "node:path";
-import type { INoteV3, INotesEnvelopeV3, Metadata } from "@fluffylabs/links-metadata";
+import type { INotesEnvelopeV3, INoteV3, Metadata } from "@fluffylabs/links-metadata";
 import { fetchMetadata, findLinkToLatestVersion } from "@fluffylabs/links-metadata";
 
 /**

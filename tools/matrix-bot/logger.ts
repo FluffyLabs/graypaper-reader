@@ -44,7 +44,7 @@ export class MessagesLogger {
     // read previous log file
     try {
       messages = JSON.parse(readFileSync(path.resolve(outputFilename), "utf-8"));
-    } catch (e) {}
+    } catch (_e) {}
 
     // append the new message and save.
     messages.push(newMessage);

@@ -1,4 +1,4 @@
-import type { INoteV3, INotesEnvelopeV3, Link } from "@fluffylabs/links-metadata";
+import type { INotesEnvelopeV3, INoteV3, Link } from "@fluffylabs/links-metadata";
 import type { Report } from "./report";
 
 export function generateNotes(report: Report, label?: string): INotesEnvelopeV3 {

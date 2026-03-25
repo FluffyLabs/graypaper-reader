@@ -17,11 +17,11 @@
   min-width: fit-content;
 }
 
-.pdfViewer .page{
+.pdfViewer .page {
   background-color: #101010;
 }
 
-.pdfViewer.light .page{
+.pdfViewer.light .page {
   filter: invert(1) contrast(1.6);
 }
 
@@ -29,7 +29,7 @@
   filter: invert(1);
 }
 
-.pdfViewer .page.loading::after{
+.pdfViewer .page.loading::after {
   background-color: inherit;
 }
 
@@ -40,23 +40,27 @@
   z-index: 1;
 }
 
+.pdfViewer .textLayer ::selection {
+  background: rgba(0, 50, 255, 0.25);
+}
+
 .pdfViewer.gray .textLayer ::selection,
 .pdfViewer.light .textLayer ::selection {
   background: rgba(255, 155, 50, 0.25);
 }
 
-.pdfViewer .textLayer ::selection {
-  background: rgba(0, 50, 255, 0.25);
-}
-
-.pdfViewer .textLayer .endOfContent, .pdfViewer .textLayer br{
+.pdfViewer .textLayer .endOfContent,
+.pdfViewer .textLayer br {
   pointer-events: none;
 }
 
 .pdf-viewer-root {
-  position: absolute
+  position: absolute;
 }
 
-.pdf-viewer-root, .pdf-viewer-root *, .pdf-viewer-root :after, .pdf-viewer-root :before {
+.pdf-viewer-root,
+.pdf-viewer-root *,
+.pdf-viewer-root :after,
+.pdf-viewer-root :before {
   box-sizing: initial;
 }

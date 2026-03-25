@@ -1,11 +1,11 @@
 import type { ISynctexBlock, ISynctexBlockId } from "@fluffylabs/links-metadata";
 import {
+  createContext,
   type Dispatch,
   type MouseEventHandler,
   type MutableRefObject,
   type ReactNode,
   type SetStateAction,
-  createContext,
   useCallback,
   useContext,
   useEffect,
@@ -83,7 +83,7 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     }
 
     const pageRect = subtractBorder(pageElement.getBoundingClientRect(), pageElement);
-    const pageNumber = Number.parseInt(pageElement.dataset.pageNumber || "");
+    const pageNumber = Number.parseInt(pageElement.dataset.pageNumber || "", 10);
     const synctexBlocks = [];
 
     for (const rect of selection.getRangeAt(0).getClientRects()) {

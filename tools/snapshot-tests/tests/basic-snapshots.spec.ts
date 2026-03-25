@@ -1,4 +1,4 @@
-import { type BrowserContext, type Page, expect, test } from "@playwright/test";
+import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";

@@ -1,4 +1,4 @@
-import { DropdownMenuItem, cn } from "@fluffylabs/shared-ui";
+import { cn, DropdownMenuItem } from "@fluffylabs/shared-ui";
 import { type MouseEventHandler, type PropsWithChildren, type ReactNode, useEffect, useRef, useState } from "react";
 
 export const TwoStepDropdownMenuItem = ({

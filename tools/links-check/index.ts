@@ -1,12 +1,12 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { type Metadata, fetchMetadata } from "@fluffylabs/links-metadata";
+import { fetchMetadata, type Metadata } from "@fluffylabs/links-metadata";
 import { program } from "commander";
 import fastGlob from "fast-glob";
 import ignore from "ignore";
 import { performMigrations } from "./migrate";
 import { generateNotes } from "./notes";
-import { type Report, printReport } from "./report";
+import { printReport, type Report } from "./report";
 import { scan } from "./scan";
 
 const TIME_GLOB = "resolving glob patterns";

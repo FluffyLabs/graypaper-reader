@@ -1,7 +1,7 @@
 import { Button } from "@fluffylabs/shared-ui";
 import { Slot } from "@radix-ui/react-slot";
-import React, { useEffect } from "react";
 import type { FC, ReactNode } from "react";
+import React, { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type Tab = {
@@ -68,16 +68,16 @@ const useContainerWidth = () => {
 };
 
 export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallbackTreshold = 220 }: TabsProps) {
-  if (tabs.length === 0) {
-    return null;
-  }
-
   const contextValue = React.useMemo(
     () => ({ activeTab, shortNameFallbackTreshold }),
     [activeTab, shortNameFallbackTreshold],
   );
 
   const activeTabIdx = tabs.map((t) => t.name).indexOf(activeTab);
+
+  if (tabs.length === 0) {
+    return null;
+  }
 
   return (
     <tabsContext.Provider value={contextValue}>

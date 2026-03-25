@@ -1,9 +1,9 @@
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./PdfViewer.css";
 import * as pdfJsViewer from "pdfjs-dist/web/pdf_viewer.mjs";
-import { type WheelEventHandler, useCallback, useContext, useEffect, useState } from "react";
-import { PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
+import { useCallback, useContext, useEffect, useState, type WheelEventHandler } from "react";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
+import { PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../SelectionProvider/SelectionProvider";
 import { NoteRenderer } from "./NoteRenderer/NoteRenderer";
 import { SelectionRenderer } from "./SelectionRenderer/SelectionRenderer";

@@ -1,8 +1,8 @@
 import { Button } from "@fluffylabs/shared-ui";
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { validateMath } from "../../../utils/validateMath";
-import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useGetLocationParamsToHash } from "../../LocationProvider/hooks/useGetLocationParamsToHash";
+import { useVersionContext } from "../../LocationProvider/VersionProvider";
 import { useMetadataContext } from "../../MetadataProvider/MetadataProvider";
 import type { INotesContext } from "../../NotesProvider/NotesProvider";
 import { type IDecoratedNote, NoteSource } from "../../NotesProvider/types/DecoratedNote";
@@ -291,25 +291,23 @@ export function Note({ ref, note, active = false, sectionTitles, onEditNote, onD
           )}
           {active && isEditing && (
             <>
-              <>
-                <NoteLayout.SelectedText />
-                <NoteLayout.TextArea className={noteContentError ? "error" : ""} ref={textAreaRef} />
-                {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
-                <NoteLayout.Labels />
-                {noteLabelsError ? <div className="validation-message">{noteLabelsError}</div> : null}
-                <div className="actions gap-2">
-                  <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
-                    Delete
-                  </Button>
-                  <div className="fill" />
-                  <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
-                    Cancel
-                  </Button>
-                  <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
-                    Save
-                  </Button>
-                </div>
-              </>
+              <NoteLayout.SelectedText />
+              <NoteLayout.TextArea className={noteContentError ? "error" : ""} ref={textAreaRef} />
+              {noteContentError ? <div className="validation-message">{noteContentError}</div> : null}
+              <NoteLayout.Labels />
+              {noteLabelsError ? <div className="validation-message">{noteLabelsError}</div> : null}
+              <div className="actions gap-2">
+                <Button variant="ghost" intent="destructive" size="sm" onClick={handleDeleteClick}>
+                  Delete
+                </Button>
+                <div className="fill" />
+                <Button variant="tertiary" data-testid={"cancel-button"} onClick={handleCancelClick} size="sm">
+                  Cancel
+                </Button>
+                <Button data-testid={"save-button"} onClick={handleSaveClick} size="sm">
+                  Save
+                </Button>
+              </div>
             </>
           )}
         </div>

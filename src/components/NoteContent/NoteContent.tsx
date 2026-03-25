@@ -21,7 +21,7 @@ export const NoteContent: React.FC<NoteContentProps> = ({ content }) => {
 function renderMath(content: string): string {
   try {
     return renderMathToString(content);
-  } catch (e) {
+  } catch (_e) {
     return content;
   }
 }

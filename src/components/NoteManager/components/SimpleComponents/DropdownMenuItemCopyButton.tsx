@@ -7,7 +7,11 @@ export const DropdownMenuItemCopyButton = ({
   href,
   onCopyComplete,
   onCopyInitiated,
-}: { href: string; onCopyComplete: () => void; onCopyInitiated: () => void }) => {
+}: {
+  href: string;
+  onCopyComplete: () => void;
+  onCopyInitiated: () => void;
+}) => {
   const [secondaryState, setSecondaryState] = useState<"success" | "error" | undefined>(undefined);
   const onCopyCompleteRef = useRef(onCopyComplete);
   onCopyCompleteRef.current = onCopyComplete;

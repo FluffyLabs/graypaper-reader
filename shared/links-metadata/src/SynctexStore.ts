@@ -14,10 +14,10 @@ export class SynctexStore {
 
       return {
         filePathsByFileId: new Map(
-          Object.entries(json.files).map(([fileId, filePath]) => [Number.parseInt(fileId), filePath]),
+          Object.entries(json.files).map(([fileId, filePath]) => [Number.parseInt(fileId, 10), filePath]),
         ),
         blocksByPage: new Map(
-          Object.entries(json.pages).map(([pageNumber, blocks]) => [Number.parseInt(pageNumber), blocks]),
+          Object.entries(json.pages).map(([pageNumber, blocks]) => [Number.parseInt(pageNumber, 10), blocks]),
         ),
         blocksByFileIdAndLine: Object.values(json.pages).reduce((acc, blocksInPage) => {
           for (const block of blocksInPage) {

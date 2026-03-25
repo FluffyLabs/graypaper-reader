@@ -1,7 +1,7 @@
-import type { SynctexStore } from "./SynctexStore";
-import type { TexStore } from "./TexStore";
 import { type Metadata, ORIGIN, shortVersionId } from "./metadata";
 import { migrateSelection } from "./migrate";
+import type { SynctexStore } from "./SynctexStore";
+import type { TexStore } from "./TexStore";
 import type { ISelectionParams, ISynctexBlockId } from "./types";
 
 export type Link = {

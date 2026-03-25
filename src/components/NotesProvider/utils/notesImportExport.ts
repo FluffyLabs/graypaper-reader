@@ -1,5 +1,5 @@
 import type { ISelectionParams, UnPrefixedLabel } from "@fluffylabs/links-metadata";
-import type { INoteV3, INotesEnvelope } from "../types/StorageNote";
+import type { INotesEnvelope, INoteV3 } from "../types/StorageNote";
 
 /** Download given string as a JSON file. */
 function downloadJsonFile(strNotes: string, fileName: string) {

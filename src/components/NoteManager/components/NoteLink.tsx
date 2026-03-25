@@ -49,7 +49,7 @@ export function NoteLink({ showTooltip }: { showTooltip: boolean }) {
       <OutlineLink
         href={`#${currentVersionLink}`}
         firstLevel
-        title={subSectionTitle ? `${sectionTitle} > ${subSectionTitle}` : sectionTitle ?? ""}
+        title={subSectionTitle ? `${sectionTitle} > ${subSectionTitle}` : (sectionTitle ?? "")}
         number={`p. ${pageNumber} >`}
         onClick={handleLinkOpen}
       />
