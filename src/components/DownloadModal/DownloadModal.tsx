@@ -94,7 +94,9 @@ export function DownloadModal() {
                 <Button variant="secondary" className="w-full" onClick={handleGeneratePdf} disabled={isProcessing}>
                   {isProcessing ? "⏳ Processing..." : `🎨 Generate PDF (${generateTheme})`}
                 </Button>
-                <p className="text-xs opacity-60">Re-renders all pages with selected theme. May take a couple of minutes.</p>
+                <p className="text-xs opacity-60">
+                  Re-renders all pages with selected theme. May take a couple of minutes.
+                </p>
               </div>
             </div>
           </DialogModal.Body>
