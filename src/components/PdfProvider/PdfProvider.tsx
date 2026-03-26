@@ -32,7 +32,7 @@ export interface IPdfContext extends IPdfServices {
   setTheme: Dispatch<SetStateAction<ITheme>>;
   visiblePages: number[];
   pageOffsets: RefObject<DOMRect[]>;
-  downloadPdfWithTheme: () => void;
+  downloadPdfWithTheme: (filename: string, themeOverride?: ITheme) => void;
   textLayerRenderedRef: RefObject<number[]>;
 }
 
@@ -222,12 +222,15 @@ export function PdfProvider({ pdfUrl, children }: IPdfProviderProps) {
     setVisiblePages,
   });
 
-  const downloadPdfWithTheme = useCallback(async () => {
-    if (services.pdfDocument) {
-      const doc = await createPdfWithTheme(services.pdfDocument, theme, PDF_RESOLUTION);
-      doc.save(`graypaper-${theme}-theme.pdf`);
-    }
-  }, [services.pdfDocument, theme]);
+  const downloadPdfWithTheme = useCallback(
+    async (filename: string, themeOverride?: ITheme) => {
+      if (services.pdfDocument) {
+        const doc = await createPdfWithTheme(services.pdfDocument, themeOverride ?? theme, PDF_RESOLUTION);
+        doc.save(filename);
+      }
+    },
+    [services.pdfDocument, theme],
+  );
 
   const context = useMemo(
     () => ({

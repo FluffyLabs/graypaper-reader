@@ -3,7 +3,7 @@ import "./App.css";
 
 import { AppsSidebar, Content } from "@fluffylabs/shared-ui";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
-import { DownloadPdfWithTheme } from "./components/DownloadThemedPdf/DownloadThemedPdf";
+import { DownloadModal } from "./components/DownloadModal/DownloadModal";
 import { Header } from "./components/Header/Header";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { useVersionContext } from "./components/LocationProvider/VersionProvider";
@@ -37,7 +37,7 @@ export function App() {
                     </Content>
                     <div className="controls">
                       <LightThemeToggle />
-                      <DownloadPdfWithTheme />
+                      <DownloadModal />
                       <ZoomControls />
                     </div>
                   </div>

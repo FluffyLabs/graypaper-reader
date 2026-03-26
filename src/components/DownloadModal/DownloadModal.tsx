@@ -1,0 +1,110 @@
+import { Button, DialogModal } from "@fluffylabs/shared-ui";
+import { useContext, useState } from "react";
+import { Tooltip } from "react-tooltip";
+import { useVersionContext } from "../LocationProvider/VersionProvider";
+import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
+import { type IPdfContext, type ITheme, PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
+
+export function DownloadModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { version } = useVersionContext();
+  const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
+  const { downloadPdfWithTheme } = useContext(PdfContext) as IPdfContext;
+  const [generateTheme, setGenerateTheme] = useState<ITheme>("dark");
+
+  const shortVersion = version.substring(0, 7);
+
+  const handleGeneratePdf = async () => {
+    setIsProcessing(true);
+    try {
+      await downloadPdfWithTheme(`graypaper-${shortVersion}-${generateTheme}-theme.pdf`, generateTheme);
+    } finally {
+      setIsProcessing(false);
+      setIsOpen(false);
+    }
+  };
+
+  const fetchAndSave = async (url: string, filename: string) => {
+    setIsProcessing(true);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(blobUrl);
+    } finally {
+      setIsProcessing(false);
+      setIsOpen(false);
+    }
+  };
+
+  const handleDownloadDarkPdf = () => {
+    fetchAndSave(urlGetters.pdf(version), `graypaper-${shortVersion}.pdf`);
+  };
+
+  const handleDownloadMarkdown = () => {
+    fetchAndSave(urlGetters.md(version), `graypaper-${shortVersion}.md`);
+  };
+
+  return (
+    <div>
+      <button
+        data-tooltip-id="download"
+        data-tooltip-content="Download"
+        data-tooltip-place="right"
+        onClick={() => setIsOpen(true)}
+        className="default-button download-pdf-with-theme"
+      >
+        ⬇️
+      </button>
+      <Tooltip id="download" />
+      <DialogModal open={isOpen}>
+        <DialogModal.Content className="max-w-sm">
+          <DialogModal.Title>Download</DialogModal.Title>
+          <DialogModal.Body>
+            <div className="flex flex-col gap-3">
+              <Button variant="secondary" className="w-full" onClick={handleDownloadMarkdown} disabled={isProcessing}>
+                📝 Download Markdown
+              </Button>
+              <Button variant="secondary" className="w-full" onClick={handleDownloadDarkPdf} disabled={isProcessing}>
+                ⬇️ Download PDF (dark)
+              </Button>
+              <hr className="border-current opacity-20" />
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs opacity-60">Theme:</label>
+                  <div className="flex gap-1">
+                    {themesOrder.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setGenerateTheme(t)}
+                        className={`text-xs px-2 py-1 rounded border ${
+                          generateTheme === t ? "border-current opacity-100" : "border-transparent opacity-50"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Button variant="secondary" className="w-full" onClick={handleGeneratePdf} disabled={isProcessing}>
+                  {isProcessing ? "⏳ Processing..." : `🎨 Generate PDF (${generateTheme})`}
+                </Button>
+                <p className="text-xs opacity-60">Re-renders all pages with selected theme. May take a couple of minutes.</p>
+              </div>
+            </div>
+          </DialogModal.Body>
+          <DialogModal.Footer>
+            <Button variant="tertiary" onClick={() => setIsOpen(false)}>
+              Close
+            </Button>
+          </DialogModal.Footer>
+        </DialogModal.Content>
+      </DialogModal>
+    </div>
+  );
+}

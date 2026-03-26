@@ -23,6 +23,7 @@ export interface IMetadataContext {
   metadata: IMetadata;
   urlGetters: {
     pdf: (version: string) => string;
+    md: (version: string) => string;
     synctex: (version: string) => string;
     texDirectory: (version: string) => string;
     legacyReaderRedirect: (hash: string) => string;
@@ -65,6 +66,7 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
       metadata,
       urlGetters: {
         pdf: (version) => `${METADATA_HOST}/graypaper-${version}.pdf`,
+        md: (version) => `${METADATA_HOST}/graypaper-${version}.md`,
         synctex: (version) => `${METADATA_HOST}/graypaper-${version}.synctex.json`,
         texDirectory: (version) => `${METADATA_HOST}/tex-${version}`,
         legacyReaderRedirect: (hash) => `${LEGACY_READER_HOST}/${hash}`,
