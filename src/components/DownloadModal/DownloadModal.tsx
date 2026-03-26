@@ -1,6 +1,7 @@
 import { Button, DialogModal } from "@fluffylabs/shared-ui";
 import { useContext, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import { SHORT_COMMIT_HASH_LENGTH } from "../LocationProvider/utils/constants";
 import { useVersionContext } from "../LocationProvider/VersionProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import { type IPdfContext, type ITheme, PdfContext, themesOrder } from "../PdfProvider/PdfProvider";
@@ -8,27 +9,35 @@ import { type IPdfContext, type ITheme, PdfContext, themesOrder } from "../PdfPr
 export function DownloadModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string>();
   const { version } = useVersionContext();
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
   const { downloadPdfWithTheme } = useContext(PdfContext) as IPdfContext;
   const [generateTheme, setGenerateTheme] = useState<ITheme>("dark");
 
-  const shortVersion = version.substring(0, 7);
+  const shortVersion = version.substring(0, SHORT_COMMIT_HASH_LENGTH);
 
   const handleGeneratePdf = async () => {
     setIsProcessing(true);
+    setError(undefined);
     try {
       await downloadPdfWithTheme(`graypaper-${shortVersion}-${generateTheme}-theme.pdf`, generateTheme);
+      setIsOpen(false);
+    } catch {
+      setError("Failed to generate PDF. Please try again.");
     } finally {
       setIsProcessing(false);
-      setIsOpen(false);
     }
   };
 
   const fetchAndSave = async (url: string, filename: string) => {
     setIsProcessing(true);
+    setError(undefined);
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -36,9 +45,11 @@ export function DownloadModal() {
       link.download = filename;
       link.click();
       URL.revokeObjectURL(blobUrl);
+      setIsOpen(false);
+    } catch {
+      setError(`Failed to download ${filename}. The file may not be available for this version.`);
     } finally {
       setIsProcessing(false);
-      setIsOpen(false);
     }
   };
 
@@ -56,7 +67,10 @@ export function DownloadModal() {
         data-tooltip-id="download"
         data-tooltip-content="Download"
         data-tooltip-place="right"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setError(undefined);
+          setIsOpen(true);
+        }}
         className="default-button download-pdf-with-theme"
       >
         ⬇️
@@ -100,6 +114,7 @@ export function DownloadModal() {
               </div>
             </div>
           </DialogModal.Body>
+          {error && <p className="text-xs text-red-400 px-6 pb-2">{error}</p>}
           <DialogModal.Footer>
             <Button variant="tertiary" onClick={() => setIsOpen(false)}>
               Close
