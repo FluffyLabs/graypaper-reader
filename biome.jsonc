@@ -6,7 +6,8 @@
       "!**/dist",
       "!**/public",
       "!**/tools/matrix-bot/output/messages.json",
-      "!**/tools/snapshot-tests/playwright-report"
+      "!**/tools/snapshot-tests/playwright-report",
+      "!**/graypaper-archive"
     ]
   },
   "formatter": {
