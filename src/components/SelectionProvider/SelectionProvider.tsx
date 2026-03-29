@@ -30,13 +30,15 @@ export interface ISelectionContext {
 
 interface ISelectionProviderProps {
   children: ReactNode;
+  /** When true, selection is local-only: doesn't read from or write to URL */
+  isolated?: boolean;
 }
 
 export const SelectionContext = createContext<ISelectionContext | null>(null);
 
 // todo: solve the problem of multi-page selections
 
-export function SelectionProvider({ children }: ISelectionProviderProps) {
+export function SelectionProvider({ children, isolated = false }: ISelectionProviderProps) {
   const { locationParams, setLocationParams, synctexBlocksToSelectionParams } = useContext(
     LocationContext,
   ) as ILocationContext;
@@ -126,11 +128,12 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
   );
 
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
+    if (isolated) return [];
     if (stableSelectionStart && stableSelectionEnd) {
       return getSynctexBlockRange(stableSelectionStart, stableSelectionEnd);
     }
     return [];
-  }, [getSynctexBlockRange, stableSelectionStart, stableSelectionEnd]);
+  }, [isolated, getSynctexBlockRange, stableSelectionStart, stableSelectionEnd]);
 
   const pageNumber: number | null = useMemo(() => {
     return selectedBlocks[0]?.pageNumber || null;

@@ -14,6 +14,7 @@ import {
 } from "@fluffylabs/shared-ui";
 import { ChevronDown, Ellipsis, PanelRight, X } from "lucide-react";
 import { useCallback, useContext, useRef } from "react";
+import { useVersionContext } from "../LocationProvider/VersionProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import { PdfProvider } from "../PdfProvider/PdfProvider";
 import { PdfViewer } from "../PdfViewer/PdfViewer";
@@ -23,6 +24,7 @@ import { useSplitScreenContext } from "../SplitScreenProvider/SplitScreenProvide
 import { ZoomSyncBridge } from "../ZoomSync/ZoomSync";
 
 export function SplitPaneView() {
+  const { version: mainVersion } = useVersionContext();
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
   const {
@@ -138,7 +140,7 @@ export function SplitPaneView() {
 
       <div className="split-pane-content">
         <PdfProvider pdfUrl={urlGetters.pdf(effectiveVersion)} externalTheme={theme} onThemeChange={setTheme}>
-          <SelectionProvider>
+          <SelectionProvider isolated={effectiveVersion === mainVersion}>
             <ScrollSyncBridge paneId="right" />
             <ZoomSyncBridge />
             <Content>
