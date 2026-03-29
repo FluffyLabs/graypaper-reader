@@ -63,7 +63,11 @@ function AppLayout() {
   });
 
   return (
-    <div style={isFocusMode ? { "--header-height": "28px", "--controls-left": "14px" } as React.CSSProperties : undefined}>
+    <div
+      style={
+        isFocusMode ? ({ "--header-height": "28px", "--controls-left": "14px" } as React.CSSProperties) : undefined
+      }
+    >
       {!isFocusMode && <Header />}
       {isFocusMode && <FocusModeBar onExit={toggleFocusMode} />}
       {isNarrow ? <NarrowLayout /> : <WideLayout />}
