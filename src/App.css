@@ -16,7 +16,7 @@
 
 .controls {
   position: absolute;
-  left: 72px;
+  left: var(--controls-left, 72px);
   bottom: 5px;
   display: flex;
   gap: 5px;
