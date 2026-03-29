@@ -36,6 +36,12 @@ export const locationParamsToHash = (params: ILocationParams, metadata: IMetadat
     rest: `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`,
   };
 
+  if (params.split) {
+    const splitName =
+      metadata.versions[params.split]?.name ?? (params.split === metadata.nightly?.hash ? "nightly" : null);
+    finalParamsToSerialize.split = splitName || params.split.substring(0, SHORT_COMMIT_HASH_LENGTH);
+  }
+
   return serializeSearchParams(finalParamsToSerialize);
 };
 

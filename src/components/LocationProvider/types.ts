@@ -4,6 +4,7 @@ export interface ILocationParams extends Partial<ISelectionParams> {
   version: string;
   search?: string;
   section?: string;
+  split?: string;
 }
 
 export type SearchParams = {
@@ -11,4 +12,5 @@ export type SearchParams = {
   v?: string;
   search?: string;
   section?: string;
+  split?: string;
 };

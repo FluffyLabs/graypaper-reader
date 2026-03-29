@@ -2,21 +2,26 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@fluffylabs/shared-ui";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Columns2 } from "lucide-react";
 import { useCallback, useContext, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IMetadataContext, type IVersionInfo, MetadataContext } from "../MetadataProvider/MetadataProvider";
+import { useSplitScreenContext } from "../SplitScreenProvider/SplitScreenProvider";
 
 export function Version() {
   const { metadata } = useContext(MetadataContext) as IMetadataContext;
   const { locationParams, setLocationParams } = useContext(LocationContext) as ILocationContext;
   const { migrateSelection } = useContext(CodeSyncContext) as ICodeSyncContext;
+  const { activateCompare, isSplitActive, rightVersion, setRightVersion } = useSplitScreenContext();
+
   const versions = [
     ...Object.values(metadata.versions).filter(({ legacy }) => !legacy),
     ...(metadata.nightly ? [metadata.nightly] : []),
@@ -46,6 +51,17 @@ export function Version() {
       }
     },
     [setLocationParams, locationParams, migrateSelection],
+  );
+
+  const handleCompareWith = useCallback(
+    (targetVersion: string) => {
+      if (isSplitActive) {
+        setRightVersion(targetVersion);
+      } else {
+        activateCompare(targetVersion);
+      }
+    },
+    [activateCompare, isSplitActive, setRightVersion],
   );
 
   const getCurrentVersionLabel = () => getVersionLabel(currentVersion, metadata.latest, metadata.nightly?.hash);
@@ -91,6 +107,21 @@ export function Version() {
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <div className="px-2 py-1 text-xs opacity-60">Compare with...</div>
+          {versions
+            .filter((v) => v.hash !== currentVersionHash && v.hash !== rightVersion)
+            .slice(0, 5)
+            .map((version) => (
+              <DropdownMenuItem
+                key={`compare-${version.hash}`}
+                className="flex gap-2 items-center"
+                onSelect={() => handleCompareWith(version.hash)}
+              >
+                <Columns2 className="h-3 w-3 opacity-60" />
+                <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <Tooltip
