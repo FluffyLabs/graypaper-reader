@@ -60,8 +60,26 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   const { getHashFromLocationParams } = useGetLocationParamsToHash();
 
+  const resolveFullVersion = useCallback(
+    (shortVersion: string): string | null => {
+      if (shortVersion.length === 0) return null;
+      // Try matching by hash prefix first
+      const byHash =
+        Object.keys(metadata.versions).find((version) => version.startsWith(shortVersion)) ??
+        (metadata.nightly?.hash.startsWith(shortVersion) ? metadata.nightly.hash : null);
+      if (byHash) return byHash;
+      // Try matching by friendly name (e.g. "0.5.3", "nightly")
+      if (shortVersion.toLowerCase() === "nightly") return metadata.nightly?.hash ?? null;
+      const byName = Object.values(metadata.versions).find((v) => v.name === shortVersion);
+      return byName?.hash ?? null;
+    },
+    [metadata],
+  );
+
   const handleHashChange = useCallback(() => {
-    const { rest: newHash, search, section } = extractSearchParams(window.location.hash);
+    const { rest: newHash, search, section, split } = extractSearchParams(window.location.hash);
+
+    const resolvedSplit = split ? (resolveFullVersion(split) ?? undefined) : undefined;
 
     if (!newHash.startsWith(SEGMENT_SEPARATOR)) {
       const version = metadata.latest;
@@ -70,19 +88,16 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         version,
         search,
         section,
+        split: resolvedSplit,
       }));
-      handleSetLocationParams({ version, search, section });
+      handleSetLocationParams({ version, search, section, split: resolvedSplit });
       return;
     }
 
     const rawParams = newHash.split(SEGMENT_SEPARATOR).slice(1);
     const selectedVersion = rawParams[VERSION_SEGMENT_INDEX];
 
-    const fullVersion =
-      selectedVersion.length > 0
-        ? (Object.keys(metadata.versions).find((version) => version.startsWith(rawParams[VERSION_SEGMENT_INDEX])) ??
-          (metadata.nightly?.hash.startsWith(rawParams[VERSION_SEGMENT_INDEX]) ? metadata.nightly.hash : null))
-        : null;
+    const fullVersion = resolveFullVersion(selectedVersion);
 
     if (!fullVersion) {
       const version = metadata.latest;
@@ -91,8 +106,9 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         version,
         search,
         section,
+        split: resolvedSplit,
       }));
-      handleSetLocationParams({ version, search, section });
+      handleSetLocationParams({ version, search, section, split: resolvedSplit });
       return;
     }
 
@@ -100,6 +116,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       version: fullVersion,
       search,
       section,
+      split: resolvedSplit,
     };
 
     if (rawParams[SELECTION_SEGMENT_INDEX]) {
@@ -128,9 +145,12 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       if (params?.section !== newLocationParams.section) {
         return newLocationParams;
       }
+      if (params?.split !== newLocationParams.split) {
+        return newLocationParams;
+      }
       return params;
     });
-  }, [handleSetLocationParams, metadata]);
+  }, [handleSetLocationParams, metadata, resolveFullVersion]);
 
   const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = useCallback((blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
@@ -200,6 +220,7 @@ function extractSearchParams(hash: string): SearchParams {
     v: undefined,
     search: undefined,
     section: undefined,
+    split: undefined,
   };
 
   if (!searchParams) {

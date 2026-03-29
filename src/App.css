@@ -65,3 +65,10 @@
   /* border-color: light-dark(rgba(204, 204, 204), #111) !important; */
   border-color: light-dark(rgba(204, 204, 204), #666);
 }
+
+.narrow-layout {
+  position: relative;
+  height: calc(100svh - var(--header-height));
+  width: 100vw;
+  padding-bottom: 44px;
+}

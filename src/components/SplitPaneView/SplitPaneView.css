@@ -1,0 +1,37 @@
+.split-pane-view {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.split-pane-header {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  background: #242424;
+  border-radius: 6px;
+  color-scheme: dark;
+  color: white;
+}
+
+.split-header-btn {
+  height: 28px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+.split-pane-content {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.split-pane-content > * {
+  height: 100%;
+}

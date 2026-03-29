@@ -112,12 +112,25 @@ export function SelectionProvider({ children }: ISelectionProviderProps) {
     setLocationParams(newLocation);
   }, [setLocationParams, locationParams, getSynctexBlockAtLocation, synctexBlocksToSelectionParams]);
 
+  // Stabilize selection references so they only change when actual values change,
+  // not when unrelated locationParams fields (like split) change.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally comparing by value not reference
+  const stableSelectionStart = useMemo(
+    () => locationParams.selectionStart,
+    [locationParams.selectionStart?.pageNumber, locationParams.selectionStart?.index],
+  );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally comparing by value not reference
+  const stableSelectionEnd = useMemo(
+    () => locationParams.selectionEnd,
+    [locationParams.selectionEnd?.pageNumber, locationParams.selectionEnd?.index],
+  );
+
   const selectedBlocks: ISynctexBlock[] = useMemo(() => {
-    if (locationParams.selectionStart && locationParams.selectionEnd) {
-      return getSynctexBlockRange(locationParams.selectionStart, locationParams.selectionEnd);
+    if (stableSelectionStart && stableSelectionEnd) {
+      return getSynctexBlockRange(stableSelectionStart, stableSelectionEnd);
     }
     return [];
-  }, [getSynctexBlockRange, locationParams]);
+  }, [getSynctexBlockRange, stableSelectionStart, stableSelectionEnd]);
 
   const pageNumber: number | null = useMemo(() => {
     return selectedBlocks[0]?.pageNumber || null;

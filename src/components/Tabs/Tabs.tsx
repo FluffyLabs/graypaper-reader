@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 export type Tab = {
   name: string;
   shortNameFallback?: string;
+  icon?: ReactNode;
   render: () => ReactNode;
 };
 
@@ -124,7 +125,7 @@ export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void
           : "bg-transparent",
       )}
     >
-      {t.shortNameFallback && shouldRenderShortName ? t.shortNameFallback : t.name}
+      {t.icon ? t.icon : t.shortNameFallback && shouldRenderShortName ? t.shortNameFallback : t.name}
     </Button>
   ));
 
