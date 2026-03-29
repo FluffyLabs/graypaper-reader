@@ -7,7 +7,6 @@
   background: var(--color-sidebar);
   border-top: 1px solid light-dark(#d4d4d4, #3d3d3d);
   transition: transform 200ms ease-out;
-  touch-action: none;
 }
 
 .bottom-drawer.collapsed {
@@ -31,6 +30,7 @@
   border: none;
   background: transparent;
   padding: 0;
+  touch-action: none;
 }
 
 .bottom-drawer .drawer-handle:focus-visible {
@@ -49,4 +49,5 @@
 .bottom-drawer .drawer-content {
   overflow: hidden;
   height: calc(100% - 28px);
+  touch-action: pan-y pinch-zoom;
 }

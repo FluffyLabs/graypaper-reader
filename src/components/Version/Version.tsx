@@ -116,7 +116,7 @@ export function Version() {
               <DropdownMenuItem
                 key={`compare-${version.hash}`}
                 className="flex gap-2 items-center"
-                onClick={() => handleCompareWith(version.hash)}
+                onSelect={() => handleCompareWith(version.hash)}
               >
                 <Columns2 className="h-3 w-3 opacity-60" />
                 <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>

@@ -26,7 +26,7 @@ export function SidebarOverlay() {
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click-to-dismiss */}
       <div className="sidebar-overlay-backdrop" onClick={() => setSidebarOverlayOpen(false)} />
-      <div className="sidebar-overlay-panel">
+      <div className="sidebar-overlay-panel" role="dialog" aria-modal="true" aria-label="Sidebar">
         <div className="sidebar-overlay-header">
           <Button
             variant="tertiary"

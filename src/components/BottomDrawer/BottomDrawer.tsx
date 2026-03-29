@@ -37,11 +37,14 @@ export function BottomDrawer() {
       <button
         type="button"
         className="drawer-handle"
+        aria-label={isExpanded ? "Collapse sidebar drawer" : "Expand sidebar drawer"}
+        aria-expanded={isExpanded}
+        aria-controls="bottom-drawer-content"
         onClick={handleHandleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       />
-      <div className="drawer-content">
+      <div id="bottom-drawer-content" className="drawer-content">
         <Sidebar />
       </div>
     </div>

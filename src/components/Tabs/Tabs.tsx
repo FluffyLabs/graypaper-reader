@@ -101,6 +101,12 @@ export function Tabs({ tabs, activeTab, switchTab, alwaysRender, shortNameFallba
   );
 }
 
+function getTabLabel(tab: Tab, shouldRenderShortName: boolean): ReactNode {
+  if (tab.icon) return tab.icon;
+  if (tab.shortNameFallback && shouldRenderShortName) return tab.shortNameFallback;
+  return tab.name;
+}
+
 export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void; tabs: Tab[] }> = ({
   activeTab,
   switchTab,
@@ -125,7 +131,7 @@ export const TabsMenu: FC<{ activeTab: string; switchTab: (name: string) => void
           : "bg-transparent",
       )}
     >
-      {t.icon ? t.icon : t.shortNameFallback && shouldRenderShortName ? t.shortNameFallback : t.name}
+      {getTabLabel(t, shouldRenderShortName)}
     </Button>
   ));
 
