@@ -1,5 +1,5 @@
 import "./Outline.css";
-import { type FC, memo, useCallback, useContext, useEffect, useState } from "react";
+import { type FC, memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import type { IPdfContext } from "../PdfProvider/PdfProvider";
@@ -7,15 +7,18 @@ import { PdfContext } from "../PdfProvider/PdfProvider";
 import { OutlineLink } from "./OutlineLink";
 import { OutlineLinkSkeleton, outlineForSkeleton } from "./Skeleton";
 import type { TOutlineComplete, TOutlineSingleSlim } from "./types";
+import { useActiveOutlineItem } from "./useActiveOutlineItem";
 
 export function Outline({ searchIsDone, className }: { searchIsDone: boolean; className?: string }) {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { pdfDocument, linkService } = useContext(PdfContext) as IPdfContext;
+  const { pdfDocument, linkService, visiblePages } = useContext(PdfContext) as IPdfContext;
   const [outline, setOutline] = useState<TOutlineComplete | undefined>(undefined);
 
   useEffect(() => {
     pdfDocument?.getOutline().then((outline) => setOutline(outline));
   }, [pdfDocument]);
+
+  const activeTitle = useActiveOutlineItem(outline, pdfDocument, visiblePages);
 
   const section = locationParams.section?.toLowerCase();
 
@@ -50,14 +53,33 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
     [linkService],
   );
 
-  return <OutlineDumb outline={outline} onClick={handleClick} className={className} />;
+  return <OutlineDumb outline={outline} onClick={handleClick} activeTitle={activeTitle} className={className} />;
 }
 
 const OutlineDumb: FC<{
   outline?: TOutlineSingleSlim[];
   onClick: (item: TOutlineSingleSlim["dest"]) => void;
+  activeTitle: string | null;
   className?: string;
-}> = memo(({ outline, onClick, className }) => {
+}> = memo(({ outline, onClick, activeTitle, className }) => {
+  const activeRef = useRef<HTMLAnchorElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeRef.current && containerRef.current) {
+      const container = containerRef.current;
+      const el = activeRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+
+      // Check if the active element is outside the visible area of the container
+      const isVisible = elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom;
+      if (!isVisible) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [activeTitle]);
+
   const renderOutline = (
     outline: TOutlineSingleSlim[],
     options: { firstLevel?: boolean; isSkeleton?: boolean } = {},
@@ -68,6 +90,7 @@ const OutlineDumb: FC<{
       <ul className={twMerge(firstLevel ? "mt-0" : "my-3", className)}>
         {outline.map((item, index) => {
           const { title, number } = splitOutlineTitle(item.title);
+          const isActive = activeTitle === item.title;
           return (
             <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
               {isSkeleton && (
@@ -85,8 +108,10 @@ const OutlineDumb: FC<{
               )}
               {!isSkeleton && (
                 <OutlineLink
+                  ref={isActive ? activeRef : undefined}
                   href={"#"}
                   firstLevel={firstLevel}
+                  isActive={isActive}
                   onClick={(e) => {
                     e.preventDefault();
                     onClick(item.dest);
@@ -106,7 +131,7 @@ const OutlineDumb: FC<{
   const pickedOutline = outline ?? outlineForSkeleton;
 
   return (
-    <div className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto">
+    <div ref={containerRef} className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto">
       {renderOutline(pickedOutline, { firstLevel: true, isSkeleton: pickedOutline === outlineForSkeleton })}
     </div>
   );

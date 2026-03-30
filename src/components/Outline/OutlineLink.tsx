@@ -5,6 +5,7 @@ export const OutlineLink = ({
   className,
   onClick,
   firstLevel,
+  isActive,
   href,
   ref,
   number,
@@ -12,6 +13,7 @@ export const OutlineLink = ({
   ...restOfProps
 }: {
   firstLevel: boolean;
+  isActive?: boolean;
   number?: string;
   title: string;
   ref?: React.Ref<HTMLAnchorElement>;
@@ -25,6 +27,7 @@ export const OutlineLink = ({
         "cursor-pointer hover:opacity-75",
         !firstLevel && "dark:text-brand-dark text-brand-dark mt-0.5",
         firstLevel && "dark:text-brand text-brand-very-dark",
+        isActive && "font-bold",
         className,
       )}
       {...restOfProps}
@@ -36,7 +39,7 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className="border-b dark:border-brand/50 border-brand-darkest/50">{title}</span>
+          <span className={twMerge("border-b dark:border-brand/50 border-brand-darkest/50", isActive && "dark:border-brand border-brand-darkest")}>{title}</span>
         </>
       )}
       {!firstLevel && (
@@ -46,7 +49,7 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className="border-b dark:border-brand-light/50 border-brand-dark/50">{title}</span>
+          <span className={twMerge("border-b dark:border-brand-light/50 border-brand-dark/50", isActive && "dark:border-brand-light border-brand-dark")}>{title}</span>
         </>
       )}
     </a>
