@@ -15,7 +15,18 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
   const [outline, setOutline] = useState<TOutlineComplete | undefined>(undefined);
 
   useEffect(() => {
-    pdfDocument?.getOutline().then((outline) => setOutline(outline));
+    if (!pdfDocument) {
+      setOutline(undefined);
+      return;
+    }
+
+    let cancelled = false;
+    pdfDocument.getOutline().then((outline) => {
+      if (!cancelled) setOutline(outline);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [pdfDocument]);
 
   const activePath = useActiveOutlineItem(outline, pdfDocument, viewer?.container, pageOffsets);
@@ -86,7 +97,7 @@ const OutlineDumb: FC<{
     const { firstLevel = false, isSkeleton = false, parentPath = "" } = options;
 
     return (
-      <ul className={twMerge(firstLevel ? "mt-0" : "my-3", className)}>
+      <ul className={firstLevel ? "mt-0" : "my-3"}>
         {outline.map((item, index) => {
           const path = parentPath ? `${parentPath}.${index}` : `${index}`;
           const { title, number } = splitOutlineTitle(item.title);
@@ -133,7 +144,10 @@ const OutlineDumb: FC<{
   return (
     <div
       ref={containerRef}
-      className="rounded-lg min-h-0 w-full py-6 px-6 bg-[#eeeeee] dark:bg-[#323232] overflow-y-auto"
+      className={twMerge(
+        "rounded-lg min-h-0 w-full py-6 px-6 bg-[#eeeeee] dark:bg-[#323232] overflow-y-auto",
+        className,
+      )}
     >
       {renderOutline(pickedOutline, { firstLevel: true, isSkeleton: pickedOutline === outlineForSkeleton })}
     </div>
