@@ -5,6 +5,7 @@ import { AppsSidebar, Content, useBreakpoint } from "@fluffylabs/shared-ui";
 import { BottomDrawer } from "./components/BottomDrawer/BottomDrawer";
 import { CodeSyncProvider } from "./components/CodeSyncProvider/CodeSyncProvider";
 import { DownloadModal } from "./components/DownloadModal/DownloadModal";
+import { FocusModeProvider, useFocusModeContext } from "./components/FocusModeProvider/FocusModeProvider";
 import { Header } from "./components/Header/Header";
 import { LightThemeToggle } from "./components/LightThemeToggle/LightThemeToggle";
 import { useVersionContext } from "./components/LocationProvider/VersionProvider";
@@ -25,19 +26,22 @@ import { useKeyboardShortcut } from "./hooks/useKeyboardShortcut";
 
 export function App() {
   return (
-    <CodeSyncProvider>
-      <NotesProvider>
-        <SplitScreenProvider>
-          <AppLayout />
-        </SplitScreenProvider>
-      </NotesProvider>
-    </CodeSyncProvider>
+    <FocusModeProvider>
+      <CodeSyncProvider>
+        <NotesProvider>
+          <SplitScreenProvider>
+            <AppLayout />
+          </SplitScreenProvider>
+        </NotesProvider>
+      </CodeSyncProvider>
+    </FocusModeProvider>
   );
 }
 
 function AppLayout() {
   const isNarrow = useBreakpoint("(max-width: 768px)");
   const { isSplitActive, activateSplit, deactivateSplit } = useSplitScreenContext();
+  const { isFocusMode, toggleFocusMode } = useFocusModeContext();
 
   const handleToggleSplit = useCallback(() => {
     if (isNarrow) return;
@@ -53,18 +57,47 @@ function AppLayout() {
     onKeyPress: handleToggleSplit,
   });
 
+  useKeyboardShortcut({
+    key: "f",
+    onKeyPress: toggleFocusMode,
+  });
+
   return (
-    <div>
-      <Header />
+    <div
+      style={
+        isFocusMode ? ({ "--header-height": "28px", "--controls-left": "14px" } as React.CSSProperties) : undefined
+      }
+    >
+      {!isFocusMode && <Header />}
+      {isFocusMode && <FocusModeBar onExit={toggleFocusMode} />}
       {isNarrow ? <NarrowLayout /> : <WideLayout />}
     </div>
   );
 }
 
+function FocusModeBar({ onExit }: { onExit: () => void }) {
+  return (
+    <div className="flex items-center justify-end px-2 py-1 bg-[var(--card)] text-[var(--foreground)] text-xs border-b border-[var(--border)]">
+      <button
+        type="button"
+        onClick={onExit}
+        className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[var(--accent)] transition-colors cursor-pointer"
+      >
+        <span>Exit focus mode</span>
+        <kbd className="ml-1 px-1 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)] text-[10px] font-mono">
+          F
+        </kbd>
+      </button>
+    </div>
+  );
+}
+
 function PdfPaneContent() {
+  const { isFocusMode } = useFocusModeContext();
+
   return (
     <div className="h-full w-full flex flex-row items-stretch justify-center">
-      <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />
+      {!isFocusMode && <AppsSidebar activeLink="reader" enableDarkModeToggle={true} />}
       <Content>
         <PdfViewer />
       </Content>
