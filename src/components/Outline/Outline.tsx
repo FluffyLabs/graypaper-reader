@@ -92,7 +92,7 @@ const OutlineDumb: FC<{
           const { title, number } = splitOutlineTitle(item.title);
           const isActive = activePath === path;
           return (
-            <li key={path} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
+            <li key={path} className={firstLevel ? "pl-0 mt-4 first-of-type:mt-0" : "pl-4 mt-0.5 first-of-type:mt-0"}>
               {isSkeleton && (
                 <OutlineLinkSkeleton
                   className={twMerge(
