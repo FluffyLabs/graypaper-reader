@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { TOutlineComplete, TOutlineSingleSlim } from "./types";
 
 type OutlineItemWithPage = {
-  title: string;
+  path: string;
   pageNumber: number; // 1-based
 };
 
@@ -21,7 +21,7 @@ async function resolveDestToPage(
       return pageIndex + 1; // convert to 1-based page number
     }
   } catch {
-    // destination could not be resolved
+    // Expected: some destinations (e.g. invalid refs, skeleton items) cannot be resolved.
   }
   return null;
 }
@@ -32,19 +32,21 @@ async function flattenOutlineWithPages(
 ): Promise<OutlineItemWithPage[]> {
   const result: OutlineItemWithPage[] = [];
 
-  async function walk(items: TOutlineSingleSlim[]) {
-    for (const item of items) {
+  async function walk(items: TOutlineSingleSlim[], parentPath: string) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const path = parentPath ? `${parentPath}.${i}` : `${i}`;
       const pageNumber = await resolveDestToPage(pdfDocument, item.dest);
       if (pageNumber !== null) {
-        result.push({ title: item.title, pageNumber });
+        result.push({ path, pageNumber });
       }
       if (item.items.length > 0) {
-        await walk(item.items);
+        await walk(item.items, path);
       }
     }
   }
 
-  await walk(outline);
+  await walk(outline, "");
   return result;
 }
 
@@ -60,7 +62,16 @@ export function useActiveOutlineItem(
       setItemsWithPages([]);
       return;
     }
-    flattenOutlineWithPages(pdfDocument, outline).then(setItemsWithPages);
+
+    let cancelled = false;
+    flattenOutlineWithPages(pdfDocument, outline).then((items) => {
+      if (!cancelled) {
+        setItemsWithPages(items);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [outline, pdfDocument]);
 
   if (itemsWithPages.length === 0 || visiblePages.length === 0) {
@@ -69,15 +80,17 @@ export function useActiveOutlineItem(
 
   const topVisiblePage = visiblePages[0];
 
-  // Find the last outline item whose page is <= the top visible page.
-  let activeTitle: string | null = null;
+  // itemsWithPages is in document order (produced by a depth-first walk of
+  // the outline tree), so page numbers are non-decreasing.  We find the last
+  // item whose page is <= the top visible page.
+  let activePath: string | null = null;
   for (const item of itemsWithPages) {
     if (item.pageNumber <= topVisiblePage) {
-      activeTitle = item.title;
+      activePath = item.path;
     } else {
       break;
     }
   }
 
-  return activeTitle;
+  return activePath;
 }

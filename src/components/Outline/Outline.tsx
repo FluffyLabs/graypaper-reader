@@ -18,7 +18,7 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
     pdfDocument?.getOutline().then((outline) => setOutline(outline));
   }, [pdfDocument]);
 
-  const activeTitle = useActiveOutlineItem(outline, pdfDocument, visiblePages);
+  const activePath = useActiveOutlineItem(outline, pdfDocument, visiblePages);
 
   const section = locationParams.section?.toLowerCase();
 
@@ -53,20 +53,20 @@ export function Outline({ searchIsDone, className }: { searchIsDone: boolean; cl
     [linkService],
   );
 
-  return <OutlineDumb outline={outline} onClick={handleClick} activeTitle={activeTitle} className={className} />;
+  return <OutlineDumb outline={outline} onClick={handleClick} activePath={activePath} className={className} />;
 }
 
 const OutlineDumb: FC<{
   outline?: TOutlineSingleSlim[];
   onClick: (item: TOutlineSingleSlim["dest"]) => void;
-  activeTitle: string | null;
+  activePath: string | null;
   className?: string;
-}> = memo(({ outline, onClick, activeTitle, className }) => {
+}> = memo(({ outline, onClick, activePath, className }) => {
   const activeRef = useRef<HTMLAnchorElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!activeTitle || !activeRef.current || !containerRef.current) return;
+    if (!activePath || !activeRef.current || !containerRef.current) return;
 
     const container = containerRef.current;
     const el = activeRef.current;
@@ -77,21 +77,22 @@ const OutlineDumb: FC<{
     if (!isVisible) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [activeTitle]);
+  }, [activePath]);
 
   const renderOutline = (
     outline: TOutlineSingleSlim[],
-    options: { firstLevel?: boolean; isSkeleton?: boolean } = {},
+    options: { firstLevel?: boolean; isSkeleton?: boolean; parentPath?: string } = {},
   ) => {
-    const { firstLevel = false, isSkeleton = false } = options;
+    const { firstLevel = false, isSkeleton = false, parentPath = "" } = options;
 
     return (
       <ul className={twMerge(firstLevel ? "mt-0" : "my-3", className)}>
         {outline.map((item, index) => {
+          const path = parentPath ? `${parentPath}.${index}` : `${index}`;
           const { title, number } = splitOutlineTitle(item.title);
-          const isActive = activeTitle === item.title;
+          const isActive = activePath === path;
           return (
-            <li key={item.title} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
+            <li key={path} className={twMerge(firstLevel ? "pl-0 mt-4" : "pl-4", "mt-0.5 first-of-type:mt-0")}>
               {isSkeleton && (
                 <OutlineLinkSkeleton
                   className={twMerge(
@@ -119,7 +120,7 @@ const OutlineDumb: FC<{
                   number={firstLevel ? number?.replace(".", " >") : (number ?? undefined)}
                 />
               )}
-              {item.items.length > 0 ? renderOutline(item.items, { isSkeleton }) : null}
+              {item.items.length > 0 ? renderOutline(item.items, { isSkeleton, parentPath: path }) : null}
             </li>
           );
         })}
@@ -132,7 +133,7 @@ const OutlineDumb: FC<{
   return (
     <div
       ref={containerRef}
-      className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto"
+      className="rounded-lg min-h-0 w-full py-6 px-6 bg-[#eeeeee] dark:bg-[#323232] overflow-y-auto"
     >
       {renderOutline(pickedOutline, { firstLevel: true, isSkeleton: pickedOutline === outlineForSkeleton })}
     </div>
