@@ -21,6 +21,8 @@ function getCommonContext() {
   };
 }
 
+const screenshotOpts = { fullPage: true };
+
 test.describe("Split Screen", () => {
   test("sidebar shows split tab icon", async ({ browser }) => {
     const context = await browser.newContext(getCommonContext());
@@ -32,7 +34,7 @@ test.describe("Split Screen", () => {
     const splitTab = page.locator('[data-testid="tab-split"]');
     await expect(splitTab).toBeVisible();
 
-    await expect(page).toHaveScreenshot("sidebar-with-split-tab.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("sidebar-with-split-tab.png", screenshotOpts);
   });
 
   test("split view opens when clicking split tab", async ({ browser }) => {
@@ -46,7 +48,7 @@ test.describe("Split Screen", () => {
     await splitTab.click();
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
 
-    await expect(page).toHaveScreenshot("split-view-opened.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-view-opened.png", screenshotOpts);
   });
 
   test("split view opens via URL param", async ({ browser }) => {
@@ -57,7 +59,7 @@ test.describe("Split Screen", () => {
     await page.evaluate(() => document.fonts.ready);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
 
-    await expect(page).toHaveScreenshot("split-view-via-url.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-view-via-url.png", screenshotOpts);
   });
 
   test("split pane header - version dropdown", async ({ browser }) => {
@@ -74,7 +76,7 @@ test.describe("Split Screen", () => {
     await versionButton.click({ force: true });
     await page.locator('[role="menu"], [role="radiogroup"]').first().waitFor({ state: "visible", timeout: 5000 });
 
-    await expect(page).toHaveScreenshot("split-header-version-dropdown.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-header-version-dropdown.png", screenshotOpts);
   });
 
   test("split pane header - options menu", async ({ browser }) => {
@@ -90,7 +92,7 @@ test.describe("Split Screen", () => {
     await optionsButton.click({ force: true });
     await page.locator('[role="menu"]').waitFor({ state: "visible", timeout: 5000 });
 
-    await expect(page).toHaveScreenshot("split-header-options-menu.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-header-options-menu.png", screenshotOpts);
   });
 
   test("sidebar overlay in split mode", async ({ browser }) => {
@@ -106,7 +108,7 @@ test.describe("Split Screen", () => {
     await sidebarButton.click({ force: true });
     await page.locator(".sidebar-overlay-panel").waitFor({ state: "visible", timeout: 5000 });
 
-    await expect(page).toHaveScreenshot("split-sidebar-overlay.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-sidebar-overlay.png", screenshotOpts);
   });
 
   test("sidebar overlay closes on Escape", async ({ browser }) => {
@@ -124,7 +126,7 @@ test.describe("Split Screen", () => {
     await page.keyboard.press("Escape");
     await page.locator(".sidebar-overlay-panel").waitFor({ state: "hidden", timeout: 2500 });
 
-    await expect(page).toHaveScreenshot("split-sidebar-overlay-closed.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-sidebar-overlay-closed.png", screenshotOpts);
   });
 
   test("split view closes via options menu", async ({ browser }) => {
@@ -143,7 +145,7 @@ test.describe("Split Screen", () => {
     await page.locator(".split-pane-view").waitFor({ state: "hidden", timeout: 2500 });
     await page.locator(".gp-sidebar").waitFor({ state: "visible", timeout: 2500 });
 
-    await expect(page).toHaveScreenshot("split-view-closed.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("split-view-closed.png", screenshotOpts);
   });
 
   test("split tab not visible in sidebar overlay", async ({ browser }) => {
@@ -179,6 +181,6 @@ test.describe("Version Compare", () => {
     const compareSection = page.locator('text="Compare with..."');
     await expect(compareSection).toBeVisible();
 
-    await expect(page).toHaveScreenshot("version-dropdown-with-compare.png", { fullPage: true });
+    await expect(page).toHaveScreenshot("version-dropdown-with-compare.png", screenshotOpts);
   });
 });

@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapshot-tests
+      target: test-runner
     volumes:
       - ./tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
@@ -22,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapshot-tests
+      target: test-runner
     volumes:
       - ./tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests
       - ./tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results
