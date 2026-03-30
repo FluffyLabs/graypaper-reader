@@ -39,7 +39,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/snapshot-tests/tests/basic-snapshots.spec.ts-snapshots/*.png
+          git add tools/snapshot-tests/tests/*-snapshots/*.png
           if git diff --cached --quiet; then
             echo "No snapshot changes"
           else

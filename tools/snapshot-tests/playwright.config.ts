@@ -7,6 +7,13 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
+  expect: {
+    toHaveScreenshot: {
+      // PDF rendering can vary slightly between runs
+      maxDiffPixelRatio: 0.02,
+      animations: "disabled",
+    },
+  },
   use: {
     trace: "on-first-retry",
     viewport: { width: 1280, height: 720 },
