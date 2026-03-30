@@ -39,7 +39,14 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className={twMerge("border-b dark:border-brand/50 border-brand-darkest/50", isActive && "dark:border-brand border-brand-darkest")}>{title}</span>
+          <span
+            className={twMerge(
+              "border-b dark:border-brand/50 border-brand-darkest/50",
+              isActive && "dark:border-brand border-brand-darkest",
+            )}
+          >
+            {title}
+          </span>
         </>
       )}
       {!firstLevel && (
@@ -49,7 +56,14 @@ export const OutlineLink = ({
               <span>{number}</span>&nbsp;
             </>
           )}
-          <span className={twMerge("border-b dark:border-brand-light/50 border-brand-dark/50", isActive && "dark:border-brand-light border-brand-dark")}>{title}</span>
+          <span
+            className={twMerge(
+              "border-b dark:border-brand-light/50 border-brand-dark/50",
+              isActive && "dark:border-brand-light border-brand-dark",
+            )}
+          >
+            {title}
+          </span>
         </>
       )}
     </a>

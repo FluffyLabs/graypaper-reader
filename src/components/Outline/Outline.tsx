@@ -66,17 +66,16 @@ const OutlineDumb: FC<{
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activeRef.current && containerRef.current) {
-      const container = containerRef.current;
-      const el = activeRef.current;
-      const containerRect = container.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
+    if (!activeTitle || !activeRef.current || !containerRef.current) return;
 
-      // Check if the active element is outside the visible area of the container
-      const isVisible = elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom;
-      if (!isVisible) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+    const container = containerRef.current;
+    const el = activeRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    const isVisible = elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom;
+    if (!isVisible) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [activeTitle]);
 
@@ -131,7 +130,10 @@ const OutlineDumb: FC<{
   const pickedOutline = outline ?? outlineForSkeleton;
 
   return (
-    <div ref={containerRef} className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="rounded-lg min-h-0 w-full py-6 px-6  bg-[#eeeeee] dark:bg-[#323232]  overflow-y-auto"
+    >
       {renderOutline(pickedOutline, { firstLevel: true, isSkeleton: pickedOutline === outlineForSkeleton })}
     </div>
   );
