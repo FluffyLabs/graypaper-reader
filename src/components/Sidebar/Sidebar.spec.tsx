@@ -18,12 +18,12 @@ vi.mock("../Search/Search", () => ({
 }));
 
 // Mock useBreakpoint from @fluffylabs/shared-ui
-const mockUseBreakpoint = vi.fn(() => false);
+const mockUseBreakpoint = vi.fn((_query: string) => false);
 vi.mock("@fluffylabs/shared-ui", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
-    useBreakpoint: (...args: unknown[]) => mockUseBreakpoint(...args),
+    useBreakpoint: (query: string) => mockUseBreakpoint(query),
   };
 });
 
