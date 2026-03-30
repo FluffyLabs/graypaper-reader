@@ -11,14 +11,14 @@ import { useActiveOutlineItem } from "./useActiveOutlineItem";
 
 export function Outline({ searchIsDone, className }: { searchIsDone: boolean; className?: string }) {
   const { locationParams } = useContext(LocationContext) as ILocationContext;
-  const { pdfDocument, linkService, visiblePages } = useContext(PdfContext) as IPdfContext;
+  const { pdfDocument, linkService, viewer, pageOffsets } = useContext(PdfContext) as IPdfContext;
   const [outline, setOutline] = useState<TOutlineComplete | undefined>(undefined);
 
   useEffect(() => {
     pdfDocument?.getOutline().then((outline) => setOutline(outline));
   }, [pdfDocument]);
 
-  const activePath = useActiveOutlineItem(outline, pdfDocument, visiblePages);
+  const activePath = useActiveOutlineItem(outline, pdfDocument, viewer?.container, pageOffsets);
 
   const section = locationParams.section?.toLowerCase();
 
