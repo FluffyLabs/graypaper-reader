@@ -1,8 +1,9 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { DOC_CONFIG } from "../../config/documentConfig";
 
-const METADATA_HOST = "https://gp.fluffylabs.dev";
+const METADATA_HOST = DOC_CONFIG.metadataHost;
 const METADATA_JSON = `${METADATA_HOST}/metadata.json`;
-export const LEGACY_READER_HOST = "https://old-graypaper.fluffylabs.dev";
+export const LEGACY_READER_HOST = DOC_CONFIG.legacyReaderHost;
 
 export interface IVersionInfo {
   hash: string;
@@ -65,9 +66,9 @@ export function MetadataProvider({ children }: IMetadataProviderProps) {
     return {
       metadata,
       urlGetters: {
-        pdf: (version) => `${METADATA_HOST}/graypaper-${version}.pdf`,
-        md: (version) => `${METADATA_HOST}/graypaper-${version}.md`,
-        synctex: (version) => `${METADATA_HOST}/graypaper-${version}.synctex.json`,
+        pdf: (version) => `${METADATA_HOST}/${DOC_CONFIG.pdfFilePrefix}-${version}.pdf`,
+        md: (version) => `${METADATA_HOST}/${DOC_CONFIG.pdfFilePrefix}-${version}.md`,
+        synctex: (version) => `${METADATA_HOST}/${DOC_CONFIG.pdfFilePrefix}-${version}.synctex.json`,
         texDirectory: (version) => `${METADATA_HOST}/tex-${version}`,
         legacyReaderRedirect: (hash) => `${LEGACY_READER_HOST}/${hash}`,
       },

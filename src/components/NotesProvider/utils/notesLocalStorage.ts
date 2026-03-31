@@ -1,9 +1,10 @@
+import { lsKey } from "../../../config/documentConfig";
 import { LABEL_LOCAL } from "../consts/labels";
 import type { INotesEnvelope } from "../types/StorageNote";
 import { exportNotesAsJson, importNotesFromJson } from "./notesImportExport";
 
-const LOCAL_STORAGE_KEY = "notes-v2";
-const BACKUP_STORAGE_KEY = "notes-v2-backup";
+const LOCAL_STORAGE_KEY = lsKey("notes-v2");
+const BACKUP_STORAGE_KEY = lsKey("notes-v2-backup");
 
 export function loadFromLocalStorage(): INotesEnvelope {
   try {

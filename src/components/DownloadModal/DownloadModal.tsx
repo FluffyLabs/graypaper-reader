@@ -1,6 +1,7 @@
 import { Button, DialogModal } from "@fluffylabs/shared-ui";
 import { useContext, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import { DOC_CONFIG } from "../../config/documentConfig";
 import { SHORT_COMMIT_HASH_LENGTH } from "../LocationProvider/utils/constants";
 import { useVersionContext } from "../LocationProvider/VersionProvider";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
@@ -21,7 +22,10 @@ export function DownloadModal() {
     setIsProcessing(true);
     setError(undefined);
     try {
-      await downloadPdfWithTheme(`graypaper-${shortVersion}-${generateTheme}-theme.pdf`, generateTheme);
+      await downloadPdfWithTheme(
+        `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}-${generateTheme}-theme.pdf`,
+        generateTheme,
+      );
       setIsOpen(false);
     } catch {
       setError("Failed to generate PDF. Please try again.");
@@ -54,11 +58,11 @@ export function DownloadModal() {
   };
 
   const handleDownloadDarkPdf = () => {
-    fetchAndSave(urlGetters.pdf(version), `graypaper-${shortVersion}.pdf`);
+    fetchAndSave(urlGetters.pdf(version), `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.pdf`);
   };
 
   const handleDownloadMarkdown = () => {
-    fetchAndSave(urlGetters.md(version), `graypaper-${shortVersion}.md`);
+    fetchAndSave(urlGetters.md(version), `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.md`);
   };
 
   return (

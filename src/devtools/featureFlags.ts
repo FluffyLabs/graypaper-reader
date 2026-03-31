@@ -1,3 +1,5 @@
+import { DOC_CONFIG } from "../config/documentConfig";
+
 export interface FeatureFlag {
   key: string;
   name: string;
@@ -17,7 +19,7 @@ export const FEATURE_FLAGS = {
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
 
 class FeatureFlagsManager {
-  private static STORAGE_PREFIX = "gp_feature_flag_";
+  private static STORAGE_PREFIX = `${DOC_CONFIG.localStoragePrefix}_feature_flag_`;
 
   private isDevelopment(): boolean {
     return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
