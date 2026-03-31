@@ -3,7 +3,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import { useGetLocationParamsToHash } from "./hooks/useGetLocationParamsToHash";
-import type { ILocationParams, SearchParams } from "./types";
+import type { ILocationParams } from "./types";
 import {
   BASE64_VALIDATION_REGEX,
   SEGMENT_SEPARATOR,
@@ -11,7 +11,9 @@ import {
   SELECTION_SEGMENT_INDEX,
   VERSION_SEGMENT_INDEX,
 } from "./utils/constants";
+import { extractSearchParams } from "./utils/extractSearchParams";
 import { locationParamsToHash } from "./utils/locationParamsToHash";
+import { resolveFullVersion as resolveFullVersionUtil } from "./utils/resolveFullVersion";
 
 export interface ILocationContext {
   locationParams: ILocationParams;
@@ -61,18 +63,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
   const { getHashFromLocationParams } = useGetLocationParamsToHash();
 
   const resolveFullVersion = useCallback(
-    (shortVersion: string): string | null => {
-      if (shortVersion.length === 0) return null;
-      // Try matching by hash prefix first
-      const byHash =
-        Object.keys(metadata.versions).find((version) => version.startsWith(shortVersion)) ??
-        (metadata.nightly?.hash.startsWith(shortVersion) ? metadata.nightly.hash : null);
-      if (byHash) return byHash;
-      // Try matching by friendly name (e.g. "0.5.3", "nightly")
-      if (shortVersion.toLowerCase() === "nightly") return metadata.nightly?.hash ?? null;
-      const byName = Object.values(metadata.versions).find((v) => v.name === shortVersion);
-      return byName?.hash ?? null;
-    },
+    (shortVersion: string): string | null => resolveFullVersionUtil(shortVersion, metadata),
     [metadata],
   );
 
@@ -209,30 +200,4 @@ function decodePageNumberAndIndex(s: string) {
   let index = fromHex(s.substring(2, 4));
   index += fromHex(s.substring(4, 6)) << 8;
   return { pageNumber, index };
-}
-
-function extractSearchParams(hash: string): SearchParams {
-  // skip the leading '/'
-  const [rest, searchParams] = hash.substring(1).split("?");
-
-  const result = {
-    rest,
-    v: undefined,
-    search: undefined,
-    section: undefined,
-    split: undefined,
-  };
-
-  if (!searchParams) {
-    return result;
-  }
-
-  for (const v of searchParams.split("&")) {
-    const [key, val] = v.split("=");
-    if (key in result) {
-      (result as { [key: string]: string | undefined })[key] = decodeURIComponent(val);
-    }
-  }
-
-  return result;
 }
