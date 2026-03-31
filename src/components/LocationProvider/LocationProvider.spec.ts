@@ -103,6 +103,17 @@ describe("resolveFullVersion", () => {
     expect(resolveFullVersion("zzz9999", metadata)).toBeNull();
   });
 
+  it("returns null for ambiguous hash prefix", () => {
+    const metadataWithSharedPrefix = {
+      versions: {
+        abc1234567890: { hash: "abc1234567890", name: "0.6.0" },
+        abc9999999999: { hash: "abc9999999999", name: "0.7.0" },
+      } as Record<string, { hash: string; name: string }>,
+      nightly: null,
+    };
+    expect(resolveFullVersion("abc", metadataWithSharedPrefix)).toBeNull();
+  });
+
   it("prefers hash prefix over friendly name", () => {
     // "abc" is both a hash prefix for abc1234567890 AND a friendly name for def4567890123
     const metadataWithConflict = {
