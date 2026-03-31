@@ -15,7 +15,7 @@
   "license": "MPL-2.0",
   "description": "Matrix bot that listens for messages containing GP Reader links.",
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8",
+    "@biomejs/biome": "^2.4.10",
     "@tsconfig/node20": "^20.1.9",
     "@types/node": "^25.5.0",
     "typescript": "^6.0.2"
