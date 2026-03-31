@@ -13,7 +13,11 @@ import "./font.css";
 import { App } from "./App.tsx";
 import { VersionProvider } from "./components/LocationProvider/VersionProvider.tsx";
 
-migrateLocalStorageKeys();
+try {
+  migrateLocalStorageKeys();
+} catch (e) {
+  console.warn("Local storage migration skipped", e);
+}
 initDevTools();
 
 ReactDOM.createRoot(document.getElementById("root") ?? document.body).render(
