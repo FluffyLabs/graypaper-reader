@@ -1,7 +1,17 @@
 import type { SearchParams } from "../types";
 
+const ALLOWED_PARAMS = new Set<string>(["v", "search", "section", "split"]);
+
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export function extractSearchParams(hash: string): SearchParams {
-  // skip the leading '/'
+  // skip the leading '#'
   const [rest, searchParams] = hash.substring(1).split("?");
 
   const result: SearchParams = {
@@ -16,10 +26,13 @@ export function extractSearchParams(hash: string): SearchParams {
     return result;
   }
 
-  for (const v of searchParams.split("&")) {
-    const [key, val] = v.split("=");
-    if (key in result) {
-      (result as { [key: string]: string | undefined })[key] = decodeURIComponent(val);
+  for (const param of searchParams.split("&")) {
+    const eqIndex = param.indexOf("=");
+    if (eqIndex === -1) continue;
+    const key = param.substring(0, eqIndex);
+    const val = param.substring(eqIndex + 1);
+    if (ALLOWED_PARAMS.has(key)) {
+      (result as { [key: string]: string | undefined })[key] = safeDecode(val);
     }
   }
 

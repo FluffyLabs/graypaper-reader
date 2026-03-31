@@ -36,9 +36,25 @@ describe("extractSearchParams", () => {
     expect(result).not.toHaveProperty("unknown");
   });
 
+  it("never overwrites rest via query params", () => {
+    const result = extractSearchParams("#/abc1234?rest=injected&split=bar");
+    expect(result.rest).toBe("/abc1234");
+    expect(result.split).toBe("bar");
+  });
+
   it("decodes URI components in param values", () => {
     const result = extractSearchParams("#/abc1234?search=hello%20world");
     expect(result.search).toBe("hello world");
+  });
+
+  it("preserves values containing '=' characters", () => {
+    const result = extractSearchParams("#/abc1234?search=a%3Db%3Dc");
+    expect(result.search).toBe("a=b=c");
+  });
+
+  it("does not throw on malformed percent-escape", () => {
+    const result = extractSearchParams("#/abc1234?search=%ZZbad");
+    expect(result.search).toBe("%ZZbad");
   });
 
   it("handles hash with selection segment and query params", () => {
@@ -71,8 +87,8 @@ describe("resolveFullVersion", () => {
     expect(resolveFullVersion("night12", metadata)).toBe("night1234567890");
   });
 
-  it("resolves 'nightly' literal (case-insensitive concept)", () => {
-    expect(resolveFullVersion("nightly", metadata)).toBe("night1234567890");
+  it("resolves 'nightly' literal (case-insensitive)", () => {
+    expect(resolveFullVersion("NightLy", metadata)).toBe("night1234567890");
   });
 
   it("resolves by friendly name", () => {
@@ -88,6 +104,14 @@ describe("resolveFullVersion", () => {
   });
 
   it("prefers hash prefix over friendly name", () => {
-    expect(resolveFullVersion("abc", metadata)).toBe("abc1234567890");
+    // "abc" is both a hash prefix for abc1234567890 AND a friendly name for def4567890123
+    const metadataWithConflict = {
+      versions: {
+        abc1234567890: { hash: "abc1234567890", name: "0.6.0" },
+        def4567890123: { hash: "def4567890123", name: "abc" },
+      } as Record<string, { hash: string; name: string }>,
+      nightly: { hash: "night1234567890" },
+    };
+    expect(resolveFullVersion("abc", metadataWithConflict)).toBe("abc1234567890");
   });
 });
