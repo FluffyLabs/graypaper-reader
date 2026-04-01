@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@fluffylabs/shared-ui";
 import { ChevronDown, Columns2 } from "lucide-react";
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { CodeSyncContext, type ICodeSyncContext } from "../CodeSyncProvider/CodeSyncProvider";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
@@ -66,6 +66,25 @@ export function Version() {
 
   const getCurrentVersionLabel = () => getVersionLabel(currentVersion, metadata.latest, metadata.nightly?.hash);
 
+  const compareVersions = useMemo(() => {
+    const excluded = new Set([currentVersionHash, rightVersion].filter(Boolean));
+    const isExcluded = (v: IVersionInfo) => excluded.has(v.hash);
+
+    const nightlyVersion = metadata.nightly;
+    const latestVersion = metadata.versions[metadata.latest];
+
+    const prioritized = [nightlyVersion, latestVersion]
+      .filter((v): v is IVersionInfo => v != null && !isExcluded(v))
+      .filter((v, i, arr) => arr.findIndex((x) => x.hash === v.hash) === i);
+
+    const recentVersions = Object.values(metadata.versions)
+      .filter((v) => !v.legacy && v.hash !== metadata.latest && v.hash !== nightlyVersion?.hash && !isExcluded(v))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 2);
+
+    return [...prioritized, ...recentVersions];
+  }, [metadata, currentVersionHash, rightVersion]);
+
   const handleOpenChange = (open: boolean) => {
     if (open) {
       requestAnimationFrame(() => {
@@ -109,19 +128,16 @@ export function Version() {
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <div className="px-2 py-1 text-xs opacity-60">Compare with...</div>
-          {versions
-            .filter((v) => v.hash !== currentVersionHash && v.hash !== rightVersion)
-            .slice(0, 5)
-            .map((version) => (
-              <DropdownMenuItem
-                key={`compare-${version.hash}`}
-                className="flex gap-2 items-center"
-                onSelect={() => handleCompareWith(version.hash)}
-              >
-                <Columns2 className="h-3 w-3 opacity-60" />
-                <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>
-              </DropdownMenuItem>
-            ))}
+          {compareVersions.map((version) => (
+            <DropdownMenuItem
+              key={`compare-${version.hash}`}
+              className="flex gap-2 items-center"
+              onSelect={() => handleCompareWith(version.hash)}
+            >
+              <Columns2 className="h-3 w-3 opacity-60" />
+              <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <Tooltip
