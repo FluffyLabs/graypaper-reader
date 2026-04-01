@@ -23,8 +23,7 @@ jobs:
       - name: Build Docker image
         run: docker build -f Dockerfile.snapshot-tests -t playwright-test .
 
-      - name: Update snapshots
-        if: github.event_name == 'pull_request'
+      - name: Update and run visual regression tests
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests \
@@ -32,7 +31,7 @@ jobs:
             -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
             -e CI=true \
             playwright-test \
-            sh -c "cd tools/snapshot-tests && npm run test:update"
+            sh -c "cd tools/snapshot-tests && npm run test:update && npm run test"
 
       - name: Commit updated snapshots
         if: github.event_name == 'pull_request'
@@ -44,18 +43,9 @@ jobs:
             echo "No snapshot changes"
           else
             git commit -m "test: auto-update visual regression snapshots"
+            git pull --rebase
             git push
           fi
-
-      - name: Run visual regression tests
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}/tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests \
-            -v ${{ github.workspace }}/tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results \
-            -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
-            -e CI=true \
-            playwright-test \
-            sh -c "cd tools/snapshot-tests && npm run test"
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v6
