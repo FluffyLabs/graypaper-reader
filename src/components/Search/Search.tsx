@@ -1,11 +1,12 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import type { PDFDocumentProxy } from "pdfjs-dist";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DOC_CONFIG } from "../../config/documentConfig";
 import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
 
 import "./Search.css";
-import { Input } from "@fluffylabs/shared-ui";
+import { Button, ButtonGroup, Input } from "@fluffylabs/shared-ui";
 import { twMerge } from "tailwind-merge";
 import { useTabsContext } from "../Tabs/Tabs";
 
@@ -71,19 +72,104 @@ type PageResults = {
   count: number;
 };
 
+type SectionResults = {
+  title: string;
+  totalCount: number;
+  firstPage: PageResults;
+};
+
+function usePageSectionMap(pdfDocument: PDFDocumentProxy | undefined): Map<number, string> {
+  const [sectionMap, setSectionMap] = useState<Map<number, string>>(new Map());
+
+  useEffect(() => {
+    if (!pdfDocument) {
+      setSectionMap(new Map());
+      return;
+    }
+
+    let cancelled = false;
+    const doc = pdfDocument;
+
+    async function buildMap() {
+      const outline = await doc.getOutline();
+      if (!outline || cancelled) return;
+
+      const sections: { title: string; pageIndex: number }[] = [];
+      for (const item of outline) {
+        let resolvedDest = item.dest;
+        if (typeof resolvedDest === "string") {
+          resolvedDest = await doc.getDestination(resolvedDest);
+        }
+        if (!Array.isArray(resolvedDest) || !resolvedDest[0]) continue;
+
+        try {
+          const pageIndex = await doc.getPageIndex(resolvedDest[0]);
+          sections.push({ title: item.title, pageIndex });
+        } catch {
+          // Skip unresolvable destinations
+        }
+      }
+
+      if (cancelled) return;
+
+      sections.sort((a, b) => a.pageIndex - b.pageIndex);
+
+      const numPages = doc.numPages;
+      const map = new Map<number, string>();
+      for (let pageIndex = 0; pageIndex < numPages; pageIndex++) {
+        let sectionTitle = sections[0]?.title ?? "Document";
+        for (const section of sections) {
+          if (section.pageIndex <= pageIndex) {
+            sectionTitle = section.title;
+          } else {
+            break;
+          }
+        }
+        map.set(pageIndex, sectionTitle);
+      }
+
+      setSectionMap(map);
+    }
+
+    buildMap();
+    return () => {
+      cancelled = true;
+    };
+  }, [pdfDocument]);
+
+  return sectionMap;
+}
+
 type SearchResultsProps = {
   query: string;
   onSearchFinished: (hasQuery: boolean) => void;
 };
 
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
-  const { eventBus, findController, viewer, linkService } = useContext(PdfContext) as IPdfContext;
+  const { eventBus, findController, viewer, linkService, pdfDocument } = useContext(PdfContext) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
   const resetTimeout = useRef(0);
   const [matches, setMatches] = useState<Match>({
     count: 0,
     pagesAndCount: [],
   });
+  const [currentMatch, setCurrentMatch] = useState(0);
+
+  const pageSectionMap = usePageSectionMap(pdfDocument);
+
+  const sectionResults = useMemo(() => {
+    const grouped = new Map<string, SectionResults>();
+    for (const res of matches.pagesAndCount) {
+      const sectionTitle = pageSectionMap.get(res.pageIndex) ?? `Page ${res.pageIndex + 1}`;
+      const existing = grouped.get(sectionTitle);
+      if (existing) {
+        existing.totalCount += res.count;
+      } else {
+        grouped.set(sectionTitle, { title: sectionTitle, totalCount: res.count, firstPage: res });
+      }
+    }
+    return Array.from(grouped.values());
+  }, [matches.pagesAndCount, pageSectionMap]);
 
   const resetMatchesLater = useCallback(() => {
     setIsLoading(true);
@@ -143,9 +229,17 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
       onSearchFinished(true);
     };
 
+    const updateCurrentMatch = (evt: { matchesCount?: { current: number; total: number } }) => {
+      setCurrentMatch(evt.matchesCount?.current ?? 0);
+    };
+
     eventBus.on("updatefindmatchescount", updateMatches);
+    eventBus.on("updatefindmatchescount", updateCurrentMatch);
+    eventBus.on("updatefindcontrolstate", updateCurrentMatch);
     return () => {
       eventBus.off("updatefindmatchescount", updateMatches);
+      eventBus.off("updatefindmatchescount", updateCurrentMatch);
+      eventBus.off("updatefindcontrolstate", updateCurrentMatch);
     };
   }, [eventBus, findController, viewer, onSearchFinished]);
 
@@ -169,24 +263,31 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   return (
     <>
       <div className={`search-buttons ${isLoading ? "search-loading" : ""}`}>
-        <button className="default-button" disabled={!hasResults} onClick={handlePrev}>
-          ⬅️
-        </button>
-        <button className="default-button" disabled={!hasResults} onClick={handleNext}>
-          ➡️
-        </button>
+        <ButtonGroup className="w-full">
+          <Button className="flex-1" variant="tertiary" disabled={!hasResults} onClick={handlePrev}>
+            ⬅️ Previous
+          </Button>
+          <span className="flex items-center justify-center px-3 text-sm text-sidebar-foreground w-[7ch]">
+            {hasResults ? `${currentMatch}/${matches.count}` : "0/0"}
+          </span>
+          <Button className="flex-1" variant="tertiary" disabled={!hasResults} onClick={handleNext}>
+            Next ➡️
+          </Button>
+        </ButtonGroup>
       </div>
       <div className={`search-results text-sidebar-foreground ${isLoading ? "search-loading" : ""}`}>
-        Found {matches.count} results on {matches.pagesAndCount.length} pages.
         <ul>
-          {matches.pagesAndCount.map((res) => (
-            <li key={res.pageIndex}>
-              <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(res)}>
-                Page {res.pageIndex + 1} ({res.count} matches)
-              </a>
+          {sectionResults.map((section) => (
+            <li key={section.title}>
+              <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(section.firstPage)}>
+                {section.title}
+              </a>{" "}
+              ({section.totalCount} {section.totalCount === 1 ? "match" : "matches"})
             </li>
           ))}
         </ul>
+        <br />
+        Found {matches.count} results in {sectionResults.length} sections.
       </div>
     </>
   );
