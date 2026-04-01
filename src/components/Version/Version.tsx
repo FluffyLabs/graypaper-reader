@@ -73,7 +73,9 @@ export function Version() {
     const nightlyVersion = metadata.nightly;
     const latestVersion = metadata.versions[metadata.latest];
 
-    const prioritized = [nightlyVersion, latestVersion].filter((v): v is IVersionInfo => v != null && !isExcluded(v));
+    const prioritized = [nightlyVersion, latestVersion]
+      .filter((v): v is IVersionInfo => v != null && !isExcluded(v))
+      .filter((v, i, arr) => arr.findIndex((x) => x.hash === v.hash) === i);
 
     const recentVersions = Object.values(metadata.versions)
       .filter((v) => !v.legacy && v.hash !== metadata.latest && v.hash !== nightlyVersion?.hash && !isExcluded(v))
