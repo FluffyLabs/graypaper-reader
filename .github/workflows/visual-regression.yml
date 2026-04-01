@@ -23,7 +23,7 @@ jobs:
       - name: Build Docker image
         run: docker build -f Dockerfile.snapshot-tests -t playwright-test .
 
-      - name: Update and run visual regression tests
+      - name: Run visual regression tests (updating snapshots)
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests \
