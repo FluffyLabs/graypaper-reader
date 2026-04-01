@@ -125,7 +125,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
   }, []);
 
   const activeNotes = useMemo(() => {
-    if (!locationParams || !locationParams.selectionStart || !locationParams.selectionEnd) return emptyActiveNotes;
+    if (!locationParams?.selectionStart || !locationParams.selectionEnd) return emptyActiveNotes;
 
     const { selectionStart, selectionEnd } = locationParams;
 
