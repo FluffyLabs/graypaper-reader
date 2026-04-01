@@ -73,8 +73,7 @@ export function Version() {
     const nightlyVersion = metadata.nightly;
     const latestVersion = metadata.versions[metadata.latest];
 
-    const prioritized = [nightlyVersion, latestVersion]
-      .filter((v): v is IVersionInfo => v != null && !isExcluded(v));
+    const prioritized = [nightlyVersion, latestVersion].filter((v): v is IVersionInfo => v != null && !isExcluded(v));
 
     const recentVersions = Object.values(metadata.versions)
       .filter((v) => !v.legacy && v.hash !== metadata.latest && v.hash !== nightlyVersion?.hash && !isExcluded(v))
@@ -128,15 +127,15 @@ export function Version() {
           <DropdownMenuSeparator />
           <div className="px-2 py-1 text-xs opacity-60">Compare with...</div>
           {compareVersions.map((version) => (
-              <DropdownMenuItem
-                key={`compare-${version.hash}`}
-                className="flex gap-2 items-center"
-                onSelect={() => handleCompareWith(version.hash)}
-              >
-                <Columns2 className="h-3 w-3 opacity-60" />
-                <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>
-              </DropdownMenuItem>
-            ))}
+            <DropdownMenuItem
+              key={`compare-${version.hash}`}
+              className="flex gap-2 items-center"
+              onSelect={() => handleCompareWith(version.hash)}
+            >
+              <Columns2 className="h-3 w-3 opacity-60" />
+              <span>{getVersionLabel(version, metadata.latest, metadata.nightly?.hash)}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <Tooltip
