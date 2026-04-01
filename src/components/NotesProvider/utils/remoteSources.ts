@@ -1,7 +1,8 @@
+import { DOC_CONFIG, lsKey } from "../../../config/documentConfig";
 import type { IRemoteSource } from "../types/RemoteSource";
 
-const LOCAL_STORAGE_KEY = "remote-sources";
-const BACKUP_STORAGE_KEY = "remote-sources-backup";
+const LOCAL_STORAGE_KEY = lsKey("remote-sources");
+const BACKUP_STORAGE_KEY = lsKey("remote-sources-backup");
 
 const VERSIONS_0_6_X = [
   "78ca0a81d8058531c2e2e46235db2b832eae0213", // 0
@@ -13,7 +14,7 @@ const VERSIONS_0_6_X = [
 ];
 
 // negative indices to avoid conflicts with user-added sources.
-export const DEFAULT_SOURCES = [
+const GRAYPAPER_DEFAULT_SOURCES: IRemoteSource[] = [
   {
     id: -6,
     name: "Element Activity (v0.6.x)",
@@ -29,6 +30,8 @@ export const DEFAULT_SOURCES = [
     versions: VERSIONS_0_6_X,
   },
 ];
+
+export const DEFAULT_SOURCES: IRemoteSource[] = DOC_CONFIG.docId === "graypaper" ? GRAYPAPER_DEFAULT_SOURCES : [];
 
 export function updateDefaultSources(sources: IRemoteSource[]) {
   const ids = sources.map((x) => x.id);

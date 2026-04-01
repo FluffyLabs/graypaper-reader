@@ -1,6 +1,7 @@
+import { lsKey } from "../../../config/documentConfig";
 import type { IStorageLabel } from "../hooks/useLabels";
 
-const LOCAL_STORAGE_KEY = "labels-v1";
+const LOCAL_STORAGE_KEY = lsKey("labels-v1");
 
 function isLabel(x: unknown): x is IStorageLabel {
   if (x === null || typeof x !== "object") {

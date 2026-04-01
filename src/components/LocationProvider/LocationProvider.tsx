@@ -1,5 +1,6 @@
 import { type ISelectionParams, type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { DOC_CONFIG } from "../../config/documentConfig";
 import { deserializeLegacyLocation } from "../../utils/deserializeLegacyLocation";
 import { type IMetadataContext, MetadataContext } from "../MetadataProvider/MetadataProvider";
 import { useGetLocationParamsToHash } from "./hooks/useGetLocationParamsToHash";
@@ -43,6 +44,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
 
   useEffect(() => {
     if (
+      DOC_CONFIG.legacyReaderHost &&
       !window.location.hash.startsWith("#/") &&
       BASE64_VALIDATION_REGEX.test(window.location.hash) &&
       deserializeLegacyLocation(window.location.hash)

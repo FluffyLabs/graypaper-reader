@@ -5,5 +5,17 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/dist/**", "tools/**/*"],
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
+    env: {
+      VITE_DOC_ID: "graypaper",
+      VITE_DOC_NAME: "Gray Paper",
+      VITE_DOC_BASE_PATH: "/",
+      VITE_DOC_METADATA_HOST: "https://gp.fluffylabs.dev",
+      VITE_DOC_READER_DOMAIN: "https://graypaper.fluffylabs.dev",
+      VITE_DOC_LEGACY_READER_HOST: "https://old-graypaper.fluffylabs.dev",
+      VITE_DOC_PDF_FILE_PREFIX: "graypaper",
+      VITE_DOC_LOCAL_STORAGE_PREFIX: "gp",
+      VITE_DOC_SEARCH_PLACEHOLDER: "search the Gray Paper",
+      VITE_DOC_DISCLAIMER_SUBJECT: "the Gray Paper",
+    },
   },
 });

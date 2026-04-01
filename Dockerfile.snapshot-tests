@@ -51,6 +51,7 @@ COPY vitest.config.ts ./
 COPY tailwind.config.js ./
 COPY biome.jsonc ./
 COPY index.html ./
+COPY .env.* ./
 
 COPY public ./public/
 COPY src ./src/

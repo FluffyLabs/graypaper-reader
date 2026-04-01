@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { DOC_CONFIG } from "../../config/documentConfig";
 import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { type ILocationContext, LocationContext } from "../LocationProvider/LocationProvider";
 import { type IPdfContext, PdfContext } from "../PdfProvider/PdfProvider";
@@ -52,7 +53,7 @@ export function Search({
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="🔍 press 's' to search the Gray Paper"
+        placeholder={`🔍 press 's' to ${DOC_CONFIG.searchPlaceholder}`}
       />
       <SearchResults query={query} onSearchFinished={onSearchFinished} />
     </div>

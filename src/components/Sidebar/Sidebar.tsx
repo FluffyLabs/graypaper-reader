@@ -3,6 +3,7 @@ import "./Sidebar.css";
 import { useBreakpoint } from "@fluffylabs/shared-ui";
 import { Columns2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { lsKey } from "../../config/documentConfig";
 import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import { NoteManager } from "../NoteManager/NoteManager";
 import { Outline } from "../Outline/Outline";
@@ -88,9 +89,9 @@ export function Sidebar() {
 }
 
 function storeActiveTab(tab: string) {
-  window.localStorage.setItem("gp-tab", tab);
+  window.localStorage.setItem(lsKey("tab"), tab);
 }
 
 function loadActiveTab(): string {
-  return window.localStorage.getItem("gp-tab") ?? "outline";
+  return window.localStorage.getItem(lsKey("tab")) ?? "outline";
 }

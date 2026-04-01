@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { LocationProvider } from "./components/LocationProvider/LocationProvider.tsx";
 import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider.tsx";
+import { migrateLocalStorageKeys } from "./config/localStorageMigration";
 import { initDevTools } from "./devtools/initDevTools";
 
 import "./tailwind.css";
@@ -12,6 +13,11 @@ import "./font.css";
 import { App } from "./App.tsx";
 import { VersionProvider } from "./components/LocationProvider/VersionProvider.tsx";
 
+try {
+  migrateLocalStorageKeys();
+} catch (e) {
+  console.warn("Local storage migration skipped", e);
+}
 initDevTools();
 
 ReactDOM.createRoot(document.getElementById("root") ?? document.body).render(
