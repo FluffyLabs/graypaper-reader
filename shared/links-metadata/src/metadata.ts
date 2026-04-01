@@ -53,7 +53,7 @@ export function synctexUrlGetter(version: string) {
 }
 
 export function texUrlGetter(version: string) {
-  return `${ARCHIVE}/tex-${version}`;
+  return `${ARCHIVE}tex-${version}`;
 }
 
 function getShortVersionMapping(data: JsonMetadata) {
