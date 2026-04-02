@@ -1,4 +1,5 @@
 export const ORIGIN = "https://graypaper.fluffylabs.dev/";
+export const ARCHIVE = "https://gp.fluffylabs.dev/";
 
 export type JsonMetadata = {
   latest: string;
@@ -26,7 +27,7 @@ export async function fetchMetadata(): Promise<Metadata> {
     controller.abort("timeout");
   }, 30_000);
 
-  const meta = await fetch(`${ORIGIN}metadata.json`, {
+  const meta = await fetch(`${ARCHIVE}metadata.json`, {
     method: "GET",
     keepalive: true,
     signal: controller.signal,
@@ -48,11 +49,11 @@ export async function fetchMetadata(): Promise<Metadata> {
 }
 
 export function synctexUrlGetter(version: string) {
-  return `${ORIGIN}graypaper-${version}.synctex.json`;
+  return `${ARCHIVE}graypaper-${version}.synctex.json`;
 }
 
 export function texUrlGetter(version: string) {
-  return `${ORIGIN}/tex-${version}`;
+  return `${ARCHIVE}tex-${version}`;
 }
 
 function getShortVersionMapping(data: JsonMetadata) {

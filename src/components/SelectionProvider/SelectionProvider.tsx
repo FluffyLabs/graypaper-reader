@@ -70,7 +70,7 @@ export function SelectionProvider({ children, isolated = false }: ISelectionProv
 
     const selection = document.getSelection();
 
-    if (!selection || !selection.anchorNode) {
+    if (!selection?.anchorNode) {
       return;
     }
 
