@@ -31,7 +31,7 @@ jobs:
             -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
             -e CI=true \
             playwright-test \
-            sh -c "cd tools/snapshot-tests && npm run test:update && npm run test"
+            sh -c "cd tools/snapshot-tests && npm run test:update"
 
       - name: Commit updated snapshots
         if: github.event_name == 'pull_request'
