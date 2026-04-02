@@ -23,15 +23,19 @@ jobs:
       - name: Build Docker image
         run: docker build -f Dockerfile.snapshot-tests -t playwright-test .
 
-      - name: Run visual regression tests (updating snapshots)
+      - name: Update and run visual regression tests
         run: |
+          TEST_CMD="npm run test"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TEST_CMD="npm run test:update"
+          fi
           docker run --rm \
             -v ${{ github.workspace }}/tools/snapshot-tests/tests:/app/tools/snapshot-tests/tests \
             -v ${{ github.workspace }}/tools/snapshot-tests/test-results:/app/tools/snapshot-tests/test-results \
             -v ${{ github.workspace }}/tools/snapshot-tests/playwright-report:/app/tools/snapshot-tests/playwright-report \
             -e CI=true \
             playwright-test \
-            sh -c "cd tools/snapshot-tests && npm run test:update"
+            sh -c "cd tools/snapshot-tests && $TEST_CMD"
 
       - name: Commit updated snapshots
         if: github.event_name == 'pull_request'
