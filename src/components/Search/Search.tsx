@@ -83,7 +83,6 @@ function usePageSectionMap(pdfDocument: PDFDocumentProxy | undefined): Map<numbe
 
   useEffect(() => {
     if (!pdfDocument) {
-      setSectionMap(new Map());
       return;
     }
 
@@ -116,16 +115,16 @@ function usePageSectionMap(pdfDocument: PDFDocumentProxy | undefined): Map<numbe
 
       const numPages = doc.numPages;
       const map = new Map<number, string>();
+      let currentSectionTitle: string | undefined;
+      let nextSection = 0;
       for (let pageIndex = 0; pageIndex < numPages; pageIndex++) {
-        let sectionTitle = sections[0]?.title ?? "Document";
-        for (const section of sections) {
-          if (section.pageIndex <= pageIndex) {
-            sectionTitle = section.title;
-          } else {
-            break;
-          }
+        while (nextSection < sections.length && sections[nextSection].pageIndex <= pageIndex) {
+          currentSectionTitle = sections[nextSection].title;
+          nextSection += 1;
         }
-        map.set(pageIndex, sectionTitle);
+        if (currentSectionTitle) {
+          map.set(pageIndex, currentSectionTitle);
+        }
       }
 
       setSectionMap(map);
