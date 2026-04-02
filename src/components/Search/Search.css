@@ -22,10 +22,6 @@
 
 .search-buttons {
   margin: 1rem 0;
-  display: flex;
-}
-.search-buttons > button {
-  flex: 1;
 }
 
 .search-results {

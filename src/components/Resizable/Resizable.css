@@ -30,7 +30,8 @@
   width: 10px;
   cursor: col-resize;
   height: 100%;
-  border-right: 1px solid light-dark(#d4d4d4, #181818);
+  border-right: 1px solid;
+  border-right-color: light-dark(#d4d4d4, #181818);
   background-color: var(--color-sidebar);
 }
 @media (max-width: 640px) {
