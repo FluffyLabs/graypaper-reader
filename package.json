@@ -36,7 +36,7 @@
     "jspdf": "^4.2.1",
     "katex": "^0.16.44",
     "lucide-react": "^1.7.0",
-    "pdfjs-dist": "^5.5.207",
+    "pdfjs-dist": "^5.6.205",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-tooltip": "^5.30.0",
