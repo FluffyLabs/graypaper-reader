@@ -1,5 +1,6 @@
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
+import { waitForPdfReady } from "./utils/wait-for-pdf";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
 const host = process.env.PLAYWRIGHT_HOST || "localhost";
@@ -38,6 +39,7 @@ test.describe
     test("homepage screenshot - with outline", async () => {
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await waitForPdfReady(page);
       await expect(page).toHaveScreenshot("homepage-outline.png", { fullPage: true });
     });
 
@@ -48,6 +50,7 @@ test.describe
         test.beforeAll(async () => {
           await page.goto(hostname, { waitUntil: "networkidle" });
           await page.evaluate(() => document.fonts.ready);
+          await waitForPdfReady(page);
         });
 
         test("notes tab - initial state", async ({ browser }) => {
@@ -100,6 +103,7 @@ test.describe
       test("search - initial state", async () => {
         await page.goto(hostname, { waitUntil: "networkidle" });
         await page.evaluate(() => document.fonts.ready);
+        await waitForPdfReady(page);
 
         // Click on search tab or search input
         const searchTab = page.locator('[data-testid="tab-search"]');
@@ -126,6 +130,7 @@ test.describe("Top Bar Tests", () => {
     test("github dropdown - expanded state", async ({ page }) => {
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await waitForPdfReady(page);
 
       const githubButton = page.locator(
         '[data-testid="github-dropdown"], button:has-text("GitHub"), [aria-label*="github"], .github',
@@ -152,6 +157,7 @@ test.describe("Top Bar Tests", () => {
       const page = await context.newPage();
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await waitForPdfReady(page);
 
       const notesDropdown = page.locator(
         '[data-testid="notes-dropdown"], button:has-text("Notes"), [aria-label*="notes"], .notes-dropdown',
@@ -168,6 +174,7 @@ test.describe("Top Bar Tests", () => {
       const page = await context.newPage();
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await waitForPdfReady(page);
 
       const notesDropdown = page.locator(
         '[data-testid="notes-dropdown"], button:has-text("Notes"), [aria-label*="notes"], .notes-dropdown',
@@ -193,6 +200,7 @@ test.describe("Top Bar Tests", () => {
     test("settings modal or panel", async ({ page }) => {
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      await waitForPdfReady(page);
 
       const moreButton = page.locator('button:has-text("...")');
       await moreButton.first().click();

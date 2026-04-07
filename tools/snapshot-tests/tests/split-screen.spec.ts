@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
+import { waitForPdfReady, waitForSplitPdfReady } from "./utils/wait-for-pdf";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
 const host = process.env.PLAYWRIGHT_HOST || "localhost";
@@ -30,6 +31,7 @@ test.describe("Split Screen", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const splitTab = page.locator('[data-testid="tab-split"]');
     await expect(splitTab).toBeVisible();
@@ -43,10 +45,12 @@ test.describe("Split Screen", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const splitTab = page.locator('[data-testid="tab-split"]');
     await splitTab.click();
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
+    await waitForSplitPdfReady(page);
 
     await expect(page).toHaveScreenshot("split-view-opened.png", screenshotOpts);
   });
@@ -57,7 +61,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
+    await waitForSplitPdfReady(page);
 
     await expect(page).toHaveScreenshot("split-view-via-url.png", screenshotOpts);
   });
@@ -68,9 +74,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 10000 });
-    // Wait for both PDFs to render
-    await page.locator(".split-pane-view .pdfViewer .page").first().waitFor({ state: "visible", timeout: 10000 });
+    await waitForSplitPdfReady(page);
 
     const versionButton = page.locator(".split-pane-header button").first();
     await versionButton.click({ force: true });
@@ -85,8 +91,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 10000 });
-    await page.locator(".split-pane-view .pdfViewer .page").first().waitFor({ state: "visible", timeout: 10000 });
+    await waitForSplitPdfReady(page);
 
     const optionsButton = page.locator(".split-pane-header button:has(svg.lucide-ellipsis)");
     await optionsButton.click({ force: true });
@@ -101,8 +108,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 10000 });
-    await page.locator(".split-pane-view .pdfViewer .page").first().waitFor({ state: "visible", timeout: 10000 });
+    await waitForSplitPdfReady(page);
 
     const sidebarButton = page.locator('.split-pane-header button[title="Toggle sidebar"]');
     await sidebarButton.click({ force: true });
@@ -117,7 +125,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
+    await waitForSplitPdfReady(page);
 
     const sidebarButton = page.locator('.split-pane-header button[title="Toggle sidebar"]');
     await sidebarButton.click({ force: true });
@@ -135,7 +145,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
+    await waitForSplitPdfReady(page);
 
     const optionsButton = page.locator(".split-pane-header button:has(svg.lucide-ellipsis)");
     await optionsButton.click({ force: true });
@@ -154,7 +166,9 @@ test.describe("Split Screen", () => {
 
     await page.goto(splitHostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
     await page.locator(".split-pane-view").waitFor({ state: "visible", timeout: 5000 });
+    await waitForSplitPdfReady(page);
 
     const sidebarButton = page.locator('.split-pane-header button[title="Toggle sidebar"]');
     await sidebarButton.click({ force: true });
@@ -172,6 +186,7 @@ test.describe("Version Compare", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     // The version dropdown trigger contains a ChevronDown SVG — find it in the header end slot
     const versionButton = page.locator("button:has(svg.lucide-chevron-down)").first();
