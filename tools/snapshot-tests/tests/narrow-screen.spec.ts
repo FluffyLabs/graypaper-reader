@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
+import { waitForPdfReady } from "./utils/wait-for-pdf";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
 const host = process.env.PLAYWRIGHT_HOST || "localhost";
@@ -32,6 +33,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const drawer = page.locator(".bottom-drawer");
     await expect(drawer).toBeVisible();
@@ -49,6 +51,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const handle = page.locator(".drawer-handle");
     await handle.click();
@@ -68,6 +71,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const handle = page.locator(".drawer-handle");
 
@@ -91,6 +95,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const handle = page.locator(".drawer-handle");
     await handle.click();
@@ -109,6 +114,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
 
     await page.goto(`${origin}/#/ab2cdbd?v=0.7.2&split=0.7.2`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const drawer = page.locator(".bottom-drawer");
     await expect(drawer).toBeVisible();
@@ -130,6 +136,7 @@ test.describe("Narrow Screen - Tablet", () => {
 
     await page.goto(hostname, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
+    await waitForPdfReady(page);
 
     const drawer = page.locator(".bottom-drawer");
     await expect(drawer).toBeVisible();
