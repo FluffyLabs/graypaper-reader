@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() && hashFiles('tools/snapshot-tests/playwright-report/**') != '' }}
         with:
           name: playwright-report-${{ github.run_number }}
