@@ -34,9 +34,9 @@
     "class-variance-authority": "^0.7.1",
     "dompurify": "^3.3.3",
     "jspdf": "^4.2.1",
-    "katex": "^0.16.44",
+    "katex": "^0.16.45",
     "lucide-react": "^1.7.0",
-    "pdfjs-dist": "^5.5.207",
+    "pdfjs-dist": "^5.6.205",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-tooltip": "^5.30.0",
@@ -60,7 +60,7 @@
     "jsdom": "^29.0.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
-    "vite": "^8.0.3",
+    "vite": "^8.0.5",
     "vite-plugin-prefetch-chunk": "^0.1.2",
     "vitest": "^4.1.2"
   }
