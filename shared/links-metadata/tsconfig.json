@@ -5,7 +5,8 @@
     "moduleResolution": "Node16",
     "target": "es2022",
     "outDir": "dist/",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
   "extends": "@tsconfig/node20/tsconfig.json",
   "exclude": ["node_modules"]
