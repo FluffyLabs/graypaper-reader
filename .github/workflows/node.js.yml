@@ -23,4 +23,8 @@ jobs:
       - run: npm ci
       - run: npm run qa
       - run: npm run build --if-present
+      - name: Build publishable packages
+        run: |
+          npm run build --workspace=shared/links-metadata
+          npm run build --workspace=tools/links-check
       - run: npm test
