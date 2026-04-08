@@ -1,5 +1,10 @@
 {
   "name": "@fluffylabs/links-metadata",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FluffyLabs/graypaper-reader.git",
+    "directory": "shared/links-metadata"
+  },
   "version": "1.4.0",
   "scripts": {
     "build": "tsc",
