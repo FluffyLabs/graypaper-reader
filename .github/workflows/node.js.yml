@@ -27,4 +27,8 @@ jobs:
         run: |
           npm run build --workspace=shared/links-metadata
           npm run build --workspace=tools/links-check
+      - name: Dry-run publish
+        run: |
+          npm publish --dry-run --workspace=shared/links-metadata
+          npm publish --dry-run --workspace=tools/links-check
       - run: npm test
