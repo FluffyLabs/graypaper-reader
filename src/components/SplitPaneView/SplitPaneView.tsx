@@ -140,7 +140,7 @@ export function SplitPaneView() {
 
       <div className="split-pane-content">
         <PdfProvider pdfUrl={urlGetters.pdf(effectiveVersion)} externalTheme={theme} onThemeChange={setTheme}>
-          <SelectionProvider isolated={effectiveVersion === mainVersion}>
+          <SelectionProvider mode={effectiveVersion === mainVersion ? "isolated" : "readonly"}>
             <ScrollSyncBridge paneId="right" />
             <ZoomSyncBridge />
             <Content>

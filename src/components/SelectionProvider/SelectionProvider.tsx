@@ -28,17 +28,25 @@ export interface ISelectionContext {
   handleClearSelection: () => void;
 }
 
+type SelectionMode = "connected" | "readonly" | "isolated";
+
 interface ISelectionProviderProps {
   children: ReactNode;
-  /** When true, selection is local-only: doesn't read from or write to URL */
-  isolated?: boolean;
+  /**
+   * - "connected" (default): reads and writes selection to URL
+   * - "readonly": reads selection from URL but doesn't write (e.g. split pane showing a different version)
+   * - "isolated": doesn't read from or write to URL (e.g. split pane showing the same version)
+   */
+  mode?: SelectionMode;
 }
 
 export const SelectionContext = createContext<ISelectionContext | null>(null);
 
 // todo: solve the problem of multi-page selections
 
-export function SelectionProvider({ children, isolated = false }: ISelectionProviderProps) {
+export function SelectionProvider({ children, mode = "connected" }: ISelectionProviderProps) {
+  const isolated = mode === "isolated";
+  const readOnly = mode !== "connected";
   const { locationParams, setLocationParams, synctexBlocksToSelectionParams } = useContext(
     LocationContext,
   ) as ILocationContext;
@@ -47,7 +55,7 @@ export function SelectionProvider({ children, isolated = false }: ISelectionProv
   const lastScrolledTo = useRef<ISynctexBlockId | null>(null);
 
   const handleClearSelection = useCallback(() => {
-    if (isolated) {
+    if (readOnly) {
       window.getSelection()?.empty();
       return;
     }
@@ -55,7 +63,7 @@ export function SelectionProvider({ children, isolated = false }: ISelectionProv
     setLocationParams(otherParams);
     window.getSelection()?.empty();
     lastScrolledTo.current = null;
-  }, [isolated, setLocationParams, locationParams]);
+  }, [readOnly, setLocationParams, locationParams]);
 
   // reset scroll position when version changes.
   const previousVersion = usePrevious(locationParams.version);
@@ -66,7 +74,7 @@ export function SelectionProvider({ children, isolated = false }: ISelectionProv
   }, [previousVersion, locationParams]);
 
   const handleViewerMouseUp = useCallback(() => {
-    if (isolated) return;
+    if (readOnly) return;
 
     const selection = document.getSelection();
 
@@ -118,7 +126,7 @@ export function SelectionProvider({ children, isolated = false }: ISelectionProv
     // auto-scrolling that would happen otherwise.
     lastScrolledTo.current = newLocation.selectionStart;
     setLocationParams(newLocation);
-  }, [isolated, setLocationParams, locationParams, getSynctexBlockAtLocation, synctexBlocksToSelectionParams]);
+  }, [readOnly, setLocationParams, locationParams, getSynctexBlockAtLocation, synctexBlocksToSelectionParams]);
 
   // Stabilize selection references so they only change when actual values change,
   // not when unrelated locationParams fields (like split) change.
