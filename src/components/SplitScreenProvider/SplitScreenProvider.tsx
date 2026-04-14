@@ -130,8 +130,6 @@ export function SplitScreenProvider({ children }: ISplitScreenProviderProps) {
   const setRightVersion = useCallback(
     (v: string | null) => {
       if (v) {
-        const isDifferentVersion = v !== locationParams.version;
-        setScrollLinked(isDifferentVersion);
         setLocationParams({
           ...locationParams,
           split: v,
