@@ -71,21 +71,12 @@ describe("SplitScreenProvider", () => {
   });
 
   describe("activateCompare", () => {
-    it("enables scroll linking when versions differ", () => {
+    it("does not change scroll linking state", () => {
       const { wrapper } = createWrapper({ version: "abc123" });
       const { result } = renderHook(() => useSplitScreenContext(), { wrapper });
 
+      expect(result.current.isScrollLinked).toBe(false);
       act(() => result.current.activateCompare("def456"));
-
-      expect(result.current.isScrollLinked).toBe(true);
-    });
-
-    it("disables scroll linking when comparing same version", () => {
-      const { wrapper } = createWrapper({ version: "abc123" });
-      const { result } = renderHook(() => useSplitScreenContext(), { wrapper });
-
-      act(() => result.current.activateCompare("abc123"));
-
       expect(result.current.isScrollLinked).toBe(false);
     });
 
