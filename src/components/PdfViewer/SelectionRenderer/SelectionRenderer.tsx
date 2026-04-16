@@ -1,5 +1,5 @@
 import { type ISynctexBlock, isSameBlock } from "@fluffylabs/links-metadata";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { subtractBorder } from "../../../utils/subtractBorder";
 import { type IPdfContext, PdfContext } from "../../PdfProvider/PdfProvider";
 import { type ISelectionContext, SelectionContext } from "../../SelectionProvider/SelectionProvider";
@@ -18,6 +18,16 @@ export function SelectionRenderer() {
   const { pageOffsets } = useContext(PdfContext) as IPdfContext;
   const [retryScrolling, setRetryScrolling] = useState(0);
   const { isCurrentPageTextLayerRendered } = useIsCurrentPageRendered();
+
+  // Reset scroll tracking when the PDF viewer changes (new document loaded),
+  // so we re-scroll to the selection in the new document.
+  const prevViewerRef = useRef(viewer);
+  useEffect(() => {
+    if (prevViewerRef.current !== viewer) {
+      prevViewerRef.current = viewer;
+      lastScrolledTo.current = null;
+    }
+  }, [viewer, lastScrolledTo]);
 
   useEffect(() => {
     // not ready yet

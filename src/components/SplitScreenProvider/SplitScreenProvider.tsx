@@ -109,8 +109,6 @@ export function SplitScreenProvider({ children }: ISplitScreenProviderProps) {
 
   const activateCompare = useCallback(
     (targetVersion: string) => {
-      const isDifferentVersion = targetVersion !== locationParams.version;
-      setScrollLinked(isDifferentVersion);
       setSidebarOverlayOpen(false);
       setLocationParams({
         ...locationParams,
@@ -130,8 +128,6 @@ export function SplitScreenProvider({ children }: ISplitScreenProviderProps) {
   const setRightVersion = useCallback(
     (v: string | null) => {
       if (v) {
-        const isDifferentVersion = v !== locationParams.version;
-        setScrollLinked(isDifferentVersion);
         setLocationParams({
           ...locationParams,
           split: v,
