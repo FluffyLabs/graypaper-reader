@@ -32,7 +32,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
-    "dompurify": "^3.3.3",
+    "dompurify": "^3.4.0",
     "jspdf": "^4.2.1",
     "katex": "^0.16.45",
     "lucide-react": "^1.8.0",
