@@ -1,5 +1,5 @@
 import { Button, DialogModal } from "@fluffylabs/shared-ui";
-import { useContext, useState } from "react";
+import { type MouseEvent, useContext, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { DOC_CONFIG } from "../../config/documentConfig";
 import { SHORT_COMMIT_HASH_LENGTH } from "../LocationProvider/utils/constants";
@@ -57,13 +57,21 @@ export function DownloadModal() {
     }
   };
 
-  const handleDownloadDarkPdf = () => {
-    fetchAndSave(urlGetters.pdf(version), `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.pdf`);
+  const handleLinkClick = (url: string, filename: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    if (isProcessing) {
+      return;
+    }
+    fetchAndSave(url, filename);
   };
 
-  const handleDownloadMarkdown = () => {
-    fetchAndSave(urlGetters.md(version), `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.md`);
-  };
+  const pdfUrl = urlGetters.pdf(version);
+  const pdfFilename = `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.pdf`;
+  const mdUrl = urlGetters.md(version);
+  const mdFilename = `${DOC_CONFIG.pdfFilePrefix}-${shortVersion}.md`;
 
   return (
     <div>
@@ -85,11 +93,25 @@ export function DownloadModal() {
           <DialogModal.Title>Download</DialogModal.Title>
           <DialogModal.Body>
             <div className="flex flex-col gap-3">
-              <Button variant="secondary" className="w-full" onClick={handleDownloadMarkdown} disabled={isProcessing}>
-                📝 Download Markdown
+              <Button variant="secondary" className="w-full" asChild>
+                <a
+                  href={mdUrl}
+                  download={mdFilename}
+                  onClick={handleLinkClick(mdUrl, mdFilename)}
+                  aria-disabled={isProcessing}
+                >
+                  📝 Download Markdown
+                </a>
               </Button>
-              <Button variant="secondary" className="w-full" onClick={handleDownloadDarkPdf} disabled={isProcessing}>
-                ⬇️ Download PDF (dark)
+              <Button variant="secondary" className="w-full" asChild>
+                <a
+                  href={pdfUrl}
+                  download={pdfFilename}
+                  onClick={handleLinkClick(pdfUrl, pdfFilename)}
+                  aria-disabled={isProcessing}
+                >
+                  ⬇️ Download PDF (dark)
+                </a>
               </Button>
               <hr className="border-current opacity-20" />
               <div className="flex flex-col gap-2">
