@@ -60,7 +60,7 @@ jobs:
           retention-days: 30
 
       - name: Comment PR with Visual Test Report
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         with:
           script: |
