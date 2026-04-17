@@ -1,5 +1,5 @@
 import { Button, DialogModal } from "@fluffylabs/shared-ui";
-import { type MouseEvent, useContext, useState } from "react";
+import { type MouseEvent, useContext, useRef, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { DOC_CONFIG } from "../../config/documentConfig";
 import { SHORT_COMMIT_HASH_LENGTH } from "../LocationProvider/utils/constants";
@@ -10,6 +10,7 @@ import { type IPdfContext, type ITheme, PdfContext, themesOrder } from "../PdfPr
 export function DownloadModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const isProcessingRef = useRef(false);
   const [error, setError] = useState<string>();
   const { version } = useVersionContext();
   const { urlGetters } = useContext(MetadataContext) as IMetadataContext;
@@ -35,6 +36,10 @@ export function DownloadModal() {
   };
 
   const fetchAndSave = async (url: string, filename: string) => {
+    if (isProcessingRef.current) {
+      return;
+    }
+    isProcessingRef.current = true;
     setIsProcessing(true);
     setError(undefined);
     try {
@@ -53,6 +58,7 @@ export function DownloadModal() {
     } catch {
       setError(`Failed to download ${filename}. The file may not be available for this version.`);
     } finally {
+      isProcessingRef.current = false;
       setIsProcessing(false);
     }
   };
@@ -62,10 +68,10 @@ export function DownloadModal() {
       return;
     }
     event.preventDefault();
-    if (isProcessing) {
+    if (isProcessingRef.current) {
       return;
     }
-    fetchAndSave(url, filename);
+    void fetchAndSave(url, filename);
   };
 
   const pdfUrl = urlGetters.pdf(version);
