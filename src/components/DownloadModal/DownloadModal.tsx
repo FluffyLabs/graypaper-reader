@@ -20,6 +20,10 @@ export function DownloadModal() {
   const shortVersion = version.substring(0, SHORT_COMMIT_HASH_LENGTH);
 
   const handleGeneratePdf = async () => {
+    if (isProcessingRef.current) {
+      return;
+    }
+    isProcessingRef.current = true;
     setIsProcessing(true);
     setError(undefined);
     try {
@@ -31,6 +35,7 @@ export function DownloadModal() {
     } catch {
       setError("Failed to generate PDF. Please try again.");
     } finally {
+      isProcessingRef.current = false;
       setIsProcessing(false);
     }
   };
