@@ -8,7 +8,11 @@ import {
 } from "./constants";
 import { encodePageNumberAndIndex } from "./encodePageNumberAndIndex";
 
-export const locationParamsToHash = (params: ILocationParams, metadata: IMetadataContext["metadata"]) => {
+export const locationParamsToHash = (
+  params: ILocationParams,
+  metadata: IMetadataContext["metadata"],
+  options: { includeSearchSection?: boolean } = {},
+) => {
   const fullVersion = params.version;
   const version = fullVersion
     ? fullVersion.substring(0, SHORT_COMMIT_HASH_LENGTH)
@@ -29,12 +33,19 @@ export const locationParamsToHash = (params: ILocationParams, metadata: IMetadat
     ].join("");
   }
 
-  // we never put search/section to the URL,
-  // yet we keep them in `locationParams`.
+  // search/section are URL-only "intents" consumed by Search input and Outline scroll.
+  // They are normally dropped from the serialized URL once consumed; the redirect path
+  // (when the URL had no resolvable version) opts in via `includeSearchSection` so the
+  // pre-consumption values survive the rewrite.
   const finalParamsToSerialize: SearchParams = {
     v: versionName,
     rest: `${SEGMENT_SEPARATOR}${stringifiedParams.join(SEGMENT_SEPARATOR)}`,
   };
+
+  if (options.includeSearchSection) {
+    if (params.search) finalParamsToSerialize.search = params.search;
+    if (params.section) finalParamsToSerialize.section = params.section;
+  }
 
   if (params.split) {
     const splitName =
