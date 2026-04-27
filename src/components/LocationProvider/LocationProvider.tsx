@@ -83,7 +83,13 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         section,
         split: resolvedSplit,
       }));
-      handleSetLocationParams({ version, search, section, split: resolvedSplit });
+      // Redirect to the canonical URL, but keep ?search/?section so the second
+      // hashchange (triggered by the rewrite) doesn't wipe state before the
+      // Search input and Outline scroll have a chance to consume them.
+      const redirectHash = locationParamsToHash({ version, search, section, split: resolvedSplit }, metadata, {
+        includeSearchSection: true,
+      });
+      window.location.hash = redirectHash;
       return;
     }
 
@@ -101,7 +107,10 @@ export function LocationProvider({ children }: ILocationProviderProps) {
         section,
         split: resolvedSplit,
       }));
-      handleSetLocationParams({ version, search, section, split: resolvedSplit });
+      const redirectHash = locationParamsToHash({ version, search, section, split: resolvedSplit }, metadata, {
+        includeSearchSection: true,
+      });
+      window.location.hash = redirectHash;
       return;
     }
 
@@ -143,7 +152,7 @@ export function LocationProvider({ children }: ILocationProviderProps) {
       }
       return params;
     });
-  }, [handleSetLocationParams, metadata, resolveFullVersion]);
+  }, [metadata, resolveFullVersion]);
 
   const synctexBlocksToSelectionParams: ILocationContext["synctexBlocksToSelectionParams"] = useCallback((blocks) => {
     const blockIds = blocks.map((block) => ({ pageNumber: block.pageNumber, index: block.index }));
