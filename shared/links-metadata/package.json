@@ -23,7 +23,7 @@
   "license": "MPL-2.0",
   "description": "Migrate graypaper reader notes between versions.",
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
+    "@biomejs/biome": "^2.4.13",
     "@tsconfig/node20": "^20.1.9",
     "@types/node": "^25.5.2"
   },
