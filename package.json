@@ -45,7 +45,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.13",
     "@commitlint/cli": "^21.0.0",
-    "@commitlint/config-conventional": "^20.5.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@tailwindcss/postcss": "^4.2.3",
     "@tailwindcss/vite": "^4.2.4",
     "@testing-library/jest-dom": "^6.9.1",
