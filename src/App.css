@@ -29,6 +29,7 @@
 @media (max-width: 640px) {
   .controls {
     left: 14px;
+    bottom: 52px;
   }
 }
 
