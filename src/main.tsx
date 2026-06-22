@@ -4,6 +4,11 @@ import { LocationProvider } from "./components/LocationProvider/LocationProvider
 import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider.tsx";
 import { migrateLocalStorageKeys } from "./config/localStorageMigration";
 import { initDevTools } from "./devtools/initDevTools";
+import { installRegExpEscapePolyfill } from "./utils/regExpEscapePolyfill";
+
+// pdf.js search relies on `RegExp.escape`, which WebKit only added in iOS/Safari 18.4.
+// Install the polyfill before anything renders so search works on older iOS (issue #446).
+installRegExpEscapePolyfill();
 
 import "./tailwind.css";
 import "./variables.css";
