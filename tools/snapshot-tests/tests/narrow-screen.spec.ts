@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
+import { maskedPdfScreenshot } from "./utils/screenshot-opts";
 import { waitForPdfReady } from "./utils/wait-for-pdf";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
@@ -21,8 +22,6 @@ function getCommonContext() {
   };
 }
 
-const screenshotOpts = { fullPage: true };
-
 test.describe("Narrow Screen - Bottom Drawer", () => {
   test("narrow layout shows bottom drawer collapsed", async ({ browser }) => {
     const context = await browser.newContext({
@@ -39,7 +38,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
     await expect(drawer).toBeVisible();
     await expect(drawer).toHaveClass(/collapsed/);
 
-    await expect(page).toHaveScreenshot("narrow-layout-collapsed.png", screenshotOpts);
+    await expect(page).toHaveScreenshot("narrow-layout-collapsed.png", maskedPdfScreenshot(page));
   });
 
   test("bottom drawer expands on click", async ({ browser }) => {
@@ -59,7 +58,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
     const drawer = page.locator(".bottom-drawer");
     await expect(drawer).toHaveClass(/expanded/);
 
-    await expect(page).toHaveScreenshot("narrow-layout-expanded.png", screenshotOpts);
+    await expect(page).toHaveScreenshot("narrow-layout-expanded.png", maskedPdfScreenshot(page));
   });
 
   test("bottom drawer collapses on second click", async ({ browser }) => {
@@ -83,7 +82,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
     await handle.click();
     await expect(page.locator(".bottom-drawer")).toHaveClass(/collapsed/);
 
-    await expect(page).toHaveScreenshot("narrow-layout-re-collapsed.png", screenshotOpts);
+    await expect(page).toHaveScreenshot("narrow-layout-re-collapsed.png", maskedPdfScreenshot(page));
   });
 
   test("narrow layout does not show split tab", async ({ browser }) => {
@@ -122,7 +121,7 @@ test.describe("Narrow Screen - Bottom Drawer", () => {
     const splitPane = page.locator(".split-pane-view");
     await expect(splitPane).toHaveCount(0);
 
-    await expect(page).toHaveScreenshot("narrow-layout-ignores-split.png", screenshotOpts);
+    await expect(page).toHaveScreenshot("narrow-layout-ignores-split.png", maskedPdfScreenshot(page));
   });
 });
 
@@ -141,6 +140,6 @@ test.describe("Narrow Screen - Tablet", () => {
     const drawer = page.locator(".bottom-drawer");
     await expect(drawer).toBeVisible();
 
-    await expect(page).toHaveScreenshot("tablet-layout.png", screenshotOpts);
+    await expect(page).toHaveScreenshot("tablet-layout.png", maskedPdfScreenshot(page));
   });
 });

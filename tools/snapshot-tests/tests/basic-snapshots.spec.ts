@@ -1,5 +1,6 @@
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { initialLocalStorage } from "./utils/add-notes-to-local-storage";
+import { maskedPdfScreenshot } from "./utils/screenshot-opts";
 import { waitForPdfReady } from "./utils/wait-for-pdf";
 
 const port = process.env.PLAYWRIGHT_PORT || "5173";
@@ -40,7 +41,7 @@ test.describe
       await page.goto(hostname, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       await waitForPdfReady(page);
-      await expect(page).toHaveScreenshot("homepage-outline.png", { fullPage: true });
+      await expect(page).toHaveScreenshot("homepage-outline.png", maskedPdfScreenshot(page));
     });
 
     test.describe
@@ -113,14 +114,14 @@ test.describe
           await page.locator('[data-testid="tab-content-search"]').waitFor({ state: "visible" });
         }
 
-        await expect(page).toHaveScreenshot("search-initial.png", { fullPage: true });
+        await expect(page).toHaveScreenshot("search-initial.png", maskedPdfScreenshot(page));
         const searchInput = page.locator('input[placeholder*="search"]');
         await searchInput.first().fill("protocol");
         await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
-        await expect(page).toHaveScreenshot("search-with-query.png", { fullPage: true });
+        await expect(page).toHaveScreenshot("search-with-query.png", maskedPdfScreenshot(page));
         await searchInput.first().fill("blockchain");
         await page.locator(".search-results:not(.search-loading)").waitFor({ state: "visible" });
-        await expect(page).toHaveScreenshot("search-with-results.png", { fullPage: true });
+        await expect(page).toHaveScreenshot("search-with-results.png", maskedPdfScreenshot(page));
       });
     });
   });
@@ -138,14 +139,14 @@ test.describe("Top Bar Tests", () => {
       if ((await githubButton.count()) > 0) {
         await githubButton.first().click();
 
-        await expect(page).toHaveScreenshot("topbar-github-expanded.png", { fullPage: true });
+        await expect(page).toHaveScreenshot("topbar-github-expanded.png", maskedPdfScreenshot(page));
 
         // Hover over dropdown options
         const dropdownOptions = page.locator('[role="menuitem"], .dropdown-item, .github-menu-item');
         if ((await dropdownOptions.count()) > 0) {
           await dropdownOptions.first().hover();
 
-          await expect(page).toHaveScreenshot("topbar-github-option-hover.png", { fullPage: true });
+          await expect(page).toHaveScreenshot("topbar-github-option-hover.png", maskedPdfScreenshot(page));
         }
       }
     });
@@ -165,7 +166,7 @@ test.describe("Top Bar Tests", () => {
       if ((await notesDropdown.count()) > 0) {
         await notesDropdown.first().click();
 
-        await expect(page).toHaveScreenshot("topbar-notes-dropdown.png", { fullPage: true });
+        await expect(page).toHaveScreenshot("topbar-notes-dropdown.png", maskedPdfScreenshot(page));
       }
     });
 
@@ -186,11 +187,11 @@ test.describe("Top Bar Tests", () => {
         if ((await noteOptions.count()) > 0) {
           await noteOptions.first().click();
 
-          await expect(page).toHaveScreenshot("topbar-notes-selected-on.png", { fullPage: true });
+          await expect(page).toHaveScreenshot("topbar-notes-selected-on.png", maskedPdfScreenshot(page));
 
           await noteOptions.first().click();
 
-          await expect(page).toHaveScreenshot("topbar-notes-selected-off.png", { fullPage: true });
+          await expect(page).toHaveScreenshot("topbar-notes-selected-off.png", maskedPdfScreenshot(page));
         }
       }
     });
@@ -204,10 +205,10 @@ test.describe("Top Bar Tests", () => {
 
       const moreButton = page.locator('button:has-text("...")');
       await moreButton.first().click();
-      await expect(page).toHaveScreenshot("topbar-more-clicked.png", { fullPage: true });
+      await expect(page).toHaveScreenshot("topbar-more-clicked.png", maskedPdfScreenshot(page));
       const settingsMenuItem = page.locator("role=menuitem", { hasText: "Settings" });
       await settingsMenuItem.click();
-      await expect(page).toHaveScreenshot("topbar-more-settings-clicked.png", { fullPage: true });
+      await expect(page).toHaveScreenshot("topbar-more-settings-clicked.png", maskedPdfScreenshot(page));
     });
   });
 });
