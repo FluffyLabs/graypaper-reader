@@ -39,7 +39,7 @@
     "pdfjs-dist": "^6.0.227",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-tooltip": "^6.0.6",
+    "react-tooltip": "^6.0.8",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
