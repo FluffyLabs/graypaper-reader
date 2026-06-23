@@ -144,6 +144,26 @@ type SearchResultsProps = {
   onSearchFinished: (hasQuery: boolean) => void;
 };
 
+export function getMatchSummary(pageMatches: ArrayLike<number[] | undefined>): Match {
+  const pagesAndCount = Array.from({ length: pageMatches.length }, (_, pageIndex) => {
+    const matchesOnPage = pageMatches[pageIndex];
+    if (!matchesOnPage || matchesOnPage.length === 0) {
+      return undefined;
+    }
+
+    return {
+      pageIndex,
+      firstMatchIndex: matchesOnPage[0],
+      count: matchesOnPage.length,
+    } satisfies PageResults;
+  }).filter((result): result is PageResults => result !== undefined);
+
+  return {
+    count: pagesAndCount.reduce((sum, result) => sum + result.count, 0),
+    pagesAndCount,
+  };
+}
+
 function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   const { eventBus, findController, viewer, linkService, pdfDocument } = useContext(PdfContext) as IPdfContext;
   const [isLoading, setIsLoading] = useState(false);
@@ -153,6 +173,8 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
     pagesAndCount: [],
   });
   const [currentMatch, setCurrentMatch] = useState(0);
+  const lastSearchQuery = useRef("");
+  const hasActiveQuery = useRef(false);
 
   const pageSectionMap = usePageSectionMap(pdfDocument);
 
@@ -200,32 +222,38 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
       return;
     }
 
+    if (!query) {
+      hasActiveQuery.current = false;
+      clearTimeout(resetTimeout.current);
+      setIsLoading(false);
+      setMatches({ count: 0, pagesAndCount: [] });
+      setCurrentMatch(0);
+      onSearchFinished(false);
+
+      if (lastSearchQuery.current) {
+        search("");
+      }
+      lastSearchQuery.current = "";
+      return;
+    }
+
+    hasActiveQuery.current = true;
+    lastSearchQuery.current = query;
     resetMatchesLater();
     search("");
-  }, [search, resetMatchesLater, eventBus]);
+  }, [query, search, resetMatchesLater, eventBus, onSearchFinished]);
 
   useEffect(() => {
-    const pageMatches = findController?.pageMatches ?? [];
     if (!eventBus || !viewer) {
       return;
     }
 
     const updateMatches = () => {
-      const count = pageMatches.reduce((sum, x) => sum + x.length, 0);
-      const pagesAndCount = Array.from(pageMatches.entries())
-        .filter((x) => x.length > 0 && x[1].length > 0)
-        .map(
-          (x) =>
-            ({
-              pageIndex: x[0],
-              firstMatchIndex: x[1][0],
-              count: x[1].length,
-            }) as PageResults,
-        );
+      const { count, pagesAndCount } = getMatchSummary(findController?.pageMatches ?? []);
       clearTimeout(resetTimeout.current);
       setIsLoading(false);
       setMatches({ count, pagesAndCount });
-      onSearchFinished(true);
+      onSearchFinished(hasActiveQuery.current);
     };
 
     const updateCurrentMatch = (evt: { matchesCount?: { current: number; total: number } }) => {
