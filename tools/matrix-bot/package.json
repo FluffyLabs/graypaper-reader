@@ -17,7 +17,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
     "@tsconfig/node20": "^20.1.9",
-    "@types/node": "^25.5.2",
+    "@types/node": "^26.0.0",
     "typescript": "^6.0.2"
   },
   "dependencies": {
