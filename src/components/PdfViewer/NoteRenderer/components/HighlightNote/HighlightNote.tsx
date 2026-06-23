@@ -103,6 +103,7 @@ export function HighlightNote({ notes, pageOffset, isInViewport, isPinnedByDefau
         onMouseEnter={handleNoteHoverOn}
         onMouseLeave={handleNoteHoverOff}
       >
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: pin toggle is a click-only affordance */}
         <a className="close default-link" onClick={handleNotePinnedToggle}>
           {isDisplayed ? "📍" : "📌"}
         </a>

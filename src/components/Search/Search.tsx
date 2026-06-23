@@ -306,6 +306,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
         <ul>
           {sectionResults.map((section) => (
             <li key={section.title}>
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: result link navigates on click */}
               <a className="default-link" style={{ cursor: "pointer" }} onClick={() => jumpToPage(section.firstPage)}>
                 {section.title}
               </a>{" "}
