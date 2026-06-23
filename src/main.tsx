@@ -5,11 +5,9 @@ import { MetadataProvider } from "./components/MetadataProvider/MetadataProvider
 import { migrateLocalStorageKeys } from "./config/localStorageMigration";
 import { initDevTools } from "./devtools/initDevTools";
 import { installReadableStreamAsyncIteratorPolyfill } from "./utils/readableStreamAsyncIteratorPolyfill";
-import { installRegExpEscapePolyfill } from "./utils/regExpEscapePolyfill";
 
-// pdf.js search relies on `RegExp.escape`, which WebKit only added in iOS/Safari 18.4.
-// Install the polyfill before anything renders so search works on older iOS (issue #446).
-installRegExpEscapePolyfill();
+// pdf.js text extraction uses ReadableStream async iteration, which is missing in some Safari versions.
+// Install the polyfill before anything renders so search works there (issue #446).
 installReadableStreamAsyncIteratorPolyfill();
 
 import "./tailwind.css";
