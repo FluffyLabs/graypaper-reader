@@ -174,6 +174,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
   });
   const [currentMatch, setCurrentMatch] = useState(0);
   const lastSearchQuery = useRef("");
+  const hasActiveQuery = useRef(false);
 
   const pageSectionMap = usePageSectionMap(pdfDocument);
 
@@ -222,6 +223,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
     }
 
     if (!query) {
+      hasActiveQuery.current = false;
       clearTimeout(resetTimeout.current);
       setIsLoading(false);
       setMatches({ count: 0, pagesAndCount: [] });
@@ -235,6 +237,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
       return;
     }
 
+    hasActiveQuery.current = true;
     lastSearchQuery.current = query;
     resetMatchesLater();
     search("");
@@ -250,7 +253,7 @@ function SearchResults({ query, onSearchFinished }: SearchResultsProps) {
       clearTimeout(resetTimeout.current);
       setIsLoading(false);
       setMatches({ count, pagesAndCount });
-      onSearchFinished(true);
+      onSearchFinished(hasActiveQuery.current);
     };
 
     const updateCurrentMatch = (evt: { matchesCount?: { current: number; total: number } }) => {
