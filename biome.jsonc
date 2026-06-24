@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
   "files": {
     "includes": [
       "**",
@@ -8,7 +8,8 @@
       "!**/tools/matrix-bot/output/messages.json",
       "!**/tools/snapshot-tests/playwright-report",
       "!**/tools/snapshot-tests/test-results",
-      "!**/graypaper-archive"
+      "!**/graypaper-archive",
+      "!**/*.svg"
     ]
   },
   "formatter": {
@@ -33,7 +34,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "useConsistentArrayType": { "level": "error", "options": { "syntax": "shorthand" } }
       },

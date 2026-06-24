@@ -79,6 +79,7 @@ export function RemoteSource({ source, onChange }: RemoteSourceProps) {
         <strong>{name}</strong>
       </label>
       {id > 0 ? (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: edit toggle is a click-only affordance
         <a className="default-link" onClick={() => setEditing(true)}>
           &nbsp;✏︎
         </a>
